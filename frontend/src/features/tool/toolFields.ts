@@ -18,6 +18,11 @@ const sharedLanguageOptions = [
   { label: 'Arabic', value: 'ar' },
 ]
 
+const booleanOptions = [
+  { label: 'Yes', value: 'true' },
+  { label: 'No', value: 'false' },
+]
+
 export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'split-pdf': [
     {
@@ -342,6 +347,10 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'background', label: 'Background Color', type: 'text', defaultValue: '#0b1120' },
   ],
   'split-image': [
+    { name: 'columns', label: 'Columns', type: 'number', defaultValue: '2' },
+    { name: 'rows', label: 'Rows', type: 'number', defaultValue: '2' },
+  ],
+  'image-splitter': [
     { name: 'columns', label: 'Columns', type: 'number', defaultValue: '2' },
     { name: 'rows', label: 'Rows', type: 'number', defaultValue: '2' },
   ],
@@ -785,6 +794,136 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       label: 'JSON Text',
       type: 'textarea',
       placeholder: '[{"name":"ishu","score":95}]',
+    },
+  ],
+  'jpeg-to-png': [],
+  'png-to-jpeg': [],
+  'jpeg-to-jpg': [],
+  'remove-image-metadata': [],
+  'remove-image-object': [
+    { name: 'x', label: 'Object X', type: 'number', defaultValue: '120' },
+    { name: 'y', label: 'Object Y', type: 'number', defaultValue: '120' },
+    { name: 'width', label: 'Object Width', type: 'number', defaultValue: '180' },
+    { name: 'height', label: 'Object Height', type: 'number', defaultValue: '180' },
+    { name: 'radius', label: 'Inpaint Radius', type: 'number', defaultValue: '5' },
+    {
+      name: 'method',
+      label: 'Inpaint Method',
+      type: 'select',
+      defaultValue: 'telea',
+      options: [
+        { label: 'Telea (default)', value: 'telea' },
+        { label: 'Navier-Stokes', value: 'ns' },
+      ],
+    },
+  ],
+  'unblur-face': [
+    { name: 'strength', label: 'Enhance Strength', type: 'number', defaultValue: '1.8' },
+    { name: 'denoise', label: 'Denoise Level', type: 'number', defaultValue: '6' },
+  ],
+  'resize-image-pixel': [
+    { name: 'width', label: 'Width', type: 'number', defaultValue: '1200' },
+    { name: 'height', label: 'Height', type: 'number', defaultValue: '800' },
+  ],
+  'resize-signature': [
+    { name: 'width_mm', label: 'Width (mm)', type: 'number', defaultValue: '50' },
+    { name: 'height_mm', label: 'Height (mm)', type: 'number', defaultValue: '20' },
+    { name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' },
+  ],
+  'resize-image-to-3.5cmx4.5cm': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-6cmx2cm': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-signature-to-50mmx20mm': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-35mmx45mm': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-2x2': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-3x4': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-4x6': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'resize-image-to-600x600-pixel': [],
+  'resize-image-for-whatsapp-dp': [],
+  'resize-image-for-youtube-banner': [],
+  'resize-image-to-a4-size': [{ name: 'dpi', label: 'DPI', type: 'number', defaultValue: '300' }],
+  'reduce-image-size-in-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'compress-to-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'increase-image-size-in-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '200' },
+  ],
+  'reduce-image-size-in-mb': [
+    { name: 'target_mb', label: 'Target Size (MB)', type: 'number', defaultValue: '0.2' },
+  ],
+  'convert-image-from-mb-to-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '200' },
+  ],
+  'convert-image-size-kb-to-mb': [
+    { name: 'target_mb', label: 'Target Size (MB)', type: 'number', defaultValue: '1.0' },
+  ],
+  'jpg-to-kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' }],
+  'compress-to-15kb': [],
+  'compress-to-25kb': [],
+  'compress-to-30kb': [],
+  'compress-to-40kb': [],
+  'compress-to-150kb': [],
+  'compress-to-300kb': [],
+  'compress-to-2mb': [],
+  'jpg-to-pdf-under-50kb': [
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'jpg-to-pdf-under-100kb': [
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'jpeg-to-pdf-under-200kb': [
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'jpg-to-pdf-under-300kb': [
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+  ],
+  'jpg-to-pdf-under-500kb': [
+    {
+      name: 'strict',
+      label: 'Strict Target Mode',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
     },
   ],
   'html-to-image': [

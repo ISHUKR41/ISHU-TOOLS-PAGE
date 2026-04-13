@@ -50,8 +50,17 @@ npm run lint
 ## Current Coverage
 
 - 22 categories
-- 127 working tools registered
+- 228 tools registered
 - Includes core and advanced groups: PDF workflows and insights, office conversion, OCR/vision, image editing/layout/enhancement, metadata and security, export/data tools, text operations and cleanup, and batch archive automation tools.
+
+## Backend Smoke Validation
+
+Run an automated smoke matrix against representative PDF, image, text, and conversion tools:
+
+```bash
+cd backend
+python scripts/smoke_tool_matrix.py
+```
 
 ## Python 3.14 Note
 

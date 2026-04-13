@@ -85,22 +85,38 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   'png-to-text': Search,
   'ocr-pdf': Search,
   'remove-background': Wand2,
+  'remove-image-object': Wand2,
   'blur-background': Wand2,
   'blur-face': Shield,
+  'unblur-face': Sparkles,
   'pixelate-face': Shield,
   'add-text-image': Type,
   'add-logo-image': FileImage,
   'join-images': Files,
   'split-image': Scissors,
+  'image-splitter': Scissors,
   'circle-crop-image': Crop,
   'square-crop-image': Crop,
   'image-color-picker': Palette,
   'motion-blur-image': Sparkles,
   'compress-image': Minimize2,
   'resize-image': Crop,
+  'resize-image-pixel': Crop,
   'resize-image-in-cm': Crop,
   'resize-image-in-mm': Crop,
   'resize-image-in-inch': Crop,
+  'resize-signature': Crop,
+  'resize-image-to-3.5cmx4.5cm': Crop,
+  'resize-image-to-6cmx2cm': Crop,
+  'resize-signature-to-50mmx20mm': Crop,
+  'resize-image-to-35mmx45mm': Crop,
+  'resize-image-to-2x2': Crop,
+  'resize-image-to-3x4': Crop,
+  'resize-image-to-4x6': Crop,
+  'resize-image-to-600x600-pixel': Crop,
+  'resize-image-for-whatsapp-dp': Crop,
+  'resize-image-for-youtube-banner': Crop,
+  'resize-image-to-a4-size': Crop,
   'crop-image': Crop,
   'rotate-image': RotateCw,
   'convert-image': Image,
@@ -131,6 +147,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   'qr-code-generator': QrCode,
   'extract-metadata': FileSearch,
   'remove-metadata-image': Shield,
+  'remove-image-metadata': Shield,
   'extract-pages': Scissors,
   'delete-pages': Scissors,
   'rearrange-pages': Package,
@@ -147,7 +164,9 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   'gif-to-pdf': FileImage,
   'bmp-to-pdf': FileImage,
   'jpg-to-png': Image,
+  'jpeg-to-png': Image,
   'png-to-jpg': Image,
+  'png-to-jpeg': Image,
   'image-to-webp': Image,
   'pdf-to-txt': FileText,
   'pdf-to-markdown': FileText,
@@ -203,6 +222,73 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   'json-prettify': FileSearch,
   'csv-to-json': FileSearch,
   'json-to-csv': FileSearch,
+  'a4-size-resize': Crop,
+  'add-white-border-image': Crop,
+  'ai-to-pdf': FileText,
+  'beautify-image': Sparkles,
+  'cbr-to-pdf': Package,
+  'check-dpi': FileSearch,
+  'chm-to-pdf': FileText,
+  'color-code-from-image': Palette,
+  'compress-to-5kb': Minimize2,
+  'compress-to-10kb': Minimize2,
+  'compress-to-15kb': Minimize2,
+  'compress-to-20kb': Minimize2,
+  'compress-to-25kb': Minimize2,
+  'compress-to-30kb': Minimize2,
+  'compress-to-40kb': Minimize2,
+  'compress-to-50kb': Minimize2,
+  'compress-to-100kb': Minimize2,
+  'compress-to-150kb': Minimize2,
+  'compress-to-200kb': Minimize2,
+  'compress-to-300kb': Minimize2,
+  'compress-to-500kb': Minimize2,
+  'compress-to-1mb': Minimize2,
+  'compress-to-2mb': Minimize2,
+  'compress-to-kb': Minimize2,
+  'increase-image-size-in-kb': Minimize2,
+  'reduce-image-size-in-mb': Minimize2,
+  'convert-image-from-mb-to-kb': Minimize2,
+  'convert-image-size-kb-to-mb': Minimize2,
+  'jpg-to-kb': Minimize2,
+  'jpeg-to-jpg': Image,
+  'jpg-to-pdf-under-50kb': FileImage,
+  'jpg-to-pdf-under-100kb': FileImage,
+  'jpeg-to-pdf-under-200kb': FileImage,
+  'jpg-to-pdf-under-300kb': FileImage,
+  'jpg-to-pdf-under-500kb': FileImage,
+  'convert-from-jpg': Image,
+  'convert-to-jpg': Image,
+  'crop-png': Crop,
+  'djvu-to-pdf': FileText,
+  'dwg-to-pdf': FileImage,
+  'dxf-to-pdf': FileImage,
+  'freehand-crop': Crop,
+  'heic-to-jpg': Image,
+  'html-to-image': Image,
+  'hwp-to-pdf': FileText,
+  'increase-image-quality': Sparkles,
+  'instagram-grid': Scissors,
+  'mobi-to-pdf': FileText,
+  'pages-to-pdf': FileText,
+  'passport-photo-maker': Crop,
+  'passport-size-photo': Crop,
+  'pdf-to-mobi': FileText,
+  'photo-editor': Wand2,
+  'pub-to-pdf': FileText,
+  'reduce-image-size-in-kb': Minimize2,
+  'resize-for-instagram': Crop,
+  'resize-for-whatsapp': Crop,
+  'resize-for-youtube': Crop,
+  'retouch-image': Sparkles,
+  'social-media-resize': Crop,
+  'super-resolution': Sparkles,
+  'unblur-image': Sparkles,
+  'view-metadata': FileSearch,
+  'webp-to-jpg': Image,
+  'wps-to-pdf': FileText,
+  'xps-to-pdf': FileText,
+  'zoom-out-image': Crop,
   'remove-pages': Scissors,
   'edit-metadata': FileSearch,
 }
@@ -212,7 +298,26 @@ type ToolIconProps = {
   className?: string
 }
 
+function pickFallbackIcon(slug: string): ComponentType<{ className?: string }> {
+  const value = slug.toLowerCase()
+
+  if (/compress|minify|reduce|optimize|\bkb\b|\bmb\b/.test(value)) return Minimize2
+  if (/merge|join|combine/.test(value)) return Files
+  if (/split|extract|crop|cut/.test(value)) return Scissors
+  if (/rotate|flip/.test(value)) return RotateCw
+  if (/lock|protect|unlock|security|redact|whiteout/.test(value)) return Shield
+  if (/watermark|signature|sign|annotate|highlight|filler|edit/.test(value)) return PenTool
+  if (/translate|language/.test(value)) return Languages
+  if (/ocr|scan|search/.test(value)) return Search
+  if (/ai|summar|intelligence|chat|enhance|upscale|beautify|retouch/.test(value)) return Sparkles
+  if (/qr/.test(value)) return QrCode
+  if (/jpg|jpeg|png|webp|gif|bmp|tiff|heic|heif|image/.test(value)) return Image
+  if (/pdf|docx|word|pptx|excel|xlsx|json|csv|xml|txt|md|rtf|odt|epub|mobi/.test(value)) return FileText
+
+  return FileText
+}
+
 export default function ToolIcon({ slug, className }: ToolIconProps) {
-  const Icon = iconMap[slug] || FileText
+  const Icon = iconMap[slug] || pickFallbackIcon(slug)
   return <Icon className={className} />
 }

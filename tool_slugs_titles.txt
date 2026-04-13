@@ -1,0 +1,261 @@
+merge-pdf|Merge PDF
+split-pdf|Split PDF
+compress-pdf|Compress PDF
+rotate-pdf|Rotate PDF
+organize-pdf|Organize PDF
+crop-pdf|Crop PDF
+watermark-pdf|Watermark PDF
+page-numbers-pdf|Page Numbers
+protect-pdf|Protect PDF
+unlock-pdf|Unlock PDF
+redact-pdf|Redact PDF
+compare-pdf|Compare PDF
+extract-text-pdf|Extract Text
+extract-images-pdf|Extract Images
+pdf-to-jpg|PDF to JPG
+pdf-to-png|PDF to PNG
+jpg-to-pdf|JPG to PDF
+image-to-pdf|Image to PDF
+repair-pdf|Repair PDF
+translate-pdf|Translate PDF
+summarize-pdf|Summarize PDF
+compress-image|Compress Image
+resize-image|Resize Image
+crop-image|Crop Image
+rotate-image|Rotate Image
+convert-image|Convert Image
+watermark-image|Watermark Image
+grayscale-image|Grayscale Image
+blur-image|Blur Image
+pixelate-image|Pixelate Image
+meme-generator|Meme Generator
+pdf-to-image|PDF to Image
+html-to-pdf|HTML to PDF
+md-to-pdf|MD to PDF
+txt-to-pdf|TXT to PDF
+summarize-text|Summarize Text
+translate-text|Translate Text
+qr-code-generator|QR Code Generator
+extract-metadata|Extract Metadata
+remove-metadata-image|Remove Image Metadata
+extract-pages|Extract Pages
+delete-pages|Delete Pages
+rearrange-pages|Rearrange Pages
+add-text-pdf|Add Text PDF
+header-footer-pdf|Header and Footer
+resize-pages-pdf|Resize Pages
+remove-metadata-pdf|Remove PDF Metadata
+whiteout-pdf|Whiteout PDF
+grayscale-pdf|Grayscale PDF
+create-pdf|Create PDF
+url-to-pdf|URL to PDF
+png-to-pdf|PNG to PDF
+webp-to-pdf|WEBP to PDF
+gif-to-pdf|GIF to PDF
+bmp-to-pdf|BMP to PDF
+jpg-to-png|JPG to PNG
+png-to-jpg|PNG to JPG
+image-to-webp|Image to WEBP
+pdf-to-txt|PDF to TXT
+pdf-to-markdown|PDF to Markdown
+pdf-to-json|PDF to JSON
+pdf-to-csv|PDF to CSV
+json-to-pdf|JSON to PDF
+xml-to-pdf|XML to PDF
+csv-to-pdf|CSV to PDF
+flip-image|Flip Image
+add-border-image|Add Border Image
+thumbnail-image|Thumbnail Image
+image-collage|Image Collage
+word-count-text|Word Count
+case-converter-text|Case Converter
+extract-keywords-text|Extract Keywords
+slug-generator-text|Slug Generator
+pdf-pages-to-zip|PDF Pages to ZIP
+zip-images-to-pdf|ZIP Images to PDF
+pdf-page-count|PDF Page Count
+reverse-pdf|Reverse PDF
+flatten-pdf|Flatten PDF
+pdf-to-html|PDF to HTML
+pdf-to-bmp|PDF to BMP
+pdf-to-gif|PDF to GIF
+sharpen-image|Sharpen Image
+brighten-image|Brighten Image
+contrast-image|Contrast Image
+invert-image|Invert Image
+posterize-image|Posterize Image
+image-histogram|Image Histogram
+remove-extra-spaces-text|Remove Extra Spaces
+sort-lines-text|Sort Lines
+deduplicate-lines-text|Deduplicate Lines
+find-replace-text|Find and Replace
+split-text-file|Split Text File
+reading-time-text|Reading Time Estimator
+images-to-zip|Images to ZIP
+batch-convert-images|Batch Convert Images
+merge-text-files|Merge Text Files
+json-prettify|JSON Prettify
+csv-to-json|CSV to JSON
+json-to-csv|JSON to CSV
+pdf-to-docx|PDF to DOCX
+docx-to-pdf|DOCX to PDF
+pdf-to-excel|PDF to Excel
+excel-to-pdf|Excel to PDF
+pdf-to-pptx|PDF to PPTX
+pptx-to-pdf|PPTX to PDF
+scan-to-pdf|Scan to PDF
+sign-pdf|Sign PDF
+edit-metadata-pdf|Edit Metadata
+pdf-to-pdfa|PDF to PDF/A
+chat-with-pdf|Chat with PDF
+upscale-image|Upscale Image
+create-workflow|Create Workflow
+add-image-pdf|Add Image to PDF
+ocr-image|OCR Image
+ocr-pdf|OCR PDF
+remove-background|Remove Background
+blur-face|Blur Face
+pixelate-face|Pixelate Face
+blur-background|Blur Background
+add-text-image|Add Text to Image
+add-logo-image|Add Logo to Image
+join-images|Join Images
+split-image|Split Image
+circle-crop-image|Circle Crop Image
+square-crop-image|Square Crop Image
+image-color-picker|Image Color Picker
+motion-blur-image|Motion Blur Image
+pdf-to-tiff|PDF to TIFF
+tiff-to-pdf|TIFF to PDF
+pdf-to-svg|PDF to SVG
+svg-to-pdf|SVG to PDF
+pdf-to-rtf|PDF to RTF
+rtf-to-pdf|RTF to PDF
+pdf-to-odt|PDF to ODT
+odt-to-pdf|ODT to PDF
+pdf-to-epub|PDF to EPUB
+epub-to-pdf|EPUB to PDF
+optimize-pdf|Optimize PDF
+convert-to-pdf|Convert to PDF
+convert-from-pdf|Convert from PDF
+pdf-converter|PDF Converter
+pdf-security|PDF Security
+ai-summarizer|AI Summarizer
+pdf-viewer|PDF Viewer
+pdf-intelligence|PDF Intelligence
+edit-pdf|Edit PDF
+annotate-pdf|Annotate PDF
+highlight-pdf|Highlight PDF
+pdf-filler|PDF Filler
+remove-pages|Remove Pages
+add-page-numbers|Add Page Numbers
+add-watermark|Add Watermark
+pdf-ocr|PDF OCR
+image-to-text|Image to Text
+jpg-to-text|JPG to Text
+png-to-text|PNG to Text
+check-image-dpi|Check Image DPI
+convert-dpi|Convert DPI
+resize-image-in-cm|Resize Image in CM
+resize-image-in-mm|Resize Image in MM
+resize-image-in-inch|Resize Image in Inches
+add-name-dob-image|Add Name and DOB on Photo
+merge-photo-signature|Merge Photo and Signature
+black-and-white-image|Black and White Image
+censor-photo|Censor Photo
+picture-to-pixel-art|Picture to Pixel Art
+generate-signature|Generate Signature
+word-to-pdf|Word to PDF
+pdf-to-word|PDF to Word
+powerpoint-to-pdf|PowerPoint to PDF
+pdf-to-powerpoint|PDF to PowerPoint
+eml-to-pdf|EML to PDF
+fb2-to-pdf|FB2 to PDF
+cbz-to-pdf|CBZ to PDF
+ebook-to-pdf|eBook to PDF
+heic-to-pdf|HEIC to PDF
+heif-to-pdf|HEIF to PDF
+jfif-to-pdf|JFIF to PDF
+zip-to-pdf|ZIP to PDF
+cbr-to-pdf|CBR to PDF
+djvu-to-pdf|DjVu to PDF
+ai-to-pdf|AI to PDF
+pdf-to-mobi|PDF to MOBI
+mobi-to-pdf|MOBI to PDF
+xps-to-pdf|XPS to PDF
+wps-to-pdf|WPS to PDF
+dwg-to-pdf|DWG to PDF
+pub-to-pdf|PUB to PDF
+hwp-to-pdf|HWP to PDF
+chm-to-pdf|CHM to PDF
+dxf-to-pdf|DXF to PDF
+pages-to-pdf|PAGES to PDF
+html-to-image|HTML to Image
+reduce-image-size-in-kb|Reduce Image Size in KB
+compress-to-kb|Compress to Target KB
+passport-photo-maker|Passport Photo Maker
+passport-size-photo|Passport Size Photo
+social-media-resize|Social Media Resize
+resize-for-instagram|Resize for Instagram
+resize-for-whatsapp|WhatsApp DP Maker
+resize-for-youtube|YouTube Banner Resize
+instagram-grid|Instagram Grid Maker
+convert-to-jpg|Convert to JPG
+convert-from-jpg|Convert from JPG
+heic-to-jpg|HEIC to JPG
+webp-to-jpg|WEBP to JPG
+photo-editor|Photo Editor
+unblur-image|Unblur Image
+increase-image-quality|Increase Image Quality
+beautify-image|Beautify Image
+retouch-image|Retouch Image
+super-resolution|Super Resolution
+zoom-out-image|Zoom Out Image
+add-white-border-image|Add White Border to Image
+freehand-crop|Freehand Crop
+crop-png|Crop PNG
+a4-size-resize|Resize to A4 Size
+check-dpi|Check Image DPI
+color-code-from-image|Color Picker from Image
+view-metadata|View Image Metadata
+compress-to-5kb|Compress to 5KB
+compress-to-10kb|Compress to 10KB
+compress-to-20kb|Compress to 20KB
+compress-to-50kb|Compress to 50KB
+compress-to-100kb|Compress to 100KB
+compress-to-200kb|Compress to 200KB
+compress-to-500kb|Compress to 500KB
+compress-to-1mb|Compress to 1MB
+compress-to-15kb|Compress to 15KB
+compress-to-25kb|Compress to 25KB
+compress-to-30kb|Compress to 30KB
+compress-to-40kb|Compress to 40KB
+compress-to-150kb|Compress to 150KB
+compress-to-300kb|Compress to 300KB
+compress-to-2mb|Compress to 2MB
+increase-image-size-in-kb|Increase Image Size in KB
+reduce-image-size-in-mb|Reduce Image Size in MB
+convert-image-from-mb-to-kb|Convert Image from MB to KB
+convert-image-size-kb-to-mb|Convert Image Size KB to MB
+jpg-to-kb|JPG to KB
+jpeg-to-jpg|JPEG to JPG
+remove-image-object|Remove Object from Photo
+unblur-face|Unblur Face
+resize-image-pixel|Resize Image by Pixel
+resize-signature|Resize Signature
+resize-image-to-3.5cmx4.5cm|Resize Image to 3.5cm x 4.5cm
+resize-image-to-6cmx2cm|Resize Image to 6cm x 2cm
+resize-signature-to-50mmx20mm|Resize Signature to 50mm x 20mm
+resize-image-to-35mmx45mm|Resize Image to 35mm x 45mm
+resize-image-to-2x2|Resize Image to 2 x 2 Inch
+resize-image-to-3x4|Resize Image to 3 x 4 Inch
+resize-image-to-4x6|Resize Image to 4 x 6 Inch
+resize-image-to-600x600-pixel|Resize Image to 600x600 Pixel
+resize-image-for-whatsapp-dp|Resize Image for WhatsApp DP
+resize-image-for-youtube-banner|Resize Image for YouTube Banner
+resize-image-to-a4-size|Resize Image to A4 Size
+jpg-to-pdf-under-50kb|JPG to PDF (Under 50KB)
+jpg-to-pdf-under-100kb|JPG to PDF (Under 100KB)
+jpeg-to-pdf-under-200kb|JPEG to PDF (Under 200KB)
+jpg-to-pdf-under-300kb|JPG to PDF (Under 300KB)
+jpg-to-pdf-under-500kb|JPG to PDF (Under 500KB)

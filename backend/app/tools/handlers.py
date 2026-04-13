@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import csv
 import difflib
 import html
@@ -8,6 +9,8 @@ import json
 import math
 import re
 import shutil
+import subprocess
+import tempfile
 import textwrap
 import uuid
 import zipfile
@@ -27,7 +30,7 @@ from deep_translator import GoogleTranslator
 from docx import Document
 from fastapi import HTTPException, UploadFile
 from openpyxl import Workbook, load_workbook
-from PIL import Image, ImageColor, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageColor, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps, ImageSequence, PngImagePlugin
 from pptx import Presentation
 from pptx.util import Inches
 from pypdf import PdfReader, PdfWriter
@@ -164,9 +167,23 @@ def parse_page_numbers(raw: str, total_pages: int) -> list[int]:
 
 
 def zip_outputs(paths: list[Path], output_dir: Path, zip_name: str) -> Path:
-    archive_base = output_dir / zip_name
-    zip_file = shutil.make_archive(str(archive_base), "zip", root_dir=output_dir, base_dir=".")
-    return Path(zip_file)
+    archive_path = output_dir / f"{zip_name}.zip"
+
+    # Build the archive manually to avoid self-inclusion when the ZIP lives in output_dir.
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(paths):
+            if not path.exists() or path.resolve() == archive_path.resolve():
+                continue
+
+            if path.is_file():
+                archive.write(path, arcname=path.relative_to(output_dir))
+                continue
+
+            for child in sorted(path.rglob("*")):
+                if child.is_file() and child.resolve() != archive_path.resolve():
+                    archive.write(child, arcname=child.relative_to(output_dir))
+
+    return archive_path
 
 
 def create_single_file_result(path: Path, message: str, content_type: str = "application/octet-stream") -> ExecutionResult:
@@ -191,11 +208,71 @@ def create_zip_result(output_dir: Path, message: str, zip_name: str = "result") 
 
 
 def extract_pdf_text(pdf_path: Path) -> str:
-    reader = PdfReader(str(pdf_path))
-    text_parts: list[str] = []
-    for page in reader.pages:
-        text_parts.append(page.extract_text() or "")
-    return "\n".join(text_parts).strip()
+    # Try multiple extraction engines and keep the most informative result.
+    # This improves accuracy for scanned, complex-layout, and mixed-encoding PDFs.
+    candidates: list[str] = []
+
+    try:
+        document = fitz.open(str(pdf_path))
+        try:
+            fitz_text = "\n\n".join((page.get_text("text") or "").strip() for page in document).strip()
+            if fitz_text:
+                candidates.append(fitz_text)
+        finally:
+            document.close()
+    except Exception:
+        pass
+
+    try:
+        reader = PdfReader(str(pdf_path))
+        pypdf_text = "\n\n".join((page.extract_text() or "").strip() for page in reader.pages).strip()
+        if pypdf_text:
+            candidates.append(pypdf_text)
+    except Exception:
+        pass
+
+    try:
+        import pdfplumber
+
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            plumber_text = "\n\n".join((page.extract_text() or "").strip() for page in pdf.pages).strip()
+            if plumber_text:
+                candidates.append(plumber_text)
+    except Exception:
+        pass
+
+    def score_text(value: str) -> int:
+        return len(re.sub(r"[^A-Za-z0-9]", "", value or ""))
+
+    best = max(candidates, key=score_text).strip() if candidates else ""
+
+    # Fallback OCR for scanned/image-only PDFs.
+    if score_text(best) < 140:
+        try:
+            ocr_sections: list[str] = []
+            with tempfile.TemporaryDirectory(prefix="pdf-ocr-") as temp_name:
+                temp_dir = Path(temp_name)
+                document = fitz.open(str(pdf_path))
+                try:
+                    max_pages = max(1, min(12, len(document)))
+                    for index in range(max_pages):
+                        page = document.load_page(index)
+                        pix = page.get_pixmap(matrix=fitz.Matrix(2.3, 2.3), alpha=False)
+                        page_image = temp_dir / f"page-{index + 1}.png"
+                        pix.save(str(page_image))
+                        page_text = extract_ocr_text_from_image(page_image)
+                        if page_text:
+                            ocr_sections.append(f"Page {index + 1}\n{page_text}")
+                finally:
+                    document.close()
+
+            ocr_text = "\n\n".join(ocr_sections).strip()
+            if score_text(ocr_text) > score_text(best):
+                best = ocr_text
+        except Exception:
+            pass
+
+    return best
 
 
 def text_to_pdf(text: str, output_path: Path, title: str = "Generated Document") -> None:
@@ -221,13 +298,49 @@ def chunk_text(text: str, max_chars: int = 4000) -> list[str]:
     cleaned = text.strip()
     if not cleaned:
         return []
+
+    if len(cleaned) <= max_chars:
+        return [cleaned]
+
+    paragraphs = [part.strip() for part in re.split(r"\n{2,}", cleaned) if part.strip()]
     chunks: list[str] = []
-    start = 0
-    while start < len(cleaned):
-        end = min(start + max_chars, len(cleaned))
-        chunks.append(cleaned[start:end])
-        start = end
-    return chunks
+    current_parts: list[str] = []
+    current_len = 0
+
+    def flush() -> None:
+        nonlocal current_parts, current_len
+        if not current_parts:
+            return
+        chunks.append(" ".join(current_parts).strip())
+        current_parts = []
+        current_len = 0
+
+    for paragraph in paragraphs:
+        sentences = [segment.strip() for segment in re.split(r"(?<=[.!?])\s+", paragraph) if segment.strip()]
+        if not sentences:
+            sentences = [paragraph]
+
+        for sentence in sentences:
+            if len(sentence) > max_chars:
+                flush()
+                for start in range(0, len(sentence), max_chars):
+                    piece = sentence[start : start + max_chars].strip()
+                    if piece:
+                        chunks.append(piece)
+                continue
+
+            projected_len = current_len + len(sentence) + (1 if current_parts else 0)
+            if projected_len > max_chars and current_parts:
+                flush()
+
+            current_parts.append(sentence)
+            current_len += len(sentence) + (1 if current_len else 0)
+
+        if current_parts and current_len >= int(max_chars * 0.9):
+            flush()
+
+    flush()
+    return chunks or [cleaned]
 
 
 def summarize_text_algo(text: str, max_sentences: int = 5) -> str:
@@ -280,6 +393,78 @@ def read_text_input(files: list[Path], payload: dict[str, Any]) -> str:
             return source.read_text(encoding="utf-8", errors="ignore")
 
     return ""
+
+
+def get_soffice_binary() -> str | None:
+    candidates = [
+        shutil.which("soffice"),
+        shutil.which("libreoffice"),
+        "C:/Program Files/LibreOffice/program/soffice.exe",
+        "C:/Program Files (x86)/LibreOffice/program/soffice.exe",
+    ]
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+        path = Path(candidate)
+        if path.exists() and path.is_file():
+            return str(path)
+
+    return None
+
+
+def try_libreoffice_convert_to_pdf(source: Path, output_dir: Path, timeout_seconds: int = 240) -> Path | None:
+    soffice = get_soffice_binary()
+    if not soffice:
+        return None
+
+    before = {item.resolve() for item in output_dir.glob("*.pdf")}
+    command = [
+        soffice,
+        "--headless",
+        "--nologo",
+        "--nodefault",
+        "--nofirststartwizard",
+        "--convert-to",
+        "pdf",
+        "--outdir",
+        str(output_dir),
+        str(source),
+    ]
+
+    try:
+        subprocess.run(command, check=True, capture_output=True, timeout=timeout_seconds)
+    except Exception:
+        return None
+
+    direct = output_dir / f"{source.stem}.pdf"
+    if direct.exists() and direct.stat().st_size > 0:
+        return direct
+
+    produced = [
+        item
+        for item in output_dir.glob("*.pdf")
+        if item.resolve() not in before and item.stat().st_size > 0
+    ]
+    if produced:
+        return max(produced, key=lambda item: item.stat().st_mtime)
+
+    return None
+
+
+def extract_text_from_binary_file(source: Path, max_chars: int = 80000) -> str:
+    raw = source.read_bytes()
+    decoded = raw.decode("utf-8", errors="ignore")
+    if len(decoded.strip()) < 80:
+        decoded = raw.decode("latin-1", errors="ignore")
+
+    cleaned = re.sub(r"[^\x09\x0A\x0D\x20-\x7E]", " ", decoded)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned[:max_chars]
+
+
+def has_meaningful_text(text: str, min_chars: int = 120) -> bool:
+    return len(re.sub(r"\s+", "", text)) >= min_chars
 
 
 def extract_docx_text(docx_path: Path) -> str:
@@ -483,20 +668,133 @@ def extract_epub_text(epub_path: Path) -> str:
     return "\n\n".join(chunks).strip()
 
 
-def get_ocr_engine():
-    from rapidocr_onnxruntime import RapidOCR
+def get_ocr_engine() -> Any | None:
+    try:
+        from rapidocr_onnxruntime import RapidOCR
+    except Exception:
+        return None
 
     if not hasattr(get_ocr_engine, "_engine"):
-        get_ocr_engine._engine = RapidOCR()
-    return get_ocr_engine._engine
+        try:
+            get_ocr_engine._engine = RapidOCR()
+        except Exception:
+            return None
+    return getattr(get_ocr_engine, "_engine", None)
+
+
+def _score_ocr_lines(lines: list[str]) -> int:
+    return sum(len(re.sub(r"[^A-Za-z0-9]", "", line)) for line in lines)
+
+
+def _dedupe_ocr_lines(lines: list[str]) -> list[str]:
+    cleaned: list[str] = []
+    seen: set[str] = set()
+    for line in lines:
+        normalized = re.sub(r"\s+", " ", str(line).strip())
+        if not normalized:
+            continue
+        key = normalized.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        cleaned.append(normalized)
+    return cleaned
+
+
+def _build_ocr_variants(image: Image.Image) -> list[Image.Image]:
+    base = image.convert("RGB")
+    gray = ImageOps.grayscale(base)
+    auto = ImageOps.autocontrast(gray)
+    sharp = ImageEnhance.Sharpness(auto).enhance(2.0)
+    contrast = ImageEnhance.Contrast(auto).enhance(1.7)
+
+    variants: list[Image.Image] = [
+        base,
+        auto.convert("RGB"),
+        sharp.convert("RGB"),
+        contrast.convert("RGB"),
+    ]
+
+    try:
+        import cv2
+        import numpy as np
+
+        arr = np.array(auto)
+        _, otsu = cv2.threshold(arr, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        variants.append(Image.fromarray(otsu).convert("RGB"))
+    except Exception:
+        thresholded = auto.point(lambda value: 255 if value > 160 else 0)
+        variants.append(thresholded.convert("RGB"))
+
+    return variants
 
 
 def extract_ocr_lines_from_image(image_path: Path) -> list[str]:
-    engine = get_ocr_engine()
-    result, _ = engine(str(image_path))
-    if not result:
-        return []
-    return [str(item[1]).strip() for item in result if len(item) > 1 and str(item[1]).strip()]
+    source = open_image_file(image_path, "RGB")
+    variants = _build_ocr_variants(source)
+
+    best_lines: list[str] = []
+    best_score = 0
+
+    with tempfile.TemporaryDirectory(prefix="ocr-variants-") as temp_name:
+        temp_dir = Path(temp_name)
+        variant_paths: list[Path] = []
+        for index, variant in enumerate(variants, start=1):
+            variant_path = temp_dir / f"variant-{index}.png"
+            variant.save(variant_path, format="PNG")
+            variant_paths.append(variant_path)
+
+        engine = get_ocr_engine()
+        if engine is not None:
+            for variant_path in variant_paths:
+                try:
+                    result, _ = engine(str(variant_path))
+                    if not result:
+                        continue
+                    rapid_lines = _dedupe_ocr_lines([str(item[1]).strip() for item in result if len(item) > 1])
+                    score = _score_ocr_lines(rapid_lines)
+                    if score > best_score:
+                        best_lines = rapid_lines
+                        best_score = score
+                except Exception:
+                    continue
+
+        # Tesseract fallback with multiple page segmentation modes.
+        try:
+            import pytesseract
+
+            for variant in variants:
+                for psm in (6, 11):
+                    config = f"--oem 3 --psm {psm}"
+                    tess_text = pytesseract.image_to_string(variant, config=config)
+                    tess_lines = _dedupe_ocr_lines(tess_text.splitlines())
+                    score = _score_ocr_lines(tess_lines)
+                    if score > best_score:
+                        best_lines = tess_lines
+                        best_score = score
+        except Exception:
+            pass
+
+        # EasyOCR fallback when RapidOCR/Tesseract are weak or unavailable.
+        if best_score < 80:
+            try:
+                import easyocr
+
+                if not hasattr(extract_ocr_lines_from_image, "_easyocr_reader"):
+                    extract_ocr_lines_from_image._easyocr_reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+
+                reader = getattr(extract_ocr_lines_from_image, "_easyocr_reader")
+                for variant_path in variant_paths:
+                    easy_result = reader.readtext(str(variant_path), detail=0, paragraph=False)
+                    easy_lines = _dedupe_ocr_lines([str(item).strip() for item in easy_result])
+                    score = _score_ocr_lines(easy_lines)
+                    if score > best_score:
+                        best_lines = easy_lines
+                        best_score = score
+            except Exception:
+                pass
+
+    return best_lines
 
 
 def extract_ocr_text_from_image(image_path: Path) -> str:
@@ -524,14 +822,84 @@ def extract_ocr_text_from_pdf(pdf_path: Path, temp_dir: Path) -> str:
 def detect_faces_in_image(image_path: Path) -> tuple[Any, Any]:
     import cv2
 
-    classifier = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    cascade_files = [
+        "haarcascade_frontalface_default.xml",
+        "haarcascade_frontalface_alt2.xml",
+        "haarcascade_profileface.xml",
+    ]
+    classifiers = [
+        (cascade_name, cv2.CascadeClassifier(cv2.data.haarcascades + cascade_name))
+        for cascade_name in cascade_files
+        if Path(cv2.data.haarcascades + cascade_name).exists()
+    ]
+    if not classifiers:
+        raise HTTPException(status_code=500, detail="OpenCV face detection cascades are not available")
+
     image = cv2.imread(str(image_path))
     if image is None:
         raise HTTPException(status_code=400, detail="Unable to open image for face detection")
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = classifier.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(36, 36))
-    return image, faces
+    gray = cv2.equalizeHist(gray)
+
+    candidates: list[tuple[int, int, int, int]] = []
+
+    def add_faces(detected: Any, scale: float = 1.0, mirrored: bool = False) -> None:
+        for x, y, w, h in detected:
+            if mirrored:
+                x = gray.shape[1] - x - w
+            x = int(round(x / scale))
+            y = int(round(y / scale))
+            w = int(round(w / scale))
+            h = int(round(h / scale))
+            if w < 20 or h < 20:
+                continue
+            candidates.append((x, y, w, h))
+
+    for cascade_name, classifier in classifiers:
+        try:
+            faces = classifier.detectMultiScale(gray, scaleFactor=1.08, minNeighbors=4, minSize=(24, 24))
+            add_faces(faces)
+
+            if "profileface" in cascade_name:
+                flipped = cv2.flip(gray, 1)
+                mirrored_faces = classifier.detectMultiScale(flipped, scaleFactor=1.08, minNeighbors=4, minSize=(24, 24))
+                add_faces(mirrored_faces, mirrored=True)
+        except Exception:
+            continue
+
+    # Small-face recovery pass for low-resolution uploads.
+    if not candidates:
+        scale = 2.0
+        upscaled = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+        for _, classifier in classifiers:
+            try:
+                faces = classifier.detectMultiScale(upscaled, scaleFactor=1.08, minNeighbors=4, minSize=(40, 40))
+                add_faces(faces, scale=scale)
+            except Exception:
+                continue
+
+    def iou(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> float:
+        ax1, ay1, aw, ah = a
+        bx1, by1, bw, bh = b
+        ax2, ay2 = ax1 + aw, ay1 + ah
+        bx2, by2 = bx1 + bw, by1 + bh
+        ix1, iy1 = max(ax1, bx1), max(ay1, by1)
+        ix2, iy2 = min(ax2, bx2), min(ay2, by2)
+        iw, ih = max(0, ix2 - ix1), max(0, iy2 - iy1)
+        inter = iw * ih
+        if inter <= 0:
+            return 0.0
+        union = aw * ah + bw * bh - inter
+        return inter / max(1.0, float(union))
+
+    deduped: list[tuple[int, int, int, int]] = []
+    for rect in sorted(candidates, key=lambda value: value[2] * value[3], reverse=True):
+        if any(iou(rect, existing) > 0.38 for existing in deduped):
+            continue
+        deduped.append(rect)
+
+    return image, deduped
 
 
 def get_resampling_module() -> Any:
@@ -607,6 +975,14 @@ def clamp_percentage(raw: Any, default: float) -> float:
     except (TypeError, ValueError):
         value = default
     return max(0.0, min(100.0, value))
+
+
+def is_truthy(raw: Any) -> bool:
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, (int, float)):
+        return raw != 0
+    return str(raw).strip().lower() in {"1", "true", "yes", "on"}
 
 
 def resolve_anchor_position(
@@ -707,13 +1083,33 @@ def dispatch_existing_handler(
 
 def handle_merge_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 2)
+    output = output_dir / "merged.pdf"
+
+    # Prefer PyMuPDF merge for better structural preservation.
+    try:
+        merged = fitz.open()
+        try:
+            for file_path in files:
+                part = fitz.open(str(file_path))
+                try:
+                    merged.insert_pdf(part)
+                finally:
+                    part.close()
+
+            merged.save(str(output), garbage=3, deflate=True)
+        finally:
+            merged.close()
+
+        return create_single_file_result(output, "PDF files merged successfully", "application/pdf")
+    except Exception:
+        pass
+
     writer = PdfWriter()
     for file_path in files:
         reader = PdfReader(str(file_path))
         for page in reader.pages:
             writer.add_page(page)
 
-    output = output_dir / "merged.pdf"
     with output.open("wb") as f:
         writer.write(f)
     return create_single_file_result(output, "PDF files merged successfully", "application/pdf")
@@ -728,6 +1124,7 @@ def handle_split_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pat
     if not pages:
         raise HTTPException(status_code=400, detail="Provide valid pages like '1,2,5' or ranges like '2-4'")
 
+    generated = 0
     for page_no in pages:
         if page_no < 1 or page_no > len(reader.pages):
             continue
@@ -736,13 +1133,48 @@ def handle_split_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pat
         part = output_dir / f"page-{page_no}.pdf"
         with part.open("wb") as f:
             writer.write(f)
+        generated += 1
+
+    if generated == 0:
+        raise HTTPException(status_code=400, detail="No valid pages matched your split request")
 
     return create_zip_result(output_dir, "PDF split completed", "split-pages")
 
 
 def handle_compress_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    image_quality = max(20, min(95, int(payload.get("image_quality", 75))))
+    output = output_dir / "compressed.pdf"
+    original_size = files[0].stat().st_size
+
+    # Try pikepdf first for stronger compression and resource cleanup.
+    try:
+        import pikepdf
+
+        with pikepdf.open(str(files[0])) as pdf:
+            pdf.remove_unreferenced_resources()
+
+            save_kwargs: dict[str, Any] = {
+                "compress_streams": True,
+                "recompress_flate": True,
+                "normalize_content": True,
+            }
+            try:
+                save_kwargs["object_stream_mode"] = pikepdf.ObjectStreamMode.generate
+            except Exception:
+                pass
+
+            pdf.save(str(output), **save_kwargs)
+
+        compressed_size = output.stat().st_size
+        reduction = ((original_size - compressed_size) / max(1, original_size)) * 100
+        return create_single_file_result(
+            output,
+            f"PDF compressed successfully ({reduction:.1f}% smaller)",
+            "application/pdf",
+        )
+    except Exception:
+        pass
+
     reader = PdfReader(str(files[0]))
     writer = PdfWriter()
 
@@ -758,11 +1190,16 @@ def handle_compress_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
     if reader.metadata:
         writer.add_metadata(reader.metadata)
 
-    output = output_dir / "compressed.pdf"
     with output.open("wb") as f:
         writer.write(f)
 
-    return create_single_file_result(output, "PDF compressed successfully", "application/pdf")
+    compressed_size = output.stat().st_size
+    reduction = ((original_size - compressed_size) / max(1, original_size)) * 100
+    return create_single_file_result(
+        output,
+        f"PDF compressed successfully ({reduction:.1f}% smaller)",
+        "application/pdf",
+    )
 
 
 def handle_rotate_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -789,7 +1226,7 @@ def handle_organize_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
     if not raw_order:
         raise HTTPException(status_code=400, detail="page_order is required, e.g. 3,1,2")
 
-    order = [int(p.strip()) for p in raw_order.split(",") if p.strip().isdigit()]
+    order = parse_page_numbers(raw_order, len(reader.pages))
     if not order:
         raise HTTPException(status_code=400, detail="No valid page numbers in page_order")
 
@@ -818,10 +1255,15 @@ def handle_crop_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path
 
     for page in reader.pages:
         box = page.mediabox
-        x0 = float(box.left) + left
-        y0 = float(box.bottom) + bottom
-        x1 = float(box.right) - right
-        y1 = float(box.top) - top
+        min_x = float(box.left)
+        min_y = float(box.bottom)
+        max_x = float(box.right)
+        max_y = float(box.top)
+
+        x0 = min(max_x - 1, max(min_x, min_x + left))
+        y0 = min(max_y - 1, max(min_y, min_y + bottom))
+        x1 = max(x0 + 1, min(max_x, max_x - right))
+        y1 = max(y0 + 1, min(max_y, max_y - top))
         page.mediabox.lower_left = (x0, y0)
         page.mediabox.upper_right = (x1, y1)
         writer.add_page(page)
@@ -1071,13 +1513,22 @@ def handle_summarize_pdf(files: list[Path], payload: dict[str, Any], output_dir:
 def handle_compress_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     quality = int(payload.get("quality", 70))
+    quality = max(5, min(95, quality))
 
     for file_path in files:
-        img = Image.open(file_path)
+        img = open_image_file(file_path)
         ext = file_path.suffix.lower().replace(".", "")
         target_ext = "jpg" if ext in {"jpeg", "jpg"} else ext
         output = output_dir / f"compressed-{file_path.stem}.{target_ext}"
-        save_image(img.convert("RGB") if target_ext == "jpg" else img, output, fmt=target_ext.upper(), quality=quality)
+
+        if target_ext in {"jpg", "jpeg"}:
+            save_image(img.convert("RGB"), output, fmt="JPEG", quality=quality)
+        elif target_ext == "png":
+            img.save(str(output), format="PNG", optimize=True, compress_level=9)
+        elif target_ext == "webp":
+            img.convert("RGB").save(str(output), format="WEBP", quality=quality, method=6)
+        else:
+            save_image(img.convert("RGB") if img.mode == "RGBA" else img, output, fmt=target_ext.upper(), quality=quality)
 
     if len(files) == 1:
         only_file = next(output_dir.iterdir())
@@ -1088,25 +1539,40 @@ def handle_compress_image(files: list[Path], payload: dict[str, Any], output_dir
 
 def handle_resize_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    width = int(payload.get("width", 1200))
-    height = int(payload.get("height", 800))
+    width = max(1, int(payload.get("width", 1200)))
+    height = max(1, int(payload.get("height", 800)))
+    maintain_aspect = str(payload.get("maintain_aspect", "true")).strip().lower() not in {"false", "0", "no"}
 
-    source = Image.open(files[0])
-    resized = source.resize((width, height))
+    source = open_image_file(files[0])
+    if maintain_aspect:
+        resized = source.copy()
+        resized.thumbnail((width, height), get_resampling_module().LANCZOS)
+    else:
+        resized = source.resize((width, height), get_resampling_module().LANCZOS)
+
     output = output_dir / f"resized-{files[0].name}"
-    save_image(resized, output)
-    return create_single_file_result(output, "Image resized", "image/*")
+    save_image(resized, output, quality=95)
+    aspect_message = "(aspect ratio preserved)" if maintain_aspect else ""
+    return create_single_file_result(output, f"Image resized {aspect_message}".strip(), "image/*")
 
 
 def handle_crop_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    source = Image.open(files[0])
+    source = open_image_file(files[0])
     x = int(payload.get("x", 0))
     y = int(payload.get("y", 0))
     w = int(payload.get("width", max(1, source.width - x)))
     h = int(payload.get("height", max(1, source.height - y)))
 
-    cropped = source.crop((x, y, x + w, y + h))
+    left = max(0, min(source.width - 1, x))
+    top = max(0, min(source.height - 1, y))
+    right = max(left + 1, min(source.width, left + max(1, w)))
+    bottom = max(top + 1, min(source.height, top + max(1, h)))
+
+    if right <= left or bottom <= top:
+        raise HTTPException(status_code=400, detail="Invalid crop area. Check x, y, width, and height values")
+
+    cropped = source.crop((left, top, right, bottom))
     output = output_dir / f"cropped-{files[0].name}"
     save_image(cropped, output)
     return create_single_file_result(output, "Image cropped", "image/*")
@@ -1116,8 +1582,14 @@ def handle_rotate_image(files: list[Path], payload: dict[str, Any], output_dir: 
     ensure_files(files, 1)
     angle = float(payload.get("angle", 90))
 
-    source = Image.open(files[0])
-    rotated = source.rotate(-angle, expand=True)
+    source = open_image_file(files[0])
+    fill = parse_color_value(payload.get("background", "#ffffff"), (255, 255, 255))
+    if source.mode == "RGBA":
+        fill_color = (*fill, 0)
+    else:
+        fill_color = fill
+
+    rotated = source.rotate(-angle, expand=True, resample=get_resampling_module().BICUBIC, fillcolor=fill_color)
     output = output_dir / f"rotated-{files[0].name}"
     save_image(rotated, output)
     return create_single_file_result(output, "Image rotated", "image/*")
@@ -1129,10 +1601,19 @@ def handle_convert_image(files: list[Path], payload: dict[str, Any], output_dir:
     if target_format not in {"png", "jpg", "jpeg", "webp", "gif", "bmp"}:
         raise HTTPException(status_code=400, detail="target_format must be one of png,jpg,webp,gif,bmp")
 
-    img = Image.open(files[0])
-    converted = img.convert("RGB") if target_format in {"jpg", "jpeg"} else img
+    quality = max(5, min(100, int(payload.get("quality", 92))))
+    img = open_image_file(files[0])
+    converted = img.convert("RGB") if target_format in {"jpg", "jpeg", "webp"} else img
     output = output_dir / f"converted.{ 'jpg' if target_format == 'jpeg' else target_format }"
-    save_image(converted, output, fmt=target_format.upper())
+    if target_format in {"jpg", "jpeg"}:
+        save_image(converted, output, fmt="JPEG", quality=quality)
+    elif target_format == "png":
+        converted.save(str(output), format="PNG", optimize=True, compress_level=9)
+    elif target_format == "webp":
+        converted.save(str(output), format="WEBP", quality=quality, method=6)
+    else:
+        save_image(converted, output, fmt=target_format.upper(), quality=quality)
+
     return create_single_file_result(output, "Image converted", "image/*")
 
 
@@ -1218,6 +1699,29 @@ def handle_html_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: P
     url = str(payload.get("url", "")).strip()
     html_content = str(payload.get("html", "")).strip()
 
+    if files and not html_content:
+        try:
+            html_content = files[0].read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            html_content = ""
+
+    output = output_dir / "html-to-pdf.pdf"
+
+    # Best effort: render full HTML with CSS using WeasyPrint.
+    try:
+        from weasyprint import HTML
+
+        if html_content:
+            base_url = str(files[0].parent) if files else None
+            HTML(string=html_content, base_url=base_url).write_pdf(str(output))
+            return create_single_file_result(output, "HTML converted to PDF", "application/pdf")
+
+        if url:
+            HTML(url=url).write_pdf(str(output))
+            return create_single_file_result(output, "HTML converted to PDF", "application/pdf")
+    except Exception:
+        pass
+
     if url:
         try:
             with httpx.Client(timeout=20, follow_redirects=True, verify=False) as client:
@@ -1231,7 +1735,6 @@ def handle_html_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: P
         raise HTTPException(status_code=400, detail="Provide either url or html in payload")
 
     text = BeautifulSoup(html_content, "html.parser").get_text("\n", strip=True)
-    output = output_dir / "html-to-pdf.pdf"
     text_to_pdf(text, output, title="HTML to PDF")
     return create_single_file_result(output, "HTML converted to PDF", "application/pdf")
 
@@ -1241,8 +1744,30 @@ def handle_md_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pat
     if not text:
         raise HTTPException(status_code=400, detail="Provide markdown text or upload an md/txt file")
 
-    plain_text = re.sub(r"[#>*`_\-]", "", text)
     output = output_dir / "markdown.pdf"
+
+    try:
+        import markdown
+        from weasyprint import HTML
+
+        rendered = markdown.markdown(
+            text,
+            extensions=["fenced_code", "tables", "sane_lists"],
+        )
+        html_doc = f"""<!doctype html>
+<html lang=\"en\"><head><meta charset=\"utf-8\" />
+<style>
+body {{ font-family: Arial, sans-serif; margin: 28px; line-height: 1.5; }}
+pre, code {{ font-family: Consolas, 'Courier New', monospace; }}
+table {{ border-collapse: collapse; width: 100%; margin: 16px 0; }}
+th, td {{ border: 1px solid #c7cdd8; padding: 6px 8px; text-align: left; }}
+</style></head><body>{rendered}</body></html>"""
+        HTML(string=html_doc).write_pdf(str(output))
+        return create_single_file_result(output, "Markdown converted to PDF", "application/pdf")
+    except Exception:
+        pass
+
+    plain_text = re.sub(r"[#>*`_\-]", "", text)
     text_to_pdf(plain_text, output, title="Markdown to PDF")
     return create_single_file_result(output, "Markdown converted to PDF", "application/pdf")
 
@@ -1328,6 +1853,50 @@ def handle_remove_metadata_image(files: list[Path], payload: dict[str, Any], out
         return create_single_file_result(result, "Metadata removed", "image/*")
 
     return create_zip_result(output_dir, "Metadata removed from images", "clean-images")
+
+
+def handle_edit_metadata_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    source = files[0]
+
+    fields = {
+        "title": str(payload.get("title", "")).strip(),
+        "author": str(payload.get("author", "")).strip(),
+        "subject": str(payload.get("subject", "")).strip(),
+        "keywords": str(payload.get("keywords", "")).strip(),
+    }
+    fields = {key: value for key, value in fields.items() if value}
+    if not fields:
+        raise HTTPException(status_code=400, detail="Provide at least one metadata field to update")
+
+    suffix = source.suffix.lower()
+    output_suffix = suffix if suffix else ".png"
+    output = output_dir / f"metadata-edited-{source.stem}{output_suffix}"
+
+    image = open_image_file(source)
+
+    if suffix in {".jpg", ".jpeg", ".tif", ".tiff"}:
+        exif = image.getexif()
+        description_parts = [fields.get("title", ""), fields.get("subject", ""), fields.get("keywords", "")]
+        description = " | ".join(part for part in description_parts if part)
+        if description:
+            exif[0x010E] = description
+        if fields.get("author"):
+            exif[0x013B] = fields["author"]
+
+        writable = image.convert("RGB") if suffix in {".jpg", ".jpeg"} and image.mode in {"RGBA", "P"} else image
+        writable.save(output, exif=exif)
+    elif suffix == ".png":
+        png_info = PngImagePlugin.PngInfo()
+        for key, value in fields.items():
+            png_info.add_text(key, value)
+        image.save(output, pnginfo=png_info)
+    else:
+        # Preserve visual content for formats without easy metadata writing support.
+        writable = image.convert("RGB") if image.mode in {"RGBA", "P"} else image
+        writable.save(output)
+
+    return create_single_file_result(output, "Image metadata updated", "image/*")
 
 
 def handle_extract_pages(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -1768,9 +2337,36 @@ def handle_zip_images_to_pdf(files: list[Path], payload: dict[str, Any], output_
 
 def handle_pdf_to_docx(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    content = extract_pdf_text(files[0])
     output = output_dir / "pdf.docx"
-    build_docx_from_text(content, output, "PDF to DOCX")
+
+    # Best effort layout-preserving conversion.
+    converted = False
+    converter = None
+    try:
+        from pdf2docx import Converter
+
+        converter = Converter(str(files[0]))
+        start_page = max(0, int(payload.get("start_page", 0)))
+        end_page_raw = payload.get("end_page")
+        end_page: int | None = None
+        if end_page_raw not in (None, ""):
+            end_page = max(start_page + 1, int(end_page_raw))
+
+        converter.convert(str(output), start=start_page, end=end_page)
+        converted = output.exists() and output.stat().st_size > 0
+    except Exception:
+        converted = False
+    finally:
+        try:
+            if converter is not None:
+                converter.close()
+        except Exception:
+            pass
+
+    if not converted:
+        content = extract_pdf_text(files[0])
+        build_docx_from_text(content, output, "PDF to DOCX")
+
     return create_single_file_result(
         output,
         "PDF converted to DOCX",
@@ -1780,6 +2376,15 @@ def handle_pdf_to_docx(files: list[Path], payload: dict[str, Any], output_dir: P
 
 def handle_docx_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(files[0], output_dir)
+    if libreoffice_result:
+        return create_single_file_result(
+            libreoffice_result,
+            "DOCX converted to PDF",
+            "application/pdf",
+        )
+
     content = extract_docx_text(files[0])
     output = output_dir / "docx.pdf"
     text_to_pdf(content, output, title="DOCX to PDF")
@@ -1788,16 +2393,160 @@ def handle_docx_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: P
 
 def handle_pdf_to_excel(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    content = extract_pdf_text(files[0])
-    lines = [line.strip() for line in content.splitlines() if line.strip()]
-
     workbook = Workbook()
-    sheet = workbook.active
-    sheet.title = "PDF Text"
-    sheet.append(["line_number", "text"])
+    default_sheet = workbook.active
+    workbook.remove(default_sheet)
 
-    for index, line in enumerate(lines, start=1):
-        sheet.append([index, line])
+    sheet_counter = 1
+    wrote_any = False
+
+    def next_sheet(title_prefix: str) -> Any:
+        nonlocal sheet_counter
+        safe_prefix = re.sub(r"[^A-Za-z0-9 _-]", "", title_prefix).strip() or "Table"
+        sheet_name = f"{safe_prefix[:20]}-{sheet_counter}"
+        sheet_counter += 1
+        return workbook.create_sheet(sheet_name)
+
+    def append_table_rows(sheet: Any, table_rows: list[list[str]]) -> bool:
+        wrote = False
+        for row in table_rows:
+            normalized = [str(cell).replace("\n", " ").strip() if cell is not None else "" for cell in row]
+            if any(value for value in normalized):
+                sheet.append(normalized)
+                wrote = True
+        return wrote
+
+    def parse_tabular_rows(lines: list[str]) -> list[list[str]]:
+        parsed_rows: list[list[str]] = []
+        for line in lines:
+            stripped = line.strip()
+            if not stripped:
+                continue
+
+            cells: list[str]
+            if "\t" in stripped:
+                cells = [part.strip() for part in stripped.split("\t")]
+            elif "|" in stripped and stripped.count("|") >= 1:
+                cells = [part.strip() for part in stripped.split("|")]
+            elif ";" in stripped and stripped.count(";") >= 1 and stripped.count(" ") < max(8, len(stripped) // 8):
+                cells = [part.strip() for part in next(csv.reader([stripped], delimiter=";"))]
+            elif "," in stripped and stripped.count(",") >= 1 and stripped.count(" ") < max(8, len(stripped) // 8):
+                cells = [part.strip() for part in next(csv.reader([stripped]))]
+            else:
+                cells = [part.strip() for part in re.split(r"\s{2,}", stripped) if part.strip()]
+
+            cells = [cell for cell in cells if cell]
+            if len(cells) >= 2:
+                parsed_rows.append(cells)
+
+        if len(parsed_rows) < 2:
+            return []
+
+        max_columns = max(len(row) for row in parsed_rows)
+        if max_columns < 2:
+            return []
+
+        return [row + [""] * (max_columns - len(row)) for row in parsed_rows]
+
+    # 1) Camelot provides the highest quality table extraction when available.
+    try:
+        import camelot
+
+        for flavor in ("lattice", "stream"):
+            try:
+                tables = camelot.read_pdf(str(files[0]), pages="all", flavor=flavor)
+            except Exception:
+                continue
+
+            for index, table in enumerate(tables, start=1):
+                dataframe = table.df.fillna("")
+                rows = dataframe.values.tolist()
+                if not rows:
+                    continue
+
+                sheet = next_sheet(f"Camelot-{flavor}-{index}")
+                if append_table_rows(sheet, rows):
+                    wrote_any = True
+    except Exception:
+        pass
+
+    # 2) Tabula fallback for scanned / ruled table variants.
+    if not wrote_any:
+        try:
+            import tabula
+
+            table_sets: list[Any] = []
+            for options in (
+                {"lattice": True, "stream": False},
+                {"lattice": False, "stream": True},
+            ):
+                try:
+                    table_sets.extend(
+                        tabula.read_pdf(
+                            str(files[0]),
+                            pages="all",
+                            multiple_tables=True,
+                            pandas_options={"dtype": str},
+                            **options,
+                        )
+                    )
+                except Exception:
+                    continue
+
+            for index, dataframe in enumerate(table_sets, start=1):
+                if dataframe is None or dataframe.empty:
+                    continue
+
+                rows = dataframe.fillna("").astype(str).values.tolist()
+                sheet = next_sheet(f"Tabula-{index}")
+                if append_table_rows(sheet, rows):
+                    wrote_any = True
+        except Exception:
+            pass
+
+    # 3) pdfplumber fallback: usable when dedicated table engines are unavailable.
+    if not wrote_any:
+        try:
+            import pdfplumber
+
+            with pdfplumber.open(str(files[0])) as pdf:
+                for page_index, page in enumerate(pdf.pages, start=1):
+                    tables = page.extract_tables() or []
+                    if tables:
+                        for table_index, table in enumerate(tables, start=1):
+                            sheet = next_sheet(f"Page{page_index}-T{table_index}")
+                            if append_table_rows(sheet, [[cell if cell is not None else "" for cell in row] for row in (table or [])]):
+                                wrote_any = True
+                    else:
+                        page_text = page.extract_text() or ""
+                        text_lines = [line.strip() for line in page_text.splitlines() if line.strip()]
+                        if text_lines:
+                            parsed_rows = parse_tabular_rows(text_lines)
+                            if parsed_rows:
+                                sheet = next_sheet(f"Page{page_index}-Parsed")
+                                if append_table_rows(sheet, parsed_rows):
+                                    wrote_any = True
+                            else:
+                                sheet = next_sheet(f"Page{page_index}-Text")
+                                for line in text_lines:
+                                    sheet.append([line])
+                                wrote_any = True
+        except Exception:
+            pass
+
+    # 4) Final guaranteed fallback so tool always returns meaningful output.
+    if not wrote_any:
+        content = extract_pdf_text(files[0])
+        lines = [line.strip() for line in content.splitlines() if line.strip()]
+        parsed_rows = parse_tabular_rows(lines)
+        if parsed_rows:
+            sheet = next_sheet("PDF-Parsed")
+            append_table_rows(sheet, parsed_rows)
+        else:
+            sheet = next_sheet("PDF-Text")
+            sheet.append(["line_number", "text"])
+            for index, line in enumerate(lines, start=1):
+                sheet.append([index, line])
 
     output = output_dir / "pdf.xlsx"
     workbook.save(str(output))
@@ -1810,6 +2559,15 @@ def handle_pdf_to_excel(files: list[Path], payload: dict[str, Any], output_dir: 
 
 def handle_excel_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(files[0], output_dir)
+    if libreoffice_result:
+        return create_single_file_result(
+            libreoffice_result,
+            "Excel converted to PDF",
+            "application/pdf",
+        )
+
     workbook = load_workbook(str(files[0]), data_only=True)
     lines: list[str] = []
 
@@ -1830,20 +2588,30 @@ def handle_pdf_to_pptx(files: list[Path], payload: dict[str, Any], output_dir: P
     ensure_files(files, 1)
     document = fitz.open(str(files[0]))
     presentation = Presentation()
+    blank_layout = presentation.slide_layouts[6]
+
+    emu_per_pixel = 9525
+    slide_width = int(presentation.slide_width)
+    slide_height = int(presentation.slide_height)
 
     for index, page in enumerate(document, start=1):
-        slide = presentation.slides.add_slide(presentation.slide_layouts[1])
-        if slide.shapes.title:
-            slide.shapes.title.text = f"Page {index}"
+        slide = presentation.slides.add_slide(blank_layout)
 
-        content = page.get_text("text").strip() or f"Page {index} has no extractable text."
-        body_text = content[:3800]
+        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+        image_bytes = pix.tobytes("png")
+        image = Image.open(io.BytesIO(image_bytes))
 
-        if len(slide.placeholders) > 1 and hasattr(slide.placeholders[1], "text_frame"):
-            slide.placeholders[1].text_frame.text = body_text
-        else:
-            text_box = slide.shapes.add_textbox(Inches(1.0), Inches(1.6), Inches(8.0), Inches(4.5))
-            text_box.text_frame.text = body_text
+        image_w = image.width * emu_per_pixel
+        image_h = image.height * emu_per_pixel
+        scale = min(slide_width / max(1, image_w), slide_height / max(1, image_h))
+
+        target_w = int(image_w * scale)
+        target_h = int(image_h * scale)
+        left = int((slide_width - target_w) / 2)
+        top = int((slide_height - target_h) / 2)
+
+        stream = io.BytesIO(image_bytes)
+        slide.shapes.add_picture(stream, left, top, width=target_w, height=target_h)
 
     document.close()
 
@@ -1858,6 +2626,15 @@ def handle_pdf_to_pptx(files: list[Path], payload: dict[str, Any], output_dir: P
 
 def handle_pptx_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(files[0], output_dir)
+    if libreoffice_result:
+        return create_single_file_result(
+            libreoffice_result,
+            "PPTX converted to PDF",
+            "application/pdf",
+        )
+
     presentation = Presentation(str(files[0]))
     lines: list[str] = []
 
@@ -2129,24 +2906,119 @@ def handle_flatten_pdf(files: list[Path], payload: dict[str, Any], output_dir: P
 
 def handle_pdf_to_html(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    text = extract_pdf_text(files[0])
+    source_pdf = files[0]
+    output = output_dir / "pdf.html"
+
+    # 1) Highest-fidelity path when pdf2htmlEX is installed on the server.
+    pdf2htmlex_bin = shutil.which("pdf2htmlEX")
+    if pdf2htmlex_bin:
+        command = [
+            pdf2htmlex_bin,
+            "--embed-css",
+            "1",
+            "--embed-font",
+            "1",
+            "--embed-image",
+            "1",
+            "--embed-javascript",
+            "0",
+            "--dest-dir",
+            str(output_dir),
+            str(source_pdf),
+            output.name,
+        ]
+        try:
+            subprocess.run(command, check=True, capture_output=True, timeout=900)
+            if output.exists() and output.stat().st_size > 0:
+                return create_single_file_result(output, "PDF converted to HTML", "text/html")
+        except Exception:
+            pass
+
+    # 2) Native PyMuPDF layout extraction with scanned-page image fallback.
+    try:
+        page_fragments: list[str] = []
+        with fitz.open(str(source_pdf)) as document:
+            for page_index, page in enumerate(document, start=1):
+                page_text = (page.get_text("text") or "").strip()
+                if page_text:
+                    page_html = page.get_text("html")
+                    if page_html and page_html.strip():
+                        page_fragments.append(
+                            f'<section class="pdf-page text-page" data-page="{page_index}">{page_html}</section>'
+                        )
+                        continue
+
+                # Scanned or image-only page: preserve visual fidelity via embedded PNG.
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+                encoded = base64.b64encode(pix.tobytes("png")).decode("ascii")
+                page_fragments.append(
+                    f'<section class="pdf-page image-page" data-page="{page_index}">'
+                    f'<img alt="Page {page_index}" src="data:image/png;base64,{encoded}" />'
+                    "</section>"
+                )
+
+        if page_fragments:
+            html_doc = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <title>{html.escape(source_pdf.stem)}</title>
+  <style>
+    body {{
+      margin: 20px;
+      background: #f6f8fb;
+      color: #0f172a;
+      font-family: Arial, sans-serif;
+    }}
+    .pdf-page {{
+      margin: 0 auto 22px;
+      padding: 10px;
+      background: #ffffff;
+      border: 1px solid #dbe3f1;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+      overflow-x: auto;
+      max-width: 1100px;
+    }}
+    .pdf-page img {{
+      display: block;
+      width: 100%;
+      height: auto;
+    }}
+  </style>
+</head>
+<body>
+{''.join(page_fragments)}
+</body>
+</html>
+"""
+            output.write_text(html_doc, encoding="utf-8")
+            return create_single_file_result(output, "PDF converted to HTML", "text/html")
+    except Exception:
+        pass
+
+    # 3) Guaranteed fallback: readable text-only HTML export.
+    text = extract_pdf_text(source_pdf)
+    if not text:
+        raise HTTPException(status_code=400, detail="Unable to extract content from the PDF")
+
     escaped = html.escape(text)
     html_doc = f"""<!doctype html>
 <html lang=\"en\">
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-  <title>{html.escape(files[0].stem)}</title>
+  <title>{html.escape(source_pdf.stem)}</title>
   <style>body {{ font-family: Arial, sans-serif; margin: 24px; line-height: 1.5; }} pre {{ white-space: pre-wrap; }}</style>
 </head>
 <body>
-  <h1>{html.escape(files[0].name)}</h1>
+  <h1>{html.escape(source_pdf.name)}</h1>
   <pre>{escaped}</pre>
 </body>
 </html>
 """
 
-    output = output_dir / "pdf.html"
     output.write_text(html_doc, encoding="utf-8")
     return create_single_file_result(output, "PDF converted to HTML", "text/html")
 
@@ -2474,7 +3346,20 @@ def handle_pdf_to_tiff(files: list[Path], payload: dict[str, Any], output_dir: P
 
 
 def handle_tiff_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
-    return handle_image_to_pdf(files, payload, output_dir)
+    ensure_files(files, 1)
+
+    pages: list[Image.Image] = []
+    for source in files:
+        image = Image.open(source)
+        if getattr(image, "n_frames", 1) > 1:
+            for frame in ImageSequence.Iterator(image):
+                pages.append(ImageOps.exif_transpose(frame).convert("RGB"))
+        else:
+            pages.append(ImageOps.exif_transpose(image).convert("RGB"))
+
+    output = output_dir / "tiff.pdf"
+    save_images_as_pdf(pages, output)
+    return create_single_file_result(output, "TIFF converted to PDF", "application/pdf")
 
 
 def handle_pdf_to_svg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -2499,23 +3384,37 @@ def handle_svg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
     ensure_files(files, 1)
     generated_pdfs: list[Path] = []
 
-    for index, source in enumerate(files, start=1):
-        svg_content = source.read_text(encoding="utf-8", errors="ignore")
-        text_content = BeautifulSoup(svg_content, "html.parser").get_text(" ", strip=True)
-        pdf_path = output_dir / f"svg-{index}.pdf"
-        pdf_canvas = canvas.Canvas(str(pdf_path), pagesize=A4)
-        pdf_canvas.setFont("Helvetica", 11)
-        pdf_canvas.drawString(40, 780, f"Converted from: {source.name}")
-        y = 760
-        for line in textwrap.wrap(text_content, width=90):
-            if y < 40:
-                pdf_canvas.showPage()
-                pdf_canvas.setFont("Helvetica", 11)
-                y = 780
-            pdf_canvas.drawString(40, y, line)
-            y -= 15
-        pdf_canvas.save()
-        generated_pdfs.append(pdf_path)
+    # Preferred path: render vector content faithfully with CairoSVG.
+    try:
+        import cairosvg
+
+        for index, source in enumerate(files, start=1):
+            pdf_path = output_dir / f"svg-{index}.pdf"
+            cairosvg.svg2pdf(url=str(source), write_to=str(pdf_path))
+            if pdf_path.exists() and pdf_path.stat().st_size > 0:
+                generated_pdfs.append(pdf_path)
+    except Exception:
+        generated_pdfs = []
+
+    if not generated_pdfs:
+        # Fallback path: export textual content when vector renderer is unavailable.
+        for index, source in enumerate(files, start=1):
+            svg_content = source.read_text(encoding="utf-8", errors="ignore")
+            text_content = BeautifulSoup(svg_content, "html.parser").get_text(" ", strip=True)
+            pdf_path = output_dir / f"svg-{index}.pdf"
+            pdf_canvas = canvas.Canvas(str(pdf_path), pagesize=A4)
+            pdf_canvas.setFont("Helvetica", 11)
+            pdf_canvas.drawString(40, 780, f"Converted from: {source.name}")
+            y = 760
+            for line in textwrap.wrap(text_content, width=90):
+                if y < 40:
+                    pdf_canvas.showPage()
+                    pdf_canvas.setFont("Helvetica", 11)
+                    y = 780
+                pdf_canvas.drawString(40, y, line)
+                y -= 15
+            pdf_canvas.save()
+            generated_pdfs.append(pdf_path)
 
     if len(generated_pdfs) == 1:
         return create_single_file_result(generated_pdfs[0], "SVG converted to PDF", "application/pdf")
@@ -2596,14 +3495,76 @@ def handle_ocr_image(files: list[Path], payload: dict[str, Any], output_dir: Pat
 
 def handle_ocr_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    temp_dir = output_dir / "_ocr_pages"
-    temp_dir.mkdir(parents=True, exist_ok=True)
-    text = extract_ocr_text_from_pdf(files[0], temp_dir)
-    if not text:
+    source_pdf = files[0]
+
+    # Prefer OCRmyPDF when available: best-in-class searchable PDF generation.
+    ocrmypdf_bin = shutil.which("ocrmypdf")
+    if ocrmypdf_bin:
+        output = output_dir / "ocr.pdf"
+        command = [
+            ocrmypdf_bin,
+            "--skip-text",
+            "--force-ocr",
+            "--optimize",
+            "3",
+            "--output-type",
+            "pdf",
+        ]
+        language = str(payload.get("lang", "")).strip()
+        if language:
+            command.extend(["--language", language])
+        command.extend([str(source_pdf), str(output)])
+
+        try:
+            subprocess.run(command, check=True, capture_output=True, timeout=900)
+            if output.exists() and output.stat().st_size > 0:
+                return create_single_file_result(output, "OCR-generated searchable PDF created", "application/pdf")
+        except Exception:
+            pass
+
+    # Fallback: rebuild pages as images and overlay invisible OCR text for searchability.
+    output = output_dir / "ocr.pdf"
+    aggregate_text: list[str] = []
+
+    with tempfile.TemporaryDirectory(prefix="ocr-pdf-pages-") as temp_name:
+        temp_dir = Path(temp_name)
+        source_doc = fitz.open(str(source_pdf))
+        target_doc = fitz.open()
+
+        try:
+            for page_index, page in enumerate(source_doc, start=1):
+                pix = page.get_pixmap(matrix=fitz.Matrix(2.2, 2.2), alpha=False)
+                page_image = temp_dir / f"ocr-page-{page_index}.png"
+                pix.save(str(page_image))
+
+                page_text = extract_ocr_text_from_image(page_image)
+                if page_text:
+                    aggregate_text.append(f"Page {page_index}\n{page_text}")
+
+                new_page = target_doc.new_page(width=page.rect.width, height=page.rect.height)
+                new_page.insert_image(new_page.rect, filename=str(page_image), keep_proportion=False)
+
+                # Invisible overlay text preserves search/copy ability without changing visual output.
+                if page_text:
+                    new_page.insert_textbox(
+                        new_page.rect,
+                        page_text,
+                        fontsize=7,
+                        render_mode=3,
+                        color=(0, 0, 0),
+                        fill_opacity=0,
+                        stroke_opacity=0,
+                        overlay=True,
+                    )
+
+            target_doc.save(str(output), garbage=4, deflate=True)
+        finally:
+            source_doc.close()
+            target_doc.close()
+
+    if not aggregate_text:
         raise HTTPException(status_code=400, detail="No readable text was detected in the PDF pages")
 
-    output = output_dir / "ocr.pdf"
-    text_to_pdf(text, output, title="OCR PDF")
     return create_single_file_result(output, "OCR-generated searchable PDF created", "application/pdf")
 
 
@@ -2654,12 +3615,30 @@ def handle_remove_background(files: list[Path], payload: dict[str, Any], output_
 
 def handle_blur_background(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    from rembg import remove
-
     radius = max(2, float(payload.get("radius", 12)))
     original = open_image_file(files[0], "RGBA")
-    cutout = Image.open(io.BytesIO(remove(files[0].read_bytes()))).convert("RGBA")
-    mask = cutout.getchannel("A")
+
+    try:
+        from rembg import remove
+
+        cutout = Image.open(io.BytesIO(remove(files[0].read_bytes()))).convert("RGBA")
+        mask = cutout.getchannel("A")
+    except Exception:
+        # Fallback: keep center subject area and blur outer background smoothly.
+        width, height = original.size
+        mask = Image.new("L", (width, height), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse(
+            (
+                int(width * 0.15),
+                int(height * 0.05),
+                int(width * 0.85),
+                int(height * 0.95),
+            ),
+            fill=255,
+        )
+        mask = mask.filter(ImageFilter.GaussianBlur(radius=max(12, int(min(width, height) * 0.04))))
+
     blurred = original.filter(ImageFilter.GaussianBlur(radius=radius))
     output_img = Image.composite(original, blurred, mask)
 
@@ -2710,6 +3689,73 @@ def handle_pixelate_face(files: list[Path], payload: dict[str, Any], output_dir:
     output = output_dir / f"{files[0].stem}-pixelate-face.png"
     cv2.imwrite(str(output), image)
     return create_single_file_result(output, "Faces pixelated successfully", "image/png")
+
+
+def handle_unblur_face(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    import cv2
+
+    image, faces = detect_faces_in_image(files[0])
+    if len(faces) == 0:
+        raise HTTPException(status_code=400, detail="No face was detected in the uploaded image")
+
+    sharpen_strength = max(1.1, min(3.0, float(payload.get("strength", 1.8))))
+    denoise = max(0, min(20, int(payload.get("denoise", 6))))
+
+    for (x, y, w, h) in faces:
+        region = image[y : y + h, x : x + w]
+        if region.size == 0:
+            continue
+
+        if denoise > 0:
+            region = cv2.fastNlMeansDenoisingColored(region, None, denoise, denoise, 7, 21)
+
+        blurred = cv2.GaussianBlur(region, (0, 0), 2.2)
+        sharpened = cv2.addWeighted(region, sharpen_strength, blurred, -(sharpen_strength - 1.0), 0)
+
+        lab = cv2.cvtColor(sharpened, cv2.COLOR_BGR2LAB)
+        l_channel, a_channel, b_channel = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        l_channel = clahe.apply(l_channel)
+        merged = cv2.merge((l_channel, a_channel, b_channel))
+        image[y : y + h, x : x + w] = cv2.cvtColor(merged, cv2.COLOR_LAB2BGR)
+
+    output = output_dir / f"{files[0].stem}-unblur-face.png"
+    cv2.imwrite(str(output), image)
+    return create_single_file_result(output, "Faces enhanced successfully", "image/png")
+
+
+def handle_remove_image_object(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    import cv2
+    import numpy as np
+
+    image = cv2.imread(str(files[0]))
+    if image is None:
+        raise HTTPException(status_code=400, detail="Unable to read image for object removal")
+
+    height, width = image.shape[:2]
+    x = int(payload.get("x", width * 0.35))
+    y = int(payload.get("y", height * 0.35))
+    w = int(payload.get("width", width * 0.2))
+    h = int(payload.get("height", height * 0.2))
+    inpaint_radius = max(1, min(21, int(payload.get("radius", 5))))
+
+    x = max(0, min(width - 2, x))
+    y = max(0, min(height - 2, y))
+    w = max(1, min(width - x, w))
+    h = max(1, min(height - y, h))
+
+    mask = np.zeros((height, width), dtype=np.uint8)
+    mask[y : y + h, x : x + w] = 255
+
+    method = str(payload.get("method", "telea")).strip().lower()
+    algorithm = cv2.INPAINT_NS if method == "ns" else cv2.INPAINT_TELEA
+    restored = cv2.inpaint(image, mask, inpaint_radius, algorithm)
+
+    output = output_dir / f"{files[0].stem}-object-removed.png"
+    cv2.imwrite(str(output), restored)
+    return create_single_file_result(output, "Object removed from image", "image/png")
 
 
 def handle_add_text_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -2992,9 +4038,10 @@ def handle_add_watermark(files: list[Path], payload: dict[str, Any], output_dir:
 
 
 def handle_edit_metadata(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
-    if files and files[0].suffix.lower() == ".pdf":
+    ensure_files(files, 1)
+    if files[0].suffix.lower() == ".pdf":
         return handle_edit_metadata_pdf(files, payload, output_dir)
-    return handle_extract_metadata(files, payload, output_dir)
+    return handle_edit_metadata_image(files, payload, output_dir)
 
 
 def handle_pdf_viewer(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3139,8 +4186,11 @@ def handle_convert_to_pdf(files: list[Path], payload: dict[str, Any], output_dir
     source = files[0]
     extension = source.suffix.lower()
     handler_by_extension: dict[str, ToolHandler] = {
+        ".doc": handle_word_to_pdf,
         ".docx": handle_docx_to_pdf,
+        ".ppt": handle_powerpoint_to_pdf,
         ".pptx": handle_pptx_to_pdf,
+        ".xls": handle_excel_to_pdf,
         ".xlsx": handle_excel_to_pdf,
         ".xlsm": handle_excel_to_pdf,
         ".csv": handle_csv_to_pdf,
@@ -3148,6 +4198,8 @@ def handle_convert_to_pdf(files: list[Path], payload: dict[str, Any], output_dir
         ".xml": handle_xml_to_pdf,
         ".txt": handle_txt_to_pdf,
         ".md": handle_md_to_pdf,
+        ".html": handle_html_to_pdf,
+        ".htm": handle_html_to_pdf,
         ".svg": handle_svg_to_pdf,
         ".rtf": handle_rtf_to_pdf,
         ".odt": handle_odt_to_pdf,
@@ -3155,11 +4207,36 @@ def handle_convert_to_pdf(files: list[Path], payload: dict[str, Any], output_dir
         ".eml": handle_eml_to_pdf,
         ".fb2": handle_fb2_to_pdf,
         ".cbz": handle_cbz_to_pdf,
+        ".cbr": handle_cbr_to_pdf,
+        ".djvu": handle_djvu_to_pdf,
+        ".ai": handle_ai_to_pdf,
+        ".xps": handle_xps_to_pdf,
+        ".wps": handle_wps_to_pdf,
+        ".dwg": handle_dwg_to_pdf,
+        ".dxf": handle_dxf_to_pdf,
+        ".pub": handle_pub_to_pdf,
+        ".hwp": handle_hwp_to_pdf,
+        ".chm": handle_chm_to_pdf,
+        ".pages": handle_pages_to_pdf,
+        ".mobi": handle_mobi_to_pdf,
+        ".zip": handle_zip_to_pdf,
     }
     handler = handler_by_extension.get(extension)
-    if not handler:
-        raise HTTPException(status_code=400, detail=f"Unsupported input format for convert-to-pdf: {extension or 'unknown'}")
-    return handler(files, payload, output_dir)
+    if handler:
+        return handler(files, payload, output_dir)
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(source, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(
+            libreoffice_result,
+            "Document converted to PDF via LibreOffice",
+            "application/pdf",
+        )
+
+    raise HTTPException(
+        status_code=400,
+        detail=f"Unsupported input format for convert-to-pdf: {extension or 'unknown'}",
+    )
 
 
 def handle_convert_from_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3258,6 +4335,72 @@ def handle_resize_image_in_inch(files: list[Path], payload: dict[str, Any], outp
     output = output_dir / f"{files[0].stem}-inch{files[0].suffix.lower() or '.png'}"
     resize_image_to_physical_units(files[0], output, width, height, dpi, "inch")
     return create_single_file_result(output, "Image resized in inches", "image/*")
+
+
+def handle_resize_image_pixel(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_resize_image(files, payload, output_dir)
+
+
+def handle_resize_signature(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    dpi = max(36, int(payload.get("dpi", 300)))
+    width_mm = float(payload.get("width_mm", 50))
+    height_mm = float(payload.get("height_mm", 20))
+    output = output_dir / f"{files[0].stem}-signature{files[0].suffix.lower() or '.png'}"
+    resize_image_to_physical_units(files[0], output, width_mm, height_mm, dpi, "mm")
+    return create_single_file_result(output, "Signature resized", "image/*")
+
+
+def handle_resize_image_to_3_5cmx4_5cm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_cm": 3.5, "height_cm": 4.5, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_cm(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_6cmx2cm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_cm": 6.0, "height_cm": 2.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_cm(files, alias_payload, output_dir)
+
+
+def handle_resize_signature_to_50mmx20mm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_mm": 50.0, "height_mm": 20.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_signature(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_35mmx45mm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_mm": 35.0, "height_mm": 45.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_mm(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_2x2(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_inch": 2.0, "height_inch": 2.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_inch(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_3x4(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_inch": 3.0, "height_inch": 4.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_inch(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_4x6(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width_inch": 4.0, "height_inch": 6.0, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_inch(files, alias_payload, output_dir)
+
+
+def handle_resize_image_to_600x600_pixel(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {**payload, "width": 600, "height": 600}
+    return handle_resize_image(files, alias_payload, output_dir)
+
+
+def handle_resize_image_for_whatsapp_dp(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_resize_for_whatsapp(files, payload, output_dir)
+
+
+def handle_resize_image_for_youtube_banner(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_resize_for_youtube(files, payload, output_dir)
+
+
+def handle_resize_image_to_a4_size(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_a4_size_resize(files, payload, output_dir)
 
 
 def handle_add_name_dob_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3503,17 +4646,26 @@ def handle_cbr_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
 def handle_djvu_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files)
     djvu_path = files[0]
+    output = output_dir / "converted.pdf"
     try:
         doc = fitz.open(str(djvu_path))
-        output = output_dir / "converted.pdf"
         doc.save(str(output))
         doc.close()
         return create_single_file_result(output, "DjVu converted to PDF successfully", "application/pdf")
     except Exception:
-        content = f"DjVu Document Converted\nFile: {djvu_path.name}\n\nNote: DjVu conversion requires native libraries. Text content extracted where possible."
-        output = output_dir / "djvu-converted.pdf"
-        text_to_pdf(content, output, title="DjVu to PDF")
-        return create_single_file_result(output, "DjVu content converted to PDF", "application/pdf")
+        libreoffice_result = try_libreoffice_convert_to_pdf(djvu_path, output_dir)
+        if libreoffice_result:
+            return create_single_file_result(libreoffice_result, "DjVu converted to PDF", "application/pdf")
+
+        extracted = extract_text_from_binary_file(djvu_path)
+        if has_meaningful_text(extracted):
+            text_to_pdf(extracted, output, title=djvu_path.stem)
+            return create_single_file_result(output, "DjVu text extracted to PDF", "application/pdf")
+
+        raise HTTPException(
+            status_code=422,
+            detail="Unable to convert DjVu in this runtime. Install LibreOffice or DjVu support tools and retry.",
+        )
 
 
 def handle_ai_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3526,14 +4678,14 @@ def handle_ai_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pat
         doc.close()
         return create_single_file_result(output, "AI file converted to PDF successfully", "application/pdf")
     except Exception as e:
-        try:
-            import shutil
-            shutil.copy(str(ai_path), str(output))
-            if output.stat().st_size > 100:
-                return create_single_file_result(output, "AI file saved as PDF", "application/pdf")
-        except Exception:
-            pass
-        raise HTTPException(status_code=400, detail=f"Could not convert AI file: {str(e)[:120]}")
+        libreoffice_result = try_libreoffice_convert_to_pdf(ai_path, output_dir)
+        if libreoffice_result:
+            return create_single_file_result(libreoffice_result, "AI file converted to PDF", "application/pdf")
+
+        raise HTTPException(
+            status_code=422,
+            detail=f"Could not convert AI file: {str(e)[:120]}. Install LibreOffice/Illustrator-compatible converters.",
+        )
 
 
 def handle_pdf_to_mobi(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3586,6 +4738,11 @@ def handle_wps_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
     ensure_files(files)
     wps_path = files[0]
     output = output_dir / "converted.pdf"
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(wps_path, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(libreoffice_result, "WPS document converted to PDF", "application/pdf")
+
     try:
         doc = Document(str(wps_path))
         text = extract_docx_text(wps_path)
@@ -3601,7 +4758,10 @@ def handle_wps_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
                 return create_single_file_result(output, "WPS content converted to PDF", "application/pdf")
         except Exception:
             pass
-        raise HTTPException(status_code=400, detail="WPS file conversion requires LibreOffice. Try converting to DOCX first.")
+        raise HTTPException(
+            status_code=422,
+            detail="Unable to convert WPS reliably. Install LibreOffice for full WPS support.",
+        )
 
 
 def handle_dwg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3635,15 +4795,31 @@ def handle_pub_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
     ensure_files(files)
     pub_path = files[0]
     output = output_dir / "converted.pdf"
-    text = f"Microsoft Publisher File: {pub_path.name}\n\nDirect PUB conversion requires Microsoft Publisher or LibreOffice.\nPlease save your PUB file as PDF directly from Publisher, or convert to DOCX first.\n\nFile size: {pub_path.stat().st_size:,} bytes"
-    text_to_pdf(text, output, title="PUB to PDF")
-    return create_single_file_result(output, "PUB file info exported (full conversion requires LibreOffice)", "application/pdf")
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(pub_path, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(libreoffice_result, "PUB file converted to PDF", "application/pdf")
+
+    extracted = extract_text_from_binary_file(pub_path)
+    if has_meaningful_text(extracted):
+        text_to_pdf(extracted, output, title=pub_path.stem)
+        return create_single_file_result(output, "PUB text extracted to PDF", "application/pdf")
+
+    raise HTTPException(
+        status_code=422,
+        detail="Unable to convert PUB reliably in this runtime. Install LibreOffice for full PUB conversion.",
+    )
 
 
 def handle_hwp_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files)
     hwp_path = files[0]
     output = output_dir / "converted.pdf"
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(hwp_path, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(libreoffice_result, "HWP converted to PDF", "application/pdf")
+
     try:
         raw = hwp_path.read_bytes()
         text = raw.decode('utf-8', errors='ignore')
@@ -3655,15 +4831,22 @@ def handle_hwp_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
             return create_single_file_result(output, "HWP text content extracted to PDF", "application/pdf")
     except Exception:
         pass
-    content = f"Hangul HWP File: {hwp_path.name}\n\nFull HWP conversion requires Hangul Office or LibreOffice with HWP support.\nText extraction attempted but format uses proprietary encoding.\n\nFile size: {hwp_path.stat().st_size:,} bytes"
-    text_to_pdf(content, output, title="HWP to PDF")
-    return create_single_file_result(output, "HWP file info exported", "application/pdf")
+
+    raise HTTPException(
+        status_code=422,
+        detail="Unable to convert HWP reliably in this runtime. Install LibreOffice/HWP support and retry.",
+    )
 
 
 def handle_chm_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files)
     chm_path = files[0]
     output = output_dir / "converted.pdf"
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(chm_path, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(libreoffice_result, "CHM converted to PDF", "application/pdf")
+
     try:
         import zipfile as _zf
         texts: list[str] = []
@@ -3690,9 +4873,11 @@ def handle_chm_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
             return create_single_file_result(output, "CHM content extracted to PDF", "application/pdf")
     except Exception:
         pass
-    content = f"Windows CHM Help File: {chm_path.name}\n\nCHM is a compressed HTML format. Full conversion requires specialized CHM extraction tools.\n\nFile size: {chm_path.stat().st_size:,} bytes"
-    text_to_pdf(content, output, title="CHM to PDF")
-    return create_single_file_result(output, "CHM file info exported", "application/pdf")
+
+    raise HTTPException(
+        status_code=422,
+        detail="Unable to convert CHM reliably in this runtime. Install LibreOffice or CHM extraction tooling.",
+    )
 
 
 def handle_dxf_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3736,6 +4921,11 @@ def handle_pages_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
     ensure_files(files)
     pages_path = files[0]
     output = output_dir / "converted.pdf"
+
+    libreoffice_result = try_libreoffice_convert_to_pdf(pages_path, output_dir)
+    if libreoffice_result:
+        return create_single_file_result(libreoffice_result, "PAGES converted to PDF", "application/pdf")
+
     try:
         import zipfile as _zf
         with _zf.ZipFile(str(pages_path)) as z:
@@ -3754,9 +4944,11 @@ def handle_pages_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
                 return create_single_file_result(output, "Apple Pages document converted to PDF", "application/pdf")
     except Exception:
         pass
-    content = f"Apple Pages Document: {pages_path.name}\n\nFull PAGES conversion requires macOS with Pages app or iCloud.\nFor best results, open the file in Apple Pages and export as PDF.\n\nFile size: {pages_path.stat().st_size:,} bytes"
-    text_to_pdf(content, output, title="PAGES to PDF")
-    return create_single_file_result(output, "PAGES file info exported", "application/pdf")
+
+    raise HTTPException(
+        status_code=422,
+        detail="Unable to convert PAGES reliably in this runtime. Install LibreOffice or export from Apple Pages first.",
+    )
 
 
 def handle_html_to_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -3819,59 +5011,277 @@ def handle_html_to_image(files: list[Path], payload: dict[str, Any], output_dir:
 def compress_image_to_target_bytes(img: Image.Image, target_bytes: int, ext: str, output_path: Path) -> None:
     ext = ext.lower().replace(".", "")
     fmt = "JPEG" if ext in {"jpg", "jpeg"} else "PNG" if ext == "png" else "WEBP"
-    rgb_img = img.convert("RGB") if fmt == "JPEG" else img
 
     if fmt == "PNG":
-        rgb_img.save(str(output_path), "PNG", optimize=True)
-        if output_path.stat().st_size <= target_bytes:
-            return
-        new_w = max(1, int(rgb_img.width * 0.9))
-        new_h = max(1, int(rgb_img.height * 0.9))
-        rgb_img = rgb_img.resize((new_w, new_h), Image.LANCZOS)
-        rgb_img.save(str(output_path), "PNG", optimize=True)
+        base = img.convert("RGBA") if img.mode in {"RGBA", "LA", "P"} else img.convert("RGB")
+        best_data: bytes | None = None
+        # Progressive downscale loop to satisfy very low target sizes.
+        for scale_step in range(12):
+            scale = max(0.25, 1.0 - (scale_step * 0.07))
+            width = max(1, int(base.width * scale))
+            height = max(1, int(base.height * scale))
+            variant = base if scale_step == 0 else base.resize((width, height), Image.LANCZOS)
+            buffer = io.BytesIO()
+            variant.save(buffer, format="PNG", optimize=True, compress_level=9)
+            data = buffer.getvalue()
+            if len(data) <= target_bytes:
+                best_data = data
+                break
+            if best_data is None or len(data) < len(best_data):
+                best_data = data
+
+        output_path.write_bytes(best_data or b"")
         return
 
-    low, high = 10, 95
-    best_quality = high
-    for _ in range(10):
-        mid = (low + high) // 2
-        buf = io.BytesIO()
-        rgb_img.save(buf, fmt, quality=mid, optimize=True)
-        size = buf.tell()
-        if size <= target_bytes:
-            best_quality = mid
-            low = mid + 1
+    base = img.convert("RGB") if fmt in {"JPEG", "WEBP"} else img
+    best_data: bytes | None = None
+    best_gap = float("inf")
+
+    for scale_step in range(10):
+        scale = max(0.2, 1.0 - (scale_step * 0.08))
+        width = max(1, int(base.width * scale))
+        height = max(1, int(base.height * scale))
+        variant = base if scale_step == 0 else base.resize((width, height), Image.LANCZOS)
+
+        low, high = 4, 95
+        candidate_data: bytes | None = None
+
+        while low <= high:
+            mid = (low + high) // 2
+            buffer = io.BytesIO()
+            save_kwargs: dict[str, Any] = {
+                "quality": mid,
+                "optimize": True,
+            }
+            if fmt == "JPEG":
+                save_kwargs["progressive"] = True
+            if fmt == "WEBP":
+                save_kwargs["method"] = 6
+            variant.save(buffer, format=fmt, **save_kwargs)
+            data = buffer.getvalue()
+
+            if len(data) <= target_bytes:
+                candidate_data = data
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        if candidate_data is not None:
+            gap = target_bytes - len(candidate_data)
+            if gap < best_gap:
+                best_data = candidate_data
+                best_gap = gap
+            if best_gap <= max(256, int(target_bytes * 0.03)):
+                break
+        elif best_data is None:
+            # Keep the most compressed fallback for impossible targets.
+            buffer = io.BytesIO()
+            variant.save(buffer, format=fmt, quality=4, optimize=True)
+            fallback = buffer.getvalue()
+            if best_data is None or len(fallback) < len(best_data):
+                best_data = fallback
+
+    output_path.write_bytes(best_data or b"")
+
+
+def expand_image_to_target_bytes(img: Image.Image, target_bytes: int, ext: str, output_path: Path) -> None:
+    ext = ext.lower().replace(".", "")
+    fmt = "JPEG" if ext in {"jpg", "jpeg"} else "PNG" if ext == "png" else "WEBP"
+    base = img.convert("RGB") if fmt in {"JPEG", "WEBP"} else img.convert("RGBA")
+
+    best_over: bytes | None = None
+    best_under: bytes | None = None
+
+    for scale in (1.0, 1.08, 1.16, 1.24, 1.34, 1.46, 1.62, 1.82, 2.1, 2.45, 2.9, 3.5, 4.2, 5.0, 6.0):
+        width = max(1, int(base.width * scale))
+        height = max(1, int(base.height * scale))
+        variant = base if scale == 1.0 else base.resize((width, height), Image.LANCZOS)
+
+        if fmt == "PNG":
+            for level in (0, 1, 2, 3):
+                buffer = io.BytesIO()
+                variant.save(buffer, format="PNG", optimize=False, compress_level=level)
+                data = buffer.getvalue()
+                if len(data) >= target_bytes:
+                    if best_over is None or len(data) < len(best_over):
+                        best_over = data
+                else:
+                    if best_under is None or len(data) > len(best_under):
+                        best_under = data
         else:
-            high = mid - 1
+            for quality in (94, 97, 100):
+                buffer = io.BytesIO()
+                save_kwargs: dict[str, Any] = {"quality": quality, "optimize": False}
+                if fmt == "JPEG":
+                    save_kwargs["progressive"] = False
+                    save_kwargs["subsampling"] = 0
+                if fmt == "WEBP":
+                    save_kwargs["method"] = 0
+                variant.save(buffer, format=fmt, **save_kwargs)
+                data = buffer.getvalue()
+                if len(data) >= target_bytes:
+                    if best_over is None or len(data) < len(best_over):
+                        best_over = data
+                else:
+                    if best_under is None or len(data) > len(best_under):
+                        best_under = data
 
-    if low > high and best_quality == 95:
-        scale = (target_bytes / max(1, buf.tell())) ** 0.5
-        new_w = max(1, int(rgb_img.width * scale))
-        new_h = max(1, int(rgb_img.height * scale))
-        rgb_img = rgb_img.resize((new_w, new_h), Image.LANCZOS)
+        if best_over is not None:
+            break
 
-    buf = io.BytesIO()
-    rgb_img.save(buf, fmt, quality=best_quality, optimize=True)
-    output_path.write_bytes(buf.getvalue())
+    output_path.write_bytes(best_over or best_under or b"")
 
 
 def handle_reduce_image_size_in_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     target_kb = max(1, int(payload.get("target_kb", 100)))
     target_bytes = target_kb * 1024
+    strict = is_truthy(payload.get("strict", True))
 
     source = files[0]
+    source_size = source.stat().st_size
+    if source_size <= target_bytes and not is_truthy(payload.get("force", False)):
+        output = output_dir / f"reduced-{source.name}"
+        shutil.copy(source, output)
+        actual_kb = round(source_size / 1024, 1)
+        return create_single_file_result(
+            output,
+            f"Image already under target ({actual_kb} KB <= {target_kb} KB), returned original quality",
+            "image/*",
+        )
+
     img = Image.open(source)
     ext = source.suffix.lower().replace(".", "") or "jpg"
     output = output_dir / f"reduced-{source.stem}.{ext}"
     compress_image_to_target_bytes(img, target_bytes, ext, output)
 
+    # Tighten output when strict target mode is requested.
+    if strict and output.exists() and output.stat().st_size > target_bytes:
+        for tighten_ratio in (0.96, 0.92, 0.88, 0.84, 0.8, 0.75):
+            tightened_target = max(1024, int(target_bytes * tighten_ratio))
+            compress_image_to_target_bytes(img, tightened_target, ext, output)
+            if output.stat().st_size <= target_bytes:
+                break
+
     actual_kb = round(output.stat().st_size / 1024, 1)
-    return create_single_file_result(output, f"Image compressed to ~{actual_kb} KB (target: {target_kb} KB)", "image/*")
+    if output.stat().st_size <= target_bytes:
+        message = f"Image compressed to {actual_kb} KB (target: {target_kb} KB)"
+    else:
+        message = f"Closest possible compression: {actual_kb} KB (target: {target_kb} KB)"
+
+    return create_single_file_result(output, message, "image/*")
 
 
 def handle_compress_to_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     return handle_reduce_image_size_in_kb(files, payload, output_dir)
+
+
+def handle_increase_image_size_in_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    target_kb = max(1, int(payload.get("target_kb", 200)))
+    target_bytes = target_kb * 1024
+
+    source = files[0]
+    img = open_image_file(source)
+    ext = source.suffix.lower().replace(".", "") or "jpg"
+    output = output_dir / f"increased-{source.stem}.{ext}"
+    expand_image_to_target_bytes(img, target_bytes, ext, output)
+
+    actual_kb = round(output.stat().st_size / 1024, 1)
+    return create_single_file_result(output, f"Image expanded to ~{actual_kb} KB (target: {target_kb} KB)", "image/*")
+
+
+def handle_reduce_image_size_in_mb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    target_mb = max(0.01, float(payload.get("target_mb", 0.2)))
+    alias_payload = {**payload, "target_kb": int(round(target_mb * 1024))}
+    return handle_reduce_image_size_in_kb(files, alias_payload, output_dir)
+
+
+def handle_convert_image_from_mb_to_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_reduce_image_size_in_kb(files, payload, output_dir)
+
+
+def handle_convert_image_size_kb_to_mb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    target_mb = max(0.01, float(payload.get("target_mb", 1.0)))
+    alias_payload = {**payload, "target_kb": int(round(target_mb * 1024))}
+    return handle_increase_image_size_in_kb(files, alias_payload, output_dir)
+
+
+def handle_jpg_to_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_reduce_image_size_in_kb(files, payload, output_dir)
+
+
+def handle_jpeg_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    quality = max(10, min(100, int(payload.get("quality", 95))))
+    results: list[Path] = []
+
+    for source in files:
+        image = open_image_file(source, "RGB")
+        output = output_dir / f"{source.stem}.jpg"
+        image.save(output, format="JPEG", quality=quality, optimize=True)
+        results.append(output)
+
+    if len(results) == 1:
+        return create_single_file_result(results[0], "JPEG converted to JPG", "image/jpeg")
+    return create_zip_result(output_dir, "JPEG images converted to JPG", "jpeg-jpg")
+
+
+def handle_jpg_to_pdf_under_kb_factory(max_kb: int) -> ToolHandler:
+    def handler(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+        ensure_files(files, 1)
+        target_bytes = max_kb * 1024
+        strict = is_truthy(payload.get("strict", True))
+        max_rounds = max(4, min(16, int(payload.get("max_rounds", 12))))
+        min_per_image_kb = max(1, int(payload.get("min_per_image_kb", 2)))
+        min_per_image_budget = min_per_image_kb * 1024
+        work_dir = output_dir / f"under-{max_kb}-work"
+        work_dir.mkdir(parents=True, exist_ok=True)
+
+        sources = sorted(files, key=lambda path: path.name.lower())
+        per_image_budget = max(min_per_image_budget, int(target_bytes / max(1, len(sources))) - 8192)
+        compressed_paths: list[Path] = []
+        achieved_target = False
+
+        output = output_dir / f"jpg-to-pdf-under-{max_kb}kb.pdf"
+        for _ in range(max_rounds):
+            compressed_paths = []
+            for idx, source in enumerate(sources, start=1):
+                image = open_image_file(source, "RGB")
+                compressed = work_dir / f"img-{idx}.jpg"
+                compress_image_to_target_bytes(image, per_image_budget, "jpg", compressed)
+                compressed_paths.append(compressed)
+
+            image_paths_to_pdf(compressed_paths, output)
+            size = output.stat().st_size
+            if size <= target_bytes:
+                achieved_target = True
+                break
+
+            overshoot_ratio = max(1.05, size / max(1, target_bytes))
+            if strict:
+                next_budget = int((per_image_budget / overshoot_ratio) * 0.94)
+            else:
+                next_budget = int(per_image_budget * 0.84)
+
+            if next_budget >= per_image_budget:
+                next_budget = per_image_budget - 512
+
+            per_image_budget = max(min_per_image_budget, next_budget)
+
+        actual_kb = round(output.stat().st_size / 1024, 1)
+        if achieved_target:
+            status_message = f"JPG converted to PDF ({actual_kb} KB, target: {max_kb} KB)"
+        else:
+            status_message = f"Closest possible result generated ({actual_kb} KB, target: {max_kb} KB)"
+
+        return create_single_file_result(
+            output,
+            status_message,
+            "application/pdf",
+        )
+
+    return handler
 
 
 def handle_passport_photo_maker(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -4372,7 +5782,9 @@ HANDLERS: dict[str, ToolHandler] = {
     "remove-background": handle_remove_background,
     "blur-background": handle_blur_background,
     "blur-face": handle_blur_face,
+    "unblur-face": handle_unblur_face,
     "pixelate-face": handle_pixelate_face,
+    "remove-image-object": handle_remove_image_object,
     "add-text-image": handle_add_text_image,
     "add-logo-image": handle_add_logo_image,
     "join-images": handle_join_images,
@@ -4418,6 +5830,11 @@ HANDLERS: dict[str, ToolHandler] = {
     "html-to-image": handle_html_to_image,
     "reduce-image-size-in-kb": handle_reduce_image_size_in_kb,
     "compress-to-kb": handle_compress_to_kb,
+    "increase-image-size-in-kb": handle_increase_image_size_in_kb,
+    "reduce-image-size-in-mb": handle_reduce_image_size_in_mb,
+    "convert-image-from-mb-to-kb": handle_convert_image_from_mb_to_kb,
+    "convert-image-size-kb-to-mb": handle_convert_image_size_kb_to_mb,
+    "jpg-to-kb": handle_jpg_to_kb,
     "passport-photo-maker": handle_passport_photo_maker,
     "passport-size-photo": handle_passport_size_photo,
     "social-media-resize": handle_social_media_resize,
@@ -4426,6 +5843,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "resize-for-youtube": handle_resize_for_youtube,
     "instagram-grid": handle_instagram_grid,
     "convert-to-jpg": handle_convert_to_jpg_image,
+    "jpeg-to-jpg": handle_jpeg_to_jpg,
     "convert-from-jpg": handle_convert_from_jpg_image,
     "heic-to-jpg": handle_heic_to_jpg,
     "webp-to-jpg": handle_webp_to_jpg,
@@ -4442,6 +5860,19 @@ HANDLERS: dict[str, ToolHandler] = {
     "freehand-crop": handle_freehand_crop,
     "crop-png": handle_crop_png,
     "image-splitter": handle_image_splitter,
+    "resize-image-pixel": handle_resize_image_pixel,
+    "resize-signature": handle_resize_signature,
+    "resize-image-to-3.5cmx4.5cm": handle_resize_image_to_3_5cmx4_5cm,
+    "resize-image-to-6cmx2cm": handle_resize_image_to_6cmx2cm,
+    "resize-signature-to-50mmx20mm": handle_resize_signature_to_50mmx20mm,
+    "resize-image-to-35mmx45mm": handle_resize_image_to_35mmx45mm,
+    "resize-image-to-2x2": handle_resize_image_to_2x2,
+    "resize-image-to-3x4": handle_resize_image_to_3x4,
+    "resize-image-to-4x6": handle_resize_image_to_4x6,
+    "resize-image-to-600x600-pixel": handle_resize_image_to_600x600_pixel,
+    "resize-image-for-whatsapp-dp": handle_resize_image_for_whatsapp_dp,
+    "resize-image-for-youtube-banner": handle_resize_image_for_youtube_banner,
+    "resize-image-to-a4-size": handle_resize_image_to_a4_size,
     "a4-size-resize": handle_a4_size_resize,
     "check-dpi": handle_check_dpi,
     "color-code-from-image": handle_color_code_from_image,
@@ -4449,10 +5880,22 @@ HANDLERS: dict[str, ToolHandler] = {
     "remove-image-metadata": handle_remove_image_metadata,
     "compress-to-5kb": handle_compress_specific_kb(5),
     "compress-to-10kb": handle_compress_specific_kb(10),
+    "compress-to-15kb": handle_compress_specific_kb(15),
     "compress-to-20kb": handle_compress_specific_kb(20),
+    "compress-to-25kb": handle_compress_specific_kb(25),
+    "compress-to-30kb": handle_compress_specific_kb(30),
+    "compress-to-40kb": handle_compress_specific_kb(40),
     "compress-to-50kb": handle_compress_specific_kb(50),
     "compress-to-100kb": handle_compress_specific_kb(100),
+    "compress-to-150kb": handle_compress_specific_kb(150),
     "compress-to-200kb": handle_compress_specific_kb(200),
+    "compress-to-300kb": handle_compress_specific_kb(300),
     "compress-to-500kb": handle_compress_specific_kb(500),
     "compress-to-1mb": handle_compress_specific_kb(1024),
+    "compress-to-2mb": handle_compress_specific_kb(2048),
+    "jpg-to-pdf-under-50kb": handle_jpg_to_pdf_under_kb_factory(50),
+    "jpg-to-pdf-under-100kb": handle_jpg_to_pdf_under_kb_factory(100),
+    "jpeg-to-pdf-under-200kb": handle_jpg_to_pdf_under_kb_factory(200),
+    "jpg-to-pdf-under-300kb": handle_jpg_to_pdf_under_kb_factory(300),
+    "jpg-to-pdf-under-500kb": handle_jpg_to_pdf_under_kb_factory(500),
 }

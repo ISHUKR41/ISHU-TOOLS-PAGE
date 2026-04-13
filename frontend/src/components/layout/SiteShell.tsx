@@ -18,7 +18,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark'>IT</span>
             <span>
               <strong>ISHU TOOLS</strong>
-              <small>193 free PDF, Image &amp; AI tools</small>
+              <small>260+ free PDF, Image &amp; AI tools</small>
             </span>
           </Link>
 
@@ -135,7 +135,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
 
             <Link to='/' className='mobile-all-tools-btn' onClick={() => setMobileOpen(false)}>
               <Settings size={16} />
-              Browse All 193 Tools
+              Browse All 228+ Tools
             </Link>
           </div>
         )}
@@ -148,7 +148,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark sm'>IT</span>
             <div>
               <strong>ISHU TOOLS</strong>
-              <p>Professional PDF, Image &amp; Text processing — 193 tools, all free.</p>
+              <p>Professional PDF, Image &amp; Text processing — 260+ tools, all free.</p>
             </div>
           </div>
           <div className='footer-links'>

@@ -4,10 +4,10 @@ import { ArrowLeft, Download, LoaderCircle, Upload } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-import { fetchTool, fetchTools, runTool } from '../../api/toolsApi'
+import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../api/toolsApi'
 import SiteShell from '../../components/layout/SiteShell'
 import ToolIcon from '../../components/tools/ToolIcon'
-import type { ToolDefinition, ToolRunJsonResult } from '../../types/tools'
+import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../../types/tools'
 import { applyDocumentBranding, getCategoryTheme, getToolAccept } from '../../lib/toolPresentation'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
@@ -27,6 +27,7 @@ export default function ToolPage() {
   const [relatedTools, setRelatedTools] = useState<ToolDefinition[]>([])
   const [toolLoading, setToolLoading] = useState(true)
   const [toolError, setToolError] = useState<string | null>(null)
+  const [runtimeCapabilities, setRuntimeCapabilities] = useState<RuntimeCapabilities | null>(null)
 
   const [files, setFiles] = useState<File[]>([])
   const [payloadState, setPayloadState] = useState<Record<string, string>>({})
@@ -45,10 +46,14 @@ export default function ToolPage() {
     async function load() {
       try {
         setToolLoading(true)
-        const detail = await fetchTool(currentSlug)
+        const [detail, capabilities] = await Promise.all([
+          fetchTool(currentSlug),
+          fetchRuntimeCapabilities().catch(() => null),
+        ])
         if (!mounted) return
 
         setTool(detail)
+        setRuntimeCapabilities(capabilities)
         setToolError(null)
         applyDocumentBranding(
           `${detail.title} | ISHU TOOLS`,
@@ -106,7 +111,7 @@ export default function ToolPage() {
     setRunMessage(null)
     setJsonResult(null)
 
-    if ((tool.input_kind === 'files' || tool.input_kind === 'mixed') && files.length === 0) {
+    if (tool.input_kind === 'files' && files.length === 0) {
       setRunError('Please upload the required file before running this tool.')
       return
     }
@@ -213,7 +218,10 @@ export default function ToolPage() {
               <form className='tool-form' onSubmit={handleSubmit}>
                 {(tool.input_kind === 'files' || tool.input_kind === 'mixed') && (
                   <label className='field-block'>
-                    <span>Upload source file{tool.accepts_multiple ? 's' : ''}</span>
+                    <span>
+                      Upload source file{tool.accepts_multiple ? 's' : ''}
+                      {tool.input_kind === 'mixed' ? ' (optional for text/url mode)' : ''}
+                    </span>
                     <div className='upload-shell'>
                       <Upload size={18} />
                       <input
@@ -227,9 +235,11 @@ export default function ToolPage() {
                       />
                     </div>
                     <small className='field-hint'>
-                      {tool.accepts_multiple
-                        ? 'You can upload multiple files for this workflow.'
-                        : 'Upload one source file to continue.'}
+                      {tool.input_kind === 'mixed'
+                        ? 'Upload file(s) only when needed. You can also run this tool using form fields alone.'
+                        : tool.accepts_multiple
+                          ? 'You can upload multiple files for this workflow.'
+                          : 'Upload one source file to continue.'}
                     </small>
                   </label>
                 )}
@@ -353,6 +363,7 @@ export default function ToolPage() {
             downloadUrl={downloadUrl}
             downloadName={downloadName}
             jsonResult={jsonResult?.data || null}
+            runtimeCapabilities={runtimeCapabilities}
           />
         </div>
       </div>

@@ -21,6 +21,20 @@ export interface ToolRunJsonResult {
   data?: Record<string, unknown>
 }
 
+export interface RuntimeCapabilities {
+  status: string
+  capabilities: {
+    python_version: string
+    libreoffice: boolean
+    rembg: boolean
+    rapidocr: boolean
+    pillow_heif: boolean
+    wkhtmltopdf: boolean
+    ebook_convert: boolean
+  }
+  notes: string[]
+}
+
 export type ToolRunResponse =
   | {
       type: 'json'

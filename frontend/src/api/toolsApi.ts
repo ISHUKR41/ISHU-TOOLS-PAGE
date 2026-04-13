@@ -1,4 +1,4 @@
-import type { ToolCategory, ToolDefinition, ToolRunResponse } from '../types/tools'
+import type { RuntimeCapabilities, ToolCategory, ToolDefinition, ToolRunResponse } from '../types/tools'
 import { API_BASE_URL } from './config'
 
 function parseFilename(contentDisposition: string | null, fallback: string): string {
@@ -42,6 +42,12 @@ export async function fetchTools(params?: {
 
 export async function fetchTool(slug: string): Promise<ToolDefinition> {
   const res = await fetch(`${API_BASE_URL}/api/tools/${slug}`)
+  if (!res.ok) throw await readError(res)
+  return res.json()
+}
+
+export async function fetchRuntimeCapabilities(): Promise<RuntimeCapabilities> {
+  const res = await fetch(`${API_BASE_URL}/api/runtime-capabilities`)
   if (!res.ok) throw await readError(res)
   return res.json()
 }

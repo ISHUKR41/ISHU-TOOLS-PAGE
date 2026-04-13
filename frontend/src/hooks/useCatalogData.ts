@@ -3,6 +3,48 @@ import { useEffect, useState } from 'react'
 import { checkHealth, fetchCategories, fetchTools } from '../api/toolsApi'
 import type { ToolCategory, ToolDefinition } from '../types/tools'
 
+const CATALOG_CACHE_KEY = 'ishu-tools:catalog:v1'
+const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000
+
+type CatalogCache = {
+  timestamp: number
+  categories: ToolCategory[]
+  tools: ToolDefinition[]
+}
+
+function readCatalogCache(): CatalogCache | null {
+  try {
+    const raw = sessionStorage.getItem(CATALOG_CACHE_KEY)
+    if (!raw) return null
+
+    const parsed = JSON.parse(raw) as CatalogCache
+    if (!parsed?.timestamp || !Array.isArray(parsed.categories) || !Array.isArray(parsed.tools)) {
+      return null
+    }
+
+    if (Date.now() - parsed.timestamp > CATALOG_CACHE_TTL_MS) {
+      return null
+    }
+
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+function writeCatalogCache(categories: ToolCategory[], tools: ToolDefinition[]) {
+  try {
+    const payload: CatalogCache = {
+      timestamp: Date.now(),
+      categories,
+      tools,
+    }
+    sessionStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify(payload))
+  } catch {
+    // Ignore cache write failures in restricted/private contexts.
+  }
+}
+
 export function useCatalogData() {
   const [categories, setCategories] = useState<ToolCategory[]>([])
   const [tools, setTools] = useState<ToolDefinition[]>([])
@@ -12,19 +54,29 @@ export function useCatalogData() {
 
   useEffect(() => {
     let mounted = true
+    const cached = readCatalogCache()
+
+    if (cached) {
+      setCategories(cached.categories)
+      setTools(cached.tools)
+      setLoading(false)
+    }
 
     async function loadCatalog() {
       try {
-        setLoading(true)
+        if (!cached) setLoading(true)
         const [categoryRecords, toolRecords] = await Promise.all([fetchCategories(), fetchTools()])
         if (!mounted) return
 
         setCategories(categoryRecords)
         setTools(toolRecords)
         setError(null)
+        writeCatalogCache(categoryRecords, toolRecords)
       } catch (err) {
         if (!mounted) return
-        setError(err instanceof Error ? err.message : 'Unable to load tools')
+        if (!cached) {
+          setError(err instanceof Error ? err.message : 'Unable to load tools')
+        }
       } finally {
         if (mounted) setLoading(false)
       }

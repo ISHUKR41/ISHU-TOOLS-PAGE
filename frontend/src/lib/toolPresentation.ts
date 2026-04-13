@@ -87,11 +87,29 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(249, 115, 255, 0.2)',
     label: 'AI Tools',
   },
-  utility: {
+  'utility': {
     accent: '#ffd166',
     surface: 'rgba(35, 28, 8, 0.82)',
     glow: 'rgba(255, 209, 102, 0.2)',
     label: 'Utility',
+  },
+  'pdf-insights': {
+    accent: '#fca5a5',
+    surface: 'rgba(34, 14, 14, 0.84)',
+    glow: 'rgba(252, 165, 165, 0.2)',
+    label: 'PDF Insights',
+  },
+  'text-cleanup': {
+    accent: '#93c5fd',
+    surface: 'rgba(12, 21, 38, 0.84)',
+    glow: 'rgba(147, 197, 253, 0.2)',
+    label: 'Text Cleanup',
+  },
+  'batch-automation': {
+    accent: '#86efac',
+    surface: 'rgba(12, 30, 20, 0.84)',
+    glow: 'rgba(134, 239, 172, 0.2)',
+    label: 'Batch Automation',
   },
   'page-ops': {
     accent: '#2dd4bf',
@@ -229,20 +247,25 @@ const IMAGE_INPUT_SLUGS = new Set([
   'jpg-to-text',
   'png-to-text',
   'remove-background',
+  'remove-image-object',
   'blur-background',
   'blur-face',
+  'unblur-face',
   'pixelate-face',
   'add-text-image',
   'add-logo-image',
   'join-images',
   'split-image',
+  'image-splitter',
   'circle-crop-image',
   'square-crop-image',
   'image-color-picker',
   'motion-blur-image',
   'tiff-to-pdf',
   'jpg-to-png',
+  'jpeg-to-png',
   'png-to-jpg',
+  'png-to-jpeg',
   'image-to-webp',
   'flip-image',
   'add-border-image',
@@ -250,9 +273,50 @@ const IMAGE_INPUT_SLUGS = new Set([
   'image-collage',
   'check-image-dpi',
   'convert-dpi',
+  'resize-image-pixel',
+  'resize-signature',
+  'resize-image-to-3.5cmx4.5cm',
+  'resize-image-to-6cmx2cm',
+  'resize-signature-to-50mmx20mm',
+  'resize-image-to-35mmx45mm',
+  'resize-image-to-2x2',
+  'resize-image-to-3x4',
+  'resize-image-to-4x6',
+  'resize-image-to-600x600-pixel',
+  'resize-image-for-whatsapp-dp',
+  'resize-image-for-youtube-banner',
+  'resize-image-to-a4-size',
   'resize-image-in-cm',
   'resize-image-in-mm',
   'resize-image-in-inch',
+  'increase-image-size-in-kb',
+  'reduce-image-size-in-kb',
+  'compress-to-kb',
+  'compress-to-5kb',
+  'compress-to-10kb',
+  'compress-to-20kb',
+  'compress-to-50kb',
+  'compress-to-100kb',
+  'compress-to-200kb',
+  'compress-to-500kb',
+  'compress-to-1mb',
+  'reduce-image-size-in-mb',
+  'convert-image-from-mb-to-kb',
+  'convert-image-size-kb-to-mb',
+  'jpg-to-kb',
+  'compress-to-15kb',
+  'compress-to-25kb',
+  'compress-to-30kb',
+  'compress-to-40kb',
+  'compress-to-150kb',
+  'compress-to-300kb',
+  'compress-to-2mb',
+  'jpeg-to-jpg',
+  'jpg-to-pdf-under-50kb',
+  'jpg-to-pdf-under-100kb',
+  'jpeg-to-pdf-under-200kb',
+  'jpg-to-pdf-under-300kb',
+  'jpg-to-pdf-under-500kb',
   'censor-photo',
   'generate-signature',
 ])
@@ -274,6 +338,7 @@ const CBZ_INPUT_SLUGS = new Set(['cbz-to-pdf'])
 const EBOOK_INPUT_SLUGS = new Set(['ebook-to-pdf'])
 const GENERIC_PDF_INPUT_SLUGS = new Set(['convert-to-pdf', 'pdf-converter'])
 const GENERIC_METADATA_INPUT_SLUGS = new Set(['edit-metadata', 'extract-metadata'])
+const IMAGE_METADATA_INPUT_SLUGS = new Set(['remove-image-metadata'])
 
 export function getCategoryTheme(categoryId: string): CategoryTheme {
   return CATEGORY_THEME_MAP[categoryId] || DEFAULT_THEME
@@ -297,6 +362,9 @@ export function getToolAccept(slug: string): string | undefined {
   }
   if (GENERIC_METADATA_INPUT_SLUGS.has(slug)) {
     return '.pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff,.heic,.heif'
+  }
+  if (IMAGE_METADATA_INPUT_SLUGS.has(slug)) {
+    return '.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff,.heic,.heif'
   }
   if (MIXED_PDF_IMAGE_INPUT_SLUGS.has(slug)) {
     return '.pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff'

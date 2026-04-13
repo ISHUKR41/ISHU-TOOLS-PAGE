@@ -1,4 +1,7 @@
 from pathlib import Path
+import importlib.util
+import platform
+import shutil
 from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -7,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from .models import ToolDefinition
 from .registry import CATEGORIES, TOOLS
-from .tools.handlers import HANDLERS, create_job_workspace, parse_payload, save_uploads
+from .tools.handlers import HANDLERS, create_job_workspace, get_soffice_binary, parse_payload, save_uploads
 
 app = FastAPI(
     title="Ishu Tools API",
@@ -18,7 +21,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition", "X-Tool-Message", "X-Job-Id"],
@@ -35,6 +38,31 @@ def get_tool(slug: str) -> ToolDefinition:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+def _is_module_available(module_name: str) -> bool:
+    return importlib.util.find_spec(module_name) is not None
+
+
+@app.get("/api/runtime-capabilities")
+def runtime_capabilities() -> dict:
+    capabilities = {
+        "python_version": platform.python_version(),
+        "libreoffice": bool(get_soffice_binary()),
+        "rembg": _is_module_available("rembg"),
+        "rapidocr": _is_module_available("rapidocr_onnxruntime"),
+        "pillow_heif": _is_module_available("pillow_heif"),
+        "wkhtmltopdf": shutil.which("wkhtmltopdf") is not None,
+        "ebook_convert": shutil.which("ebook-convert") is not None,
+    }
+    return {
+        "status": "ok",
+        "capabilities": capabilities,
+        "notes": [
+            "Some advanced conversions rely on optional runtime binaries.",
+            "If a capability is unavailable, related tools may return guidance for installation.",
+        ],
+    }
 
 
 @app.get("/api/categories")

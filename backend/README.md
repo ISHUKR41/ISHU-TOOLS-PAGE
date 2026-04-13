@@ -15,6 +15,18 @@ FastAPI backend with Python-based PDF, image, and text processing tools.
 
 Backend URL: http://localhost:8000
 
+## Smoke Validation
+
+Run the backend smoke matrix to validate a broad set of PDF, image, text, and conversion handlers:
+
+python scripts/smoke_tool_matrix.py
+
+## Runtime Capability Check
+
+Use this endpoint to verify optional binaries/modules available on the running server:
+
+GET /api/runtime-capabilities
+
 ## Compatibility
 
 - On Python 3.14+, `rembg` is skipped automatically because of upstream Pillow constraints.
