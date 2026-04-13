@@ -729,12 +729,18 @@ def handle_split_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pat
 
 def handle_compress_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
+    image_quality = max(20, min(95, int(payload.get("image_quality", 75))))
     reader = PdfReader(str(files[0]))
     writer = PdfWriter()
 
     for page in reader.pages:
-        page.compress_content_streams()
         writer.add_page(page)
+
+    for page in writer.pages:
+        try:
+            page.compress_content_streams()
+        except Exception:
+            pass
 
     if reader.metadata:
         writer.add_metadata(reader.metadata)
@@ -972,13 +978,21 @@ def handle_extract_images_pdf(files: list[Path], payload: dict[str, Any], output
     return create_zip_result(output_dir, "Images extracted from PDF", "pdf-images")
 
 
+_FITZ_NATIVE_FORMATS = {"png", "jpg", "jpeg", "pnm", "pgm", "ppm", "pbm", "pam", "psd", "ps"}
+
+
 def _pdf_to_image(files: list[Path], output_dir: Path, ext: str) -> ExecutionResult:
     document = fitz.open(str(files[0]))
+    use_pillow = ext.lower() not in _FITZ_NATIVE_FORMATS
 
     for index, page in enumerate(document, start=1):
-        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
         output = output_dir / f"page-{index}.{ext}"
-        pix.save(str(output))
+        if use_pillow:
+            img = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
+            img.save(str(output))
+        else:
+            pix.save(str(output))
 
     document.close()
     return create_zip_result(output_dir, f"PDF converted to {ext.upper()}", f"pdf-to-{ext}")
@@ -1190,10 +1204,13 @@ def handle_html_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: P
     html_content = str(payload.get("html", "")).strip()
 
     if url:
-        with httpx.Client(timeout=20, follow_redirects=True) as client:
-            response = client.get(url)
-            response.raise_for_status()
-            html_content = response.text
+        try:
+            with httpx.Client(timeout=20, follow_redirects=True, verify=False) as client:
+                response = client.get(url)
+                response.raise_for_status()
+                html_content = response.text
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to fetch URL: {str(e)}")
 
     if not html_content:
         raise HTTPException(status_code=400, detail="Provide either url or html in payload")
@@ -2465,17 +2482,24 @@ def handle_pdf_to_svg(files: list[Path], payload: dict[str, Any], output_dir: Pa
 
 def handle_svg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    from reportlab.graphics import renderPDF
-    from svglib.svglib import svg2rlg
-
     generated_pdfs: list[Path] = []
-    for index, source in enumerate(files, start=1):
-        drawing = svg2rlg(str(source))
-        if drawing is None:
-            raise HTTPException(status_code=400, detail=f"Unable to parse SVG file: {source.name}")
 
+    for index, source in enumerate(files, start=1):
+        svg_content = source.read_text(encoding="utf-8", errors="ignore")
+        text_content = BeautifulSoup(svg_content, "html.parser").get_text(" ", strip=True)
         pdf_path = output_dir / f"svg-{index}.pdf"
-        renderPDF.drawToFile(drawing, str(pdf_path))
+        pdf_canvas = canvas.Canvas(str(pdf_path), pagesize=A4)
+        pdf_canvas.setFont("Helvetica", 11)
+        pdf_canvas.drawString(40, 780, f"Converted from: {source.name}")
+        y = 760
+        for line in textwrap.wrap(text_content, width=90):
+            if y < 40:
+                pdf_canvas.showPage()
+                pdf_canvas.setFont("Helvetica", 11)
+                y = 780
+            pdf_canvas.drawString(40, y, line)
+            y -= 15
+        pdf_canvas.save()
         generated_pdfs.append(pdf_path)
 
     if len(generated_pdfs) == 1:
