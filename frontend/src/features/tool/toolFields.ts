@@ -787,6 +787,50 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       placeholder: '[{"name":"ishu","score":95}]',
     },
   ],
+  'html-to-image': [
+    {
+      name: 'url',
+      label: 'Page URL',
+      type: 'text',
+      placeholder: 'https://example.com',
+    },
+    {
+      name: 'html',
+      label: 'Raw HTML (optional)',
+      type: 'textarea',
+      placeholder: '<h1>Hello World</h1>',
+    },
+    {
+      name: 'format',
+      label: 'Output Format',
+      type: 'select',
+      defaultValue: 'jpg',
+      options: [
+        { label: 'JPG', value: 'jpg' },
+        { label: 'PNG', value: 'png' },
+      ],
+    },
+  ],
+  'pdf-to-mobi': [
+    {
+      name: 'title',
+      label: 'Book Title',
+      type: 'text',
+      placeholder: 'My eBook Title',
+    },
+  ],
+  'cbr-to-pdf': [],
+  'djvu-to-pdf': [],
+  'ai-to-pdf': [],
+  'mobi-to-pdf': [],
+  'xps-to-pdf': [],
+  'wps-to-pdf': [],
+  'dwg-to-pdf': [],
+  'pub-to-pdf': [],
+  'hwp-to-pdf': [],
+  'chm-to-pdf': [],
+  'dxf-to-pdf': [],
+  'pages-to-pdf': [],
 }
 
 export function getToolFields(slug: string): ToolField[] {

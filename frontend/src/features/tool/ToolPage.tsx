@@ -315,11 +315,34 @@ export default function ToolPage() {
               </section>
             )}
 
-            {(runMessage || runError || jsonResult) && (
+            {(runMessage || runError || jsonResult || downloadUrl) && (
               <section className='result-card'>
-                {runMessage && <p className='status-text success'>{runMessage}</p>}
                 {runError && <p className='status-text error'>{runError}</p>}
-                {jsonResult && <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>}
+                {runMessage && !runError && (
+                  <p className='status-text success'>{runMessage}</p>
+                )}
+                {downloadUrl && downloadName && (
+                  <a href={downloadUrl} download={downloadName} className='download-link prominent'>
+                    <Download size={18} />
+                    Download {downloadName}
+                  </a>
+                )}
+                {jsonResult && (() => {
+                  const d = jsonResult.data || {}
+                  const textFields = ['text', 'content', 'answer', 'summary', 'translated_text', 'result']
+                  const found = textFields.find((k) => d[k])
+                  return (
+                    <div className='json-result-block'>
+                      {found && (
+                        <p className='json-text-result'>{String(d[found])}</p>
+                      )}
+                      <details className='json-details'>
+                        <summary>Raw output</summary>
+                        <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>
+                      </details>
+                    </div>
+                  )
+                })()}
               </section>
             )}
           </div>

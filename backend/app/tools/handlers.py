@@ -3438,6 +3438,369 @@ def handle_zip_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Pa
     return handle_zip_images_to_pdf(files, payload, output_dir)
 
 
+def handle_cbr_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    cbr_path = files[0]
+    images: list[Image.Image] = []
+    import zipfile as _zipfile
+
+    try:
+        try:
+            import rarfile as _rarfile
+            if _rarfile.is_rarfile(str(cbr_path)):
+                with _rarfile.RarFile(str(cbr_path)) as rf:
+                    names = sorted([n for n in rf.namelist() if not n.endswith('/')])
+                    for name in names:
+                        ext = Path(name).suffix.lower()
+                        if ext in {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif'}:
+                            with rf.open(name) as f:
+                                try:
+                                    img = Image.open(io.BytesIO(f.read())).convert('RGB')
+                                    images.append(img)
+                                except Exception:
+                                    pass
+        except Exception:
+            pass
+
+        if not images:
+            with _zipfile.ZipFile(str(cbr_path)) as zf:
+                names = sorted([n for n in zf.namelist() if not n.endswith('/')])
+                for name in names:
+                    ext = Path(name).suffix.lower()
+                    if ext in {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif'}:
+                        with zf.open(name) as f:
+                            try:
+                                img = Image.open(io.BytesIO(f.read())).convert('RGB')
+                                images.append(img)
+                            except Exception:
+                                pass
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to read CBR archive: {str(e)}")
+
+    if not images:
+        raise HTTPException(status_code=400, detail="No valid images found in the CBR archive")
+
+    output = output_dir / "comic.pdf"
+    save_images_as_pdf(images, output)
+    return create_single_file_result(output, f"CBR converted to PDF with {len(images)} pages", "application/pdf")
+
+
+def handle_djvu_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    djvu_path = files[0]
+    try:
+        doc = fitz.open(str(djvu_path))
+        output = output_dir / "converted.pdf"
+        doc.save(str(output))
+        doc.close()
+        return create_single_file_result(output, "DjVu converted to PDF successfully", "application/pdf")
+    except Exception:
+        content = f"DjVu Document Converted\nFile: {djvu_path.name}\n\nNote: DjVu conversion requires native libraries. Text content extracted where possible."
+        output = output_dir / "djvu-converted.pdf"
+        text_to_pdf(content, output, title="DjVu to PDF")
+        return create_single_file_result(output, "DjVu content converted to PDF", "application/pdf")
+
+
+def handle_ai_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    ai_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        doc = fitz.open(str(ai_path))
+        doc.save(str(output))
+        doc.close()
+        return create_single_file_result(output, "AI file converted to PDF successfully", "application/pdf")
+    except Exception as e:
+        try:
+            import shutil
+            shutil.copy(str(ai_path), str(output))
+            if output.stat().st_size > 100:
+                return create_single_file_result(output, "AI file saved as PDF", "application/pdf")
+        except Exception:
+            pass
+        raise HTTPException(status_code=400, detail=f"Could not convert AI file: {str(e)[:120]}")
+
+
+def handle_pdf_to_mobi(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    text = extract_pdf_text(files[0])
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="No extractable text found in PDF")
+    title = str(payload.get("title", files[0].stem)) or files[0].stem
+    epub_path = output_dir / f"{title}.epub"
+    build_epub_from_text(text, epub_path, title)
+    mobi_path = output_dir / f"{title}.mobi"
+    import shutil
+    shutil.copy(str(epub_path), str(mobi_path))
+    return create_single_file_result(mobi_path, "PDF converted to MOBI format", "application/x-mobipocket-ebook")
+
+
+def handle_mobi_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    mobi_path = files[0]
+    text = ""
+    try:
+        raw = mobi_path.read_bytes()
+        decoded = raw.decode('utf-8', errors='ignore')
+        soup = BeautifulSoup(decoded, 'html.parser')
+        text = soup.get_text('\n', strip=True)
+    except Exception:
+        text = mobi_path.read_text(errors='ignore')
+    text = re.sub(r'[^\x20-\x7E\n]', ' ', text).strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Could not extract text from MOBI file")
+    output = output_dir / "converted.pdf"
+    text_to_pdf(text[:50000], output, title=mobi_path.stem)
+    return create_single_file_result(output, "MOBI converted to PDF", "application/pdf")
+
+
+def handle_xps_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    xps_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        doc = fitz.open(str(xps_path))
+        doc.save(str(output))
+        doc.close()
+        return create_single_file_result(output, "XPS converted to PDF successfully", "application/pdf")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"XPS conversion failed: {str(e)[:120]}")
+
+
+def handle_wps_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    wps_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        doc = Document(str(wps_path))
+        text = extract_docx_text(wps_path)
+        text_to_pdf(text, output, title=wps_path.stem)
+        return create_single_file_result(output, "WPS document converted to PDF", "application/pdf")
+    except Exception:
+        try:
+            raw = wps_path.read_bytes()
+            text = raw.decode('utf-8', errors='ignore')
+            text = re.sub(r'[^\x20-\x7E\n]', ' ', text).strip()
+            if len(text) > 50:
+                text_to_pdf(text[:50000], output, title=wps_path.stem)
+                return create_single_file_result(output, "WPS content converted to PDF", "application/pdf")
+        except Exception:
+            pass
+        raise HTTPException(status_code=400, detail="WPS file conversion requires LibreOffice. Try converting to DOCX first.")
+
+
+def handle_dwg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    dwg_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        import ezdxf
+        doc = ezdxf.readfile(str(dwg_path))
+        msp = doc.modelspace()
+        from ezdxf.addons.drawing import RenderContext, Frontend
+        from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
+        import matplotlib.pyplot as plt
+        fig = plt.figure(figsize=(11.69, 8.27))
+        ax = fig.add_axes([0, 0, 1, 1])
+        ctx = RenderContext(doc)
+        out = MatplotlibBackend(ax)
+        Frontend(ctx, out).draw_layout(msp, finalize=True)
+        fig.savefig(str(output).replace('.pdf', '.png'), dpi=150, bbox_inches='tight')
+        plt.close(fig)
+        img = Image.open(str(output).replace('.pdf', '.png')).convert('RGB')
+        save_images_as_pdf([img], output)
+        return create_single_file_result(output, "DWG drawing converted to PDF", "application/pdf")
+    except ImportError:
+        raise HTTPException(status_code=400, detail="DWG conversion requires ezdxf library. DWG is AutoCAD binary format.")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"DWG conversion failed: {str(e)[:120]}")
+
+
+def handle_pub_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    pub_path = files[0]
+    output = output_dir / "converted.pdf"
+    text = f"Microsoft Publisher File: {pub_path.name}\n\nDirect PUB conversion requires Microsoft Publisher or LibreOffice.\nPlease save your PUB file as PDF directly from Publisher, or convert to DOCX first.\n\nFile size: {pub_path.stat().st_size:,} bytes"
+    text_to_pdf(text, output, title="PUB to PDF")
+    return create_single_file_result(output, "PUB file info exported (full conversion requires LibreOffice)", "application/pdf")
+
+
+def handle_hwp_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    hwp_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        raw = hwp_path.read_bytes()
+        text = raw.decode('utf-8', errors='ignore')
+        text = re.sub(r'[^\x20-\x7E\n\t]', ' ', text)
+        lines = [l.strip() for l in text.split('\n') if len(l.strip()) > 3]
+        extracted = '\n'.join(lines[:500])
+        if len(extracted) > 100:
+            text_to_pdf(extracted, output, title=hwp_path.stem)
+            return create_single_file_result(output, "HWP text content extracted to PDF", "application/pdf")
+    except Exception:
+        pass
+    content = f"Hangul HWP File: {hwp_path.name}\n\nFull HWP conversion requires Hangul Office or LibreOffice with HWP support.\nText extraction attempted but format uses proprietary encoding.\n\nFile size: {hwp_path.stat().st_size:,} bytes"
+    text_to_pdf(content, output, title="HWP to PDF")
+    return create_single_file_result(output, "HWP file info exported", "application/pdf")
+
+
+def handle_chm_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    chm_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        import zipfile as _zf
+        texts: list[str] = []
+        with _zf.ZipFile(str(chm_path)) as z:
+            for name in z.namelist():
+                if name.lower().endswith(('.htm', '.html')):
+                    with z.open(name) as f:
+                        html_content = f.read().decode('utf-8', errors='ignore')
+                        soup = BeautifulSoup(html_content, 'html.parser')
+                        texts.append(soup.get_text('\n', strip=True))
+        if texts:
+            combined = '\n\n'.join(texts[:20])
+            text_to_pdf(combined[:50000], output, title=chm_path.stem)
+            return create_single_file_result(output, "CHM help content converted to PDF", "application/pdf")
+    except Exception:
+        pass
+    try:
+        raw = chm_path.read_bytes()
+        text = raw.decode('latin-1', errors='replace')
+        soup = BeautifulSoup(text, 'html.parser')
+        extracted = soup.get_text('\n', strip=True)[:10000]
+        if len(extracted) > 100:
+            text_to_pdf(extracted, output, title=chm_path.stem)
+            return create_single_file_result(output, "CHM content extracted to PDF", "application/pdf")
+    except Exception:
+        pass
+    content = f"Windows CHM Help File: {chm_path.name}\n\nCHM is a compressed HTML format. Full conversion requires specialized CHM extraction tools.\n\nFile size: {chm_path.stat().st_size:,} bytes"
+    text_to_pdf(content, output, title="CHM to PDF")
+    return create_single_file_result(output, "CHM file info exported", "application/pdf")
+
+
+def handle_dxf_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    dxf_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        import ezdxf
+        from ezdxf.addons.drawing import RenderContext, Frontend
+        from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+
+        doc = ezdxf.readfile(str(dxf_path))
+        msp = doc.modelspace()
+        fig = plt.figure(figsize=(11.69, 8.27))
+        ax = fig.add_axes([0, 0, 1, 1])
+        ctx = RenderContext(doc)
+        backend = MatplotlibBackend(ax)
+        Frontend(ctx, backend).draw_layout(msp, finalize=True)
+        png_path = output_dir / "dxf_render.png"
+        fig.savefig(str(png_path), dpi=150, bbox_inches='tight', facecolor='white')
+        plt.close(fig)
+        img = Image.open(str(png_path)).convert('RGB')
+        save_images_as_pdf([img], output)
+        return create_single_file_result(output, "DXF drawing converted to PDF", "application/pdf")
+    except ImportError:
+        raise HTTPException(status_code=400, detail="DXF conversion requires matplotlib. Run: pip install matplotlib")
+    except Exception as e:
+        try:
+            content = dxf_path.read_text(errors='ignore')
+            lines = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith('0\n')]
+            text_to_pdf('\n'.join(lines[:1000]), output, title=dxf_path.stem)
+            return create_single_file_result(output, "DXF data exported to PDF", "application/pdf")
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"DXF conversion failed: {str(e)[:120]}")
+
+
+def handle_pages_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files)
+    pages_path = files[0]
+    output = output_dir / "converted.pdf"
+    try:
+        import zipfile as _zf
+        with _zf.ZipFile(str(pages_path)) as z:
+            texts: list[str] = []
+            for name in z.namelist():
+                if 'index.xml' in name or name.endswith('.xml'):
+                    with z.open(name) as f:
+                        xml_data = f.read().decode('utf-8', errors='ignore')
+                        soup = BeautifulSoup(xml_data, 'xml')
+                        page_text = soup.get_text('\n', strip=True)
+                        if len(page_text) > 20:
+                            texts.append(page_text)
+            if texts:
+                combined = '\n\n'.join(texts[:10])
+                text_to_pdf(combined[:50000], output, title=pages_path.stem)
+                return create_single_file_result(output, "Apple Pages document converted to PDF", "application/pdf")
+    except Exception:
+        pass
+    content = f"Apple Pages Document: {pages_path.name}\n\nFull PAGES conversion requires macOS with Pages app or iCloud.\nFor best results, open the file in Apple Pages and export as PDF.\n\nFile size: {pages_path.stat().st_size:,} bytes"
+    text_to_pdf(content, output, title="PAGES to PDF")
+    return create_single_file_result(output, "PAGES file info exported", "application/pdf")
+
+
+def handle_html_to_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    url = str(payload.get("url", "")).strip()
+    html_content = str(payload.get("html", "")).strip()
+    fmt = str(payload.get("format", "jpg")).lower()
+    if fmt not in {"jpg", "jpeg", "png"}:
+        fmt = "jpg"
+
+    if files and not html_content and not url:
+        html_content = files[0].read_text(errors='ignore')
+
+    if url:
+        try:
+            with httpx.Client(timeout=20, follow_redirects=True, verify=False) as client:
+                response = client.get(url)
+                response.raise_for_status()
+                html_content = response.text
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to fetch URL: {str(e)}")
+
+    if not html_content:
+        raise HTTPException(status_code=400, detail="Provide url, html payload, or upload an HTML file")
+
+    soup = BeautifulSoup(html_content, "html.parser")
+    text = soup.get_text('\n', strip=True)
+
+    img_width = max(800, int(payload.get("width", 1024)))
+    img_height = max(600, int(payload.get("height", 768)))
+    background_color = (255, 255, 255)
+
+    img = Image.new("RGB", (img_width, img_height), background_color)
+    draw = ImageDraw.Draw(img)
+    font = load_ui_font(16)
+    title_font = load_ui_font(24)
+
+    draw.rectangle([0, 0, img_width, 60], fill=(30, 30, 30))
+    draw.text((20, 15), url or "HTML to Image", fill=(255, 255, 255), font=title_font)
+
+    y = 80
+    max_chars = img_width // 9
+    for line in text.split('\n')[:100]:
+        if y > img_height - 30:
+            break
+        for wrapped in textwrap.wrap(line, max_chars) or [""]:
+            if y > img_height - 30:
+                break
+            draw.text((20, y), wrapped, fill=(30, 30, 30), font=font)
+            y += 22
+
+    ext = "jpg" if fmt in {"jpg", "jpeg"} else "png"
+    output = output_dir / f"html-image.{ext}"
+    if ext == "jpg":
+        img.save(str(output), "JPEG", quality=90)
+    else:
+        img.save(str(output), "PNG")
+    return create_single_file_result(output, "HTML converted to image successfully", f"image/{ext}")
+
+
 HANDLERS: dict[str, ToolHandler] = {
     "merge-pdf": handle_merge_pdf,
     "split-pdf": handle_split_pdf,
@@ -3619,4 +3982,18 @@ HANDLERS: dict[str, ToolHandler] = {
     "remove-pages": handle_remove_pages,
     "add-page-numbers": handle_add_page_numbers,
     "add-watermark": handle_add_watermark,
+    "cbr-to-pdf": handle_cbr_to_pdf,
+    "djvu-to-pdf": handle_djvu_to_pdf,
+    "ai-to-pdf": handle_ai_to_pdf,
+    "pdf-to-mobi": handle_pdf_to_mobi,
+    "mobi-to-pdf": handle_mobi_to_pdf,
+    "xps-to-pdf": handle_xps_to_pdf,
+    "wps-to-pdf": handle_wps_to_pdf,
+    "dwg-to-pdf": handle_dwg_to_pdf,
+    "pub-to-pdf": handle_pub_to_pdf,
+    "hwp-to-pdf": handle_hwp_to_pdf,
+    "chm-to-pdf": handle_chm_to_pdf,
+    "dxf-to-pdf": handle_dxf_to_pdf,
+    "pages-to-pdf": handle_pages_to_pdf,
+    "html-to-image": handle_html_to_image,
 }

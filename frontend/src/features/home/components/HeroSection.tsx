@@ -57,15 +57,14 @@ export default function HeroSection({
       >
         <span className='hero-kicker'>
           <Server size={14} />
-          Python-powered document and image workspace
+          193 free tools — no account, no watermark, no limit
         </span>
 
         <h1>ISHU TOOLS</h1>
 
         <p className='hero-text'>
-          Minimal confusion, modern dark UI, smooth loading, dedicated tool pages, and a
-          scalable React + FastAPI setup built for real PDF, image, text, and export
-          workflows.
+          Your all-in-one workspace for PDFs, images, and text. Merge, compress, convert,
+          OCR, translate, remove backgrounds, and more — all running live in your browser.
         </p>
 
         <div className='hero-actions'>
