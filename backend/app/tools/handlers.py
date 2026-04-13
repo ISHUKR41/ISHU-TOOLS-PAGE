@@ -557,12 +557,22 @@ def open_image_file(image_path: Path, mode: str | None = None) -> Image.Image:
 def load_ui_font(size: int) -> Any:
     normalized_size = max(12, int(size))
     candidates = [
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+        Path("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+        Path("/usr/share/fonts/truetype/freefont/FreeSans.ttf"),
+        Path("/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf"),
+        Path("/usr/share/fonts/TTF/DejaVuSans.ttf"),
+        Path("/usr/share/fonts/dejavu/DejaVuSans.ttf"),
+        Path("/usr/local/share/fonts/DejaVuSans.ttf"),
         Path("C:/Windows/Fonts/arial.ttf"),
         Path("C:/Windows/Fonts/segoeui.ttf"),
         Path("C:/Windows/Fonts/calibri.ttf"),
         Path("C:/Windows/Fonts/verdana.ttf"),
         Path("C:/Windows/Fonts/tahoma.ttf"),
         Path("C:/Windows/Fonts/DejaVuSans.ttf"),
+        Path("/System/Library/Fonts/Helvetica.ttc"),
+        Path("/System/Library/Fonts/Arial.ttf"),
     ]
 
     for candidate in candidates:
@@ -572,13 +582,16 @@ def load_ui_font(size: int) -> Any:
             except OSError:
                 continue
 
-    for candidate_name in ("arial.ttf", "segoeui.ttf", "calibri.ttf", "DejaVuSans.ttf"):
+    for candidate_name in ("DejaVuSans.ttf", "DejaVuSans-Bold.ttf", "LiberationSans-Regular.ttf", "arial.ttf", "segoeui.ttf"):
         try:
             return ImageFont.truetype(candidate_name, normalized_size)
         except OSError:
             continue
 
-    return ImageFont.load_default()
+    try:
+        return ImageFont.load_default(size=normalized_size)
+    except TypeError:
+        return ImageFont.load_default()
 
 
 def parse_color_value(raw: Any, default: tuple[int, int, int]) -> tuple[int, int, int]:
@@ -1126,15 +1139,17 @@ def handle_convert_image(files: list[Path], payload: dict[str, Any], output_dir:
 def handle_watermark_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     text = str(payload.get("text", "ISHU TOOLS")).strip() or "ISHU TOOLS"
+    font_size = int(payload.get("font_size", 36))
+    opacity = int(clamp_percentage(payload.get("opacity", 60), 60) * 255 / 100)
 
     image = Image.open(files[0]).convert("RGBA")
     layer = Image.new("RGBA", image.size, (255, 255, 255, 0))
     draw = ImageDraw.Draw(layer)
-    font = ImageFont.load_default()
+    font = load_ui_font(font_size)
 
     x = int(payload.get("x", 20))
-    y = int(payload.get("y", image.height - 30))
-    draw.text((x, y), text, fill=(255, 255, 255, 160), font=font)
+    y = int(payload.get("y", max(0, image.height - font_size - 30)))
+    draw.text((x, y), text, fill=(255, 255, 255, opacity), font=font)
 
     output_img = Image.alpha_composite(image, layer).convert("RGB")
     output = output_dir / f"watermarked-{files[0].stem}.jpg"
@@ -3801,6 +3816,411 @@ def handle_html_to_image(files: list[Path], payload: dict[str, Any], output_dir:
     return create_single_file_result(output, "HTML converted to image successfully", f"image/{ext}")
 
 
+def compress_image_to_target_bytes(img: Image.Image, target_bytes: int, ext: str, output_path: Path) -> None:
+    ext = ext.lower().replace(".", "")
+    fmt = "JPEG" if ext in {"jpg", "jpeg"} else "PNG" if ext == "png" else "WEBP"
+    rgb_img = img.convert("RGB") if fmt == "JPEG" else img
+
+    if fmt == "PNG":
+        rgb_img.save(str(output_path), "PNG", optimize=True)
+        if output_path.stat().st_size <= target_bytes:
+            return
+        new_w = max(1, int(rgb_img.width * 0.9))
+        new_h = max(1, int(rgb_img.height * 0.9))
+        rgb_img = rgb_img.resize((new_w, new_h), Image.LANCZOS)
+        rgb_img.save(str(output_path), "PNG", optimize=True)
+        return
+
+    low, high = 10, 95
+    best_quality = high
+    for _ in range(10):
+        mid = (low + high) // 2
+        buf = io.BytesIO()
+        rgb_img.save(buf, fmt, quality=mid, optimize=True)
+        size = buf.tell()
+        if size <= target_bytes:
+            best_quality = mid
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    if low > high and best_quality == 95:
+        scale = (target_bytes / max(1, buf.tell())) ** 0.5
+        new_w = max(1, int(rgb_img.width * scale))
+        new_h = max(1, int(rgb_img.height * scale))
+        rgb_img = rgb_img.resize((new_w, new_h), Image.LANCZOS)
+
+    buf = io.BytesIO()
+    rgb_img.save(buf, fmt, quality=best_quality, optimize=True)
+    output_path.write_bytes(buf.getvalue())
+
+
+def handle_reduce_image_size_in_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    target_kb = max(1, int(payload.get("target_kb", 100)))
+    target_bytes = target_kb * 1024
+
+    source = files[0]
+    img = Image.open(source)
+    ext = source.suffix.lower().replace(".", "") or "jpg"
+    output = output_dir / f"reduced-{source.stem}.{ext}"
+    compress_image_to_target_bytes(img, target_bytes, ext, output)
+
+    actual_kb = round(output.stat().st_size / 1024, 1)
+    return create_single_file_result(output, f"Image compressed to ~{actual_kb} KB (target: {target_kb} KB)", "image/*")
+
+
+def handle_compress_to_kb(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_reduce_image_size_in_kb(files, payload, output_dir)
+
+
+def handle_passport_photo_maker(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    preset = str(payload.get("preset", "3.5x4.5cm")).strip()
+    dpi = int(payload.get("dpi", 300))
+    bg_color = str(payload.get("background", "white")).strip()
+
+    presets: dict[str, tuple[float, float, str]] = {
+        "3.5x4.5cm": (3.5, 4.5, "cm"),
+        "2x2inch": (2.0, 2.0, "inch"),
+        "35x45mm": (35.0, 45.0, "mm"),
+        "4x6cm": (4.0, 6.0, "cm"),
+        "51x51mm": (51.0, 51.0, "mm"),
+        "25x35mm": (25.0, 35.0, "mm"),
+    }
+
+    if preset in presets:
+        w_val, h_val, unit = presets[preset]
+    else:
+        w_val, h_val, unit = 3.5, 4.5, "cm"
+
+    unit_to_inches = {"cm": 1 / 2.54, "mm": 1 / 25.4, "inch": 1.0}
+    factor = unit_to_inches[unit]
+    width_px = max(1, int(round(w_val * factor * dpi)))
+    height_px = max(1, int(round(h_val * factor * dpi)))
+
+    source = Image.open(files[0]).convert("RGB")
+    resampling = get_resampling_module()
+    resized = source.resize((width_px, height_px), resampling.LANCZOS)
+
+    bg = Image.new("RGB", (width_px, height_px), bg_color if bg_color in {"white", "blue"} else "white")
+    bg.paste(resized, (0, 0))
+
+    output = output_dir / f"passport-photo-{preset}.jpg"
+    bg.save(str(output), "JPEG", quality=95, dpi=(dpi, dpi))
+    return create_single_file_result(output, f"Passport photo created: {w_val}{unit} x {h_val}{unit} at {dpi} DPI", "image/jpeg")
+
+
+def handle_social_media_resize(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    platform = str(payload.get("platform", "instagram")).strip().lower()
+
+    platform_sizes: dict[str, tuple[int, int, str]] = {
+        "instagram": (1080, 1080, "Instagram Square"),
+        "instagram_story": (1080, 1920, "Instagram Story"),
+        "instagram_landscape": (1080, 566, "Instagram Landscape"),
+        "whatsapp_dp": (192, 192, "WhatsApp DP"),
+        "whatsapp_status": (1080, 1920, "WhatsApp Status"),
+        "youtube_banner": (2560, 1440, "YouTube Banner"),
+        "youtube_thumbnail": (1280, 720, "YouTube Thumbnail"),
+        "facebook_cover": (851, 315, "Facebook Cover"),
+        "facebook_post": (1200, 630, "Facebook Post"),
+        "twitter_header": (1500, 500, "Twitter Header"),
+        "twitter_post": (1200, 675, "Twitter Post"),
+        "linkedin_banner": (1584, 396, "LinkedIn Banner"),
+        "linkedin_post": (1200, 627, "LinkedIn Post"),
+        "tiktok": (1080, 1920, "TikTok Video"),
+        "pinterest": (1000, 1500, "Pinterest Pin"),
+        "og_image": (1200, 630, "Open Graph Image"),
+    }
+
+    width, height, label = platform_sizes.get(platform, (1080, 1080, "Social Media"))
+    source = Image.open(files[0]).convert("RGB")
+    resampling = get_resampling_module()
+
+    src_ratio = source.width / source.height
+    tgt_ratio = width / height
+
+    if src_ratio > tgt_ratio:
+        new_h = height
+        new_w = int(new_h * src_ratio)
+    else:
+        new_w = width
+        new_h = int(new_w / src_ratio)
+
+    resized = source.resize((new_w, new_h), resampling.LANCZOS)
+    left = (new_w - width) // 2
+    top = (new_h - height) // 2
+    cropped = resized.crop((left, top, left + width, top + height))
+
+    output = output_dir / f"{platform}-{width}x{height}.jpg"
+    cropped.save(str(output), "JPEG", quality=92)
+    return create_single_file_result(output, f"Resized for {label} ({width}×{height}px)", "image/jpeg")
+
+
+def handle_resize_for_instagram(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    payload = {**payload, "platform": "instagram"}
+    return handle_social_media_resize(files, payload, output_dir)
+
+
+def handle_resize_for_whatsapp(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    payload = {**payload, "platform": "whatsapp_dp"}
+    return handle_social_media_resize(files, payload, output_dir)
+
+
+def handle_resize_for_youtube(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    payload = {**payload, "platform": "youtube_banner"}
+    return handle_social_media_resize(files, payload, output_dir)
+
+
+def handle_convert_to_jpg_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    quality = int(payload.get("quality", 92))
+    results = []
+    for f in files:
+        img = Image.open(f).convert("RGB")
+        output = output_dir / f"{f.stem}.jpg"
+        img.save(str(output), "JPEG", quality=quality, optimize=True)
+        results.append(output)
+    if len(results) == 1:
+        return create_single_file_result(results[0], "Converted to JPG", "image/jpeg")
+    return create_zip_result(output_dir, "Images converted to JPG", "jpg-images")
+
+
+def handle_convert_from_jpg_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    target_format = str(payload.get("target_format", "png")).lower()
+    if target_format not in {"png", "webp", "gif", "bmp"}:
+        target_format = "png"
+    results = []
+    for f in files:
+        img = Image.open(f)
+        output = output_dir / f"{f.stem}.{target_format}"
+        img.save(str(output), target_format.upper())
+        results.append(output)
+    if len(results) == 1:
+        return create_single_file_result(results[0], f"Converted to {target_format.upper()}", f"image/{target_format}")
+    return create_zip_result(output_dir, f"Images converted to {target_format.upper()}", f"{target_format}-images")
+
+
+def handle_heic_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    register_heif_support()
+    results = []
+    for f in files:
+        img = Image.open(f).convert("RGB")
+        output = output_dir / f"{f.stem}.jpg"
+        img.save(str(output), "JPEG", quality=92)
+        results.append(output)
+    if len(results) == 1:
+        return create_single_file_result(results[0], "HEIC converted to JPG", "image/jpeg")
+    return create_zip_result(output_dir, "HEIC images converted to JPG", "heic-jpg")
+
+
+def handle_webp_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    results = []
+    for f in files:
+        img = Image.open(f).convert("RGB")
+        output = output_dir / f"{f.stem}.jpg"
+        img.save(str(output), "JPEG", quality=92)
+        results.append(output)
+    if len(results) == 1:
+        return create_single_file_result(results[0], "WEBP converted to JPG", "image/jpeg")
+    return create_zip_result(output_dir, "WEBP images converted to JPG", "webp-jpg")
+
+
+def handle_jpeg_to_png(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_jpg_to_png(files, payload, output_dir)
+
+
+def handle_png_to_jpeg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_png_to_jpg(files, payload, output_dir)
+
+
+def handle_photo_editor(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    mode = str(payload.get("mode", "auto")).strip().lower()
+    img = Image.open(files[0]).convert("RGB")
+
+    if mode == "enhance":
+        img = ImageEnhance.Sharpness(img).enhance(1.5)
+        img = ImageEnhance.Contrast(img).enhance(1.1)
+        img = ImageEnhance.Color(img).enhance(1.15)
+    elif mode == "brighten":
+        img = ImageEnhance.Brightness(img).enhance(1.3)
+    elif mode == "vintage":
+        r, g, b = img.split()
+        r = ImageEnhance.Brightness(r).enhance(1.1)
+        b = ImageEnhance.Brightness(b).enhance(0.9)
+        img = Image.merge("RGB", (r, g, b))
+        img = ImageEnhance.Color(img).enhance(0.8)
+    elif mode == "grayscale":
+        img = img.convert("L").convert("RGB")
+    elif mode == "sharpen":
+        img = img.filter(ImageFilter.SHARPEN)
+        img = img.filter(ImageFilter.SHARPEN)
+
+    output = output_dir / f"edited-{files[0].stem}.jpg"
+    img.save(str(output), "JPEG", quality=92)
+    return create_single_file_result(output, f"Photo edited ({mode})", "image/jpeg")
+
+
+def handle_unblur_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    factor = float(payload.get("factor", 2.5))
+    img = Image.open(files[0]).convert("RGB")
+    sharpened = ImageEnhance.Sharpness(img).enhance(factor)
+    sharpened = sharpened.filter(ImageFilter.SHARPEN)
+    output = output_dir / f"unblurred-{files[0].stem}.jpg"
+    sharpened.save(str(output), "JPEG", quality=92)
+    return create_single_file_result(output, "Image sharpened / unblurred", "image/jpeg")
+
+
+def handle_increase_image_quality(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    img = Image.open(files[0]).convert("RGB")
+    img = ImageEnhance.Sharpness(img).enhance(2.0)
+    img = ImageEnhance.Contrast(img).enhance(1.1)
+    img = ImageEnhance.Color(img).enhance(1.1)
+    output = output_dir / f"enhanced-{files[0].stem}.jpg"
+    img.save(str(output), "JPEG", quality=95)
+    return create_single_file_result(output, "Image quality enhanced", "image/jpeg")
+
+
+def handle_passport_size_photo(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_passport_photo_maker(files, payload, output_dir)
+
+
+def handle_zoom_out_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    border_percent = max(5, int(payload.get("border_percent", 20)))
+    img = Image.open(files[0]).convert("RGB")
+    target_w = int(img.width * (1 + border_percent / 100))
+    target_h = int(img.height * (1 + border_percent / 100))
+    bg_color = parse_color_value(payload.get("background", "white"), (255, 255, 255))
+    bg = Image.new("RGB", (target_w, target_h), bg_color)
+    offset_x = (target_w - img.width) // 2
+    offset_y = (target_h - img.height) // 2
+    bg.paste(img, (offset_x, offset_y))
+    output = output_dir / f"zoomed-out-{files[0].stem}.jpg"
+    bg.save(str(output), "JPEG", quality=92)
+    return create_single_file_result(output, "Image zoomed out with border", "image/jpeg")
+
+
+def handle_add_white_border_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    payload = {**payload, "color": "white"}
+    return handle_add_border_image(files, payload, output_dir)
+
+
+def handle_freehand_crop(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    x1 = int(payload.get("x1", 0))
+    y1 = int(payload.get("y1", 0))
+    x2 = int(payload.get("x2", 100))
+    y2 = int(payload.get("y2", 100))
+    img = Image.open(files[0])
+    x2 = max(x1 + 1, min(x2, img.width))
+    y2 = max(y1 + 1, min(y2, img.height))
+    cropped = img.crop((x1, y1, x2, y2))
+    output = output_dir / f"freehand-crop-{files[0].stem}.png"
+    cropped.save(str(output))
+    return create_single_file_result(output, "Image freehand cropped", "image/png")
+
+
+def handle_crop_png(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_crop_image(files, payload, output_dir)
+
+
+def handle_image_splitter(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_split_image(files, payload, output_dir)
+
+
+def handle_compress_specific_kb(target_kb: int) -> ToolHandler:
+    def handler(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+        payload = {**payload, "target_kb": target_kb}
+        return handle_reduce_image_size_in_kb(files, payload, output_dir)
+    return handler
+
+
+def handle_a4_size_resize(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    payload = {**payload, "width_cm": 21.0, "height_cm": 29.7, "dpi": int(payload.get("dpi", 300))}
+    return handle_resize_image_in_cm(files, payload, output_dir)
+
+
+def handle_instagram_grid(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    cols = int(payload.get("cols", 3))
+    rows = int(payload.get("rows", 3))
+    tile_size = int(payload.get("tile_size", 1080))
+    img = Image.open(files[0]).convert("RGB")
+    total_w = tile_size * cols
+    total_h = tile_size * rows
+    resized = img.resize((total_w, total_h), Image.LANCZOS)
+    tiles = []
+    for r in range(rows):
+        for c in range(cols):
+            left = c * tile_size
+            top = r * tile_size
+            tile = resized.crop((left, top, left + tile_size, top + tile_size))
+            tile_path = output_dir / f"grid_{r+1}_{c+1}.jpg"
+            tile.save(str(tile_path), "JPEG", quality=92)
+            tiles.append(tile_path)
+    return create_zip_result(output_dir, f"Instagram grid created ({cols}x{rows} tiles)", "instagram-grid")
+
+
+def handle_beautify_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    img = Image.open(files[0]).convert("RGB")
+    img = ImageEnhance.Color(img).enhance(1.2)
+    img = ImageEnhance.Contrast(img).enhance(1.1)
+    img = ImageEnhance.Brightness(img).enhance(1.05)
+    img = ImageEnhance.Sharpness(img).enhance(1.3)
+    output = output_dir / f"beautified-{files[0].stem}.jpg"
+    img.save(str(output), "JPEG", quality=94)
+    return create_single_file_result(output, "Image beautified", "image/jpeg")
+
+
+def handle_retouch_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    img = Image.open(files[0]).convert("RGB")
+    img = img.filter(ImageFilter.MedianFilter(size=3))
+    img = ImageEnhance.Sharpness(img).enhance(1.4)
+    img = ImageEnhance.Color(img).enhance(1.1)
+    output = output_dir / f"retouched-{files[0].stem}.jpg"
+    img.save(str(output), "JPEG", quality=94)
+    return create_single_file_result(output, "Image retouched (blemish smoothing applied)", "image/jpeg")
+
+
+def handle_super_resolution(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    scale = max(2, min(4, int(payload.get("scale", 2))))
+    img = Image.open(files[0]).convert("RGB")
+    new_w = img.width * scale
+    new_h = img.height * scale
+    upscaled = img.resize((new_w, new_h), Image.LANCZOS)
+    upscaled = ImageEnhance.Sharpness(upscaled).enhance(1.5)
+    output = output_dir / f"super-res-{files[0].stem}.jpg"
+    upscaled.save(str(output), "JPEG", quality=95)
+    return create_single_file_result(output, f"Image upscaled {scale}x to {new_w}×{new_h}px", "image/jpeg")
+
+
+def handle_check_dpi(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_check_image_dpi(files, payload, output_dir)
+
+
+def handle_color_code_from_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_image_color_picker(files, payload, output_dir)
+
+
+def handle_view_metadata(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_extract_metadata(files, payload, output_dir)
+
+
+def handle_remove_image_metadata(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_remove_metadata_image(files, payload, output_dir)
+
+
 HANDLERS: dict[str, ToolHandler] = {
     "merge-pdf": handle_merge_pdf,
     "split-pdf": handle_split_pdf,
@@ -3996,4 +4416,43 @@ HANDLERS: dict[str, ToolHandler] = {
     "dxf-to-pdf": handle_dxf_to_pdf,
     "pages-to-pdf": handle_pages_to_pdf,
     "html-to-image": handle_html_to_image,
+    "reduce-image-size-in-kb": handle_reduce_image_size_in_kb,
+    "compress-to-kb": handle_compress_to_kb,
+    "passport-photo-maker": handle_passport_photo_maker,
+    "passport-size-photo": handle_passport_size_photo,
+    "social-media-resize": handle_social_media_resize,
+    "resize-for-instagram": handle_resize_for_instagram,
+    "resize-for-whatsapp": handle_resize_for_whatsapp,
+    "resize-for-youtube": handle_resize_for_youtube,
+    "instagram-grid": handle_instagram_grid,
+    "convert-to-jpg": handle_convert_to_jpg_image,
+    "convert-from-jpg": handle_convert_from_jpg_image,
+    "heic-to-jpg": handle_heic_to_jpg,
+    "webp-to-jpg": handle_webp_to_jpg,
+    "jpeg-to-png": handle_jpeg_to_png,
+    "png-to-jpeg": handle_png_to_jpeg,
+    "photo-editor": handle_photo_editor,
+    "unblur-image": handle_unblur_image,
+    "increase-image-quality": handle_increase_image_quality,
+    "beautify-image": handle_beautify_image,
+    "retouch-image": handle_retouch_image,
+    "super-resolution": handle_super_resolution,
+    "zoom-out-image": handle_zoom_out_image,
+    "add-white-border-image": handle_add_white_border_image,
+    "freehand-crop": handle_freehand_crop,
+    "crop-png": handle_crop_png,
+    "image-splitter": handle_image_splitter,
+    "a4-size-resize": handle_a4_size_resize,
+    "check-dpi": handle_check_dpi,
+    "color-code-from-image": handle_color_code_from_image,
+    "view-metadata": handle_view_metadata,
+    "remove-image-metadata": handle_remove_image_metadata,
+    "compress-to-5kb": handle_compress_specific_kb(5),
+    "compress-to-10kb": handle_compress_specific_kb(10),
+    "compress-to-20kb": handle_compress_specific_kb(20),
+    "compress-to-50kb": handle_compress_specific_kb(50),
+    "compress-to-100kb": handle_compress_specific_kb(100),
+    "compress-to-200kb": handle_compress_specific_kb(200),
+    "compress-to-500kb": handle_compress_specific_kb(500),
+    "compress-to-1mb": handle_compress_specific_kb(1024),
 }
