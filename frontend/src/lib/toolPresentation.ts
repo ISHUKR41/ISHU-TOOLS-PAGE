@@ -134,13 +134,17 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
 const PDF_INPUT_SLUGS = new Set([
   'merge-pdf',
   'split-pdf',
+  'optimize-pdf',
   'compress-pdf',
   'rotate-pdf',
   'organize-pdf',
   'crop-pdf',
   'watermark-pdf',
+  'add-watermark',
   'page-numbers-pdf',
+  'add-page-numbers',
   'protect-pdf',
+  'pdf-security',
   'unlock-pdf',
   'redact-pdf',
   'compare-pdf',
@@ -156,9 +160,21 @@ const PDF_INPUT_SLUGS = new Set([
   'pdf-to-pptx',
   'sign-pdf',
   'edit-metadata-pdf',
+  'edit-pdf',
+  'annotate-pdf',
+  'highlight-pdf',
+  'pdf-filler',
+  'pdf-viewer',
+  'pdf-intelligence',
+  'pdf-ocr',
+  'convert-from-pdf',
+  'pdf-to-word',
+  'pdf-to-powerpoint',
+  'remove-pages',
   'pdf-to-pdfa',
   'ocr-pdf',
   'chat-with-pdf',
+  'ai-summarizer',
   'pdf-to-image',
   'pdf-to-tiff',
   'pdf-to-svg',
@@ -183,6 +199,9 @@ const PDF_INPUT_SLUGS = new Set([
 
 const IMAGE_INPUT_SLUGS = new Set([
   'jpg-to-pdf',
+  'heic-to-pdf',
+  'heif-to-pdf',
+  'jfif-to-pdf',
   'image-to-pdf',
   'png-to-pdf',
   'webp-to-pdf',
@@ -194,14 +213,21 @@ const IMAGE_INPUT_SLUGS = new Set([
   'rotate-image',
   'convert-image',
   'watermark-image',
+  'add-name-dob-image',
+  'merge-photo-signature',
   'grayscale-image',
+  'black-and-white-image',
   'blur-image',
   'pixelate-image',
+  'picture-to-pixel-art',
   'meme-generator',
   'remove-metadata-image',
   'scan-to-pdf',
   'upscale-image',
   'ocr-image',
+  'image-to-text',
+  'jpg-to-text',
+  'png-to-text',
   'remove-background',
   'blur-background',
   'blur-face',
@@ -222,19 +248,32 @@ const IMAGE_INPUT_SLUGS = new Set([
   'add-border-image',
   'thumbnail-image',
   'image-collage',
+  'check-image-dpi',
+  'convert-dpi',
+  'resize-image-in-cm',
+  'resize-image-in-mm',
+  'resize-image-in-inch',
+  'censor-photo',
+  'generate-signature',
 ])
 
-const ARCHIVE_INPUT_SLUGS = new Set(['zip-images-to-pdf'])
+const ARCHIVE_INPUT_SLUGS = new Set(['zip-images-to-pdf', 'zip-to-pdf'])
 
 const TEXT_FILE_INPUT_SLUGS = new Set(['json-to-pdf', 'xml-to-pdf', 'csv-to-pdf'])
-const DOCX_INPUT_SLUGS = new Set(['docx-to-pdf'])
+const DOCX_INPUT_SLUGS = new Set(['docx-to-pdf', 'word-to-pdf'])
 const EXCEL_INPUT_SLUGS = new Set(['excel-to-pdf'])
-const PPTX_INPUT_SLUGS = new Set(['pptx-to-pdf'])
-const MIXED_PDF_IMAGE_INPUT_SLUGS = new Set(['add-image-pdf'])
+const PPTX_INPUT_SLUGS = new Set(['pptx-to-pdf', 'powerpoint-to-pdf'])
+const MIXED_PDF_IMAGE_INPUT_SLUGS = new Set(['add-image-pdf', 'edit-pdf'])
 const SVG_INPUT_SLUGS = new Set(['svg-to-pdf'])
 const RTF_INPUT_SLUGS = new Set(['rtf-to-pdf'])
 const ODT_INPUT_SLUGS = new Set(['odt-to-pdf'])
 const EPUB_INPUT_SLUGS = new Set(['epub-to-pdf'])
+const EML_INPUT_SLUGS = new Set(['eml-to-pdf'])
+const FB2_INPUT_SLUGS = new Set(['fb2-to-pdf'])
+const CBZ_INPUT_SLUGS = new Set(['cbz-to-pdf'])
+const EBOOK_INPUT_SLUGS = new Set(['ebook-to-pdf'])
+const GENERIC_PDF_INPUT_SLUGS = new Set(['convert-to-pdf', 'pdf-converter'])
+const GENERIC_METADATA_INPUT_SLUGS = new Set(['edit-metadata', 'extract-metadata'])
 
 export function getCategoryTheme(categoryId: string): CategoryTheme {
   return CATEGORY_THEME_MAP[categoryId] || DEFAULT_THEME
@@ -249,6 +288,16 @@ export function getToolAccept(slug: string): string | undefined {
   if (RTF_INPUT_SLUGS.has(slug)) return '.rtf'
   if (ODT_INPUT_SLUGS.has(slug)) return '.odt'
   if (EPUB_INPUT_SLUGS.has(slug)) return '.epub'
+  if (EML_INPUT_SLUGS.has(slug)) return '.eml'
+  if (FB2_INPUT_SLUGS.has(slug)) return '.fb2,.xml'
+  if (CBZ_INPUT_SLUGS.has(slug)) return '.cbz'
+  if (EBOOK_INPUT_SLUGS.has(slug)) return '.epub,.fb2,.cbz'
+  if (GENERIC_PDF_INPUT_SLUGS.has(slug)) {
+    return '.pdf,.docx,.pptx,.xlsx,.xlsm,.csv,.json,.xml,.txt,.md,.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff,.jfif,.heic,.heif,.svg,.rtf,.odt,.epub,.eml,.fb2,.cbz'
+  }
+  if (GENERIC_METADATA_INPUT_SLUGS.has(slug)) {
+    return '.pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff,.heic,.heif'
+  }
   if (MIXED_PDF_IMAGE_INPUT_SLUGS.has(slug)) {
     return '.pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.tif,.tiff'
   }
@@ -266,6 +315,13 @@ export function getToolOutputLabel(tool: ToolDefinition): string {
     tool.slug === 'image-color-picker'
   ) {
     return 'ZIP package'
+  }
+  if (
+    tool.slug.includes('viewer') ||
+    tool.slug.includes('intelligence') ||
+    tool.slug.includes('dpi')
+  ) {
+    return 'JSON report'
   }
   if (tool.slug.includes('docx')) return 'DOCX document'
   if (tool.slug.includes('excel') || tool.slug.includes('xlsx')) return 'XLSX workbook'

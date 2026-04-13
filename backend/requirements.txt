@@ -17,3 +17,4 @@ rembg==2.0.75; python_version < "3.14"
 odfpy==1.4.1
 ebooklib==0.20
 svglib==1.6.0
+pillow-heif==1.1.1

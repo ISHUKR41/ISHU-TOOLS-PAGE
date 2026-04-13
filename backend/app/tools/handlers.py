@@ -14,6 +14,8 @@ import zipfile
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
+from email import policy
+from email.parser import BytesParser
 from pathlib import Path
 from typing import Any, Callable
 
@@ -536,7 +538,18 @@ def get_resampling_module() -> Any:
     return getattr(Image, "Resampling", Image)
 
 
+def register_heif_support() -> None:
+    try:
+        from pillow_heif import register_heif_opener
+
+        register_heif_opener()
+    except Exception:
+        pass
+
+
 def open_image_file(image_path: Path, mode: str | None = None) -> Image.Image:
+    if image_path.suffix.lower() in {".heic", ".heif"}:
+        register_heif_support()
     image = ImageOps.exif_transpose(Image.open(image_path))
     return image.convert(mode) if mode else image
 
@@ -602,6 +615,81 @@ def resolve_anchor_position(
     if normalized == "center":
         return max(0, (base_width - overlay_width) // 2), max(0, (base_height - overlay_height) // 2)
     return max(0, base_width - overlay_width - margin), max(0, base_height - overlay_height - margin)
+
+
+def save_images_as_pdf(images: list[Image.Image], output_path: Path) -> None:
+    if not images:
+        raise HTTPException(status_code=400, detail="No images were available to build a PDF")
+
+    prepared = [image.convert("RGB") for image in images]
+    prepared[0].save(output_path, save_all=True, append_images=prepared[1:])
+
+
+def image_paths_to_pdf(paths: list[Path], output_path: Path) -> None:
+    save_images_as_pdf([open_image_file(path, "RGB") for path in paths], output_path)
+
+
+def color_to_pdf_tuple(raw: Any, default: tuple[int, int, int] = (255, 234, 88)) -> tuple[float, float, float]:
+    rgb = parse_color_value(raw, default)
+    return tuple(round(channel / 255, 4) for channel in rgb)
+
+
+def extract_top_keywords(text: str, limit: int = 8) -> list[dict[str, Any]]:
+    words = [word for word in re.findall(r"[A-Za-z']+", text.lower()) if word not in STOPWORDS and len(word) > 2]
+    return [
+        {"keyword": word, "count": count}
+        for word, count in Counter(words).most_common(max(1, limit))
+    ]
+
+
+def extract_image_dpi_info(source: Path) -> dict[str, Any]:
+    image = open_image_file(source)
+    raw_dpi = image.info.get("dpi")
+    if isinstance(raw_dpi, tuple) and len(raw_dpi) >= 2:
+        dpi_x, dpi_y = raw_dpi[0], raw_dpi[1]
+    elif isinstance(raw_dpi, (int, float)):
+        dpi_x = dpi_y = raw_dpi
+    else:
+        dpi_x = dpi_y = 72
+
+    return {
+        "format": image.format,
+        "size": {"width": image.width, "height": image.height},
+        "dpi": {"x": round(float(dpi_x), 2), "y": round(float(dpi_y), 2)},
+    }
+
+
+def resize_image_to_physical_units(
+    source: Path,
+    output_path: Path,
+    width_value: float,
+    height_value: float,
+    dpi: int,
+    unit: str,
+) -> None:
+    unit_to_inches = {
+        "cm": 1 / 2.54,
+        "mm": 1 / 25.4,
+        "inch": 1.0,
+    }
+    factor = unit_to_inches[unit]
+    width_px = max(1, int(round(width_value * factor * dpi)))
+    height_px = max(1, int(round(height_value * factor * dpi)))
+    image = open_image_file(source)
+    resized = image.resize((width_px, height_px), get_resampling_module().LANCZOS)
+    save_image(resized, output_path, quality=95)
+
+
+def dispatch_existing_handler(
+    slug: str,
+    files: list[Path],
+    payload: dict[str, Any],
+    output_dir: Path,
+) -> ExecutionResult:
+    handler = HANDLERS.get(slug)
+    if not handler:
+        raise HTTPException(status_code=501, detail=f"Handler not found for {slug}")
+    return handler(files, payload, output_dir)
 
 
 def handle_merge_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -908,9 +996,8 @@ def handle_pdf_to_png(files: list[Path], payload: dict[str, Any], output_dir: Pa
 
 def handle_jpg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    images = [Image.open(path).convert("RGB") for path in files]
     output = output_dir / "images.pdf"
-    images[0].save(output, save_all=True, append_images=images[1:])
+    image_paths_to_pdf(files, output)
     return create_single_file_result(output, "Images converted to PDF", "application/pdf")
 
 
@@ -2809,12 +2896,531 @@ def handle_motion_blur_image(files: list[Path], payload: dict[str, Any], output_
     return create_single_file_result(output, "Motion blur applied", "image/png")
 
 
+def handle_optimize_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    optimized_payload = dict(payload)
+    optimized_payload.setdefault("image_quality", 55)
+    return handle_compress_pdf(files, optimized_payload, output_dir)
+
+
+def handle_remove_pages(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_delete_pages(files, payload, output_dir)
+
+
+def handle_pdf_ocr(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_ocr_pdf(files, payload, output_dir)
+
+
+def handle_image_to_text(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_ocr_image(files, payload, output_dir)
+
+
+def handle_jpg_to_text(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_ocr_image(files, payload, output_dir)
+
+
+def handle_png_to_text(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_ocr_image(files, payload, output_dir)
+
+
+def handle_ai_summarizer(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    if files:
+        return handle_summarize_pdf(files, payload, output_dir)
+    return handle_summarize_text(files, payload, output_dir)
+
+
+def handle_word_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_docx_to_pdf(files, payload, output_dir)
+
+
+def handle_pdf_to_word(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_pdf_to_docx(files, payload, output_dir)
+
+
+def handle_powerpoint_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_pptx_to_pdf(files, payload, output_dir)
+
+
+def handle_pdf_to_powerpoint(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_pdf_to_pptx(files, payload, output_dir)
+
+
+def handle_add_page_numbers(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_page_numbers_pdf(files, payload, output_dir)
+
+
+def handle_add_watermark(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_watermark_pdf(files, payload, output_dir)
+
+
+def handle_edit_metadata(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    if files and files[0].suffix.lower() == ".pdf":
+        return handle_edit_metadata_pdf(files, payload, output_dir)
+    return handle_extract_metadata(files, payload, output_dir)
+
+
+def handle_pdf_viewer(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    reader = PdfReader(str(files[0]))
+    preview_pages: list[dict[str, Any]] = []
+    for index, page in enumerate(reader.pages[:3], start=1):
+        preview_pages.append(
+            {
+                "page": index,
+                "preview": (page.extract_text() or "").strip()[:1200],
+            }
+        )
+
+    return ExecutionResult(
+        kind="json",
+        message="PDF preview generated",
+        data={
+            "filename": files[0].name,
+            "pages": len(reader.pages),
+            "metadata": dict(reader.metadata or {}),
+            "preview_pages": preview_pages,
+        },
+    )
+
+
+def handle_pdf_intelligence(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    text = extract_pdf_text(files[0])
+    reader = PdfReader(str(files[0]))
+    summary_sentences = max(2, min(8, int(payload.get("summary_sentences", 4))))
+    top_keywords = max(3, min(15, int(payload.get("top_keywords", 8))))
+
+    return ExecutionResult(
+        kind="json",
+        message="PDF intelligence report generated",
+        data={
+            "filename": files[0].name,
+            "pages": len(reader.pages),
+            "characters": len(text),
+            "words": len(re.findall(r"[A-Za-z']+", text)),
+            "summary": summarize_text_algo(text, max_sentences=summary_sentences),
+            "keywords": extract_top_keywords(text, limit=top_keywords),
+            "preview": text[:1600],
+        },
+    )
+
+
+def handle_annotate_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="text is required for annotation")
+
+    page_number = max(1, int(payload.get("page", 1)))
+    x = float(payload.get("x", 48))
+    y = float(payload.get("y", 72))
+    width = max(120.0, float(payload.get("width", 220)))
+    height = max(40.0, float(payload.get("height", 80)))
+    font_size = max(8, int(payload.get("font_size", 12)))
+    color = color_to_pdf_tuple(payload.get("color", "#38bdf8"), (56, 189, 248))
+
+    document = fitz.open(str(files[0]))
+    try:
+        if page_number > len(document):
+            raise HTTPException(status_code=400, detail="Selected page is outside the PDF range")
+        page = document[page_number - 1]
+        annotation = page.add_freetext_annot(fitz.Rect(x, y, x + width, y + height), text)
+        annotation.update(fontsize=font_size, text_color=color, fill_color=(1, 1, 1))
+
+        output = output_dir / "annotated.pdf"
+        document.save(str(output))
+    finally:
+        document.close()
+
+    return create_single_file_result(output, "PDF annotation added", "application/pdf")
+
+
+def handle_highlight_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    page_number = max(1, int(payload.get("page", 1)))
+    x = float(payload.get("x", 48))
+    y = float(payload.get("y", 72))
+    width = max(24.0, float(payload.get("width", 180)))
+    height = max(12.0, float(payload.get("height", 24)))
+    opacity = max(0.1, min(1.0, float(payload.get("opacity", 0.35))))
+    color = color_to_pdf_tuple(payload.get("color", "#fde047"), (253, 224, 71))
+
+    document = fitz.open(str(files[0]))
+    try:
+        if page_number > len(document):
+            raise HTTPException(status_code=400, detail="Selected page is outside the PDF range")
+        page = document[page_number - 1]
+        rect = fitz.Rect(x, y, x + width, y + height)
+        annotation = page.add_rect_annot(rect)
+        annotation.set_colors(stroke=color, fill=color)
+        annotation.set_opacity(opacity)
+        annotation.update()
+
+        output = output_dir / "highlighted.pdf"
+        document.save(str(output))
+    finally:
+        document.close()
+
+    return create_single_file_result(output, "PDF highlight added", "application/pdf")
+
+
+def handle_pdf_filler(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_annotate_pdf(files, payload, output_dir)
+
+
+def handle_edit_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    mode = str(payload.get("mode", "add_text")).strip().lower()
+    if mode == "watermark":
+        return handle_watermark_pdf(files, payload, output_dir)
+    if mode == "annotate":
+        return handle_annotate_pdf(files, payload, output_dir)
+    if mode == "highlight":
+        return handle_highlight_pdf(files, payload, output_dir)
+    if mode == "add_image":
+        return handle_add_image_pdf(files, payload, output_dir)
+    return handle_add_text_pdf(files, payload, output_dir)
+
+
+def handle_pdf_security(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    mode = str(payload.get("mode", "protect")).strip().lower()
+    if mode == "unlock":
+        return handle_unlock_pdf(files, payload, output_dir)
+    return handle_protect_pdf(files, payload, output_dir)
+
+
+def handle_convert_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    suffixes = {path.suffix.lower() for path in files}
+    image_types = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tif", ".tiff", ".jfif", ".heic", ".heif"}
+    if suffixes.issubset(image_types):
+        return handle_jpg_to_pdf(files, payload, output_dir)
+
+    if len(files) > 1:
+        raise HTTPException(status_code=400, detail="Multiple uploads are currently supported for image-to-PDF conversion only")
+
+    source = files[0]
+    extension = source.suffix.lower()
+    handler_by_extension: dict[str, ToolHandler] = {
+        ".docx": handle_docx_to_pdf,
+        ".pptx": handle_pptx_to_pdf,
+        ".xlsx": handle_excel_to_pdf,
+        ".xlsm": handle_excel_to_pdf,
+        ".csv": handle_csv_to_pdf,
+        ".json": handle_json_to_pdf,
+        ".xml": handle_xml_to_pdf,
+        ".txt": handle_txt_to_pdf,
+        ".md": handle_md_to_pdf,
+        ".svg": handle_svg_to_pdf,
+        ".rtf": handle_rtf_to_pdf,
+        ".odt": handle_odt_to_pdf,
+        ".epub": handle_epub_to_pdf,
+        ".eml": handle_eml_to_pdf,
+        ".fb2": handle_fb2_to_pdf,
+        ".cbz": handle_cbz_to_pdf,
+    }
+    handler = handler_by_extension.get(extension)
+    if not handler:
+        raise HTTPException(status_code=400, detail=f"Unsupported input format for convert-to-pdf: {extension or 'unknown'}")
+    return handler(files, payload, output_dir)
+
+
+def handle_convert_from_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    target = str(payload.get("target_format", "jpg")).strip().lower()
+    handler_by_target: dict[str, ToolHandler] = {
+        "jpg": handle_pdf_to_jpg,
+        "jpeg": handle_pdf_to_jpg,
+        "png": handle_pdf_to_png,
+        "docx": handle_pdf_to_docx,
+        "word": handle_pdf_to_docx,
+        "pptx": handle_pdf_to_pptx,
+        "powerpoint": handle_pdf_to_pptx,
+        "xlsx": handle_pdf_to_excel,
+        "excel": handle_pdf_to_excel,
+        "txt": handle_pdf_to_txt,
+        "md": handle_pdf_to_markdown,
+        "markdown": handle_pdf_to_markdown,
+        "json": handle_pdf_to_json,
+        "csv": handle_pdf_to_csv,
+        "image": handle_pdf_to_image,
+        "tiff": handle_pdf_to_tiff,
+        "svg": handle_pdf_to_svg,
+        "rtf": handle_pdf_to_rtf,
+        "odt": handle_pdf_to_odt,
+        "epub": handle_pdf_to_epub,
+        "html": handle_pdf_to_html,
+        "bmp": handle_pdf_to_bmp,
+        "gif": handle_pdf_to_gif,
+        "pdfa": handle_pdf_to_pdfa,
+    }
+    handler = handler_by_target.get(target)
+    if not handler:
+        raise HTTPException(status_code=400, detail=f"Unsupported target format for convert-from-pdf: {target}")
+    return handler(files, payload, output_dir)
+
+
+def handle_pdf_converter(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    source = files[0]
+    if source.suffix.lower() == ".pdf":
+        return handle_convert_from_pdf(files, payload, output_dir)
+
+    target = str(payload.get("target_format", "pdf")).strip().lower()
+    if target not in {"", "pdf"}:
+        raise HTTPException(
+            status_code=400,
+            detail="For non-PDF source files, pdf-converter currently outputs PDF. Set target_format to pdf.",
+        )
+    return handle_convert_to_pdf(files, payload, output_dir)
+
+
+def handle_check_image_dpi(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    return ExecutionResult(
+        kind="json",
+        message="Image DPI analyzed",
+        data=extract_image_dpi_info(files[0]),
+    )
+
+
+def handle_convert_dpi(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    dpi = max(36, int(payload.get("dpi", 300)))
+    image = open_image_file(files[0])
+    output = output_dir / f"{files[0].stem}-dpi-{dpi}{files[0].suffix.lower() or '.png'}"
+    image.save(output, dpi=(dpi, dpi))
+    return create_single_file_result(output, "Image DPI updated", "image/*")
+
+
+def handle_resize_image_in_cm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    width = float(payload.get("width_cm", 3.5))
+    height = float(payload.get("height_cm", 4.5))
+    dpi = max(36, int(payload.get("dpi", 300)))
+    output = output_dir / f"{files[0].stem}-cm{files[0].suffix.lower() or '.png'}"
+    resize_image_to_physical_units(files[0], output, width, height, dpi, "cm")
+    return create_single_file_result(output, "Image resized in centimeters", "image/*")
+
+
+def handle_resize_image_in_mm(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    width = float(payload.get("width_mm", 35))
+    height = float(payload.get("height_mm", 45))
+    dpi = max(36, int(payload.get("dpi", 300)))
+    output = output_dir / f"{files[0].stem}-mm{files[0].suffix.lower() or '.png'}"
+    resize_image_to_physical_units(files[0], output, width, height, dpi, "mm")
+    return create_single_file_result(output, "Image resized in millimeters", "image/*")
+
+
+def handle_resize_image_in_inch(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    width = float(payload.get("width_inch", 2))
+    height = float(payload.get("height_inch", 2))
+    dpi = max(36, int(payload.get("dpi", 300)))
+    output = output_dir / f"{files[0].stem}-inch{files[0].suffix.lower() or '.png'}"
+    resize_image_to_physical_units(files[0], output, width, height, dpi, "inch")
+    return create_single_file_result(output, "Image resized in inches", "image/*")
+
+
+def handle_add_name_dob_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    name = str(payload.get("name", "")).strip()
+    dob = str(payload.get("dob", "")).strip()
+    if not name and not dob:
+        raise HTTPException(status_code=400, detail="Provide a name or DOB to place on the photo")
+
+    x = int(payload.get("x", 24))
+    y = int(payload.get("y", 24))
+    font_size = max(14, int(payload.get("font_size", 28)))
+    text_color = parse_color_value(payload.get("color", "#ffffff"), (255, 255, 255))
+    lines = [line for line in [name, dob] if line]
+
+    image = open_image_file(files[0], "RGBA")
+    layer = Image.new("RGBA", image.size, (255, 255, 255, 0))
+    draw = ImageDraw.Draw(layer)
+    font = load_ui_font(font_size)
+    cursor_y = y
+    for line in lines:
+        draw.text(
+            (x, cursor_y),
+            line,
+            fill=(*text_color, 255),
+            font=font,
+            stroke_width=max(1, font_size // 18),
+            stroke_fill=(0, 0, 0, 180),
+        )
+        cursor_y += font_size + 8
+
+    output_img = Image.alpha_composite(image, layer)
+    output = output_dir / f"{files[0].stem}-named.png"
+    save_image(output_img, output, fmt="PNG")
+    return create_single_file_result(output, "Name and DOB added to image", "image/png")
+
+
+def handle_merge_photo_signature(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 2)
+    gap = max(0, int(payload.get("gap", 20)))
+    direction = str(payload.get("direction", "vertical")).strip().lower()
+    background = parse_color_value(payload.get("background", "#ffffff"), (255, 255, 255))
+
+    photo = open_image_file(files[0], "RGBA")
+    signature = open_image_file(files[1], "RGBA")
+    signature.thumbnail((photo.width, max(60, photo.height // 4)), get_resampling_module().LANCZOS)
+
+    if direction == "horizontal":
+        width = photo.width + signature.width + gap
+        height = max(photo.height, signature.height)
+        canvas_image = Image.new("RGBA", (width, height), (*background, 255))
+        canvas_image.alpha_composite(photo, (0, (height - photo.height) // 2))
+        canvas_image.alpha_composite(signature, (photo.width + gap, (height - signature.height) // 2))
+    else:
+        width = max(photo.width, signature.width)
+        height = photo.height + signature.height + gap
+        canvas_image = Image.new("RGBA", (width, height), (*background, 255))
+        canvas_image.alpha_composite(photo, ((width - photo.width) // 2, 0))
+        canvas_image.alpha_composite(signature, ((width - signature.width) // 2, photo.height + gap))
+
+    output = output_dir / "photo-signature.png"
+    save_image(canvas_image, output, fmt="PNG")
+    return create_single_file_result(output, "Photo and signature merged", "image/png")
+
+
+def handle_black_and_white_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    threshold = max(0, min(255, int(payload.get("threshold", 128))))
+    source = open_image_file(files[0], "L")
+    output_img = source.point(lambda value: 255 if value >= threshold else 0, mode="1")
+    output = output_dir / f"{files[0].stem}-black-white.png"
+    output_img.save(output)
+    return create_single_file_result(output, "Black and white effect applied", "image/png")
+
+
+def handle_picture_to_pixel_art(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = dict(payload)
+    alias_payload.setdefault("factor", 24)
+    return handle_pixelate_image(files, alias_payload, output_dir)
+
+
+def handle_censor_photo(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    try:
+        censor_payload = dict(payload)
+        censor_payload.setdefault("pixel_size", 14)
+        return handle_pixelate_face(files, censor_payload, output_dir)
+    except HTTPException:
+        alias_payload = dict(payload)
+        alias_payload.setdefault("factor", 20)
+        return handle_pixelate_image(files, alias_payload, output_dir)
+
+
+def handle_generate_signature(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Provide signature text")
+
+    width = max(240, int(payload.get("width", 720)))
+    height = max(100, int(payload.get("height", 240)))
+    font_size = max(28, int(payload.get("font_size", 96)))
+    text_color = parse_color_value(payload.get("color", "#0f172a"), (15, 23, 42))
+
+    image = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(image)
+    font = load_ui_font(font_size)
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    x = max(10, (width - text_width) // 2)
+    y = max(10, (height - text_height) // 2 - bbox[1])
+    draw.text((x, y), text, fill=(*text_color, 255), font=font)
+
+    output = output_dir / "signature.png"
+    save_image(image, output, fmt="PNG")
+    return create_single_file_result(output, "Signature image generated", "image/png")
+
+
+def handle_eml_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    message = BytesParser(policy=policy.default).parsebytes(files[0].read_bytes())
+
+    body_parts: list[str] = []
+    if message.is_multipart():
+        for part in message.walk():
+            if part.get_content_type() == "text/plain":
+                body_parts.append(part.get_content())
+    else:
+        body_parts.append(message.get_content())
+
+    lines = [
+        f"Subject: {message.get('subject', '')}",
+        f"From: {message.get('from', '')}",
+        f"To: {message.get('to', '')}",
+        f"Date: {message.get('date', '')}",
+        "",
+        "\n".join(part.strip() for part in body_parts if str(part).strip()),
+    ]
+    output = output_dir / "email.pdf"
+    text_to_pdf("\n".join(lines).strip(), output, title="EML to PDF")
+    return create_single_file_result(output, "Email converted to PDF", "application/pdf")
+
+
+def handle_fb2_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    xml_text = files[0].read_text(encoding="utf-8", errors="ignore")
+    content = BeautifulSoup(xml_text, "xml").get_text("\n", strip=True)
+    output = output_dir / "fb2.pdf"
+    text_to_pdf(content, output, title="FB2 to PDF")
+    return create_single_file_result(output, "FB2 converted to PDF", "application/pdf")
+
+
+def handle_cbz_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    images: list[Image.Image] = []
+    with zipfile.ZipFile(files[0], "r") as archive:
+        for name in sorted(archive.namelist()):
+            suffix = Path(name).suffix.lower()
+            if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}:
+                continue
+            with archive.open(name) as member:
+                images.append(Image.open(io.BytesIO(member.read())).convert("RGB"))
+
+    output = output_dir / "cbz.pdf"
+    save_images_as_pdf(images, output)
+    return create_single_file_result(output, "CBZ converted to PDF", "application/pdf")
+
+
+def handle_ebook_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    extension = files[0].suffix.lower()
+    if extension == ".epub":
+        return handle_epub_to_pdf(files, payload, output_dir)
+    if extension == ".fb2":
+        return handle_fb2_to_pdf(files, payload, output_dir)
+    if extension == ".cbz":
+        return handle_cbz_to_pdf(files, payload, output_dir)
+    raise HTTPException(status_code=400, detail=f"Unsupported eBook format: {extension or 'unknown'}")
+
+
+def handle_heic_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_jpg_to_pdf(files, payload, output_dir)
+
+
+def handle_heif_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_jpg_to_pdf(files, payload, output_dir)
+
+
+def handle_jfif_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_jpg_to_pdf(files, payload, output_dir)
+
+
+def handle_zip_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_zip_images_to_pdf(files, payload, output_dir)
+
+
 HANDLERS: dict[str, ToolHandler] = {
     "merge-pdf": handle_merge_pdf,
     "split-pdf": handle_split_pdf,
     "extract-pages": handle_extract_pages,
     "delete-pages": handle_delete_pages,
     "compress-pdf": handle_compress_pdf,
+    "optimize-pdf": handle_optimize_pdf,
     "rotate-pdf": handle_rotate_pdf,
     "organize-pdf": handle_organize_pdf,
     "rearrange-pages": handle_rearrange_pages,
@@ -2825,6 +3431,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "page-numbers-pdf": handle_page_numbers_pdf,
     "header-footer-pdf": handle_header_footer_pdf,
     "protect-pdf": handle_protect_pdf,
+    "pdf-security": handle_pdf_security,
     "unlock-pdf": handle_unlock_pdf,
     "redact-pdf": handle_redact_pdf,
     "whiteout-pdf": handle_whiteout_pdf,
@@ -2836,28 +3443,49 @@ HANDLERS: dict[str, ToolHandler] = {
     "pdf-to-png": handle_pdf_to_png,
     "grayscale-pdf": handle_grayscale_pdf,
     "jpg-to-pdf": handle_jpg_to_pdf,
+    "heic-to-pdf": handle_heic_to_pdf,
+    "heif-to-pdf": handle_heif_to_pdf,
+    "jfif-to-pdf": handle_jfif_to_pdf,
     "image-to-pdf": handle_image_to_pdf,
     "scan-to-pdf": handle_scan_to_pdf,
     "png-to-pdf": handle_png_to_pdf,
     "webp-to-pdf": handle_webp_to_pdf,
     "gif-to-pdf": handle_gif_to_pdf,
     "bmp-to-pdf": handle_bmp_to_pdf,
+    "convert-to-pdf": handle_convert_to_pdf,
+    "convert-from-pdf": handle_convert_from_pdf,
+    "pdf-converter": handle_pdf_converter,
     "pdf-to-docx": handle_pdf_to_docx,
+    "pdf-to-word": handle_pdf_to_word,
     "docx-to-pdf": handle_docx_to_pdf,
+    "word-to-pdf": handle_word_to_pdf,
     "pdf-to-excel": handle_pdf_to_excel,
     "excel-to-pdf": handle_excel_to_pdf,
     "pdf-to-pptx": handle_pdf_to_pptx,
+    "pdf-to-powerpoint": handle_pdf_to_powerpoint,
     "pptx-to-pdf": handle_pptx_to_pdf,
+    "powerpoint-to-pdf": handle_powerpoint_to_pdf,
     "repair-pdf": handle_repair_pdf,
     "create-pdf": handle_create_pdf,
     "pdf-to-pdfa": handle_pdf_to_pdfa,
     "sign-pdf": handle_sign_pdf,
     "edit-metadata-pdf": handle_edit_metadata_pdf,
+    "edit-metadata": handle_edit_metadata,
     "translate-pdf": handle_translate_pdf,
     "summarize-pdf": handle_summarize_pdf,
+    "ai-summarizer": handle_ai_summarizer,
+    "pdf-viewer": handle_pdf_viewer,
+    "pdf-intelligence": handle_pdf_intelligence,
+    "edit-pdf": handle_edit_pdf,
+    "annotate-pdf": handle_annotate_pdf,
+    "highlight-pdf": handle_highlight_pdf,
+    "pdf-filler": handle_pdf_filler,
     "chat-with-pdf": handle_chat_with_pdf,
     "compress-image": handle_compress_image,
     "resize-image": handle_resize_image,
+    "resize-image-in-cm": handle_resize_image_in_cm,
+    "resize-image-in-mm": handle_resize_image_in_mm,
+    "resize-image-in-inch": handle_resize_image_in_inch,
     "upscale-image": handle_upscale_image,
     "crop-image": handle_crop_image,
     "rotate-image": handle_rotate_image,
@@ -2866,19 +3494,31 @@ HANDLERS: dict[str, ToolHandler] = {
     "png-to-jpg": handle_png_to_jpg,
     "image-to-webp": handle_image_to_webp,
     "watermark-image": handle_watermark_image,
+    "add-name-dob-image": handle_add_name_dob_image,
+    "merge-photo-signature": handle_merge_photo_signature,
     "grayscale-image": handle_grayscale_image,
+    "black-and-white-image": handle_black_and_white_image,
     "blur-image": handle_blur_image,
     "pixelate-image": handle_pixelate_image,
+    "picture-to-pixel-art": handle_picture_to_pixel_art,
+    "censor-photo": handle_censor_photo,
     "meme-generator": handle_meme_generator,
+    "generate-signature": handle_generate_signature,
     "pdf-to-image": handle_pdf_to_image,
     "html-to-pdf": handle_html_to_pdf,
     "url-to-pdf": handle_url_to_pdf,
     "md-to-pdf": handle_md_to_pdf,
     "txt-to-pdf": handle_txt_to_pdf,
+    "eml-to-pdf": handle_eml_to_pdf,
+    "fb2-to-pdf": handle_fb2_to_pdf,
+    "cbz-to-pdf": handle_cbz_to_pdf,
+    "ebook-to-pdf": handle_ebook_to_pdf,
     "summarize-text": handle_summarize_text,
     "translate-text": handle_translate_text,
     "qr-code-generator": handle_qr_code_generator,
     "extract-metadata": handle_extract_metadata,
+    "check-image-dpi": handle_check_image_dpi,
+    "convert-dpi": handle_convert_dpi,
     "remove-metadata-image": handle_remove_metadata_image,
     "pdf-to-txt": handle_pdf_to_txt,
     "pdf-to-markdown": handle_pdf_to_markdown,
@@ -2899,6 +3539,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "add-image-pdf": handle_add_image_pdf,
     "pdf-pages-to-zip": handle_pdf_pages_to_zip,
     "zip-images-to-pdf": handle_zip_images_to_pdf,
+    "zip-to-pdf": handle_zip_to_pdf,
     "pdf-page-count": handle_pdf_page_count,
     "reverse-pdf": handle_reverse_pdf,
     "flatten-pdf": handle_flatten_pdf,
@@ -2916,7 +3557,11 @@ HANDLERS: dict[str, ToolHandler] = {
     "pdf-to-epub": handle_pdf_to_epub,
     "epub-to-pdf": handle_epub_to_pdf,
     "ocr-image": handle_ocr_image,
+    "image-to-text": handle_image_to_text,
+    "jpg-to-text": handle_jpg_to_text,
+    "png-to-text": handle_png_to_text,
     "ocr-pdf": handle_ocr_pdf,
+    "pdf-ocr": handle_pdf_ocr,
     "remove-background": handle_remove_background,
     "blur-background": handle_blur_background,
     "blur-face": handle_blur_face,
@@ -2947,4 +3592,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "json-prettify": handle_json_prettify,
     "csv-to-json": handle_csv_to_json,
     "json-to-csv": handle_json_to_csv,
+    "remove-pages": handle_remove_pages,
+    "add-page-numbers": handle_add_page_numbers,
+    "add-watermark": handle_add_watermark,
 }
