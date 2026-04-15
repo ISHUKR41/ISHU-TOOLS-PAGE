@@ -4,6 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+packages = ["cargo", "exiftool", "file", "fontconfig", "freetype", "geckodriver", "ghostscript", "glib", "glibcLocales", "gumbo", "harfbuzz", "hdf5", "imagemagickBig", "jbig2dec", "lcms2", "libaom", "libarchive", "libde265", "libheif", "libiconv", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "mupdf", "nasm", "netpbm", "openjpeg", "openssl", "pango", "pkg-config", "poppler_utils", "qpdf", "rustc", "swig", "tcl", "tesseract", "tk", "unrar", "x265", "xcbuild", "xcodebuild", "xsimd", "zlib"]
 
 [workflows]
 runButton = "Project"
