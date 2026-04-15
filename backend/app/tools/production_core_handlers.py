@@ -116,61 +116,88 @@ def split_pdf_production(files: list[Path], payload: dict[str, Any], output_dir:
 
 def compress_pdf_production(files: list[Path], payload: dict[str, Any], output_dir: Path) -> HandlerResult:
     """
-    Compress PDF with optimal settings using pikepdf
-    Achieves significant size reduction while maintaining quality
+    Compress PDF using Ghostscript for maximum quality reduction,
+    falling back to pikepdf if Ghostscript is unavailable.
     """
+    import subprocess
+    import shutil
+
     if not files:
         return HandlerResult(
             kind="json",
             message="Please upload a PDF file to compress",
             data={"error": "no_file"}
         )
-    
+
     try:
         pdf_file = files[0]
         original_size = pdf_file.stat().st_size
-        
-        # Open and optimize with pikepdf
+        quality = str(payload.get("quality", "ebook")).strip()
+        # Map user-friendly names to gs settings
+        quality_map = {
+            "screen": "/screen",
+            "ebook": "/ebook",
+            "printer": "/printer",
+            "prepress": "/prepress",
+            "default": "/default",
+        }
+        gs_quality = quality_map.get(quality, "/ebook")
+        output_path = output_dir / "compressed.pdf"
+
+        # Try Ghostscript first – best quality/size ratio
+        gs_bin = shutil.which("gs") or shutil.which("gswin64c") or shutil.which("gswin32c")
+        if gs_bin:
+            cmd = [
+                gs_bin,
+                "-sDEVICE=pdfwrite",
+                "-dCompatibilityLevel=1.4",
+                f"-dPDFSETTINGS={gs_quality}",
+                "-dNOPAUSE",
+                "-dQUIET",
+                "-dBATCH",
+                "-dColorImageDownsampleType=/Bicubic",
+                "-dGrayImageDownsampleType=/Bicubic",
+                "-dMonoImageDownsampleType=/Bicubic",
+                "-dEmbedAllFonts=true",
+                "-dSubsetFonts=true",
+                "-dCompressFonts=true",
+                f"-sOutputFile={output_path}",
+                str(pdf_file),
+            ]
+            result = subprocess.run(cmd, capture_output=True, timeout=120)
+            if result.returncode == 0 and output_path.exists() and output_path.stat().st_size > 0:
+                compressed_size = output_path.stat().st_size
+                reduction = ((original_size - compressed_size) / original_size) * 100
+                return HandlerResult(
+                    kind="file",
+                    output_path=output_path,
+                    filename="compressed.pdf",
+                    content_type="application/pdf",
+                    message=f"Compressed {reduction:.1f}% — {original_size // 1024} KB → {compressed_size // 1024} KB"
+                )
+
+        # Fallback: pikepdf with maximum stream compression
         with pikepdf.open(pdf_file) as pdf:
-            # Remove unused objects
             pdf.remove_unreferenced_resources()
-            
-            # Compress images
-            for page in pdf.pages:
-                for image_key in page.images.keys():
-                    try:
-                        image = page.images[image_key]
-                        # Recompress images with JPEG at quality 85
-                        if hasattr(image, 'obj'):
-                            img_obj = image.obj
-                            if '/Filter' in img_obj and img_obj['/Filter'] != '/DCTDecode':
-                                # Convert to JPEG compression
-                                pass  # Advanced image recompression
-                    except:
-                        pass
-            
-            # Save with maximum compression
-            output_path = output_dir / "compressed.pdf"
             pdf.save(
                 output_path,
                 compress_streams=True,
                 stream_decode_level=pikepdf.StreamDecodeLevel.generalized,
                 object_stream_mode=pikepdf.ObjectStreamMode.generate,
                 recompress_flate=True,
-                normalize_content=True
+                normalize_content=True,
             )
-        
+
         compressed_size = output_path.stat().st_size
         reduction = ((original_size - compressed_size) / original_size) * 100
-        
         return HandlerResult(
             kind="file",
             output_path=output_path,
             filename="compressed.pdf",
             content_type="application/pdf",
-            message=f"Compressed by {reduction:.1f}% (from {original_size//1024}KB to {compressed_size//1024}KB)"
+            message=f"Compressed {reduction:.1f}% — {original_size // 1024} KB → {compressed_size // 1024} KB"
         )
-    
+
     except Exception as e:
         return HandlerResult(
             kind="json",

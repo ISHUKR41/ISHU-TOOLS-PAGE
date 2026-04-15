@@ -1828,21 +1828,62 @@ def handle_rotate_image(files: list[Path], payload: dict[str, Any], output_dir: 
 def handle_convert_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     target_format = str(payload.get("target_format", "png")).lower().strip()
-    if target_format not in {"png", "jpg", "jpeg", "webp", "gif", "bmp"}:
-        raise HTTPException(status_code=400, detail="target_format must be one of png,jpg,webp,gif,bmp")
+    supported = {"png", "jpg", "jpeg", "webp", "gif", "bmp", "tiff", "tif", "ico", "pdf", "svg"}
+    if target_format not in supported:
+        raise HTTPException(status_code=400, detail=f"target_format must be one of: {', '.join(sorted(supported))}")
 
     quality = max(5, min(100, int(payload.get("quality", 92))))
     img = open_image_file(files[0])
-    converted = img.convert("RGB") if target_format in {"jpg", "jpeg", "webp"} else img
-    output = output_dir / f"converted.{ 'jpg' if target_format == 'jpeg' else target_format }"
+    ext = "jpg" if target_format == "jpeg" else ("tiff" if target_format == "tif" else target_format)
+    output = output_dir / f"converted.{ext}"
+
     if target_format in {"jpg", "jpeg"}:
-        save_image(converted, output, fmt="JPEG", quality=quality)
+        save_image(img.convert("RGB"), output, fmt="JPEG", quality=quality)
     elif target_format == "png":
-        converted.save(str(output), format="PNG", optimize=True, compress_level=9)
+        img.save(str(output), format="PNG", optimize=True, compress_level=9)
     elif target_format == "webp":
-        converted.save(str(output), format="WEBP", quality=quality, method=6)
+        img.convert("RGB").save(str(output), format="WEBP", quality=quality, method=6)
+    elif target_format in {"tiff", "tif"}:
+        img.save(str(output), format="TIFF", compression="tiff_lzw")
+    elif target_format == "ico":
+        sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+        resized = img.convert("RGBA")
+        resized.thumbnail((256, 256), get_resampling_module().LANCZOS)
+        resized.save(str(output), format="ICO", sizes=sizes)
+    elif target_format == "pdf":
+        try:
+            import fitz
+            pix_img = img.convert("RGB")
+            buf = io.BytesIO()
+            pix_img.save(buf, format="JPEG", quality=92)
+            buf.seek(0)
+            doc = fitz.open()
+            w, h = pix_img.size
+            page = doc.new_page(width=w, height=h)
+            page.insert_image(fitz.Rect(0, 0, w, h), stream=buf.read())
+            doc.save(str(output))
+            doc.close()
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Image to PDF failed: {exc}") from exc
+    elif target_format == "svg":
+        try:
+            import cairosvg
+            buf = io.BytesIO()
+            img.convert("RGBA").save(buf, format="PNG")
+            w, h = img.size
+            svg_data = f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}"><image href="data:image/png;base64,{__import__("base64").b64encode(buf.getvalue()).decode()}" width="{w}" height="{h}"/></svg>'
+            output.write_text(svg_data, encoding="utf-8")
+        except Exception:
+            # Simple SVG wrapper without cairosvg
+            buf = io.BytesIO()
+            img.convert("RGBA").save(buf, format="PNG")
+            import base64
+            encoded = base64.b64encode(buf.getvalue()).decode()
+            w, h = img.size
+            svg_data = f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}"><image href="data:image/png;base64,{encoded}" width="{w}" height="{h}"/></svg>'
+            output.write_text(svg_data, encoding="utf-8")
     else:
-        save_image(converted, output, fmt=target_format.upper(), quality=quality)
+        save_image(img, output, fmt=target_format.upper(), quality=quality)
 
     return create_single_file_result(output, "Image converted", "image/*")
 

@@ -1,8 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, FormEvent } from 'react'
-import { ArrowLeft, Download, LoaderCircle, Upload } from 'lucide-react'
+import { useDropzone } from 'react-dropzone'
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Download,
+  FileText,
+  ImageIcon,
+  LoaderCircle,
+  Trash2,
+  Upload,
+  X,
+  Zap,
+} from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../api/toolsApi'
 import SiteShell from '../../components/layout/SiteShell'
@@ -20,6 +32,27 @@ function normalizePayloadValue(value: string, fieldType: string) {
   return value
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+function getFileIcon(file: File) {
+  const type = file.type
+  if (type.startsWith('image/')) return <ImageIcon size={16} />
+  return <FileText size={16} />
+}
+
+function isImageFile(file: File) {
+  return file.type.startsWith('image/')
+}
+
+type FilePreviewItem = {
+  file: File
+  previewUrl?: string
+}
+
 export default function ToolPage() {
   const { slug } = useParams<{ slug: string }>()
 
@@ -29,14 +62,16 @@ export default function ToolPage() {
   const [toolError, setToolError] = useState<string | null>(null)
   const [runtimeCapabilities, setRuntimeCapabilities] = useState<RuntimeCapabilities | null>(null)
 
-  const [files, setFiles] = useState<File[]>([])
+  const [fileItems, setFileItems] = useState<FilePreviewItem[]>([])
   const [payloadState, setPayloadState] = useState<Record<string, string>>({})
   const [running, setRunning] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [runMessage, setRunMessage] = useState<string | null>(null)
   const [runError, setRunError] = useState<string | null>(null)
   const [jsonResult, setJsonResult] = useState<ToolRunJsonResult | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [downloadName, setDownloadName] = useState<string | null>(null)
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     if (!slug) return
@@ -79,9 +114,17 @@ export default function ToolPage() {
     }
   }, [slug])
 
+  // Revoke old preview URLs on cleanup
+  useEffect(() => {
+    return () => {
+      fileItems.forEach((item) => {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
+      })
+    }
+  }, [fileItems])
+
   useEffect(() => {
     if (!downloadUrl) return
-
     return () => {
       URL.revokeObjectURL(downloadUrl)
     }
@@ -103,6 +146,73 @@ export default function ToolPage() {
     setPayloadState(defaults)
   }, [fields])
 
+  const accept = useMemo(() => {
+    if (!tool) return {}
+    const acceptStr = getToolAccept(tool.slug)
+    if (!acceptStr) return {}
+    const result: Record<string, string[]> = {}
+    acceptStr.split(',').forEach((ext) => {
+      const trimmed = ext.trim()
+      result[trimmed] = []
+    })
+    return result
+  }, [tool])
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const newItems: FilePreviewItem[] = acceptedFiles.map((file) => ({
+        file,
+        previewUrl: isImageFile(file) ? URL.createObjectURL(file) : undefined,
+      }))
+
+      if (tool?.accepts_multiple) {
+        setFileItems((prev) => [...prev, ...newItems])
+      } else {
+        // Revoke old previews
+        fileItems.forEach((item) => {
+          if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
+        })
+        setFileItems(newItems.slice(0, 1))
+      }
+    },
+    [tool, fileItems],
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    multiple: tool?.accepts_multiple ?? false,
+    noClick: false,
+  })
+
+  function removeFile(index: number) {
+    setFileItems((prev) => {
+      const item = prev[index]
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
+      return prev.filter((_, i) => i !== index)
+    })
+  }
+
+  function startProgressSimulation() {
+    setProgress(0)
+    let currentProgress = 0
+    progressInterval.current = setInterval(() => {
+      currentProgress += Math.random() * 12
+      if (currentProgress > 90) currentProgress = 90
+      setProgress(Math.round(currentProgress))
+    }, 400)
+  }
+
+  function stopProgressSimulation(success: boolean) {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current)
+      progressInterval.current = null
+    }
+    setProgress(success ? 100 : 0)
+    if (success) {
+      setTimeout(() => setProgress(0), 1800)
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!tool || !slug) return
@@ -110,14 +220,17 @@ export default function ToolPage() {
     setRunError(null)
     setRunMessage(null)
     setJsonResult(null)
+    setDownloadUrl(null)
+    setDownloadName(null)
 
-    if (tool.input_kind === 'files' && files.length === 0) {
+    if (tool.input_kind === 'files' && fileItems.length === 0) {
       setRunError('Please upload the required file before running this tool.')
       return
     }
 
     try {
       setRunning(true)
+      startProgressSimulation()
 
       const payload: Record<string, unknown> = {}
       for (const field of fields) {
@@ -127,26 +240,31 @@ export default function ToolPage() {
         }
       }
 
+      const files = fileItems.map((item) => item.file)
       const result = await runTool(slug, files, payload)
+
+      stopProgressSimulation(true)
 
       if (result.type === 'file') {
         if (downloadUrl) URL.revokeObjectURL(downloadUrl)
         const objectUrl = URL.createObjectURL(result.blob)
+        setDownloadUrl(objectUrl)
+        setDownloadName(result.filename)
+        setRunMessage(result.message)
+
+        // Auto-trigger download
         const anchor = document.createElement('a')
         anchor.href = objectUrl
         anchor.download = result.filename
         document.body.appendChild(anchor)
         anchor.click()
         anchor.remove()
-
-        setDownloadUrl(objectUrl)
-        setDownloadName(result.filename)
-        setRunMessage(`${result.message}. Download started for ${result.filename}.`)
       } else {
         setJsonResult(result.payload)
         setRunMessage(result.payload.message || 'Tool completed successfully.')
       }
     } catch (err) {
+      stopProgressSimulation(false)
       setRunError(err instanceof Error ? err.message : 'Tool execution failed')
     } finally {
       setRunning(false)
@@ -157,7 +275,10 @@ export default function ToolPage() {
     return (
       <SiteShell>
         <div className='page-wrap'>
-          <p className='status-text'>Loading tool workspace...</p>
+          <div className='tool-loading-state'>
+            <LoaderCircle size={32} className='spin' />
+            <p>Loading tool workspace...</p>
+          </div>
         </div>
       </SiteShell>
     )
@@ -167,10 +288,12 @@ export default function ToolPage() {
     return (
       <SiteShell>
         <div className='page-wrap'>
-          <p className='status-text error'>{toolError || 'Tool not found'}</p>
-          <Link to='/' className='inline-link'>
-            Return to all tools
-          </Link>
+          <div className='tool-error-state'>
+            <p className='status-text error'>{toolError || 'Tool not found'}</p>
+            <Link to='/' className='inline-link'>
+              ← Return to all tools
+            </Link>
+          </div>
         </div>
       </SiteShell>
     )
@@ -195,12 +318,12 @@ export default function ToolPage() {
                   '--card-glow': toolTheme.glow,
                 } as CSSProperties
               }
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45 }}
+              transition={{ duration: 0.4 }}
             >
               <div className='tool-page-hero'>
-                <span className='tool-icon-wrap large'>
+                <span className='tool-icon-wrap large' style={{ borderColor: `${toolTheme.accent}40`, background: `${toolTheme.accent}12` }}>
                   <ToolIcon slug={tool.slug} className='tool-icon' />
                 </span>
                 <div>
@@ -208,95 +331,192 @@ export default function ToolPage() {
                     <span className='tool-badge' style={{ borderColor: toolTheme.accent, color: toolTheme.accent }}>
                       {toolTheme.label}
                     </span>
-                    <span className='tool-badge subtle'>{tool.accepts_multiple ? 'Multi file' : 'Single file'}</span>
+                    <span className='tool-badge subtle'>
+                      <Zap size={11} />
+                      {tool.accepts_multiple ? 'Multi-file' : 'Single-file'}
+                    </span>
                   </div>
                   <h1>{tool.title}</h1>
                   <p>{tool.description}</p>
                 </div>
               </div>
 
-              <form className='tool-form' onSubmit={handleSubmit}>
-                {(tool.input_kind === 'files' || tool.input_kind === 'mixed') && (
-                  <label className='field-block'>
-                    <span>
-                      Upload source file{tool.accepts_multiple ? 's' : ''}
-                      {tool.input_kind === 'mixed' ? ' (optional for text/url mode)' : ''}
-                    </span>
-                    <div className='upload-shell'>
-                      <Upload size={18} />
-                      <input
-                        type='file'
-                        accept={getToolAccept(tool.slug)}
-                        multiple={tool.accepts_multiple}
-                        onChange={(event) => {
-                          const incoming = Array.from(event.target.files || [])
-                          setFiles(incoming)
-                        }}
+              {/* Progress bar */}
+              <AnimatePresence>
+                {running && (
+                  <motion.div
+                    className='tool-progress-bar-wrap'
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <div className='tool-progress-bar'>
+                      <motion.div
+                        className='tool-progress-fill'
+                        style={{ width: `${progress}%`, background: toolTheme.accent }}
+                        transition={{ duration: 0.4 }}
                       />
                     </div>
-                    <small className='field-hint'>
-                      {tool.input_kind === 'mixed'
-                        ? 'Upload file(s) only when needed. You can also run this tool using form fields alone.'
-                        : tool.accepts_multiple
-                          ? 'You can upload multiple files for this workflow.'
-                          : 'Upload one source file to continue.'}
-                    </small>
-                  </label>
+                    <p className='tool-progress-label'>Processing... {progress}%</p>
+                  </motion.div>
                 )}
+              </AnimatePresence>
 
-                <div className='field-grid'>
-                  {fields.map((field) => (
-                    <label
-                      key={field.name}
-                      className={`field-block ${field.type === 'textarea' ? 'full-span' : ''}`}
-                    >
-                      <span>{field.label}</span>
-                      {field.type === 'textarea' ? (
-                        <textarea
-                          rows={6}
-                          placeholder={field.placeholder}
-                          value={payloadState[field.name] || ''}
-                          onChange={(event) =>
-                            setPayloadState((prev) => ({
-                              ...prev,
-                              [field.name]: event.target.value,
-                            }))
-                          }
-                        />
-                      ) : field.type === 'select' ? (
-                        <select
-                          value={payloadState[field.name] || field.defaultValue || ''}
-                          onChange={(event) =>
-                            setPayloadState((prev) => ({
-                              ...prev,
-                              [field.name]: event.target.value,
-                            }))
-                          }
-                        >
-                          {field.options?.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <input
-                          type={field.type}
-                          placeholder={field.placeholder}
-                          value={payloadState[field.name] || ''}
-                          onChange={(event) =>
-                            setPayloadState((prev) => ({
-                              ...prev,
-                              [field.name]: event.target.value,
-                            }))
-                          }
-                        />
+              <form className='tool-form' onSubmit={handleSubmit}>
+                {(tool.input_kind === 'files' || tool.input_kind === 'mixed') && (
+                  <div className='upload-section'>
+                    <label className='upload-label'>
+                      Upload file{tool.accepts_multiple ? 's' : ''}
+                      {tool.input_kind === 'mixed' && (
+                        <span className='upload-label-hint'>(optional)</span>
                       )}
                     </label>
-                  ))}
-                </div>
 
-                <button type='submit' className='run-button' disabled={running}>
+                    <div
+                      {...getRootProps()}
+                      className={`dropzone ${isDragActive ? 'dropzone-active' : ''} ${fileItems.length > 0 ? 'dropzone-has-files' : ''}`}
+                      style={isDragActive ? { borderColor: toolTheme.accent, background: `${toolTheme.accent}08` } : {}}
+                    >
+                      <input {...getInputProps()} />
+                      {isDragActive ? (
+                        <div className='dropzone-content dragging'>
+                          <Upload size={28} style={{ color: toolTheme.accent }} />
+                          <p>Drop files here...</p>
+                        </div>
+                      ) : fileItems.length === 0 ? (
+                        <div className='dropzone-content'>
+                          <div className='dropzone-icon-wrap' style={{ background: `${toolTheme.accent}14`, borderColor: `${toolTheme.accent}30` }}>
+                            <Upload size={24} style={{ color: toolTheme.accent }} />
+                          </div>
+                          <div>
+                            <p className='dropzone-title'>Drag & drop file{tool.accepts_multiple ? 's' : ''} here</p>
+                            <p className='dropzone-hint'>or click to browse from your computer</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className='dropzone-content compact'>
+                          <Upload size={18} style={{ color: toolTheme.accent }} />
+                          <p>{tool.accepts_multiple ? 'Add more files' : 'Replace file'}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* File preview list */}
+                    <AnimatePresence>
+                      {fileItems.length > 0 && (
+                        <motion.div
+                          className='file-preview-list'
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          {fileItems.map((item, index) => (
+                            <motion.div
+                              key={`${item.file.name}-${index}`}
+                              className='file-preview-item'
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 10 }}
+                              transition={{ delay: index * 0.04 }}
+                            >
+                              {item.previewUrl ? (
+                                <img
+                                  src={item.previewUrl}
+                                  alt={item.file.name}
+                                  className='file-preview-thumb'
+                                />
+                              ) : (
+                                <div className='file-preview-icon' style={{ color: toolTheme.accent }}>
+                                  {getFileIcon(item.file)}
+                                </div>
+                              )}
+                              <div className='file-preview-info'>
+                                <span className='file-preview-name'>{item.file.name}</span>
+                                <span className='file-preview-size'>{formatBytes(item.file.size)}</span>
+                              </div>
+                              <button
+                                type='button'
+                                className='file-remove-btn'
+                                onClick={() => removeFile(index)}
+                                title='Remove file'
+                              >
+                                <X size={14} />
+                              </button>
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {fields.length > 0 && (
+                  <div className='field-grid'>
+                    {fields.map((field) => (
+                      <label
+                        key={field.name}
+                        className={`field-block ${field.type === 'textarea' ? 'full-span' : ''}`}
+                      >
+                        <span>{field.label}</span>
+                        {field.type === 'textarea' ? (
+                          <textarea
+                            rows={6}
+                            placeholder={field.placeholder}
+                            value={payloadState[field.name] || ''}
+                            onChange={(event) =>
+                              setPayloadState((prev) => ({
+                                ...prev,
+                                [field.name]: event.target.value,
+                              }))
+                            }
+                          />
+                        ) : field.type === 'select' ? (
+                          <select
+                            value={payloadState[field.name] || field.defaultValue || ''}
+                            onChange={(event) =>
+                              setPayloadState((prev) => ({
+                                ...prev,
+                                [field.name]: event.target.value,
+                              }))
+                            }
+                          >
+                            {field.options?.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            value={payloadState[field.name] || ''}
+                            onChange={(event) =>
+                              setPayloadState((prev) => ({
+                                ...prev,
+                                [field.name]: event.target.value,
+                              }))
+                            }
+                          />
+                        )}
+                        {field.placeholder && field.type !== 'select' && (
+                          <small className='field-hint'>{field.placeholder}</small>
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type='submit'
+                  className='run-button'
+                  disabled={running}
+                  style={
+                    !running
+                      ? { background: `linear-gradient(120deg, ${toolTheme.accent}, ${toolTheme.accent}bb)` }
+                      : {}
+                  }
+                >
                   {running ? (
                     <>
                       <LoaderCircle size={18} className='spin' />
@@ -304,7 +524,7 @@ export default function ToolPage() {
                     </>
                   ) : (
                     <>
-                      <Download size={18} />
+                      <Zap size={18} />
                       Run {tool.title}
                     </>
                   )}
@@ -312,49 +532,76 @@ export default function ToolPage() {
               </form>
             </motion.section>
 
-            {files.length > 0 && (
-              <section className='result-card'>
-                <h2>Selected files</h2>
-                <div className='file-chip-row'>
-                  {files.map((file) => (
-                    <span key={`${file.name}-${file.size}`} className='file-chip'>
-                      {file.name}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {(runMessage || runError || jsonResult || downloadUrl) && (
-              <section className='result-card'>
-                {runError && <p className='status-text error'>{runError}</p>}
-                {runMessage && !runError && (
-                  <p className='status-text success'>{runMessage}</p>
-                )}
-                {downloadUrl && downloadName && (
-                  <a href={downloadUrl} download={downloadName} className='download-link prominent'>
-                    <Download size={18} />
-                    Download {downloadName}
-                  </a>
-                )}
-                {jsonResult && (() => {
-                  const d = jsonResult.data || {}
-                  const textFields = ['text', 'content', 'answer', 'summary', 'translated_text', 'result']
-                  const found = textFields.find((k) => d[k])
-                  return (
-                    <div className='json-result-block'>
-                      {found && (
-                        <p className='json-text-result'>{String(d[found])}</p>
-                      )}
-                      <details className='json-details'>
-                        <summary>Raw output</summary>
-                        <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>
-                      </details>
+            {/* Results */}
+            <AnimatePresence>
+              {(runMessage || runError || jsonResult || downloadUrl) && (
+                <motion.section
+                  className='result-card'
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.35 }}
+                >
+                  {runError && (
+                    <div className='result-error'>
+                      <X size={18} />
+                      <p>{runError}</p>
                     </div>
-                  )
-                })()}
-              </section>
-            )}
+                  )}
+
+                  {runMessage && !runError && (
+                    <div className='result-success'>
+                      <CheckCircle2 size={18} />
+                      <p>{runMessage}</p>
+                    </div>
+                  )}
+
+                  {downloadUrl && downloadName && (
+                    <motion.a
+                      href={downloadUrl}
+                      download={downloadName}
+                      className='download-link prominent'
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <Download size={20} />
+                      Download {downloadName}
+                    </motion.a>
+                  )}
+
+                  {jsonResult && (() => {
+                    const d = jsonResult.data || {}
+                    const textFields = ['text', 'content', 'answer', 'summary', 'translated_text', 'result', 'extracted_text']
+                    const found = textFields.find((k) => d[k])
+                    return (
+                      <div className='json-result-block'>
+                        {found && (
+                          <div className='json-text-result'>
+                            <div className='json-text-header'>
+                              <span>Result</span>
+                              <button
+                                type='button'
+                                className='copy-btn'
+                                onClick={() => {
+                                  navigator.clipboard.writeText(String(d[found])).catch(() => {})
+                                }}
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <p>{String(d[found])}</p>
+                          </div>
+                        )}
+                        <details className='json-details'>
+                          <summary>Raw output data</summary>
+                          <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>
+                        </details>
+                      </div>
+                    )
+                  })()}
+                </motion.section>
+              )}
+            </AnimatePresence>
           </div>
 
           <ToolSidebar

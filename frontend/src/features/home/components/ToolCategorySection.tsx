@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import type { CSSProperties } from 'react'
 
 import { getCategoryTheme } from '../../../lib/toolPresentation'
 import type { ToolCategory, ToolDefinition } from '../../../types/tools'
@@ -17,6 +18,7 @@ export default function ToolCategorySection({ category, tools }: ToolCategorySec
   return (
     <motion.section
       className='tool-section'
+      style={{ '--tool-accent': theme.accent } as CSSProperties}
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
@@ -44,4 +46,3 @@ export default function ToolCategorySection({ category, tools }: ToolCategorySec
     </motion.section>
   )
 }
-

@@ -24,6 +24,20 @@ const booleanOptions = [
 ]
 
 export const TOOL_FIELDS: Record<string, ToolField[]> = {
+  'compress-pdf': [
+    {
+      name: 'quality',
+      label: 'Compression Quality',
+      type: 'select',
+      defaultValue: 'ebook',
+      options: [
+        { label: 'Screen (smallest, ~72 DPI)', value: 'screen' },
+        { label: 'Ebook (balanced, ~150 DPI)', value: 'ebook' },
+        { label: 'Printer (high quality, ~300 DPI)', value: 'printer' },
+        { label: 'Prepress (maximum quality)', value: 'prepress' },
+      ],
+    },
+  ],
   'split-pdf': [
     {
       name: 'pages',
@@ -400,12 +414,17 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       defaultValue: 'png',
       options: [
         { label: 'PNG', value: 'png' },
-        { label: 'JPG', value: 'jpg' },
+        { label: 'JPG / JPEG', value: 'jpg' },
         { label: 'WEBP', value: 'webp' },
         { label: 'GIF', value: 'gif' },
         { label: 'BMP', value: 'bmp' },
+        { label: 'TIFF', value: 'tiff' },
+        { label: 'ICO (Icon)', value: 'ico' },
+        { label: 'PDF', value: 'pdf' },
+        { label: 'SVG', value: 'svg' },
       ],
     },
+    { name: 'quality', label: 'Quality (JPG/WEBP)', type: 'number', defaultValue: '90' },
   ],
   'convert-dpi': [{ name: 'dpi', label: 'Target DPI', type: 'number', defaultValue: '300' }],
   'resize-image-in-cm': [

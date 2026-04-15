@@ -134,9 +134,9 @@ TOOLS: list[ToolDefinition] = [
     ToolDefinition(
         slug="compress-pdf",
         title="Compress PDF",
-        description="Reduce PDF size using stream compression.",
+        description="Shrink PDF size using Ghostscript — choose screen, ebook, printer, or prepress quality targets.",
         category="pdf-core",
-        tags=["compress", "optimize", "pdf"],
+        tags=["compress", "optimize", "pdf", "ghostscript"],
         input_kind="files",
     ),
     ToolDefinition(
