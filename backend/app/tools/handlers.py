@@ -86,6 +86,176 @@ STOPWORDS = {
 }
 
 
+LANGUAGE_ALIAS_MAP = {
+    "arabic": "ar",
+    "ar": "ar",
+    "bengali": "bn",
+    "bn": "bn",
+    "chinese": "zh-cn",
+    "chinesesimplified": "zh-cn",
+    "chinesetraditional": "zh-tw",
+    "cn": "zh-cn",
+    "de": "de",
+    "dutch": "nl",
+    "en": "en",
+    "english": "en",
+    "es": "es",
+    "french": "fr",
+    "fr": "fr",
+    "german": "de",
+    "gujarati": "gu",
+    "gu": "gu",
+    "hindi": "hi",
+    "hi": "hi",
+    "id": "id",
+    "indonesian": "id",
+    "it": "it",
+    "italian": "it",
+    "ja": "ja",
+    "japanese": "ja",
+    "ko": "ko",
+    "korean": "ko",
+    "marathi": "mr",
+    "mr": "mr",
+    "nl": "nl",
+    "pl": "pl",
+    "polish": "pl",
+    "portuguese": "pt",
+    "pt": "pt",
+    "punjabi": "pa",
+    "pa": "pa",
+    "russian": "ru",
+    "ru": "ru",
+    "spanish": "es",
+    "ta": "ta",
+    "tamil": "ta",
+    "te": "te",
+    "telugu": "te",
+    "th": "th",
+    "thai": "th",
+    "tr": "tr",
+    "turkish": "tr",
+    "uk": "uk",
+    "ukrainian": "uk",
+    "urdu": "ur",
+    "ur": "ur",
+    "vi": "vi",
+    "vietnamese": "vi",
+    "zh": "zh-cn",
+    "zhcn": "zh-cn",
+    "zhtw": "zh-tw",
+}
+
+
+CONVERT_FROM_PDF_TARGET_ALIASES = {
+    "bmp": "bmp",
+    "csv": "csv",
+    "doc": "docx",
+    "docx": "docx",
+    "epub": "epub",
+    "excel": "xlsx",
+    "gif": "gif",
+    "html": "html",
+    "image": "image",
+    "jpeg": "jpg",
+    "jpg": "jpg",
+    "json": "json",
+    "markdown": "md",
+    "md": "md",
+    "odt": "odt",
+    "pdf-a": "pdfa",
+    "pdfa": "pdfa",
+    "pdfa1": "pdfa",
+    "pdfa2": "pdfa",
+    "png": "png",
+    "powerpoint": "pptx",
+    "ppt": "pptx",
+    "pptx": "pptx",
+    "rtf": "rtf",
+    "svg": "svg",
+    "text": "txt",
+    "tif": "tiff",
+    "tiff": "tiff",
+    "txt": "txt",
+    "word": "docx",
+    "xls": "xlsx",
+    "xlsx": "xlsx",
+}
+
+
+def normalize_lookup_token(raw: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", str(raw).strip().lower())
+
+
+def tokenize_words(text: str) -> list[str]:
+    return [
+        token.lower()
+        for token in re.findall(r"[^\W\d_]+(?:'[^\W\d_]+)?", text, flags=re.UNICODE)
+        if token
+    ]
+
+
+def split_sentences(text: str) -> list[str]:
+    parts = [segment.strip() for segment in re.split(r"(?<=[.!?।])\s+|\n+", text) if segment.strip()]
+    if parts:
+        return parts
+
+    cleaned = re.sub(r"\s+", " ", text).strip()
+    return [cleaned] if cleaned else []
+
+
+def normalize_convert_from_pdf_target(raw_target: Any) -> str:
+    cleaned = str(raw_target or "").strip().lower()
+    if not cleaned:
+        return "jpg"
+
+    normalized = cleaned.replace("_", "-").replace("/", "-")
+    normalized = re.sub(r"[^a-z0-9-]+", "", normalized)
+    normalized = normalized.strip("-")
+    key = normalized.replace("-", "")
+    return CONVERT_FROM_PDF_TARGET_ALIASES.get(normalized) or CONVERT_FROM_PDF_TARGET_ALIASES.get(key) or normalized
+
+
+def get_translation_language_map() -> dict[str, str]:
+    cached = getattr(get_translation_language_map, "_cache", None)
+    if isinstance(cached, dict):
+        return cached
+
+    language_map = dict(LANGUAGE_ALIAS_MAP)
+    try:
+        supported = GoogleTranslator(source="auto", target="en").get_supported_languages(as_dict=True)
+        if isinstance(supported, dict):
+            for name, code in supported.items():
+                normalized_code = str(code).strip().lower()
+                if not normalized_code:
+                    continue
+                language_map[normalize_lookup_token(name)] = normalized_code
+                language_map[normalize_lookup_token(normalized_code)] = normalized_code
+                language_map[normalized_code] = normalized_code
+    except Exception:
+        pass
+
+    get_translation_language_map._cache = language_map
+    return language_map
+
+
+def normalize_translation_target(target_lang: str) -> str:
+    raw = str(target_lang or "").strip().lower()
+    if not raw:
+        return "en"
+
+    language_map = get_translation_language_map()
+    normalized = normalize_lookup_token(raw)
+    if normalized in language_map:
+        return language_map[normalized]
+
+    raw_hyphenated = raw.replace("_", "-")
+    if re.fullmatch(r"[a-z]{2,3}(?:-[a-z]{2,4})?", raw_hyphenated):
+        return raw_hyphenated
+
+    return "en"
+
+
 MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
 
 
@@ -242,7 +412,7 @@ def extract_pdf_text(pdf_path: Path) -> str:
         pass
 
     def score_text(value: str) -> int:
-        return len(re.sub(r"[^A-Za-z0-9]", "", value or ""))
+        return len(re.sub(r"[\W_]+", "", value or "", flags=re.UNICODE))
 
     best = max(candidates, key=score_text).strip() if candidates else ""
 
@@ -344,39 +514,90 @@ def chunk_text(text: str, max_chars: int = 4000) -> list[str]:
 
 
 def summarize_text_algo(text: str, max_sentences: int = 5) -> str:
-    if not text.strip():
+    cleaned_text = text.strip()
+    if not cleaned_text:
         return ""
 
-    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    sentences = _dedupe_ocr_lines(split_sentences(cleaned_text))
+    if not sentences:
+        return ""
+
+    max_sentences = max(1, min(20, int(max_sentences)))
     if len(sentences) <= max_sentences:
         return " ".join(sentences)
 
-    words = re.findall(r"[A-Za-z']+", text.lower())
+    words = tokenize_words(cleaned_text)
     frequencies: dict[str, int] = {}
     for word in words:
-        if word not in STOPWORDS and len(word) > 2:
+        if word.isascii() and word in STOPWORDS:
+            continue
+        if len(word) > 1:
             frequencies[word] = frequencies.get(word, 0) + 1
 
-    scored: list[tuple[int, str]] = []
+    scored: list[tuple[float, int, str]] = []
+    total_sentences = len(sentences)
     for idx, sentence in enumerate(sentences):
-        sentence_words = re.findall(r"[A-Za-z']+", sentence.lower())
-        score = sum(frequencies.get(word, 0) for word in sentence_words)
-        scored.append((score * 1000 - idx, sentence))
+        sentence_words = tokenize_words(sentence)
+        if not sentence_words:
+            continue
 
-    top = sorted(scored, reverse=True)[:max_sentences]
-    selected = {item[1] for item in top}
-    ordered = [sentence for sentence in sentences if sentence in selected]
+        base_score = sum(frequencies.get(word, 0) for word in sentence_words) / max(1, len(sentence_words))
+        position_boost = 1.15 if idx < max(2, total_sentences // 8) else 1.0
+        if idx >= total_sentences - max(2, total_sentences // 10):
+            position_boost = max(position_boost, 1.05)
+        length_penalty = 0.85 if len(sentence_words) > 45 else 1.0
+        score = base_score * position_boost * length_penalty
+        scored.append((score, idx, sentence))
+
+    if not scored:
+        return " ".join(sentences[:max_sentences])
+
+    top = sorted(scored, key=lambda item: item[0], reverse=True)[:max_sentences]
+    selected_indices = {item[1] for item in top}
+    ordered = [sentence for index, sentence in enumerate(sentences) if index in selected_indices]
     return " ".join(ordered)
 
 
-def translate_text_chunks(text: str, target_lang: str) -> str:
-    if not text.strip():
-        return ""
-    translator = GoogleTranslator(source="auto", target=target_lang)
+def _translate_chunk_resilient(translator: GoogleTranslator, chunk: str) -> str:
+    try:
+        translated = translator.translate(chunk)
+        if translated and translated.strip():
+            return translated.strip()
+    except Exception:
+        pass
+
+    sub_chunks = chunk_text(chunk, max_chars=1200)
+    if len(sub_chunks) <= 1:
+        return chunk
+
     translated_parts: list[str] = []
-    for chunk in chunk_text(text, max_chars=3500):
-        translated_parts.append(translator.translate(chunk))
-    return "\n".join(translated_parts)
+    for part in sub_chunks:
+        try:
+            translated = translator.translate(part)
+            translated_parts.append((translated or part).strip())
+        except Exception:
+            translated_parts.append(part)
+
+    rebuilt = " ".join(item for item in translated_parts if item).strip()
+    return rebuilt or chunk
+
+
+def translate_text_chunks(text: str, target_lang: str) -> str:
+    cleaned = text.strip()
+    if not cleaned:
+        return ""
+
+    normalized_target = normalize_translation_target(target_lang)
+    translator = GoogleTranslator(source="auto", target=normalized_target)
+
+    translated_parts: list[str] = []
+    for chunk in chunk_text(cleaned, max_chars=3200):
+        translated_parts.append(_translate_chunk_resilient(translator, chunk))
+
+    translated_text = "\n\n".join(part for part in translated_parts if part).strip()
+    if not translated_text:
+        raise HTTPException(status_code=502, detail="Translation failed. Please retry with smaller input.")
+    return translated_text
 
 
 def read_text_input(files: list[Path], payload: dict[str, Any]) -> str:
@@ -500,18 +721,18 @@ def build_docx_from_text(text: str, output_path: Path, heading: str) -> None:
 
 
 def top_matching_sentences(text: str, question: str, limit: int = 3) -> list[str]:
-    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    sentences = split_sentences(text)
     if not sentences:
         return []
 
-    keywords = [word for word in re.findall(r"[A-Za-z']+", question.lower()) if len(word) > 2]
+    keywords = [word for word in tokenize_words(question) if len(word) > 1]
     if not keywords:
         return sentences[:limit]
 
     scored: list[tuple[int, str]] = []
     for index, sentence in enumerate(sentences):
-        lowered = sentence.lower()
-        score = sum(lowered.count(keyword) for keyword in keywords)
+        sentence_tokens = Counter(tokenize_words(sentence))
+        score = sum(sentence_tokens.get(keyword, 0) for keyword in keywords)
         scored.append((score * 1000 - index, sentence))
 
     best = [item[1] for item in sorted(scored, reverse=True) if item[0] > 0][:limit]
@@ -683,7 +904,7 @@ def get_ocr_engine() -> Any | None:
 
 
 def _score_ocr_lines(lines: list[str]) -> int:
-    return sum(len(re.sub(r"[^A-Za-z0-9]", "", line)) for line in lines)
+    return sum(len(re.sub(r"[\W_]+", "", line, flags=re.UNICODE)) for line in lines)
 
 
 def _dedupe_ocr_lines(lines: list[str]) -> list[str]:
@@ -1024,7 +1245,11 @@ def color_to_pdf_tuple(raw: Any, default: tuple[int, int, int] = (255, 234, 88))
 
 
 def extract_top_keywords(text: str, limit: int = 8) -> list[dict[str, Any]]:
-    words = [word for word in re.findall(r"[A-Za-z']+", text.lower()) if word not in STOPWORDS and len(word) > 2]
+    words = [
+        word
+        for word in tokenize_words(text)
+        if len(word) > 1 and not (word.isascii() and word in STOPWORDS)
+    ]
     return [
         {"keyword": word, "count": count}
         for word, count in Counter(words).most_common(max(1, limit))
@@ -1493,6 +1718,8 @@ def handle_translate_pdf(files: list[Path], payload: dict[str, Any], output_dir:
     ensure_files(files, 1)
     target = str(payload.get("target_lang", "en")).strip() or "en"
     content = extract_pdf_text(files[0])
+    if not has_meaningful_text(content, min_chars=16):
+        raise HTTPException(status_code=400, detail="No readable text was found in the uploaded PDF")
     translated = translate_text_chunks(content, target)
 
     output = output_dir / "translated.pdf"
@@ -1502,8 +1729,11 @@ def handle_translate_pdf(files: list[Path], payload: dict[str, Any], output_dir:
 
 def handle_summarize_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
+    max_sentences = max(1, min(20, int(payload.get("max_sentences", 5))))
     content = extract_pdf_text(files[0])
-    summary = summarize_text_algo(content)
+    summary = summarize_text_algo(content, max_sentences=max_sentences)
+    if not summary:
+        raise HTTPException(status_code=400, detail="No readable text was found in the uploaded PDF")
 
     output = output_dir / "summary.txt"
     output.write_text(summary, encoding="utf-8")
@@ -1787,7 +2017,8 @@ def handle_summarize_text(files: list[Path], payload: dict[str, Any], output_dir
     if not content:
         raise HTTPException(status_code=400, detail="Provide text to summarize")
 
-    summary = summarize_text_algo(content)
+    max_sentences = max(1, min(20, int(payload.get("max_sentences", 5))))
+    summary = summarize_text_algo(content, max_sentences=max_sentences)
     output = output_dir / "summary.txt"
     output.write_text(summary, encoding="utf-8")
     return create_single_file_result(output, "Text summarized", "text/plain")
@@ -2594,24 +2825,42 @@ def handle_pdf_to_pptx(files: list[Path], payload: dict[str, Any], output_dir: P
     slide_width = int(presentation.slide_width)
     slide_height = int(presentation.slide_height)
 
-    for index, page in enumerate(document, start=1):
-        slide = presentation.slides.add_slide(blank_layout)
+    with tempfile.TemporaryDirectory(prefix="pdf-to-pptx-") as temp_name:
+        temp_dir = Path(temp_name)
+        for index, page in enumerate(document, start=1):
+            slide = presentation.slides.add_slide(blank_layout)
 
-        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
-        image_bytes = pix.tobytes("png")
-        image = Image.open(io.BytesIO(image_bytes))
+            pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+            image_bytes = pix.tobytes("png")
+            image = Image.open(io.BytesIO(image_bytes))
 
-        image_w = image.width * emu_per_pixel
-        image_h = image.height * emu_per_pixel
-        scale = min(slide_width / max(1, image_w), slide_height / max(1, image_h))
+            image_w = image.width * emu_per_pixel
+            image_h = image.height * emu_per_pixel
+            scale = min(slide_width / max(1, image_w), slide_height / max(1, image_h))
 
-        target_w = int(image_w * scale)
-        target_h = int(image_h * scale)
-        left = int((slide_width - target_w) / 2)
-        top = int((slide_height - target_h) / 2)
+            target_w = int(image_w * scale)
+            target_h = int(image_h * scale)
+            left = int((slide_width - target_w) / 2)
+            top = int((slide_height - target_h) / 2)
 
-        stream = io.BytesIO(image_bytes)
-        slide.shapes.add_picture(stream, left, top, width=target_w, height=target_h)
+            stream = io.BytesIO(image_bytes)
+            slide.shapes.add_picture(stream, left, top, width=target_w, height=target_h)
+
+            page_text = (page.get_text("text") or "").strip()
+            if len(re.sub(r"[\W_]+", "", page_text, flags=re.UNICODE)) < 24:
+                try:
+                    image_path = temp_dir / f"page-{index}.png"
+                    image_path.write_bytes(image_bytes)
+                    ocr_text = extract_ocr_text_from_image(image_path)
+                    if ocr_text:
+                        page_text = ocr_text
+                except Exception:
+                    pass
+
+            if page_text:
+                notes_frame = slide.notes_slide.notes_text_frame
+                notes_frame.clear()
+                notes_frame.text = page_text[:5000]
 
     document.close()
 
@@ -3537,7 +3786,8 @@ def handle_ocr_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path)
                 page_image = temp_dir / f"ocr-page-{page_index}.png"
                 pix.save(str(page_image))
 
-                page_text = extract_ocr_text_from_image(page_image)
+                page_lines = extract_ocr_lines_from_image(page_image)
+                page_text = "\n".join(page_lines).strip()
                 if page_text:
                     aggregate_text.append(f"Page {page_index}\n{page_text}")
 
@@ -3545,17 +3795,26 @@ def handle_ocr_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path)
                 new_page.insert_image(new_page.rect, filename=str(page_image), keep_proportion=False)
 
                 # Invisible overlay text preserves search/copy ability without changing visual output.
-                if page_text:
-                    new_page.insert_textbox(
-                        new_page.rect,
-                        page_text,
-                        fontsize=7,
-                        render_mode=3,
-                        color=(0, 0, 0),
-                        fill_opacity=0,
-                        stroke_opacity=0,
-                        overlay=True,
-                    )
+                if page_lines:
+                    margin_x = 8.0
+                    usable_height = max(20.0, float(new_page.rect.height) - 16.0)
+                    line_height = max(8.5, min(16.0, usable_height / max(1, len(page_lines))))
+                    font_size = max(6.5, min(9.0, line_height * 0.62))
+                    y = 10.0
+                    for line in page_lines:
+                        if y > float(new_page.rect.height) - 4:
+                            break
+                        new_page.insert_text(
+                            fitz.Point(margin_x, y),
+                            line[:1400],
+                            fontsize=font_size,
+                            render_mode=3,
+                            color=(0, 0, 0),
+                            fill_opacity=0,
+                            stroke_opacity=0,
+                            overlay=True,
+                        )
+                        y += line_height
 
             target_doc.save(str(output), garbage=4, deflate=True)
         finally:
@@ -4241,20 +4500,15 @@ def handle_convert_to_pdf(files: list[Path], payload: dict[str, Any], output_dir
 
 def handle_convert_from_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    target = str(payload.get("target_format", "jpg")).strip().lower()
+    target = normalize_convert_from_pdf_target(payload.get("target_format", "jpg"))
     handler_by_target: dict[str, ToolHandler] = {
         "jpg": handle_pdf_to_jpg,
-        "jpeg": handle_pdf_to_jpg,
         "png": handle_pdf_to_png,
         "docx": handle_pdf_to_docx,
-        "word": handle_pdf_to_docx,
         "pptx": handle_pdf_to_pptx,
-        "powerpoint": handle_pdf_to_pptx,
         "xlsx": handle_pdf_to_excel,
-        "excel": handle_pdf_to_excel,
         "txt": handle_pdf_to_txt,
         "md": handle_pdf_to_markdown,
-        "markdown": handle_pdf_to_markdown,
         "json": handle_pdf_to_json,
         "csv": handle_pdf_to_csv,
         "image": handle_pdf_to_image,
@@ -5631,6 +5885,137 @@ def handle_remove_image_metadata(files: list[Path], payload: dict[str, Any], out
     return handle_remove_metadata_image(files, payload, output_dir)
 
 
+def handle_jpeg_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_jpg_to_pdf(files, payload, output_dir)
+
+
+def handle_pdf_to_ppt(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_pdf_to_pptx(files, payload, output_dir)
+
+
+def handle_ppt_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_pptx_to_pdf(files, payload, output_dir)
+
+
+def handle_edit_pdf_text(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_add_text_pdf(files, payload, output_dir)
+
+
+def handle_add_text(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_add_text_pdf(files, payload, output_dir)
+
+
+def handle_add_image_to_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_add_image_pdf(files, payload, output_dir)
+
+
+def handle_compress_jpeg_between_20kb_to_50kb(
+    files: list[Path], payload: dict[str, Any], output_dir: Path
+) -> ExecutionResult:
+    ensure_files(files, 1)
+    min_kb = max(1, int(payload.get("min_kb", 20)))
+    max_kb = max(min_kb, int(payload.get("max_kb", 50)))
+
+    compressed = handle_reduce_image_size_in_kb(
+        files,
+        {**payload, "target_kb": max_kb, "strict": True},
+        output_dir,
+    )
+
+    output = compressed.output_path
+    if output is None or not output.exists():
+        return compressed
+
+    min_bytes = min_kb * 1024
+    if output.stat().st_size < min_bytes:
+        image = open_image_file(output)
+        ext = output.suffix.lower().replace(".", "") or "jpg"
+        expand_image_to_target_bytes(image, min_bytes, ext, output)
+
+    actual_kb = round(output.stat().st_size / 1024, 1)
+    compressed.message = f"Image compressed to {actual_kb} KB (target range: {min_kb}-{max_kb} KB)"
+    return compressed
+
+
+def handle_ssc_photo_resizer(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {
+        **payload,
+        "width_mm": float(payload.get("width_mm", 35.0)),
+        "height_mm": float(payload.get("height_mm", 45.0)),
+        "dpi": int(payload.get("dpi", 300)),
+    }
+    return handle_resize_image_in_mm(files, alias_payload, output_dir)
+
+
+def handle_resize_for_pan_card(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {
+        **payload,
+        "width_mm": float(payload.get("width_mm", 35.0)),
+        "height_mm": float(payload.get("height_mm", 25.0)),
+        "dpi": int(payload.get("dpi", 300)),
+    }
+    return handle_resize_image_in_mm(files, alias_payload, output_dir)
+
+
+def handle_resize_image_for_upsc(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {
+        **payload,
+        "width_mm": float(payload.get("width_mm", 35.0)),
+        "height_mm": float(payload.get("height_mm", 45.0)),
+        "dpi": int(payload.get("dpi", 300)),
+    }
+    return handle_resize_image_in_mm(files, alias_payload, output_dir)
+
+
+def handle_psc_photo_resize(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    alias_payload = {
+        **payload,
+        "width_mm": float(payload.get("width_mm", 35.0)),
+        "height_mm": float(payload.get("height_mm", 45.0)),
+        "dpi": int(payload.get("dpi", 300)),
+    }
+    return handle_resize_image_in_mm(files, alias_payload, output_dir)
+
+
+def handle_photo_blemish_remover(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    return handle_retouch_image(files, payload, output_dir)
+
+
+def handle_bulk_image_resizer(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    ensure_files(files, 1)
+    width = max(1, int(payload.get("width", 1080)))
+    height = max(1, int(payload.get("height", 1080)))
+    quality = max(5, min(100, int(payload.get("quality", 92))))
+    maintain_aspect = str(payload.get("maintain_aspect", "true")).strip().lower() not in {"false", "0", "no"}
+
+    outputs: list[Path] = []
+    for source in files:
+        image = open_image_file(source)
+        if maintain_aspect:
+            resized = image.copy()
+            resized.thumbnail((width, height), get_resampling_module().LANCZOS)
+        else:
+            resized = image.resize((width, height), get_resampling_module().LANCZOS)
+
+        suffix = source.suffix.lower() or ".jpg"
+        target_suffix = ".jpg" if suffix in {".jpeg", ".jpg", ""} else suffix
+        output = output_dir / f"{source.stem}-resized{target_suffix}"
+        if target_suffix in {".jpg", ".jpeg"}:
+            save_image(resized.convert("RGB"), output, fmt="JPEG", quality=quality)
+        elif target_suffix == ".png":
+            resized.save(str(output), format="PNG", optimize=True, compress_level=9)
+        elif target_suffix == ".webp":
+            resized.convert("RGB").save(str(output), format="WEBP", quality=quality, method=6)
+        else:
+            save_image(resized, output, fmt=target_suffix.replace(".", "").upper(), quality=quality)
+
+        outputs.append(output)
+
+    if len(outputs) == 1:
+        return create_single_file_result(outputs[0], "Image resized", "image/*")
+    return create_zip_result(output_dir, "Bulk image resize complete", "bulk-image-resized")
+
+
 HANDLERS: dict[str, ToolHandler] = {
     "merge-pdf": handle_merge_pdf,
     "split-pdf": handle_split_pdf,
@@ -5660,6 +6045,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "pdf-to-png": handle_pdf_to_png,
     "grayscale-pdf": handle_grayscale_pdf,
     "jpg-to-pdf": handle_jpg_to_pdf,
+    "jpeg-to-pdf": handle_jpeg_to_pdf,
     "heic-to-pdf": handle_heic_to_pdf,
     "heif-to-pdf": handle_heif_to_pdf,
     "jfif-to-pdf": handle_jfif_to_pdf,
@@ -5679,8 +6065,10 @@ HANDLERS: dict[str, ToolHandler] = {
     "pdf-to-excel": handle_pdf_to_excel,
     "excel-to-pdf": handle_excel_to_pdf,
     "pdf-to-pptx": handle_pdf_to_pptx,
+    "pdf-to-ppt": handle_pdf_to_ppt,
     "pdf-to-powerpoint": handle_pdf_to_powerpoint,
     "pptx-to-pdf": handle_pptx_to_pdf,
+    "ppt-to-pdf": handle_ppt_to_pdf,
     "powerpoint-to-pdf": handle_powerpoint_to_pdf,
     "repair-pdf": handle_repair_pdf,
     "create-pdf": handle_create_pdf,
@@ -5694,9 +6082,11 @@ HANDLERS: dict[str, ToolHandler] = {
     "pdf-viewer": handle_pdf_viewer,
     "pdf-intelligence": handle_pdf_intelligence,
     "edit-pdf": handle_edit_pdf,
+    "edit-pdf-text": handle_edit_pdf_text,
     "annotate-pdf": handle_annotate_pdf,
     "highlight-pdf": handle_highlight_pdf,
     "pdf-filler": handle_pdf_filler,
+    "add-text": handle_add_text,
     "chat-with-pdf": handle_chat_with_pdf,
     "compress-image": handle_compress_image,
     "resize-image": handle_resize_image,
@@ -5754,6 +6144,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "xml-to-pdf": handle_xml_to_pdf,
     "csv-to-pdf": handle_csv_to_pdf,
     "add-image-pdf": handle_add_image_pdf,
+    "add-image-to-pdf": handle_add_image_to_pdf,
     "pdf-pages-to-zip": handle_pdf_pages_to_zip,
     "zip-images-to-pdf": handle_zip_images_to_pdf,
     "zip-to-pdf": handle_zip_to_pdf,
@@ -5844,6 +6235,12 @@ HANDLERS: dict[str, ToolHandler] = {
     "instagram-grid": handle_instagram_grid,
     "convert-to-jpg": handle_convert_to_jpg_image,
     "jpeg-to-jpg": handle_jpeg_to_jpg,
+    "bulk-image-resizer": handle_bulk_image_resizer,
+    "ssc-photo-resizer": handle_ssc_photo_resizer,
+    "resize-for-pan-card": handle_resize_for_pan_card,
+    "resize-image-for-upsc": handle_resize_image_for_upsc,
+    "psc-photo-resize": handle_psc_photo_resize,
+    "photo-blemish-remover": handle_photo_blemish_remover,
     "convert-from-jpg": handle_convert_from_jpg_image,
     "heic-to-jpg": handle_heic_to_jpg,
     "webp-to-jpg": handle_webp_to_jpg,
@@ -5879,20 +6276,36 @@ HANDLERS: dict[str, ToolHandler] = {
     "view-metadata": handle_view_metadata,
     "remove-image-metadata": handle_remove_image_metadata,
     "compress-to-5kb": handle_compress_specific_kb(5),
+    "compress-image-to-5kb": handle_compress_specific_kb(5),
     "compress-to-10kb": handle_compress_specific_kb(10),
+    "compress-jpeg-to-10kb": handle_compress_specific_kb(10),
     "compress-to-15kb": handle_compress_specific_kb(15),
+    "compress-image-to-15kb": handle_compress_specific_kb(15),
     "compress-to-20kb": handle_compress_specific_kb(20),
+    "compress-image-to-20kb": handle_compress_specific_kb(20),
     "compress-to-25kb": handle_compress_specific_kb(25),
+    "compress-jpeg-to-25kb": handle_compress_specific_kb(25),
     "compress-to-30kb": handle_compress_specific_kb(30),
+    "compress-jpeg-to-30kb": handle_compress_specific_kb(30),
     "compress-to-40kb": handle_compress_specific_kb(40),
+    "compress-jpeg-to-40kb": handle_compress_specific_kb(40),
     "compress-to-50kb": handle_compress_specific_kb(50),
+    "compress-image-to-50kb": handle_compress_specific_kb(50),
     "compress-to-100kb": handle_compress_specific_kb(100),
+    "compress-image-to-100kb": handle_compress_specific_kb(100),
     "compress-to-150kb": handle_compress_specific_kb(150),
+    "compress-jpeg-to-150kb": handle_compress_specific_kb(150),
     "compress-to-200kb": handle_compress_specific_kb(200),
+    "compress-image-to-200kb": handle_compress_specific_kb(200),
     "compress-to-300kb": handle_compress_specific_kb(300),
+    "compress-jpeg-to-300kb": handle_compress_specific_kb(300),
     "compress-to-500kb": handle_compress_specific_kb(500),
+    "compress-jpeg-to-500kb": handle_compress_specific_kb(500),
     "compress-to-1mb": handle_compress_specific_kb(1024),
+    "compress-image-to-1mb": handle_compress_specific_kb(1024),
     "compress-to-2mb": handle_compress_specific_kb(2048),
+    "compress-image-to-2mb": handle_compress_specific_kb(2048),
+    "compress-jpeg-between-20kb-to-50kb": handle_compress_jpeg_between_20kb_to_50kb,
     "jpg-to-pdf-under-50kb": handle_jpg_to_pdf_under_kb_factory(50),
     "jpg-to-pdf-under-100kb": handle_jpg_to_pdf_under_kb_factory(100),
     "jpeg-to-pdf-under-200kb": handle_jpg_to_pdf_under_kb_factory(200),

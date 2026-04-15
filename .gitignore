@@ -17,8 +17,15 @@ frontend/node_modules/
 
 # Build outputs
 frontend/dist/
-backend/storage/
+backend/storage/*
+!backend/storage/.gitkeep
+!backend/storage/smoke-fixtures/
+backend/storage/smoke-fixtures/*
+!backend/storage/smoke-fixtures/.gitkeep
+backend/storage/jobs/
 tmp_smoke_assets/
+tmp_smoke_assets_2/
+tmp_smoke_assets_3/
 
 # Logs
 *.log

@@ -1,0 +1,31 @@
+# Optional dependencies for advanced/rare conversion workflows.
+# Install only if you need the related tools in production:
+#
+#   pip install -r backend/requirements-optional.txt
+#
+# Some packages below may require native system libraries and are not needed
+# for core PDF/Image/Text tools.
+
+# Advanced image/vision stack
+scikit-image>=0.25.0,<1.0.0
+
+# Performance alternatives (Linux-focused, optional)
+# pillow-simd is intentionally optional because wheels are not available on all platforms.
+# pillow-simd>=10.4.0
+
+# Extra conversion/processing engines
+wand>=0.6.13,<1.0.0
+pypdfium2>=4.30.0,<5.0.0
+borb>=2.1.23,<3.0.0
+
+# Advanced table extraction quality mode (PDF -> Excel)
+pandas>=2.2.0,<3.0.0
+xlrd>=2.0.1,<3.0.0
+tabula-py>=2.9.0,<3.0.0
+camelot-py[cv]>=0.11.0,<1.0.0
+ghostscript>=0.7,<1.0.0
+
+# Rare format helpers (install only if your deployment supports them)
+python-djvulibre>=0.8.8
+pyxps>=0.1.0
+pypub>=2.0.2

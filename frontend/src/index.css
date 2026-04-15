@@ -608,6 +608,20 @@ h3 {
   background: rgba(59, 208, 255, 0.1);
 }
 
+.category-pill.themed {
+  border-color: color-mix(in srgb, var(--pill-accent) 30%, rgba(156, 190, 255, 0.16));
+  background: color-mix(in srgb, var(--pill-accent) 10%, rgba(255, 255, 255, 0.025));
+  color: #dbe7ff;
+}
+
+.category-pill.themed:hover,
+.category-pill.themed.active {
+  border-color: var(--pill-accent);
+  color: #fff;
+  background: color-mix(in srgb, var(--pill-accent) 22%, rgba(255, 255, 255, 0.02));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--pill-accent) 24%, transparent) inset;
+}
+
 .spotlight-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

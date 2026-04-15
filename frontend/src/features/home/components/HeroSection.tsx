@@ -47,6 +47,8 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
+  const toolLabel = toolCount > 0 ? String(toolCount) : '200+'
+
   return (
     <section className='hero-shell'>
       <motion.div
@@ -57,7 +59,7 @@ export default function HeroSection({
       >
         <span className='hero-kicker'>
           <Server size={14} />
-          193 free tools — no account, no watermark, no limit
+          {toolLabel} free tools — no account, no watermark, no limit
         </span>
 
         <h1>ISHU TOOLS</h1>

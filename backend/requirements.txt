@@ -1,100 +1,79 @@
 # Core Framework
-fastapi==0.116.1
-uvicorn[standard]==0.35.0
-python-multipart==0.0.20
+fastapi>=0.116.1,<1.0.0
+uvicorn[standard]>=0.35.0,<1.0.0
+python-multipart>=0.0.20,<1.0.0
 
-# PDF Processing - Core Libraries (High Accuracy)
-PyMuPDF==1.26.4
-pikepdf==9.0.0
-pypdf==5.9.0
-PyPDF2==3.0.1
-pdf2image==1.17.0
-pdfplumber==0.11.0
-pdf2docx==0.5.8
-pdfminer.six==20231228
-reportlab==4.4.3
+# PDF Processing - Core Libraries
+PyMuPDF>=1.26.4
+pikepdf>=10.0.0
+pypdf>=5.9.0,<6.0.0
+PyPDF2>=3.0.1,<4.0.0
+pdf2image>=1.17.0,<2.0.0
+pdfplumber>=0.11.0,<1.0.0
+pdf2docx>=0.5.8,<1.0.0
+pdfminer.six>=20231228
+reportlab>=4.4.3,<5.0.0
 
-# Image Processing - High Performance
-Pillow>=12.1.0,<13.0.0
+# Image Processing
+Pillow>=11.3.0,<13.0.0
 opencv-python-headless>=4.10.0
-scikit-image==0.24.0
-pillow-heif==0.19.0
-img2pdf==0.5.1
-rembg==2.0.75
+pillow-heif>=1.0.0
+img2pdf>=0.5.1,<1.0.0
+rembg>=2.0.65; python_version < "3.14"
 
-# OCR - Production Quality
-rapidocr-onnxruntime==1.2.3
-pytesseract==0.3.13
-easyocr==1.7.1
+# OCR
+rapidocr-onnxruntime>=1.2.3,<2.0.0
+pytesseract>=0.3.13,<1.0.0
+easyocr>=1.7.1,<2.0.0; python_version < "3.14"
 
 # Document Conversion - Office Formats
-python-docx==1.2.0
-python-pptx==1.0.2
-openpyxl==3.1.5
-xlsxwriter==3.2.0
-pandas==2.2.0
-xlrd==2.0.1
+python-docx>=1.2.0,<2.0.0
+python-pptx>=1.0.2,<2.0.0
+openpyxl>=3.1.5,<4.0.0
+xlsxwriter>=3.2.0,<4.0.0
 
 # eBook and Rich Text
-ebooklib==0.20
-mobi==0.3.3
-odfpy==1.4.1
-ezodf==0.3.2
+ebooklib>=0.20,<1.0.0
+mobi>=0.3.3,<1.0.0
+odfpy>=1.4.1,<2.0.0
+ezodf>=0.3.2,<1.0.0
+striprtf>=0.0.29,<1.0.0
 
 # Vector and Special Formats
-cairosvg==2.7.1
-svglib==1.5.1
-svgwrite==1.4.3
-ezdxf==1.3.3
+cairosvg>=2.7.1,<3.0.0
+svglib>=1.5.1,<2.0.0
+svgwrite>=1.4.3,<2.0.0
+ezdxf>=1.3.3,<2.0.0
 
 # Web and HTML
-beautifulsoup4==4.13.4
-html5lib==1.1
-html2text==2024.2.26
-lxml==5.3.0
-weasyprint==61.2
-selenium==4.27.1
-webdriver-manager==4.0.2
+beautifulsoup4>=4.13.4,<5.0.0
+html5lib>=1.1,<2.0.0
+html2text>=2024.2.26
+lxml>=5.3.0,<7.0.0
+weasyprint>=61.2,<70.0.0
+selenium>=4.27.1,<5.0.0
+webdriver-manager>=4.0.2,<5.0.0
 
 # Translation and AI
-deep-translator==1.11.4
-httpx==0.28.1
+deep-translator>=1.11.4,<2.0.0
+httpx>=0.28.1,<1.0.0
 
 # Utilities
-qrcode[pil]==8.2
-python-barcode==0.15.1
-markdown==3.5.2
-cryptography==42.0.5
-python-magic==0.4.27
-python-magic-bin==0.4.14
-filetype==1.2.0
+qrcode[pil]>=8.2,<9.0.0
+python-barcode>=0.15.1,<1.0.0
+markdown>=3.5.2,<4.0.0
+cryptography>=42.0.5
+filetype>=1.2.0,<2.0.0
+python-magic-bin>=0.4.14; platform_system == "Windows"
+python-magic>=0.4.27; platform_system != "Windows"
 
 # Archive Handling
-rarfile==4.2
-zipfile36==0.1.3
-
-# Specialized
-python-djvulibre==0.8.8
-pycairo==1.26.1
-pyxps==0.1.0
-pypub==2.0.2
+rarfile>=4.2,<5.0.0
 
 # Data Processing
-numpy>=1.24.0,<2.0.0
-scipy==1.14.1
-python-dateutil==2.9.0
-pytz==2024.1
-tzdata==2024.1
+numpy>=1.24.0,<3.0.0
+scipy>=1.14.1,<2.0.0
+python-dateutil>=2.9.0
+pytz>=2024.1
+tzdata>=2024.1
 
-# Table Extraction
-tabula-py==2.9.0
-camelot-py[cv]==0.11.0
-
-# System
-ghostscript==0.7
-
-# Additional High-Accuracy Libraries
-pillow-simd==10.4.0
-wand==0.6.13
-pypdfium2==4.30.0
-borb==2.1.23

@@ -9,6 +9,10 @@ FastAPI backend with Python-based PDF, image, and text processing tools.
 
    pip install -r requirements.txt
 
+   Optional extended converters:
+
+   pip install -r requirements-optional.txt
+
 3. Start API:
 
    python run.py
@@ -26,6 +30,11 @@ python scripts/smoke_tool_matrix.py
 Use this endpoint to verify optional binaries/modules available on the running server:
 
 GET /api/runtime-capabilities
+
+## Storage Tracking
+
+- `backend/storage` is treated as runtime output and ignored by git, except `.gitkeep` placeholders.
+- Commit generated storage files only when needed with `git add -f`.
 
 ## Compatibility
 

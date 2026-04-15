@@ -1,9 +1,10 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Search } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
-import { applyDocumentBranding } from '../../lib/toolPresentation'
+import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import HeroSection from './components/HeroSection'
 import CategorySpotlight from './components/CategorySpotlight'
 import ToolCategorySection from './components/ToolCategorySection'
@@ -130,20 +131,24 @@ export default function HomePage() {
                 All ({tools.length})
               </button>
 
-              {categories.map((category) => (
-                <button
-                  type='button'
-                  key={category.id}
-                  className={`category-pill ${activeCategory === category.id ? 'active' : ''}`}
-                  onClick={() =>
-                    startTransition(() => {
-                      setActiveCategory(category.id)
-                    })
-                  }
-                >
-                  {category.label} ({counts.byCategory[category.id] || 0})
-                </button>
-              ))}
+              {categories.map((category) => {
+                const theme = getCategoryTheme(category.id)
+                return (
+                  <button
+                    type='button'
+                    key={category.id}
+                    className={`category-pill themed ${activeCategory === category.id ? 'active' : ''}`}
+                    style={{ '--pill-accent': theme.accent } as CSSProperties}
+                    onClick={() =>
+                      startTransition(() => {
+                        setActiveCategory(category.id)
+                      })
+                    }
+                  >
+                    {category.label} ({counts.byCategory[category.id] || 0})
+                  </button>
+                )
+              })}
             </div>
           </div>
         </section>

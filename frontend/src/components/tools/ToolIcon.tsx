@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react'
+import { createElement, type ComponentType } from 'react'
 
 import {
   Crop,
@@ -319,5 +319,5 @@ function pickFallbackIcon(slug: string): ComponentType<{ className?: string }> {
 
 export default function ToolIcon({ slug, className }: ToolIconProps) {
   const Icon = iconMap[slug] || pickFallbackIcon(slug)
-  return <Icon className={className} />
+  return createElement(Icon, { className })
 }
