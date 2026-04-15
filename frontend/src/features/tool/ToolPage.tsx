@@ -4,10 +4,13 @@ import { useDropzone } from 'react-dropzone'
 import {
   ArrowLeft,
   CheckCircle2,
+  ClipboardCopy,
   Download,
+  ExternalLink,
   FileText,
   ImageIcon,
   LoaderCircle,
+  RefreshCw,
   Trash2,
   Upload,
   X,
@@ -48,6 +51,10 @@ function isImageFile(file: File) {
   return file.type.startsWith('image/')
 }
 
+function isImageBlob(contentType: string) {
+  return contentType.startsWith('image/')
+}
+
 type FilePreviewItem = {
   file: File
   previewUrl?: string
@@ -71,7 +78,12 @@ export default function ToolPage() {
   const [jsonResult, setJsonResult] = useState<ToolRunJsonResult | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [downloadName, setDownloadName] = useState<string | null>(null)
+  const [outputContentType, setOutputContentType] = useState<string | null>(null)
+  const [outputImagePreview, setOutputImagePreview] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+  const resultRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (!slug) return
@@ -114,7 +126,6 @@ export default function ToolPage() {
     }
   }, [slug])
 
-  // Revoke old preview URLs on cleanup
   useEffect(() => {
     return () => {
       fileItems.forEach((item) => {
@@ -168,7 +179,6 @@ export default function ToolPage() {
       if (tool?.accepts_multiple) {
         setFileItems((prev) => [...prev, ...newItems])
       } else {
-        // Revoke old previews
         fileItems.forEach((item) => {
           if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
         })
@@ -196,10 +206,10 @@ export default function ToolPage() {
     setProgress(0)
     let currentProgress = 0
     progressInterval.current = setInterval(() => {
-      currentProgress += Math.random() * 12
-      if (currentProgress > 90) currentProgress = 90
+      currentProgress += Math.random() * 10
+      if (currentProgress > 88) currentProgress = 88
       setProgress(Math.round(currentProgress))
-    }, 400)
+    }, 350)
   }
 
   function stopProgressSimulation(success: boolean) {
@@ -209,19 +219,31 @@ export default function ToolPage() {
     }
     setProgress(success ? 100 : 0)
     if (success) {
-      setTimeout(() => setProgress(0), 1800)
+      setTimeout(() => setProgress(0), 2000)
     }
+  }
+
+  function scrollToResult() {
+    setTimeout(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 120)
+  }
+
+  function handleReset() {
+    setRunError(null)
+    setRunMessage(null)
+    setJsonResult(null)
+    setDownloadUrl(null)
+    setDownloadName(null)
+    setOutputContentType(null)
+    setOutputImagePreview(null)
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!tool || !slug) return
 
-    setRunError(null)
-    setRunMessage(null)
-    setJsonResult(null)
-    setDownloadUrl(null)
-    setDownloadName(null)
+    handleReset()
 
     if (tool.input_kind === 'files' && fileItems.length === 0) {
       setRunError('Please upload the required file before running this tool.')
@@ -251,23 +273,34 @@ export default function ToolPage() {
         setDownloadUrl(objectUrl)
         setDownloadName(result.filename)
         setRunMessage(result.message)
+        setOutputContentType(result.contentType || null)
 
-        // Auto-trigger download
-        const anchor = document.createElement('a')
-        anchor.href = objectUrl
-        anchor.download = result.filename
-        document.body.appendChild(anchor)
-        anchor.click()
-        anchor.remove()
+        if (isImageBlob(result.contentType || '')) {
+          setOutputImagePreview(objectUrl)
+        }
+
+        scrollToResult()
       } else {
         setJsonResult(result.payload)
         setRunMessage(result.payload.message || 'Tool completed successfully.')
+        scrollToResult()
       }
     } catch (err) {
       stopProgressSimulation(false)
       setRunError(err instanceof Error ? err.message : 'Tool execution failed')
+      scrollToResult()
     } finally {
       setRunning(false)
+    }
+  }
+
+  async function handleCopyText(text: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* ignore */
     }
   }
 
@@ -299,6 +332,8 @@ export default function ToolPage() {
     )
   }
 
+  const hasResult = !!(runMessage || runError || jsonResult || downloadUrl)
+
   return (
     <SiteShell>
       <div className='page-wrap tool-page-wrap'>
@@ -323,12 +358,21 @@ export default function ToolPage() {
               transition={{ duration: 0.4 }}
             >
               <div className='tool-page-hero'>
-                <span className='tool-icon-wrap large' style={{ borderColor: `${toolTheme.accent}40`, background: `${toolTheme.accent}12` }}>
+                <span
+                  className='tool-icon-wrap large'
+                  style={{
+                    borderColor: `${toolTheme.accent}40`,
+                    background: `${toolTheme.accent}12`,
+                  }}
+                >
                   <ToolIcon slug={tool.slug} className='tool-icon' />
                 </span>
                 <div>
                   <div className='tool-badge-row'>
-                    <span className='tool-badge' style={{ borderColor: toolTheme.accent, color: toolTheme.accent }}>
+                    <span
+                      className='tool-badge'
+                      style={{ borderColor: toolTheme.accent, color: toolTheme.accent }}
+                    >
                       {toolTheme.label}
                     </span>
                     <span className='tool-badge subtle'>
@@ -357,7 +401,7 @@ export default function ToolPage() {
                         transition={{ duration: 0.4 }}
                       />
                     </div>
-                    <p className='tool-progress-label'>Processing... {progress}%</p>
+                    <p className='tool-progress-label'>Processing… {progress}%</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -375,22 +419,37 @@ export default function ToolPage() {
                     <div
                       {...getRootProps()}
                       className={`dropzone ${isDragActive ? 'dropzone-active' : ''} ${fileItems.length > 0 ? 'dropzone-has-files' : ''}`}
-                      style={isDragActive ? { borderColor: toolTheme.accent, background: `${toolTheme.accent}08` } : {}}
+                      style={
+                        isDragActive
+                          ? {
+                              borderColor: toolTheme.accent,
+                              background: `${toolTheme.accent}08`,
+                            }
+                          : {}
+                      }
                     >
                       <input {...getInputProps()} />
                       {isDragActive ? (
                         <div className='dropzone-content dragging'>
                           <Upload size={28} style={{ color: toolTheme.accent }} />
-                          <p>Drop files here...</p>
+                          <p>Drop files here…</p>
                         </div>
                       ) : fileItems.length === 0 ? (
                         <div className='dropzone-content'>
-                          <div className='dropzone-icon-wrap' style={{ background: `${toolTheme.accent}14`, borderColor: `${toolTheme.accent}30` }}>
+                          <div
+                            className='dropzone-icon-wrap'
+                            style={{
+                              background: `${toolTheme.accent}14`,
+                              borderColor: `${toolTheme.accent}30`,
+                            }}
+                          >
                             <Upload size={24} style={{ color: toolTheme.accent }} />
                           </div>
                           <div>
-                            <p className='dropzone-title'>Drag & drop file{tool.accepts_multiple ? 's' : ''} here</p>
-                            <p className='dropzone-hint'>or click to browse from your computer</p>
+                            <p className='dropzone-title'>
+                              Drag &amp; drop file{tool.accepts_multiple ? 's' : ''} here
+                            </p>
+                            <p className='dropzone-hint'>or click to browse from your device</p>
                           </div>
                         </div>
                       ) : (
@@ -401,7 +460,6 @@ export default function ToolPage() {
                       )}
                     </div>
 
-                    {/* File preview list */}
                     <AnimatePresence>
                       {fileItems.length > 0 && (
                         <motion.div
@@ -426,13 +484,18 @@ export default function ToolPage() {
                                   className='file-preview-thumb'
                                 />
                               ) : (
-                                <div className='file-preview-icon' style={{ color: toolTheme.accent }}>
+                                <div
+                                  className='file-preview-icon'
+                                  style={{ color: toolTheme.accent }}
+                                >
                                   {getFileIcon(item.file)}
                                 </div>
                               )}
                               <div className='file-preview-info'>
                                 <span className='file-preview-name'>{item.file.name}</span>
-                                <span className='file-preview-size'>{formatBytes(item.file.size)}</span>
+                                <span className='file-preview-size'>
+                                  {formatBytes(item.file.size)}
+                                </span>
                               </div>
                               <button
                                 type='button'
@@ -499,7 +562,7 @@ export default function ToolPage() {
                             }
                           />
                         )}
-                        {field.placeholder && field.type !== 'select' && (
+                        {field.placeholder && field.type === 'textarea' && (
                           <small className='field-hint'>{field.placeholder}</small>
                         )}
                       </label>
@@ -507,71 +570,131 @@ export default function ToolPage() {
                   </div>
                 )}
 
-                <button
-                  type='submit'
-                  className='run-button'
-                  disabled={running}
-                  style={
-                    !running
-                      ? { background: `linear-gradient(120deg, ${toolTheme.accent}, ${toolTheme.accent}bb)` }
-                      : {}
-                  }
-                >
-                  {running ? (
-                    <>
-                      <LoaderCircle size={18} className='spin' />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Zap size={18} />
-                      Run {tool.title}
-                    </>
+                <div className='run-button-row'>
+                  <button
+                    type='submit'
+                    className='run-button'
+                    disabled={running}
+                    style={
+                      !running
+                        ? {
+                            background: `linear-gradient(120deg, ${toolTheme.accent}, ${toolTheme.accent}bb)`,
+                          }
+                        : {}
+                    }
+                  >
+                    {running ? (
+                      <>
+                        <LoaderCircle size={18} className='spin' />
+                        Processing…
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={18} />
+                        Run {tool.title}
+                      </>
+                    )}
+                  </button>
+
+                  {hasResult && (
+                    <button
+                      type='button'
+                      className='reset-button'
+                      onClick={handleReset}
+                      title='Clear results'
+                    >
+                      <RefreshCw size={16} />
+                      New
+                    </button>
                   )}
-                </button>
+                </div>
               </form>
             </motion.section>
 
             {/* Results */}
             <AnimatePresence>
-              {(runMessage || runError || jsonResult || downloadUrl) && (
+              {hasResult && (
                 <motion.section
+                  ref={resultRef}
                   className='result-card'
-                  initial={{ opacity: 0, y: 16 }}
+                  style={
+                    {
+                      '--card-accent': toolTheme.accent,
+                    } as CSSProperties
+                  }
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.35 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
                 >
                   {runError && (
                     <div className='result-error'>
                       <X size={18} />
-                      <p>{runError}</p>
+                      <div>
+                        <strong>Error</strong>
+                        <p>{runError}</p>
+                      </div>
                     </div>
                   )}
 
                   {runMessage && !runError && (
                     <div className='result-success'>
-                      <CheckCircle2 size={18} />
-                      <p>{runMessage}</p>
+                      <CheckCircle2 size={20} style={{ color: toolTheme.accent, flexShrink: 0 }} />
+                      <div>
+                        <strong>Done!</strong>
+                        <p>{runMessage}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {outputImagePreview && (
+                    <div className='output-image-preview'>
+                      <img src={outputImagePreview} alt='Output preview' />
                     </div>
                   )}
 
                   {downloadUrl && downloadName && (
-                    <motion.a
-                      href={downloadUrl}
-                      download={downloadName}
-                      className='download-link prominent'
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <Download size={20} />
-                      Download {downloadName}
-                    </motion.a>
+                    <div className='download-actions'>
+                      <motion.a
+                        href={downloadUrl}
+                        download={downloadName}
+                        className='download-link prominent'
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          background: `linear-gradient(120deg, ${toolTheme.accent}22, ${toolTheme.accent}11)`,
+                          borderColor: `${toolTheme.accent}55`,
+                          color: toolTheme.accent,
+                        }}
+                      >
+                        <Download size={20} />
+                        Download {downloadName}
+                      </motion.a>
+                      <a
+                        href={downloadUrl}
+                        target='_blank'
+                        rel='noreferrer'
+                        className='open-link'
+                        title='Open in new tab'
+                      >
+                        <ExternalLink size={16} />
+                        Open
+                      </a>
+                    </div>
                   )}
 
                   {jsonResult && (() => {
                     const d = jsonResult.data || {}
-                    const textFields = ['text', 'content', 'answer', 'summary', 'translated_text', 'result', 'extracted_text']
+                    const textFields = [
+                      'text',
+                      'content',
+                      'answer',
+                      'summary',
+                      'translated_text',
+                      'result',
+                      'extracted_text',
+                      'output',
+                    ]
                     const found = textFields.find((k) => d[k])
                     return (
                       <div className='json-result-block'>
@@ -582,16 +705,23 @@ export default function ToolPage() {
                               <button
                                 type='button'
                                 className='copy-btn'
-                                onClick={() => {
-                                  navigator.clipboard.writeText(String(d[found])).catch(() => {})
-                                }}
+                                onClick={() => handleCopyText(String(d[found]))}
                               >
-                                Copy
+                                <ClipboardCopy size={13} />
+                                {copied ? 'Copied!' : 'Copy'}
                               </button>
                             </div>
-                            <p>{String(d[found])}</p>
+                            <div className='json-text-body'>
+                              <p>{String(d[found])}</p>
+                            </div>
                           </div>
                         )}
+                        {Object.keys(d).filter((k) => k !== found && d[k] && typeof d[k] !== 'object').map((k) => (
+                          <div key={k} className='json-kv-row'>
+                            <span className='json-kv-key'>{k.replace(/_/g, ' ')}</span>
+                            <span className='json-kv-val'>{String(d[k])}</span>
+                          </div>
+                        ))}
                         <details className='json-details'>
                           <summary>Raw output data</summary>
                           <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>
@@ -611,6 +741,7 @@ export default function ToolPage() {
             downloadName={downloadName}
             jsonResult={jsonResult?.data || null}
             runtimeCapabilities={runtimeCapabilities}
+            accentColor={toolTheme.accent}
           />
         </div>
       </div>

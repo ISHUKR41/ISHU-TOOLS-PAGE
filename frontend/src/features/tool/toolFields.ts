@@ -108,6 +108,11 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'footer', label: 'Footer Text', type: 'text' },
     { name: 'font_size', label: 'Font Size', type: 'number', defaultValue: '11' },
   ],
+  'header-and-footer': [
+    { name: 'header', label: 'Header Text', type: 'text', placeholder: 'e.g. My Document Title' },
+    { name: 'footer', label: 'Footer Text', type: 'text', placeholder: 'e.g. Confidential' },
+    { name: 'font_size', label: 'Font Size', type: 'number', defaultValue: '11' },
+  ],
   'protect-pdf': [
     { name: 'password', label: 'Password', type: 'password' },
   ],

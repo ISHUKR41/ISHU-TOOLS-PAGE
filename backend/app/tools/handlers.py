@@ -1370,14 +1370,17 @@ def handle_compress_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
     ensure_files(files, 1)
     output = output_dir / "compressed.pdf"
     original_size = files[0].stat().st_size
+    quality = str(payload.get("quality", "recommended")).lower()
+    best_output: Path | None = None
+    best_size = original_size
 
-    # Try pikepdf first for stronger compression and resource cleanup.
+    # Attempt 1: pikepdf with stream compression and object stream deduplication.
     try:
         import pikepdf
 
+        tmp1 = output_dir / "compressed_pikepdf.pdf"
         with pikepdf.open(str(files[0])) as pdf:
             pdf.remove_unreferenced_resources()
-
             save_kwargs: dict[str, Any] = {
                 "compress_streams": True,
                 "recompress_flate": True,
@@ -1387,44 +1390,94 @@ def handle_compress_pdf(files: list[Path], payload: dict[str, Any], output_dir: 
                 save_kwargs["object_stream_mode"] = pikepdf.ObjectStreamMode.generate
             except Exception:
                 pass
+            pdf.save(str(tmp1), **save_kwargs)
 
-            pdf.save(str(output), **save_kwargs)
-
-        compressed_size = output.stat().st_size
-        reduction = ((original_size - compressed_size) / max(1, original_size)) * 100
-        return create_single_file_result(
-            output,
-            f"PDF compressed successfully ({reduction:.1f}% smaller)",
-            "application/pdf",
-        )
+        candidate_size = tmp1.stat().st_size
+        if candidate_size < best_size:
+            best_size = candidate_size
+            best_output = tmp1
     except Exception:
         pass
 
-    reader = PdfReader(str(files[0]))
-    writer = PdfWriter()
+    # Attempt 2: PyMuPDF with image downsampling for quality levels below high.
+    try:
+        import fitz  # PyMuPDF
 
-    for page in reader.pages:
-        writer.add_page(page)
+        tmp2 = output_dir / "compressed_mupdf.pdf"
+        doc = fitz.open(str(files[0]))
+        dpi_map = {"low": 72, "recommended": 96, "high": 150}
+        image_dpi = dpi_map.get(quality, 96)
 
-    for page in writer.pages:
+        for page in doc:
+            for img_info in page.get_images(full=True):
+                xref = img_info[0]
+                try:
+                    pix = fitz.Pixmap(doc, xref)
+                    if pix.n >= 4:
+                        pix = fitz.Pixmap(fitz.csRGB, pix)
+                    img_data = pix.tobytes("jpeg", jpg_quality=int(image_dpi * 0.7))
+                    doc.update_stream(xref, img_data)
+                except Exception:
+                    pass
+
+        doc.save(
+            str(tmp2),
+            garbage=4,
+            clean=True,
+            deflate=True,
+            deflate_images=True,
+            deflate_fonts=True,
+            linear=True,
+        )
+        doc.close()
+
+        candidate_size = tmp2.stat().st_size
+        if candidate_size < best_size:
+            best_size = candidate_size
+            best_output = tmp2
+    except Exception:
+        pass
+
+    # Attempt 3: pypdf with content stream compression (fallback).
+    if best_output is None:
         try:
-            page.compress_content_streams()
+            tmp3 = output_dir / "compressed_pypdf.pdf"
+            reader = PdfReader(str(files[0]))
+            writer = PdfWriter()
+            for page in reader.pages:
+                writer.add_page(page)
+            for page in writer.pages:
+                try:
+                    page.compress_content_streams()
+                except Exception:
+                    pass
+            if reader.metadata:
+                writer.add_metadata(reader.metadata)
+            with tmp3.open("wb") as f:
+                writer.write(f)
+            candidate_size = tmp3.stat().st_size
+            if candidate_size < best_size:
+                best_size = candidate_size
+                best_output = tmp3
         except Exception:
             pass
 
-    if reader.metadata:
-        writer.add_metadata(reader.metadata)
+    if best_output and best_output != output:
+        import shutil
+        shutil.copy2(str(best_output), str(output))
+    elif best_output is None:
+        # Nothing reduced size — return original unchanged.
+        import shutil
+        shutil.copy2(str(files[0]), str(output))
+        best_size = original_size
 
-    with output.open("wb") as f:
-        writer.write(f)
+    reduction = max(0.0, ((original_size - best_size) / max(1, original_size)) * 100)
+    if reduction < 0.5:
+        msg = "PDF is already optimally compressed - no significant reduction possible."
+    else:
+        msg = f"PDF compressed successfully ({reduction:.1f}% smaller)"
 
-    compressed_size = output.stat().st_size
-    reduction = ((original_size - compressed_size) / max(1, original_size)) * 100
-    return create_single_file_result(
-        output,
-        f"PDF compressed successfully ({reduction:.1f}% smaller)",
-        "application/pdf",
-    )
+    return create_single_file_result(output, msg, "application/pdf")
 
 
 def handle_rotate_pdf(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
@@ -6073,6 +6126,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "add-text-pdf": handle_add_text_pdf,
     "page-numbers-pdf": handle_page_numbers_pdf,
     "header-footer-pdf": handle_header_footer_pdf,
+    "header-and-footer": handle_header_footer_pdf,
     "protect-pdf": handle_protect_pdf,
     "pdf-security": handle_pdf_security,
     "unlock-pdf": handle_unlock_pdf,

@@ -18,7 +18,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark'>IT</span>
             <span>
               <strong>ISHU TOOLS</strong>
-              <small>200+ free PDF, Image &amp; AI tools</small>
+              <small>295+ free PDF, Image & AI tools</small>
             </span>
           </Link>
 
@@ -148,7 +148,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark sm'>IT</span>
             <div>
               <strong>ISHU TOOLS</strong>
-              <p>Professional PDF, Image &amp; Text processing with 200+ free workflows.</p>
+              <p>Professional PDF, Image &amp; Text processing with 295+ free workflows.</p>
             </div>
           </div>
           <div className='footer-links'>

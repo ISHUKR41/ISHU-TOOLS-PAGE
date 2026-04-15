@@ -125,12 +125,13 @@ def run_tool(
         )
 
     if result.kind == "file" and result.output_path and Path(result.output_path).exists():
+        safe_message = (result.message or "").encode("latin-1", errors="replace").decode("latin-1")
         return FileResponse(
             path=result.output_path,
             filename=result.filename,
             media_type=result.content_type or "application/octet-stream",
             headers={
-                "X-Tool-Message": result.message,
+                "X-Tool-Message": safe_message,
                 "X-Job-Id": job_id,
             },
         )

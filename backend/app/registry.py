@@ -1345,6 +1345,14 @@ TOOLS: list[ToolDefinition] = [
         input_kind="mixed",
     ),
     ToolDefinition(
+        slug="header-and-footer",
+        title="Header and Footer",
+        description="Add custom header and footer text to every page of a PDF document.",
+        category="page-ops",
+        tags=["header", "footer", "pdf", "pages"],
+        input_kind="mixed",
+    ),
+    ToolDefinition(
         slug="add-watermark",
         title="Add Watermark",
         description="Apply text-based watermark overlays to PDF pages.",
