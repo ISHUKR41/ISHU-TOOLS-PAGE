@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 raw registry entries, 422 unique tool slugs after client-side deduplication, across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 raw registry entries, 422 unique tool slugs after backend/API deduplication, across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -30,7 +30,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
 - `frontend/src/lib/seoData.ts` — per-tool SEO data (156+ handcrafted entries)
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
-- `frontend/src/hooks/useCatalogData.ts` — deduplicates categories+tools from API
+- `frontend/src/hooks/useCatalogData.ts` — caches and defensively deduplicates categories+tools from API
+- `scripts/generate_seo_pages.py` — generates static per-tool/per-category SEO HTML and sitemap after frontend builds for better crawler coverage on deployed static hosting
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
 - `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
@@ -44,6 +45,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Comprehensive long-tail keywords per tool in seoData.ts, including fallback student, mobile, no-login, privacy, and category-intent terms for every future tool
 - Category pages include enriched meta tags, canonical URLs, Open Graph/Twitter metadata, CollectionPage JSON-LD, popular tool links, and long-tail category copy
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
+- Static build-time SEO pages are generated for every `/tools/:slug` and `/category/:id` route with route-specific title, description, keywords, canonical/hreflang, OG/Twitter, FAQ/Breadcrumb/WebApplication/CollectionPage JSON-LD, and a fresh sitemap.
+- Tool pages now show deduplicated intent keyword chips and AI search-intent copy covering student, mobile, no-signup, privacy, alternative-tool, and branded Ishu queries.
 
 ## Design System
 - Dark bg: #03060e — accent: #3bd0ff (teal-blue) — hero gradient: teal-to-purple
@@ -89,11 +92,12 @@ FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-hea
 ## Important Bugs Fixed
 - Compress PDF: returns original when compression fails
 - HTTP header encoding: non-ASCII chars in X-Tool-Message sanitized globally
-- Duplicate categories/tools in registry: deduplicated in useCatalogData.ts (client-side)
+- Duplicate categories/tools in registry: deduplicated in FastAPI catalog endpoints and defensively in useCatalogData.ts
 - robots.txt was incorrectly blocking /assets/, *.js$, *.css$ — now fixed (SPA crawlability)
 - Tool "How to use" steps now correctly show per-category steps (not generic file upload for all)
 - QR code generator now shows correct steps (not the generic developer tool steps)
 - Added 8 real student/everyday tools: Citation Generator, Flashcard Generator, Study Planner, Grade Calculator, Attendance Calculator, Reading Time Calculator, Plagiarism Risk Checker, Resume Bullet Generator
+- React duplicate-key warnings from repeated SEO keyword chips fixed with case-insensitive keyword deduplication on tool pages
 
 ## Social Links
 - LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/

@@ -16,9 +16,14 @@ const SITE = 'ISHU TOOLS'
 
 // ─── Auto-generator for any tool not in the handcrafted map ───
 export function getToolSEO(slug: string, toolTitle: string, toolDescription: string, category: string): ToolSEO {
+  const generated = createGeneratedSEO(slug, toolTitle, toolDescription, category)
   const custom = TOOL_SEO_MAP[slug]
-  if (custom) return custom
+  if (custom) return mergeToolSEO(custom, generated)
 
+  return generated
+}
+
+function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: string, category: string): ToolSEO {
   const t = toolTitle.toLowerCase()
   const categoryLabel = getCategoryLabel(category)
   const intentKeywords = buildIntentKeywords(slug, t, categoryLabel)
@@ -56,35 +61,80 @@ export function getToolSEO(slug: string, toolTitle: string, toolDescription: str
   }
 }
 
+function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
+  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 90)
+  const faq = [...custom.faq]
+
+  for (const item of generated.faq) {
+    if (!faq.some((existing) => existing.question === item.question)) {
+      faq.push(item)
+    }
+  }
+
+  return {
+    ...custom,
+    keywords,
+    faq: faq.slice(0, 8),
+  }
+}
+
 function buildIntentKeywords(slug: string, title: string, categoryLabel: string): string[] {
   const base = slug.replace(/-/g, ' ')
   const keywords = [
     `${base} for students`,
     `${base} for college`,
     `${base} for school`,
+    `${base} for exam preparation`,
+    `${base} for university assignments`,
     `${base} mobile friendly`,
     `${base} fast online`,
     `${base} privacy focused`,
     `${base} without login`,
+    `${base} without signup`,
+    `${base} no watermark`,
+    `${base} unlimited free`,
+    `${base} high accuracy`,
+    `${base} professional tool`,
+    `${base} daily use`,
+    `${base} india`,
+    `${base} hindi english users`,
     `free ${categoryLabel.toLowerCase()} by ishu`,
     `ishu student hub ${base}`,
+    `ishu kumar ${base}`,
+    `ishutools ${base}`,
     `indian student ${base} tool`,
   ]
 
   if (slug.includes('pdf')) {
-    keywords.push(`${title} without watermark`, `${title} unlimited free`, `${title} for documents`)
+    keywords.push(
+      `${title} without watermark`,
+      `${title} unlimited free`,
+      `${title} for documents`,
+      `${title} ilovepdf alternative`,
+      `${title} pdfcandy alternative`,
+      `${title} smallpdf alternative`,
+      `${title} secure pdf processing`,
+    )
   }
   if (slug.includes('image') || slug.includes('photo') || slug.includes('jpg') || slug.includes('png')) {
-    keywords.push(`${title} for photos`, `${title} high quality`, `${title} resize compress edit`)
+    keywords.push(
+      `${title} for photos`,
+      `${title} high quality`,
+      `${title} resize compress edit`,
+      `${title} iloveimg alternative`,
+      `${title} pi7 alternative`,
+      `${title} social media image tool`,
+      `${title} passport photo helper`,
+    )
   }
   if (slug.includes('calculator') || categoryLabel.toLowerCase().includes('student')) {
-    keywords.push(`${title} accurate calculator`, `${title} homework helper`, `${title} exam tool`)
+    keywords.push(`${title} accurate calculator`, `${title} homework helper`, `${title} exam tool`, `${title} college helper`, `${title} student productivity`)
   }
   if (categoryLabel.toLowerCase().includes('developer') || slug.includes('json') || slug.includes('code')) {
-    keywords.push(`${title} developer utility`, `${title} code formatter`, `${title} web developer tool`)
+    keywords.push(`${title} developer utility`, `${title} code formatter`, `${title} web developer tool`, `${title} frontend backend helper`, `${title} api utility`)
   }
 
-  return keywords
+  return Array.from(new Set(keywords))
 }
 
 export function getToolJsonLd(slug: string, title: string, description: string, category: string): object {

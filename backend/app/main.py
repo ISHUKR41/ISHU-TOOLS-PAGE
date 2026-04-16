@@ -123,12 +123,25 @@ def runtime_capabilities() -> dict:
 
 @app.get("/api/categories")
 def categories() -> list[dict]:
-    return [category.model_dump() for category in CATEGORIES]
+    seen: set[str] = set()
+    records = []
+    for category in CATEGORIES:
+        if category.id in seen:
+            continue
+        seen.add(category.id)
+        records.append(category)
+    return [category.model_dump() for category in records]
 
 
 @app.get("/api/tools")
 def list_tools(category: str | None = None, q: str | None = None) -> list[dict]:
-    records = TOOLS
+    seen: set[str] = set()
+    records = []
+    for tool in TOOLS:
+        if tool.slug in seen:
+            continue
+        seen.add(tool.slug)
+        records.append(tool)
 
     if category:
         records = [tool for tool in records if tool.category == category]

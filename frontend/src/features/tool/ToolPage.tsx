@@ -48,6 +48,17 @@ function getFileIcon(file: File) {
   return <FileText size={16} />
 }
 
+function upsertMeta(selector: string, attributes: Record<string, string>) {
+  let element = document.querySelector(selector) as HTMLMetaElement | HTMLLinkElement | null
+  if (!element) {
+    element = selector.startsWith('link')
+      ? document.createElement('link')
+      : document.createElement('meta')
+    document.head.appendChild(element)
+  }
+  Object.entries(attributes).forEach(([key, value]) => element?.setAttribute(key, value))
+}
+
 function isImageFile(file: File) {
   return file.type.startsWith('image/')
 }
@@ -115,51 +126,21 @@ export default function ToolPage() {
           getCategoryTheme(detail.category).accent,
         )
 
-        // Dynamic meta description
-        const metaDesc = document.querySelector('meta[name="description"]')
-        if (metaDesc) metaDesc.setAttribute('content', seo.description)
-        else {
-          const m = document.createElement('meta')
-          m.name = 'description'
-          m.content = seo.description
-          document.head.appendChild(m)
-        }
+        const toolUrl = `https://ishutools.com/tools/${detail.slug}`
+        const keywordText = seo.keywords.join(', ')
 
-        // Dynamic meta keywords
-        let metaKw = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null
-        if (metaKw) metaKw.content = seo.keywords.join(', ')
-        else {
-          metaKw = document.createElement('meta')
-          metaKw.name = 'keywords'
-          metaKw.content = seo.keywords.join(', ')
-          document.head.appendChild(metaKw)
-        }
-
-        // Dynamic OG tags
-        const setOg = (prop: string, val: string) => {
-          let el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement | null
-          if (el) el.content = val
-          else {
-            el = document.createElement('meta');
-            (el as any).setAttribute('property', prop)
-            el.content = val
-            document.head.appendChild(el)
-          }
-        }
-        setOg('og:title', seo.title)
-        setOg('og:description', seo.description)
-        setOg('og:url', `https://ishutools.com/tools/${detail.slug}`)
-        setOg('og:type', 'website')
-
-        // Canonical URL
-        let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
-        if (canonical) canonical.href = `https://ishutools.com/tools/${detail.slug}`
-        else {
-          canonical = document.createElement('link')
-          canonical.rel = 'canonical'
-          canonical.href = `https://ishutools.com/tools/${detail.slug}`
-          document.head.appendChild(canonical)
-        }
+        upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
+        upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywordText })
+        upsertMeta('meta[name="robots"]', { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' })
+        upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: toolUrl })
+        upsertMeta('meta[property="og:title"]', { property: 'og:title', content: seo.title })
+        upsertMeta('meta[property="og:description"]', { property: 'og:description', content: seo.description })
+        upsertMeta('meta[property="og:url"]', { property: 'og:url', content: toolUrl })
+        upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
+        upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ISHU TOOLS' })
+        upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
+        upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: seo.title })
+        upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: seo.description })
 
         // JSON-LD structured data
         const existingLd = document.getElementById('tool-jsonld')
@@ -225,6 +206,21 @@ export default function ToolPage() {
   const seo = useMemo(
     () => (tool ? getToolSEO(tool.slug, tool.title, tool.description, tool.category) : null),
     [tool],
+  )
+  const visibleSeoKeywords = useMemo(
+    () => (
+      seo
+        ? Array.from(
+          new Map(
+            seo.keywords
+              .map((keyword) => keyword.trim())
+              .filter(Boolean)
+              .map((keyword) => [keyword.toLowerCase(), keyword]),
+          ).values(),
+        )
+        : []
+    ),
+    [seo],
   )
 
   useEffect(() => {
@@ -464,7 +460,7 @@ export default function ToolPage() {
                   <p>{tool.description}</p>
                   {seo && (
                     <div className='tool-seo-chip-row' aria-label='Tool keywords'>
-                      {seo.keywords.slice(0, 6).map((keyword) => (
+                      {visibleSeoKeywords.slice(0, 6).map((keyword) => (
                         <span key={keyword}>{keyword}</span>
                       ))}
                     </div>
@@ -888,6 +884,26 @@ export default function ToolPage() {
                 ISHU TOOLS provides a completely free experience with no compromises. Our {tool.title} tool
                 uses advanced processing to deliver accurate, high-quality results every time.
               </p>
+
+              {seo && (
+                <>
+                  <h3>Popular Searches for {tool.title}</h3>
+                  <div className='seo-keyword-cloud'>
+                    {visibleSeoKeywords.slice(0, 18).map((keyword) => (
+                      <Link key={keyword} to={`/tools/${tool.slug}`}>
+                        {keyword}
+                      </Link>
+                    ))}
+                  </div>
+
+                  <h3>AI SEO Intent Coverage</h3>
+                  <p>
+                    This page is optimized for direct tool intent, student workflows, no-signup utility searches,
+                    Ishu-branded searches, mobile users, privacy-focused users, and alternative searches inspired by
+                    leading PDF, image, student, developer, and everyday tools platforms.
+                  </p>
+                </>
+              )}
             </motion.section>
           </div>
 
