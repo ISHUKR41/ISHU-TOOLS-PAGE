@@ -6407,3 +6407,49 @@ HANDLERS: dict[str, ToolHandler] = {
     "jpg-to-pdf-under-300kb": handle_jpg_to_pdf_under_kb_factory(300),
     "jpg-to-pdf-under-500kb": handle_jpg_to_pdf_under_kb_factory(500),
 }
+
+# Merge developer/utility handlers
+try:
+    from .developer_handlers import DEVELOPER_HANDLERS
+    HANDLERS.update(DEVELOPER_HANDLERS)
+    print(f"[handlers] Loaded {len(DEVELOPER_HANDLERS)} developer handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load developer_handlers: {e}")
+
+# Merge everyday utility handlers
+try:
+    from .everyday_handlers import EVERYDAY_HANDLERS
+    HANDLERS.update(EVERYDAY_HANDLERS)
+    print(f"[handlers] Loaded {len(EVERYDAY_HANDLERS)} everyday handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load everyday_handlers: {e}")
+
+# Merge extended student/everyday handlers
+try:
+    from .student_everyday_handlers import STUDENT_EVERYDAY_HANDLERS
+    HANDLERS.update(STUDENT_EVERYDAY_HANDLERS)
+    print(f"[handlers] Loaded {len(STUDENT_EVERYDAY_HANDLERS)} student/everyday handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load student_everyday_handlers: {e}")
+
+print(f"[handlers] Total registered handlers: {len(HANDLERS)}")
+
+# Merge new tools handlers (developer, color, security, conversion, social media)
+try:
+    from .new_tools_handlers import NEW_TOOL_HANDLERS
+    HANDLERS.update(NEW_TOOL_HANDLERS)
+    print(f"[handlers] Loaded {len(NEW_TOOL_HANDLERS)} new tool handlers (developer/color/security/conversion/social)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load new_tools_handlers: {e}")
+
+print(f"[handlers] FINAL total registered handlers: {len(HANDLERS)}")
+
+# Merge extra tools handlers (text encoding, improved math, etc.)
+try:
+    from .extra_tools_handlers import EXTRA_TOOL_HANDLERS
+    HANDLERS.update(EXTRA_TOOL_HANDLERS)
+    print(f"[handlers] Loaded {len(EXTRA_TOOL_HANDLERS)} extra tool handlers (text/math/encoding)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load extra_tools_handlers: {e}")
+
+print(f"[handlers] GRAND TOTAL registered handlers: {len(HANDLERS)}")

@@ -1,0 +1,40 @@
+# ISHU TOOLS — robots.txt
+# https://ishutools.com
+
+User-agent: *
+Allow: /
+Allow: /tools/
+Allow: /category/
+
+# Sitemap
+Sitemap: https://ishutools.com/sitemap.xml
+
+# Crawl-delay (be nice to crawlers)
+Crawl-delay: 1
+
+# Block non-essential paths
+Disallow: /api/
+Disallow: /assets/
+Disallow: *.js$
+Disallow: *.css$
+
+# Allow specific bots full access
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /

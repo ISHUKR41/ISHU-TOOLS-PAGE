@@ -1,0 +1,806 @@
+"""
+Extra tools handlers — text utilities, math tools, everyday tools.
+Includes improved accuracy for existing calculations and NEW tools.
+All production-ready with real, accurate logic.
+"""
+from __future__ import annotations
+import base64, csv, hashlib, html, io, json, math, os, re, secrets, string, sys, uuid
+from datetime import datetime, timezone, timedelta
+from typing import Any
+
+try:
+    from .handlers import ExecutionResult, ToolHandler
+except ImportError:
+    from handlers import ExecutionResult, ToolHandler
+
+
+# ═══════════════════════════════════════════════════════════
+# TEXT UTILITIES — Improved Accuracy
+# ═══════════════════════════════════════════════════════════
+
+def handle_text_to_morse(files, payload, output_dir):
+    text = str(payload.get("text", "")).upper()
+    MORSE = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+        'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+        'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+        'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+        'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+        '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+        '8': '---..', '9': '----.', ' ': '/', '.': '.-.-.-', ',': '--..--',
+        '?': '..--..', '!': '-.-.--', "'": '.----.', '"': '.-..-.', '(': '-.--.',
+        ')': '-.--.-', '&': '.-...', ':': '---...', ';': '-.-.-.', '/': '-..-.',
+        '=': '-...-', '+': '.-.-.', '-': '-....-', '_': '..--.-', '@': '.--.-.',
+    }
+    morse = " ".join(MORSE.get(c, c) for c in text)
+    return ExecutionResult(kind="json", message="Text converted to Morse code", data={"text": morse, "original": text})
+
+
+def handle_morse_to_text(files, payload, output_dir):
+    morse_input = str(payload.get("text", ""))
+    MORSE_REV = {
+        '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F',
+        '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L',
+        '--': 'M', '-.': 'N', '---': 'O', '.--.': 'P', '--.-': 'Q', '.-.': 'R',
+        '...': 'S', '-': 'T', '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X',
+        '-.--': 'Y', '--..': 'Z', '-----': '0', '.----': '1', '..---': '2',
+        '...--': '3', '....-': '4', '.....': '5', '-....': '6', '--...': '7',
+        '---..': '8', '----.': '9', '/': ' ', '.-.-.-': '.', '--..--': ',',
+        '..--..': '?', '-.-.--': '!',
+    }
+    words = morse_input.strip().split("   ")  # triple space = word separator
+    result = []
+    for word in words:
+        chars = word.split(" ")
+        result.append("".join(MORSE_REV.get(c, c) for c in chars))
+    text = " ".join(result)
+    return ExecutionResult(kind="json", message="Morse code converted to text", data={"text": text})
+
+
+def handle_text_to_binary(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    binary = " ".join(format(ord(c), '08b') for c in text)
+    return ExecutionResult(kind="json", message="Text converted to binary", data={"text": binary})
+
+
+def handle_binary_to_text(files, payload, output_dir):
+    binary = str(payload.get("text", "")).strip()
+    try:
+        bits = binary.replace(",", " ").split()
+        text = "".join(chr(int(b, 2)) for b in bits)
+        return ExecutionResult(kind="json", message="Binary converted to text", data={"text": text})
+    except Exception as e:
+        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
+
+
+def handle_text_to_hex(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    hex_str = " ".join(format(ord(c), '02x') for c in text)
+    return ExecutionResult(kind="json", message="Text converted to hexadecimal", data={"text": hex_str})
+
+
+def handle_hex_to_text(files, payload, output_dir):
+    hex_input = str(payload.get("text", "")).strip()
+    try:
+        hex_vals = hex_input.replace("0x", "").replace(",", " ").split()
+        text = "".join(chr(int(h, 16)) for h in hex_vals)
+        return ExecutionResult(kind="json", message="Hex converted to text", data={"text": text})
+    except Exception as e:
+        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
+
+
+def handle_text_to_octal(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    octal = " ".join(format(ord(c), '03o') for c in text)
+    return ExecutionResult(kind="json", message="Text converted to octal", data={"text": octal})
+
+
+def handle_octal_to_text(files, payload, output_dir):
+    octal_input = str(payload.get("text", "")).strip()
+    try:
+        octals = octal_input.split()
+        text = "".join(chr(int(o, 8)) for o in octals)
+        return ExecutionResult(kind="json", message="Octal converted to text", data={"text": text})
+    except Exception as e:
+        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
+
+
+def handle_text_to_unicode(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    unicode_str = " ".join(f"U+{ord(c):04X}" for c in text)
+    return ExecutionResult(kind="json", message="Text converted to Unicode codes", data={"text": unicode_str})
+
+
+def handle_unicode_to_text(files, payload, output_dir):
+    unicode_input = str(payload.get("text", "")).strip()
+    try:
+        codes = re.findall(r'(?:U\+)?([0-9a-fA-F]{2,6})', unicode_input)
+        text = "".join(chr(int(c, 16)) for c in codes)
+        return ExecutionResult(kind="json", message="Unicode converted to text", data={"text": text})
+    except Exception as e:
+        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
+
+
+def handle_text_reverse(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    mode = str(payload.get("mode", "characters")).lower()
+    if mode == "words":
+        result = " ".join(text.split()[::-1])
+    elif mode == "lines":
+        result = "\n".join(text.splitlines()[::-1])
+    else:
+        result = text[::-1]
+    return ExecutionResult(kind="json", message="Text reversed", data={"text": result})
+
+
+def handle_text_repeat(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    count = max(1, min(1000, int(payload.get("count", 3))))
+    separator = str(payload.get("separator", "\n"))
+    separator = separator.replace("\\n", "\n").replace("\\t", "\t")
+    result = separator.join([text] * count)
+    return ExecutionResult(kind="json", message=f"Text repeated {count} times", data={"text": result})
+
+
+def handle_whitespace_remover(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    mode = str(payload.get("mode", "extra")).lower()
+    if mode == "all":
+        result = re.sub(r'\s+', '', text)
+    elif mode == "leading":
+        result = "\n".join(line.lstrip() for line in text.splitlines())
+    elif mode == "trailing":
+        result = "\n".join(line.rstrip() for line in text.splitlines())
+    else:
+        result = re.sub(r'[ \t]+', ' ', text)
+        result = re.sub(r'\n\s*\n', '\n\n', result)
+    return ExecutionResult(kind="json", message="Whitespace cleaned", data={"text": result.strip()})
+
+
+def handle_text_statistics(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    words = text.split()
+    sentences = re.split(r'[.!?]+', text)
+    sentences = [s for s in sentences if s.strip()]
+    paragraphs = [p for p in text.split("\n\n") if p.strip()]
+    chars_no_space = len(text.replace(" ", "").replace("\n", "").replace("\t", ""))
+    
+    avg_word_len = sum(len(w) for w in words) / max(1, len(words))
+    avg_sentence_len = len(words) / max(1, len(sentences))
+    reading_time = len(words) / 200
+    speaking_time = len(words) / 130
+    
+    result = (
+        f"Characters: {len(text)}\n"
+        f"Characters (no spaces): {chars_no_space}\n"
+        f"Words: {len(words)}\n"
+        f"Sentences: {len(sentences)}\n"
+        f"Paragraphs: {len(paragraphs)}\n"
+        f"Lines: {len(text.splitlines())}\n"
+        f"Avg word length: {avg_word_len:.1f}\n"
+        f"Avg sentence length: {avg_sentence_len:.1f} words\n"
+        f"Reading time: {reading_time:.1f} min\n"
+        f"Speaking time: {speaking_time:.1f} min"
+    )
+    return ExecutionResult(kind="json", message="Text statistics generated", data={
+        "text": result,
+        "characters": len(text),
+        "words": len(words),
+        "sentences": len(sentences),
+        "paragraphs": len(paragraphs),
+        "reading_time_min": round(reading_time, 1),
+    })
+
+
+def handle_word_frequency(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    top_n = max(1, min(100, int(payload.get("top_n", 20))))
+    words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
+    from collections import Counter
+    freq = Counter(words).most_common(top_n)
+    rows = [f"{w}: {c}" for w, c in freq]
+    return ExecutionResult(kind="json", message=f"Top {len(freq)} words", data={
+        "text": "\n".join(rows),
+        "frequencies": dict(freq),
+        "total_words": len(words),
+        "unique_words": len(set(words)),
+    })
+
+
+def handle_number_to_roman(files, payload, output_dir):
+    try:
+        num = int(payload.get("text", "0"))
+    except ValueError:
+        return ExecutionResult(kind="json", message="Invalid number", data={"error": "Please enter a valid integer"})
+    
+    if num <= 0 or num > 3999:
+        return ExecutionResult(kind="json", message="Number must be 1-3999", data={"error": "Range: 1 to 3999"})
+    
+    vals = [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),
+            (50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]
+    result = ""
+    for v, s in vals:
+        while num >= v:
+            result += s
+            num -= v
+    return ExecutionResult(kind="json", message="Number converted to Roman numeral", data={"text": result})
+
+
+def handle_roman_to_number(files, payload, output_dir):
+    roman = str(payload.get("text", "")).upper().strip()
+    roman_vals = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}
+    
+    result = 0
+    prev = 0
+    for c in reversed(roman):
+        val = roman_vals.get(c, 0)
+        if val < prev:
+            result -= val
+        else:
+            result += val
+        prev = val
+    
+    return ExecutionResult(kind="json", message="Roman numeral converted to number", data={"text": str(result), "number": result})
+
+
+def handle_number_base_converter(files, payload, output_dir):
+    value = str(payload.get("text", "0")).strip()
+    from_base = int(payload.get("from_base", 10))
+    to_base = int(payload.get("to_base", 2))
+    
+    try:
+        decimal = int(value, from_base)
+        
+        if to_base == 2:
+            result = bin(decimal)[2:]
+        elif to_base == 8:
+            result = oct(decimal)[2:]
+        elif to_base == 16:
+            result = hex(decimal)[2:].upper()
+        elif to_base == 10:
+            result = str(decimal)
+        else:
+            digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            if decimal == 0:
+                result = "0"
+            else:
+                r = []
+                n = abs(decimal)
+                while n:
+                    r.append(digits[n % to_base])
+                    n //= to_base
+                result = ("" if decimal >= 0 else "-") + "".join(reversed(r))
+        
+        return ExecutionResult(kind="json", message=f"Base {from_base} → Base {to_base}", data={
+            "text": result,
+            "decimal": decimal,
+            "binary": bin(decimal)[2:],
+            "octal": oct(decimal)[2:],
+            "hexadecimal": hex(decimal)[2:].upper(),
+        })
+    except ValueError as e:
+        return ExecutionResult(kind="json", message=f"Invalid input for base {from_base}", data={"error": str(e)})
+
+
+def handle_color_code_generator(files, payload, output_dir):
+    import random
+    count = max(1, min(50, int(payload.get("count", 10))))
+    colors = []
+    for _ in range(count):
+        r, g, b = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+        colors.append(f"#{r:02x}{g:02x}{b:02x}")
+    
+    return ExecutionResult(kind="json", message=f"Generated {count} random colors", data={
+        "text": "\n".join(colors),
+        "colors": colors,
+    })
+
+
+def handle_qr_text_generator(files, payload, output_dir):
+    """Generate QR code as text (for when qrcode lib is available)"""
+    text = str(payload.get("text", "https://ishu.tools"))
+    try:
+        import qrcode
+        from PIL import Image
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(text)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        out_path = output_dir / "qr-code.png"
+        img.save(str(out_path))
+        from .handlers import create_single_file_result
+        return create_single_file_result(out_path, f"QR Code for: {text}", "image/png")
+    except ImportError:
+        # Fallback — return text representation
+        return ExecutionResult(kind="json", message="QR code data", data={
+            "text": f"QR Code Data: {text}\n\n(Install 'qrcode' library for image output: pip install qrcode[pil])",
+            "data": text,
+        })
+
+
+def handle_character_counter(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    from collections import Counter
+    char_freq = Counter(text)
+    sorted_chars = sorted(char_freq.items(), key=lambda x: -x[1])[:30]
+    rows = [f"'{c}' → {n} ({n/max(1,len(text))*100:.1f}%)" for c, n in sorted_chars]
+    
+    return ExecutionResult(kind="json", message="Character analysis complete", data={
+        "text": f"Total characters: {len(text)}\nUnique characters: {len(char_freq)}\n\n" + "\n".join(rows),
+        "total": len(text),
+        "unique": len(char_freq),
+    })
+
+
+def handle_string_hash(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    algorithm = str(payload.get("algorithm", "sha256")).lower()
+    
+    algos = {
+        "md5": hashlib.md5,
+        "sha1": hashlib.sha1,
+        "sha224": hashlib.sha224,
+        "sha256": hashlib.sha256,
+        "sha384": hashlib.sha384,
+        "sha512": hashlib.sha512,
+    }
+    
+    if algorithm == "all":
+        results = {}
+        for name, func in algos.items():
+            results[name] = func(text.encode("utf-8")).hexdigest()
+        text_result = "\n".join(f"{k.upper()}: {v}" for k, v in results.items())
+        return ExecutionResult(kind="json", message="All hashes generated", data={"text": text_result, **results})
+    
+    func = algos.get(algorithm)
+    if not func:
+        return ExecutionResult(kind="json", message=f"Unknown algorithm: {algorithm}", data={"error": "Use: md5, sha1, sha224, sha256, sha384, sha512, all"})
+    
+    result = func(text.encode("utf-8")).hexdigest()
+    return ExecutionResult(kind="json", message=f"{algorithm.upper()} hash generated", data={"text": result, "hash": result, "algorithm": algorithm})
+
+
+def handle_json_path_finder(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    try:
+        data = json.loads(text)
+        paths = []
+        
+        def find_paths(obj, prefix="$"):
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    path = f'{prefix}.{k}'
+                    paths.append(f"{path} → {type(v).__name__}" + (f" = {v}" if not isinstance(v, (dict, list)) else ""))
+                    find_paths(v, path)
+            elif isinstance(obj, list):
+                for i, v in enumerate(obj[:10]):  # limit
+                    path = f'{prefix}[{i}]'
+                    paths.append(f"{path} → {type(v).__name__}" + (f" = {v}" if not isinstance(v, (dict, list)) else ""))
+                    find_paths(v, path)
+        
+        find_paths(data)
+        return ExecutionResult(kind="json", message=f"Found {len(paths)} paths", data={
+            "text": "\n".join(paths),
+            "path_count": len(paths),
+        })
+    except json.JSONDecodeError as e:
+        return ExecutionResult(kind="json", message=f"Invalid JSON: {e}", data={"error": str(e)})
+
+
+def handle_epoch_converter(files, payload, output_dir):
+    """More accurate epoch/timestamp converter"""
+    input_val = str(payload.get("text", "")).strip()
+    
+    now = datetime.now(timezone.utc)
+    
+    if not input_val or input_val.lower() == "now":
+        ts = int(now.timestamp())
+        ts_ms = int(now.timestamp() * 1000)
+        return ExecutionResult(kind="json", message="Current epoch timestamps", data={
+            "text": (
+                f"Current Time:\n"
+                f"  UTC: {now.strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
+                f"  ISO 8601: {now.isoformat()}\n"
+                f"  Unix (seconds): {ts}\n"
+                f"  Unix (milliseconds): {ts_ms}\n"
+                f"  Day of week: {now.strftime('%A')}\n"
+                f"  Day of year: {now.strftime('%j')}"
+            ),
+            "unix_seconds": ts,
+            "unix_ms": ts_ms,
+        })
+    
+    # Try as number
+    try:
+        num = float(input_val)
+        if num > 1e15:  # microseconds
+            dt = datetime.fromtimestamp(num / 1e6, tz=timezone.utc)
+        elif num > 1e12:  # milliseconds
+            dt = datetime.fromtimestamp(num / 1000, tz=timezone.utc)
+        else:  # seconds
+            dt = datetime.fromtimestamp(num, tz=timezone.utc)
+        
+        return ExecutionResult(kind="json", message="Timestamp converted", data={
+            "text": (
+                f"Input: {input_val}\n\n"
+                f"UTC: {dt.strftime('%Y-%m-%d %H:%M:%S UTC')}\n"
+                f"ISO 8601: {dt.isoformat()}\n"
+                f"Unix (seconds): {int(dt.timestamp())}\n"
+                f"Unix (ms): {int(dt.timestamp() * 1000)}\n"
+                f"Day: {dt.strftime('%A, %B %d, %Y')}\n"
+                f"Time: {dt.strftime('%I:%M:%S %p')}"
+            ),
+        })
+    except (ValueError, OverflowError, OSError):
+        pass
+    
+    # Try as date string
+    for fmt in [
+        "%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y",
+        "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ",
+        "%d-%m-%Y", "%d.%m.%Y", "%B %d, %Y", "%b %d, %Y",
+    ]:
+        try:
+            dt = datetime.strptime(input_val, fmt).replace(tzinfo=timezone.utc)
+            ts = int(dt.timestamp())
+            return ExecutionResult(kind="json", message="Date converted to epoch", data={
+                "text": f"Input: {input_val}\nUnix: {ts}\nUTC: {dt.strftime('%Y-%m-%d %H:%M:%S UTC')}",
+                "unix_timestamp": ts,
+            })
+        except ValueError:
+            continue
+    
+    return ExecutionResult(kind="json", message="Could not parse input", data={"error": "Unrecognized format"})
+
+
+def handle_nato_alphabet(files, payload, output_dir):
+    text = str(payload.get("text", "")).upper()
+    NATO = {
+        'A': 'Alfa', 'B': 'Bravo', 'C': 'Charlie', 'D': 'Delta', 'E': 'Echo',
+        'F': 'Foxtrot', 'G': 'Golf', 'H': 'Hotel', 'I': 'India', 'J': 'Juliet',
+        'K': 'Kilo', 'L': 'Lima', 'M': 'Mike', 'N': 'November', 'O': 'Oscar',
+        'P': 'Papa', 'Q': 'Quebec', 'R': 'Romeo', 'S': 'Sierra', 'T': 'Tango',
+        'U': 'Uniform', 'V': 'Victor', 'W': 'Whiskey', 'X': 'X-ray', 'Y': 'Yankee',
+        'Z': 'Zulu', '0': 'Zero', '1': 'One', '2': 'Two', '3': 'Three', '4': 'Four',
+        '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Niner', ' ': '(space)',
+    }
+    result = " ".join(NATO.get(c, c) for c in text)
+    return ExecutionResult(kind="json", message="NATO phonetic alphabet", data={"text": result})
+
+
+def handle_pig_latin(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    
+    def to_pig_latin(word):
+        vowels = "aeiouAEIOU"
+        if word[0] in vowels:
+            return word + "way"
+        for i, c in enumerate(word):
+            if c in vowels:
+                return word[i:] + word[:i] + "ay"
+        return word + "ay"
+    
+    words = text.split()
+    result = " ".join(to_pig_latin(w) if w.isalpha() else w for w in words)
+    return ExecutionResult(kind="json", message="Pig Latin generated", data={"text": result})
+
+
+def handle_fancy_text(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    
+    # Generate multiple fancy styles
+    styles = {}
+    
+    # Bold
+    bold_map = {chr(i): chr(0x1D400 + i - ord('A')) for i in range(ord('A'), ord('Z')+1)}
+    bold_map.update({chr(i): chr(0x1D41A + i - ord('a')) for i in range(ord('a'), ord('z')+1)})
+    styles["𝐁𝐨𝐥𝐝"] = "".join(bold_map.get(c, c) for c in text)
+    
+    # Italic
+    italic_map = {chr(i): chr(0x1D434 + i - ord('A')) for i in range(ord('A'), ord('Z')+1)}
+    italic_map.update({chr(i): chr(0x1D44E + i - ord('a')) for i in range(ord('a'), ord('z')+1)})
+    styles["𝐼𝑡𝑎𝑙𝑖𝑐"] = "".join(italic_map.get(c, c) for c in text)
+    
+    # Circled
+    circled = {chr(i): chr(0x24B6 + i - ord('A')) for i in range(ord('A'), ord('Z')+1)}
+    circled.update({chr(i): chr(0x24D0 + i - ord('a')) for i in range(ord('a'), ord('z')+1)})
+    styles["Ⓒⓘⓡⓒⓛⓔⓓ"] = "".join(circled.get(c, c) for c in text)
+    
+    # Upside Down
+    flip_map = str.maketrans(
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+        '∀qƆpƎℲפHIſʞ˥WNOԀQɹS┴∩ΛMX⅄Zɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz'
+    )
+    styles["uʍop ǝpᴉsd∩"] = text.translate(flip_map)[::-1]
+    
+    # Fullwidth
+    fw = {chr(i): chr(0xFF21 + i - ord('A')) for i in range(ord('A'), ord('Z')+1)}
+    fw.update({chr(i): chr(0xFF41 + i - ord('a')) for i in range(ord('a'), ord('z')+1)})
+    fw.update({chr(i): chr(0xFF10 + i - ord('0')) for i in range(ord('0'), ord('9')+1)})
+    styles["Ｆｕｌｌｗｉｄｔｈ"] = "".join(fw.get(c, c) for c in text)
+    
+    result = "\n\n".join(f"【{name}】\n{val}" for name, val in styles.items())
+    return ExecutionResult(kind="json", message="Fancy text generated", data={"text": result, "styles": styles})
+
+
+def handle_line_counter(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    lines = text.splitlines()
+    non_empty = [l for l in lines if l.strip()]
+    
+    numbered = "\n".join(f"{i+1}: {l}" for i, l in enumerate(lines))
+    
+    return ExecutionResult(kind="json", message=f"{len(lines)} lines total", data={
+        "text": f"Total lines: {len(lines)}\nNon-empty lines: {len(non_empty)}\nEmpty lines: {len(lines) - len(non_empty)}\n\n{numbered}",
+        "total": len(lines),
+        "non_empty": len(non_empty),
+    })
+
+
+def handle_text_to_ascii_art(files, payload, output_dir):
+    text = str(payload.get("text", "ISHU"))[:20]
+    
+    # Simple ASCII banner
+    CHARS = {
+        'A': [" ██ ", "█  █", "████", "█  █", "█  █"],
+        'B': ["███ ", "█  █", "███ ", "█  █", "███ "],
+        'C': [" ███", "█   ", "█   ", "█   ", " ███"],
+        'D': ["███ ", "█  █", "█  █", "█  █", "███ "],
+        'E': ["████", "█   ", "███ ", "█   ", "████"],
+        'F': ["████", "█   ", "███ ", "█   ", "█   "],
+        'G': [" ███", "█   ", "█ ██", "█  █", " ███"],
+        'H': ["█  █", "█  █", "████", "█  █", "█  █"],
+        'I': ["████", " ██ ", " ██ ", " ██ ", "████"],
+        'J': ["████", "  █ ", "  █ ", "█ █ ", " █  "],
+        'K': ["█  █", "█ █ ", "██  ", "█ █ ", "█  █"],
+        'L': ["█   ", "█   ", "█   ", "█   ", "████"],
+        'M': ["█   █", "██ ██", "█ █ █", "█   █", "█   █"],
+        'N': ["█   █", "██  █", "█ █ █", "█  ██", "█   █"],
+        'O': [" ██ ", "█  █", "█  █", "█  █", " ██ "],
+        'P': ["███ ", "█  █", "███ ", "█   ", "█   "],
+        'Q': [" ██ ", "█  █", "█ ██", "█  █", " ███"],
+        'R': ["███ ", "█  █", "███ ", "█ █ ", "█  █"],
+        'S': [" ███", "█   ", " ██ ", "   █", "███ "],
+        'T': ["████", " ██ ", " ██ ", " ██ ", " ██ "],
+        'U': ["█  █", "█  █", "█  █", "█  █", " ██ "],
+        'V': ["█   █", "█   █", "█   █", " █ █ ", "  █  "],
+        'W': ["█   █", "█   █", "█ █ █", "██ ██", "█   █"],
+        'X': ["█  █", " ██ ", " ██ ", " ██ ", "█  █"],
+        'Y': ["█  █", " ██ ", " ██ ", " ██ ", " ██ "],
+        'Z': ["████", "  █ ", " █  ", "█   ", "████"],
+        ' ': ["    ", "    ", "    ", "    ", "    "],
+    }
+    
+    upper = text.upper()
+    lines = ["", "", "", "", ""]
+    for c in upper:
+        char_lines = CHARS.get(c, ["?   ", "?   ", "?   ", "?   ", "?   "])
+        for i in range(5):
+            lines[i] += char_lines[i] + " "
+    
+    result = "\n".join(lines)
+    return ExecutionResult(kind="json", message="ASCII art generated", data={"text": result})
+
+
+# ═══════════════════════════════════════════════════════════
+# MATH TOOLS — Improved Accuracy
+# ═══════════════════════════════════════════════════════════
+
+def handle_percentage_calculator_improved(files, payload, output_dir):
+    """More accurate percentage calculator with multiple modes"""
+    mode = str(payload.get("mode", "basic")).lower()
+    
+    try:
+        if mode == "what_percent":
+            # What % is X of Y?
+            x = float(payload.get("value", 0))
+            y = float(payload.get("total", 100))
+            if y == 0:
+                return ExecutionResult(kind="json", message="Cannot divide by zero", data={"error": "Total cannot be zero"})
+            pct = (x / y) * 100
+            return ExecutionResult(kind="json", message=f"{x} is {pct:.2f}% of {y}", data={
+                "text": f"{x} is {pct:.4f}% of {y}",
+                "result": round(pct, 4),
+            })
+        
+        elif mode == "increase":
+            # X increased by Y%
+            x = float(payload.get("value", 100))
+            pct = float(payload.get("percentage", 10))
+            result = x * (1 + pct / 100)
+            increase = result - x
+            return ExecutionResult(kind="json", message=f"{x} + {pct}% = {result:.2f}", data={
+                "text": f"Original: {x}\nIncrease: {pct}%\nIncrease amount: {increase:.4f}\nResult: {result:.4f}",
+                "result": round(result, 4),
+            })
+        
+        elif mode == "decrease":
+            x = float(payload.get("value", 100))
+            pct = float(payload.get("percentage", 10))
+            result = x * (1 - pct / 100)
+            decrease = x - result
+            return ExecutionResult(kind="json", message=f"{x} - {pct}% = {result:.2f}", data={
+                "text": f"Original: {x}\nDecrease: {pct}%\nDecrease amount: {decrease:.4f}\nResult: {result:.4f}",
+                "result": round(result, 4),
+            })
+        
+        else:
+            # Basic: Y% of X
+            x = float(payload.get("value", 100))
+            pct = float(payload.get("percentage", 10))
+            result = x * pct / 100
+            return ExecutionResult(kind="json", message=f"{pct}% of {x} = {result:.2f}", data={
+                "text": f"{pct}% of {x} = {result:.4f}",
+                "result": round(result, 4),
+            })
+    
+    except (ValueError, TypeError) as e:
+        return ExecutionResult(kind="json", message=f"Calculation error: {e}", data={"error": str(e)})
+
+
+def handle_scientific_calculator_improved(files, payload, output_dir):
+    """More accurate scientific calculator with safe eval"""
+    expr = str(payload.get("text", ""))
+    
+    # Sanitize: only allow safe mathematical operations
+    safe_expr = expr
+    
+    # Replace common math functions
+    replacements = {
+        "sqrt": "math.sqrt", "sin": "math.sin", "cos": "math.cos", "tan": "math.tan",
+        "asin": "math.asin", "acos": "math.acos", "atan": "math.atan",
+        "log": "math.log10", "ln": "math.log", "log2": "math.log2",
+        "abs": "abs", "ceil": "math.ceil", "floor": "math.floor",
+        "pi": "math.pi", "PI": "math.pi", "e": "math.e", "E": "math.e",
+        "^": "**", "×": "*", "÷": "/",
+        "fact": "math.factorial", "factorial": "math.factorial",
+        "pow": "math.pow", "exp": "math.exp",
+        "rad": "math.radians", "deg": "math.degrees",
+        "round": "round",
+    }
+    
+    for old, new in replacements.items():
+        safe_expr = safe_expr.replace(old, new)
+    
+    # Security: only allow safe characters
+    allowed = set("0123456789.+-*/() ,math.sqrtcosintaleogbf2pPIEecirundwxp")
+    if not all(c in allowed or c.isalpha() or c in "._" for c in safe_expr.replace(" ", "")):
+        return ExecutionResult(kind="json", message="Unsafe expression", data={"error": "Only mathematical expressions allowed"})
+    
+    try:
+        result = eval(safe_expr, {"__builtins__": {}, "math": math, "abs": abs, "round": round, "int": int, "float": float})
+        
+        if isinstance(result, float):
+            if result == int(result) and abs(result) < 1e15:
+                display = str(int(result))
+            else:
+                display = f"{result:.10g}"
+        else:
+            display = str(result)
+        
+        return ExecutionResult(kind="json", message=f"= {display}", data={
+            "text": f"{expr} = {display}",
+            "result": result,
+            "expression": expr,
+        })
+    except Exception as e:
+        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e), "expression": expr})
+
+
+def handle_compound_interest(files, payload, output_dir):
+    """Accurate compound interest calculator"""
+    principal = float(payload.get("principal", 10000))
+    rate = float(payload.get("rate", 8))  # annual %
+    time = float(payload.get("time", 5))  # years
+    n = int(payload.get("compound_per_year", 12))  # compounding frequency
+    
+    r = rate / 100
+    amount = principal * (1 + r/n) ** (n * time)
+    interest = amount - principal
+    
+    # Simple interest for comparison
+    simple_amount = principal * (1 + r * time)
+    simple_interest = simple_amount - principal
+    
+    frequency_label = {1: "Annually", 2: "Semi-annually", 4: "Quarterly", 12: "Monthly", 365: "Daily"}.get(n, f"{n}x/year")
+    
+    return ExecutionResult(kind="json", message=f"Final amount: ₹{amount:,.2f}", data={
+        "text": (
+            f"═══ Compound Interest Calculator ═══\n"
+            f"Principal: ₹{principal:,.2f}\n"
+            f"Annual Rate: {rate}%\n"
+            f"Time: {time} years\n"
+            f"Compounding: {frequency_label}\n\n"
+            f"Compound Interest: ₹{interest:,.2f}\n"
+            f"Total Amount: ₹{amount:,.2f}\n\n"
+            f"── Comparison with Simple Interest ──\n"
+            f"Simple Interest: ₹{simple_interest:,.2f}\n"
+            f"Simple Total: ₹{simple_amount:,.2f}\n"
+            f"Extra earned via compounding: ₹{interest - simple_interest:,.2f}"
+        ),
+        "amount": round(amount, 2),
+        "interest": round(interest, 2),
+    })
+
+
+def handle_loan_emi(files, payload, output_dir):
+    """Accurate EMI calculator with amortization"""
+    principal = float(payload.get("principal", 1000000))
+    rate = float(payload.get("rate", 8.5))  # annual %
+    years = float(payload.get("years", 20))
+    
+    months = int(years * 12)
+    monthly_rate = rate / 100 / 12
+    
+    if monthly_rate == 0:
+        emi = principal / months
+    else:
+        emi = principal * monthly_rate * (1 + monthly_rate)**months / ((1 + monthly_rate)**months - 1)
+    
+    total_payment = emi * months
+    total_interest = total_payment - principal
+    
+    return ExecutionResult(kind="json", message=f"Monthly EMI: ₹{emi:,.2f}", data={
+        "text": (
+            f"═══ EMI Calculator ═══\n"
+            f"Loan Amount: ₹{principal:,.2f}\n"
+            f"Annual Interest Rate: {rate}%\n"
+            f"Loan Tenure: {years} years ({months} months)\n\n"
+            f"Monthly EMI: ₹{emi:,.2f}\n"
+            f"Total Interest: ₹{total_interest:,.2f}\n"
+            f"Total Payment: ₹{total_payment:,.2f}\n"
+            f"Interest to Principal Ratio: {total_interest/principal*100:.1f}%"
+        ),
+        "emi": round(emi, 2),
+        "total_interest": round(total_interest, 2),
+        "total_payment": round(total_payment, 2),
+    })
+
+
+# ═══════════════════════════════════════════════════════════
+# HANDLER REGISTRY
+# ═══════════════════════════════════════════════════════════
+
+EXTRA_TOOL_HANDLERS: dict[str, ToolHandler] = {
+    # Text encoding/conversion
+    "text-to-morse": handle_text_to_morse,
+    "morse-to-text": handle_morse_to_text,
+    "text-to-binary": handle_text_to_binary,
+    "binary-to-text": handle_binary_to_text,
+    "text-to-hex": handle_text_to_hex,
+    "hex-to-text": handle_hex_to_text,
+    "text-to-octal": handle_text_to_octal,
+    "octal-to-text": handle_octal_to_text,
+    "text-to-unicode": handle_text_to_unicode,
+    "unicode-to-text": handle_unicode_to_text,
+    
+    # Text operations
+    "text-reverse": handle_text_reverse,
+    "text-repeat": handle_text_repeat,
+    "whitespace-remover": handle_whitespace_remover,
+    "text-statistics": handle_text_statistics,
+    "word-frequency": handle_word_frequency,
+    "character-counter": handle_character_counter,
+    "line-counter": handle_line_counter,
+    "text-to-ascii-art": handle_text_to_ascii_art,
+    "fancy-text-generator": handle_fancy_text,
+    "nato-alphabet": handle_nato_alphabet,
+    "pig-latin": handle_pig_latin,
+    
+    # Number converters
+    "number-to-roman": handle_number_to_roman,
+    "roman-to-number": handle_roman_to_number,
+    "number-base-converter": handle_number_base_converter,
+    
+    # Generators
+    "random-color-generator": handle_color_code_generator,
+    "string-hash": handle_string_hash,
+    "json-path-finder": handle_json_path_finder,
+    "epoch-converter": handle_epoch_converter,
+    
+    # Math — improved accuracy
+    "percentage-calculator": handle_percentage_calculator_improved,
+    "scientific-calculator": handle_scientific_calculator_improved,
+    "compound-interest-calculator": handle_compound_interest,
+    "loan-emi-calculator": handle_loan_emi,
+}

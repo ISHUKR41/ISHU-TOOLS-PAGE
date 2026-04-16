@@ -6,7 +6,6 @@ import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import HeroSection from './components/HeroSection'
-import CategorySpotlight from './components/CategorySpotlight'
 import ToolCategorySection from './components/ToolCategorySection'
 
 const socialLinks = [
@@ -37,8 +36,8 @@ export default function HomePage() {
 
   useEffect(() => {
     applyDocumentBranding(
-      'ISHU TOOLS',
-      'Python-powered PDF, image, text, and export workflows with dedicated tool pages.',
+      'ISHU TOOLS — Indian Student Hub University Tools',
+      '383+ free online tools for students & professionals. PDF, Image, Developer, Math, Text & AI tools — no signup, no watermark.',
       '#3bd0ff',
     )
   }, [])
@@ -153,16 +152,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <CategorySpotlight
-          categories={categories}
-          toolCountByCategory={counts.byCategory}
-          activeCategory={activeCategory}
-          onSelect={(categoryId) =>
-            startTransition(() => {
-              setActiveCategory((current) => (current === categoryId ? 'all' : categoryId))
-            })
-          }
-        />
+
 
         <section id='tool-directory' className='directory-stack'>
           {loading && <p className='status-text'>Loading categories and tools...</p>}
@@ -182,11 +172,65 @@ export default function HomePage() {
             ))}
         </section>
 
+        {/* How it Works Section — SEO rich */}
+        {!loading && !error && (
+          <section className='how-it-works-section'>
+            <span className='section-kicker'>Simple & Fast</span>
+            <h2>How ISHU TOOLS Works</h2>
+            <div className='steps-grid'>
+              <div className='step-card'>
+                <div className='step-number'>1</div>
+                <h3>Choose a Tool</h3>
+                <p>Search from {tools.length}+ free tools across {categories.length} categories — PDF, Image, Developer, Math, and more.</p>
+              </div>
+              <div className='step-card'>
+                <div className='step-number'>2</div>
+                <h3>Upload or Enter Data</h3>
+                <p>Upload your files or enter text/data. Drag & drop supported. All files processed securely.</p>
+              </div>
+              <div className='step-card'>
+                <div className='step-number'>3</div>
+                <h3>Run & Download</h3>
+                <p>Click "Run" and download your result instantly. No signup, no watermark, no limits. 100% free.</p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* FAQ Section — SEO snippets */}
+        {!loading && !error && (
+          <section className='home-faq-section'>
+            <span className='section-kicker'>Have Questions?</span>
+            <h2>Frequently Asked Questions</h2>
+            <div className='faq-list'>
+              <details className='faq-item'>
+                <summary className='faq-question'>What is ISHU TOOLS?</summary>
+                <p className='faq-answer'>ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with {tools.length}+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar, it's designed for students and professionals — no signup, no watermark, completely free.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>Is ISHU TOOLS free to use?</summary>
+                <p className='faq-answer'>Yes! ISHU TOOLS is 100% free. All tools are available without any signup, registration, or payment. There are no watermarks, no limits, and no hidden charges.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>Is my data safe?</summary>
+                <p className='faq-answer'>Absolutely! All uploaded files are processed securely and automatically deleted after processing. We never store, share, or access your files. Your privacy is our top priority.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>Can I use ISHU TOOLS on mobile?</summary>
+                <p className='faq-answer'>Yes! ISHU TOOLS is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktop computers.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>How many tools does ISHU TOOLS have?</summary>
+                <p className='faq-answer'>ISHU TOOLS currently offers {tools.length}+ tools across {categories.length} categories including PDF Tools, Image Tools, Developer Tools, Math Calculators, Text Tools, Color Tools, Unit Converters, Security Tools, and Social Media Tools. New tools are added regularly.</p>
+              </details>
+            </div>
+          </section>
+        )}
+
         {!loading && !error && (
           <footer className='home-footer'>
             <p>
-              Showing <strong>{totalVisibleTools}</strong> tools across a modular React +
-              FastAPI workspace.
+              <strong>{totalVisibleTools}</strong> tools · <strong>{categories.length}</strong> categories · Free forever · No signup · No watermark
             </p>
           </footer>
         )}

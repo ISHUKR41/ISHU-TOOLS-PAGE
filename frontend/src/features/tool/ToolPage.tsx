@@ -26,6 +26,7 @@ import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../
 import { applyDocumentBranding, getCategoryTheme, getToolAccept } from '../../lib/toolPresentation'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
+import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -102,11 +103,83 @@ export default function ToolPage() {
         setTool(detail)
         setRuntimeCapabilities(capabilities)
         setToolError(null)
+
+        // ─── Per-tool SEO injection ───
+        const seo = getToolSEO(detail.slug, detail.title, detail.description, detail.category)
+        
+        // Set page title
+        document.title = seo.title
         applyDocumentBranding(
-          `${detail.title} | ISHU TOOLS`,
-          detail.description,
+          seo.title,
+          seo.description,
           getCategoryTheme(detail.category).accent,
         )
+
+        // Dynamic meta description
+        const metaDesc = document.querySelector('meta[name="description"]')
+        if (metaDesc) metaDesc.setAttribute('content', seo.description)
+        else {
+          const m = document.createElement('meta')
+          m.name = 'description'
+          m.content = seo.description
+          document.head.appendChild(m)
+        }
+
+        // Dynamic meta keywords
+        let metaKw = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null
+        if (metaKw) metaKw.content = seo.keywords.join(', ')
+        else {
+          metaKw = document.createElement('meta')
+          metaKw.name = 'keywords'
+          metaKw.content = seo.keywords.join(', ')
+          document.head.appendChild(metaKw)
+        }
+
+        // Dynamic OG tags
+        const setOg = (prop: string, val: string) => {
+          let el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement | null
+          if (el) el.content = val
+          else {
+            el = document.createElement('meta');
+            (el as any).setAttribute('property', prop)
+            el.content = val
+            document.head.appendChild(el)
+          }
+        }
+        setOg('og:title', seo.title)
+        setOg('og:description', seo.description)
+        setOg('og:url', `https://ishutools.com/tools/${detail.slug}`)
+        setOg('og:type', 'website')
+
+        // Canonical URL
+        let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+        if (canonical) canonical.href = `https://ishutools.com/tools/${detail.slug}`
+        else {
+          canonical = document.createElement('link')
+          canonical.rel = 'canonical'
+          canonical.href = `https://ishutools.com/tools/${detail.slug}`
+          document.head.appendChild(canonical)
+        }
+
+        // JSON-LD structured data
+        const existingLd = document.getElementById('tool-jsonld')
+        if (existingLd) existingLd.remove()
+        const ldScript = document.createElement('script')
+        ldScript.id = 'tool-jsonld'
+        ldScript.type = 'application/ld+json'
+        ldScript.textContent = JSON.stringify(getToolJsonLd(detail.slug, detail.title, detail.description, detail.category))
+        document.head.appendChild(ldScript)
+
+        // FAQ JSON-LD
+        if (seo.faq.length > 0) {
+          const existingFaq = document.getElementById('tool-faq-jsonld')
+          if (existingFaq) existingFaq.remove()
+          const faqScript = document.createElement('script')
+          faqScript.id = 'tool-faq-jsonld'
+          faqScript.type = 'application/ld+json'
+          faqScript.textContent = JSON.stringify(getFaqJsonLd(seo.faq))
+          document.head.appendChild(faqScript)
+        }
 
         const sameCategoryTools = await fetchTools({ category: detail.category })
         if (!mounted) return
@@ -123,6 +196,9 @@ export default function ToolPage() {
 
     return () => {
       mounted = false
+      // Cleanup injected SEO elements
+      document.getElementById('tool-jsonld')?.remove()
+      document.getElementById('tool-faq-jsonld')?.remove()
     }
   }, [slug])
 
@@ -732,6 +808,76 @@ export default function ToolPage() {
                 </motion.section>
               )}
             </AnimatePresence>
+
+            {/* FAQ Section for SEO */}
+            {(() => {
+              const seo = getToolSEO(tool.slug, tool.title, tool.description, tool.category)
+              if (seo.faq.length === 0) return null
+              return (
+                <motion.section
+                  className='tool-faq-section'
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                >
+                  <h2 className='faq-title'>Frequently Asked Questions</h2>
+                  <div className='faq-list'>
+                    {seo.faq.map((item, idx) => (
+                      <details key={idx} className='faq-item'>
+                        <summary className='faq-question'>{item.question}</summary>
+                        <p className='faq-answer'>{item.answer}</p>
+                      </details>
+                    ))}
+                  </div>
+                </motion.section>
+              )
+            })()}
+
+            {/* Rich SEO Content Section — visible to crawlers & users */}
+            <motion.section
+              className='seo-content-section tool-seo-section'
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <h2>About {tool.title} — Free Online Tool</h2>
+              <p>
+                {tool.title} is a free online tool by <strong>ISHU TOOLS</strong> (Indian Student Hub University Tools).
+                {tool.description} No signup, no watermark, no limits — completely free for students, professionals,
+                and everyone. Process your files securely and download results instantly.
+              </p>
+
+              <h3>How to Use {tool.title}</h3>
+              <ol>
+                <li><strong>Visit ISHU TOOLS</strong> — Navigate to the {tool.title} page.</li>
+                {tool.input_kind === 'files' || tool.input_kind === 'mixed'
+                  ? <li><strong>Upload Your File</strong> — Drag & drop or click to browse. Supports {tool.accepts_multiple ? 'multiple files' : 'single file'} upload.</li>
+                  : <li><strong>Enter Your Data</strong> — Fill in the required fields with your text or values.</li>
+                }
+                <li><strong>Configure Options</strong> — Adjust settings like quality, format, or size as needed.</li>
+                <li><strong>Click "Run"</strong> — Processing starts instantly. Results are ready in seconds.</li>
+                <li><strong>Download Result</strong> — Download your processed file or copy the output text.</li>
+              </ol>
+
+              <h3>Key Features of {tool.title}</h3>
+              <ul>
+                <li><strong>100% Free</strong> — No charges, no premium plans, no hidden fees</li>
+                <li><strong>No Signup Required</strong> — Use instantly without creating an account</li>
+                <li><strong>No Watermark</strong> — Clean, professional output every time</li>
+                <li><strong>Privacy Focused</strong> — Files are automatically deleted after processing</li>
+                <li><strong>Fast Processing</strong> — Results generated in seconds</li>
+                <li><strong>Works on All Devices</strong> — Mobile, tablet, laptop, desktop compatible</li>
+                <li><strong>Unlimited Usage</strong> — No daily limits or file count restrictions</li>
+              </ul>
+
+              <h3>Why Choose ISHU TOOLS for {tool.title}?</h3>
+              <p>
+                ISHU TOOLS is trusted by millions of students and professionals worldwide for its reliability,
+                speed, and ease of use. Unlike other tools that require signup or add watermarks,
+                ISHU TOOLS provides a completely free experience with no compromises. Our {tool.title} tool
+                uses advanced processing to deliver accurate, high-quality results every time.
+              </p>
+            </motion.section>
           </div>
 
           <ToolSidebar

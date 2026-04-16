@@ -147,6 +147,72 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(192, 132, 252, 0.2)',
     label: 'Archive',
   },
+  'developer-tools': {
+    accent: '#06b6d4',
+    surface: 'rgba(6, 22, 30, 0.84)',
+    glow: 'rgba(6, 182, 212, 0.22)',
+    label: 'Developer',
+  },
+  'color-tools': {
+    accent: '#e879f9',
+    surface: 'rgba(32, 12, 38, 0.84)',
+    glow: 'rgba(232, 121, 249, 0.22)',
+    label: 'Color',
+  },
+  'unit-converter': {
+    accent: '#14b8a6',
+    surface: 'rgba(6, 26, 24, 0.84)',
+    glow: 'rgba(20, 184, 166, 0.22)',
+    label: 'Converter',
+  },
+  'hash-crypto': {
+    accent: '#f97316',
+    surface: 'rgba(36, 18, 6, 0.84)',
+    glow: 'rgba(249, 115, 22, 0.22)',
+    label: 'Crypto',
+  },
+  'seo-tools': {
+    accent: '#84cc16',
+    surface: 'rgba(18, 28, 6, 0.84)',
+    glow: 'rgba(132, 204, 22, 0.22)',
+    label: 'SEO',
+  },
+  'code-tools': {
+    accent: '#a78bfa',
+    surface: 'rgba(22, 14, 38, 0.84)',
+    glow: 'rgba(167, 139, 250, 0.22)',
+    label: 'Code',
+  },
+  'math-tools': {
+    accent: '#f59e0b',
+    surface: 'rgba(36, 24, 6, 0.84)',
+    glow: 'rgba(245, 158, 11, 0.22)',
+    label: 'Calculator',
+  },
+  'student-tools': {
+    accent: '#10b981',
+    surface: 'rgba(6, 28, 20, 0.84)',
+    glow: 'rgba(16, 185, 129, 0.22)',
+    label: 'Everyday',
+  },
+  'security-tools': {
+    accent: '#ef4444',
+    surface: 'rgba(36, 10, 10, 0.84)',
+    glow: 'rgba(239, 68, 68, 0.22)',
+    label: 'Security',
+  },
+  'conversion-tools': {
+    accent: '#14b8a6',
+    surface: 'rgba(6, 26, 24, 0.84)',
+    glow: 'rgba(20, 184, 166, 0.22)',
+    label: 'Converters',
+  },
+  'social-media': {
+    accent: '#f472b6',
+    surface: 'rgba(33, 11, 27, 0.84)',
+    glow: 'rgba(244, 114, 182, 0.22)',
+    label: 'Social Media',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([

@@ -994,8 +994,810 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'chm-to-pdf': [],
   'dxf-to-pdf': [],
   'pages-to-pdf': [],
+
+  // ── Developer Tools ─────────────────────────────────────────
+  'json-formatter': [
+    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"name":"ishu","score":95}' },
+  ],
+  'xml-formatter': [
+    { name: 'text', label: 'XML Input', type: 'textarea', placeholder: '<root><name>ishu</name></root>' },
+  ],
+  'base64-encode': [
+    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'Hello World' },
+  ],
+  'base64-decode': [
+    { name: 'text', label: 'Base64 Input', type: 'textarea', placeholder: 'SGVsbG8gV29ybGQ=' },
+  ],
+  'url-encode': [
+    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'hello world & more' },
+  ],
+  'url-decode': [
+    { name: 'text', label: 'URL-Encoded Text', type: 'textarea', placeholder: 'hello%20world%26more' },
+  ],
+  'html-encode': [
+    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: '<h1>Hello</h1>' },
+  ],
+  'html-decode': [
+    { name: 'text', label: 'HTML-Encoded Text', type: 'textarea', placeholder: '&lt;h1&gt;Hello&lt;/h1&gt;' },
+  ],
+  'jwt-decode': [
+    { name: 'text', label: 'JWT Token', type: 'textarea', placeholder: 'eyJhbGciOiJIUzI1NiJ9...' },
+  ],
+  'regex-tester': [
+    { name: 'pattern', label: 'Regex Pattern', type: 'text', placeholder: '\\d+' },
+    { name: 'text', label: 'Test Text', type: 'textarea', placeholder: 'abc 123 def 456' },
+    { name: 'flags', label: 'Flags (i, m, s)', type: 'text', defaultValue: 'i' },
+  ],
+  'unix-timestamp': [
+    { name: 'text', label: 'Timestamp or Date', type: 'text', placeholder: '1700000000 or 2024-01-15' },
+  ],
+  'json-to-yaml': [
+    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"key":"value"}' },
+  ],
+  'yaml-to-json': [
+    { name: 'text', label: 'YAML Input', type: 'textarea', placeholder: 'key: value' },
+  ],
+
+  // ── Color Tools ─────────────────────────────────────────────
+  'hex-to-rgb': [
+    { name: 'text', label: 'HEX Color', type: 'text', placeholder: '#ff5733', defaultValue: '#3b82f6' },
+  ],
+  'rgb-to-hex': [
+    { name: 'text', label: 'RGB Values', type: 'text', placeholder: '255, 87, 51' },
+  ],
+  'rgb-to-hsl': [
+    { name: 'text', label: 'RGB Values', type: 'text', placeholder: '59, 130, 246' },
+  ],
+  'color-palette-generator': [
+    { name: 'text', label: 'Base Color (HEX)', type: 'text', placeholder: '#3b82f6', defaultValue: '#3b82f6' },
+  ],
+  'gradient-generator': [
+    { name: 'color1', label: 'Color 1', type: 'text', defaultValue: '#3b82f6' },
+    { name: 'color2', label: 'Color 2', type: 'text', defaultValue: '#8b5cf6' },
+    { name: 'angle', label: 'Angle (degrees)', type: 'number', defaultValue: '135' },
+  ],
+  'color-contrast-checker': [
+    { name: 'text', label: 'Foreground Color', type: 'text', defaultValue: '#000000' },
+    { name: 'background', label: 'Background Color', type: 'text', defaultValue: '#ffffff' },
+  ],
+
+  // ── Unit Converters ─────────────────────────────────────────
+  'length-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'm',
+      options: [
+        { label: 'Meters (m)', value: 'm' }, { label: 'Kilometers (km)', value: 'km' },
+        { label: 'Centimeters (cm)', value: 'cm' }, { label: 'Millimeters (mm)', value: 'mm' },
+        { label: 'Inches (in)', value: 'in' }, { label: 'Feet (ft)', value: 'ft' },
+        { label: 'Yards (yd)', value: 'yd' }, { label: 'Miles (mi)', value: 'mi' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'ft',
+      options: [
+        { label: 'Meters (m)', value: 'm' }, { label: 'Kilometers (km)', value: 'km' },
+        { label: 'Centimeters (cm)', value: 'cm' }, { label: 'Millimeters (mm)', value: 'mm' },
+        { label: 'Inches (in)', value: 'in' }, { label: 'Feet (ft)', value: 'ft' },
+        { label: 'Yards (yd)', value: 'yd' }, { label: 'Miles (mi)', value: 'mi' },
+      ],
+    },
+  ],
+  'weight-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kg',
+      options: [
+        { label: 'Grams (g)', value: 'g' }, { label: 'Kilograms (kg)', value: 'kg' },
+        { label: 'Milligrams (mg)', value: 'mg' }, { label: 'Pounds (lb)', value: 'lb' },
+        { label: 'Ounces (oz)', value: 'oz' }, { label: 'Metric Tons (t)', value: 't' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'lb',
+      options: [
+        { label: 'Grams (g)', value: 'g' }, { label: 'Kilograms (kg)', value: 'kg' },
+        { label: 'Milligrams (mg)', value: 'mg' }, { label: 'Pounds (lb)', value: 'lb' },
+        { label: 'Ounces (oz)', value: 'oz' }, { label: 'Metric Tons (t)', value: 't' },
+      ],
+    },
+  ],
+  'temperature-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '100' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'c',
+      options: [
+        { label: 'Celsius (°C)', value: 'c' }, { label: 'Fahrenheit (°F)', value: 'f' },
+        { label: 'Kelvin (K)', value: 'k' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'f',
+      options: [
+        { label: 'Celsius (°C)', value: 'c' }, { label: 'Fahrenheit (°F)', value: 'f' },
+        { label: 'Kelvin (K)', value: 'k' },
+      ],
+    },
+  ],
+  'data-size-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'gb',
+      options: [
+        { label: 'Bytes', value: 'b' }, { label: 'KB', value: 'kb' }, { label: 'MB', value: 'mb' },
+        { label: 'GB', value: 'gb' }, { label: 'TB', value: 'tb' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mb',
+      options: [
+        { label: 'Bytes', value: 'b' }, { label: 'KB', value: 'kb' }, { label: 'MB', value: 'mb' },
+        { label: 'GB', value: 'gb' }, { label: 'TB', value: 'tb' },
+      ],
+    },
+  ],
+  'speed-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '100' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kmh',
+      options: [
+        { label: 'km/h', value: 'kmh' }, { label: 'mph', value: 'mph' },
+        { label: 'm/s', value: 'ms' }, { label: 'Knots', value: 'kn' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mph',
+      options: [
+        { label: 'km/h', value: 'kmh' }, { label: 'mph', value: 'mph' },
+        { label: 'm/s', value: 'ms' }, { label: 'Knots', value: 'kn' },
+      ],
+    },
+  ],
+  'area-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    {
+      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'sqm',
+      options: [
+        { label: 'Square Meters', value: 'sqm' }, { label: 'Square Kilometers', value: 'sqkm' },
+        { label: 'Square Feet', value: 'sqft' }, { label: 'Acres', value: 'acre' },
+        { label: 'Hectares', value: 'ha' },
+      ],
+    },
+    {
+      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'sqft',
+      options: [
+        { label: 'Square Meters', value: 'sqm' }, { label: 'Square Kilometers', value: 'sqkm' },
+        { label: 'Square Feet', value: 'sqft' }, { label: 'Acres', value: 'acre' },
+        { label: 'Hectares', value: 'ha' },
+      ],
+    },
+  ],
+
+  // ── Hash & Crypto ───────────────────────────────────────────
+  'md5-hash': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'sha256-hash': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'sha512-hash': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'uuid-generator': [
+    { name: 'count', label: 'Number of UUIDs', type: 'number', defaultValue: '5' },
+  ],
+  'password-generator': [
+    { name: 'length', label: 'Password Length', type: 'number', defaultValue: '16' },
+    { name: 'count', label: 'Number of Passwords', type: 'number', defaultValue: '5' },
+  ],
+  'lorem-ipsum-generator': [
+    { name: 'paragraphs', label: 'Number of Paragraphs', type: 'number', defaultValue: '3' },
+  ],
+  'bcrypt-hash': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+
+  // ── SEO Tools ───────────────────────────────────────────────
+  'meta-tag-generator': [
+    { name: 'text', label: 'Website Title', type: 'text', placeholder: 'My Amazing Website' },
+    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'A great website...' },
+    { name: 'keywords', label: 'Keywords', type: 'text', placeholder: 'web, tools, ishu' },
+    { name: 'author', label: 'Author', type: 'text', placeholder: 'Ishu' },
+  ],
+  'keyword-density': [
+    { name: 'text', label: 'Text Content', type: 'textarea', placeholder: 'Paste article or blog...' },
+  ],
+  'readability-score': [
+    { name: 'text', label: 'Text Content', type: 'textarea', placeholder: 'Paste text to analyze...' },
+  ],
+  'character-counter': [
+    { name: 'text', label: 'Text Content', type: 'textarea', placeholder: 'Paste text to count...' },
+  ],
+  'open-graph-generator': [
+    { name: 'text', label: 'Page Title', type: 'text', placeholder: 'My Page' },
+    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Page description...' },
+    { name: 'url', label: 'Page URL', type: 'text', placeholder: 'https://example.com' },
+    { name: 'image', label: 'Image URL', type: 'text', placeholder: 'https://example.com/image.png' },
+  ],
+
+  // ── Code Tools ──────────────────────────────────────────────
+  'minify-css': [
+    { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body { margin: 0; }' },
+  ],
+  'minify-js': [
+    { name: 'text', label: 'JavaScript Code', type: 'textarea', placeholder: 'function hello() { return 1; }' },
+  ],
+  'minify-html': [
+    { name: 'text', label: 'HTML Code', type: 'textarea', placeholder: '<div> <p>Hello</p> </div>' },
+  ],
+  'prettify-css': [
+    { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body{margin:0;padding:0}' },
+  ],
+  'sql-formatter': [
+    { name: 'text', label: 'SQL Query', type: 'textarea', placeholder: 'SELECT * FROM users WHERE id=1' },
+  ],
+  'markdown-to-html': [
+    { name: 'text', label: 'Markdown Text', type: 'textarea', placeholder: '# Hello\n**Bold** text' },
+  ],
+  'html-to-markdown': [
+    { name: 'text', label: 'HTML Code', type: 'textarea', placeholder: '<h1>Hello</h1><p><b>Bold</b></p>' },
+  ],
+  'diff-checker': [
+    { name: 'text', label: 'Text 1', type: 'textarea', placeholder: 'Original text...' },
+    { name: 'text2', label: 'Text 2', type: 'textarea', placeholder: 'Modified text...' },
+  ],
+
+  // ── Math & Calculator Tools ─────────────────────────────────
+  'percentage-calculator': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '25' },
+    { name: 'total', label: 'Total / Base', type: 'number', defaultValue: '200' },
+    {
+      name: 'mode', label: 'Calculation Mode', type: 'select', defaultValue: 'percentage',
+      options: [
+        { label: 'What % is Value of Total', value: 'percentage' },
+        { label: 'Value% of Total', value: 'of' },
+        { label: 'Percentage Change (old → new)', value: 'change' },
+      ],
+    },
+  ],
+  'average-calculator': [
+    { name: 'text', label: 'Numbers (comma or space separated)', type: 'textarea', placeholder: '85, 90, 78, 92, 88' },
+  ],
+  'bmi-calculator': [
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '175' },
+    {
+      name: 'unit', label: 'Unit System', type: 'select', defaultValue: 'metric',
+      options: [
+        { label: 'Metric (kg/cm)', value: 'metric' },
+        { label: 'Imperial (lbs/in)', value: 'imperial' },
+      ],
+    },
+  ],
+  'age-calculator': [
+    { name: 'text', label: 'Date of Birth', type: 'text', placeholder: '2000-01-15' },
+  ],
+  'discount-calculator': [
+    { name: 'value', label: 'Original Price', type: 'number', defaultValue: '1000' },
+    { name: 'total', label: 'Discount %', type: 'number', defaultValue: '20' },
+  ],
+  'loan-emi-calculator': [
+    { name: 'value', label: 'Principal (₹)', type: 'number', defaultValue: '500000' },
+    { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5' },
+    { name: 'months', label: 'Tenure (months)', type: 'number', defaultValue: '60' },
+  ],
+  'tip-calculator': [
+    { name: 'value', label: 'Bill Amount', type: 'number', defaultValue: '100' },
+    { name: 'total', label: 'Tip %', type: 'number', defaultValue: '15' },
+    { name: 'count', label: 'Number of People', type: 'number', defaultValue: '1' },
+  ],
+  'gpa-calculator': [
+    {
+      name: 'text', label: 'Grades & Credits (one per line)',
+      type: 'textarea', placeholder: 'A 3\nB+ 4\nA- 3\nC 2',
+    },
+  ],
+
+  // ── Student & Everyday Tools ────────────────────────────────
+  'number-base-converter': [
+    { name: 'text', label: 'Number', type: 'text', placeholder: '255' },
+    {
+      name: 'from_base', label: 'From Base', type: 'select', defaultValue: 'decimal',
+      options: [
+        { label: 'Decimal', value: 'decimal' }, { label: 'Binary', value: 'binary' },
+        { label: 'Octal', value: 'octal' }, { label: 'Hexadecimal', value: 'hex' },
+      ],
+    },
+  ],
+  'text-reverse': [
+    { name: 'text', label: 'Text to Reverse', type: 'textarea', placeholder: 'Hello World' },
+  ],
+  'text-to-binary': [
+    { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'Hello' },
+  ],
+  'binary-to-text': [
+    { name: 'text', label: 'Binary Input', type: 'textarea', placeholder: '01001000 01100101 01101100 01101100 01101111' },
+  ],
+  'morse-code': [
+    { name: 'text', label: 'Text / Morse Code', type: 'textarea', placeholder: 'Hello World' },
+    {
+      name: 'mode', label: 'Mode', type: 'select', defaultValue: 'encode',
+      options: [
+        { label: 'Encode (Text → Morse)', value: 'encode' },
+        { label: 'Decode (Morse → Text)', value: 'decode' },
+      ],
+    },
+  ],
+  'random-number-generator': [
+    { name: 'value', label: 'Min', type: 'number', defaultValue: '1' },
+    { name: 'total', label: 'Max', type: 'number', defaultValue: '100' },
+    { name: 'count', label: 'Count', type: 'number', defaultValue: '1' },
+  ],
+  'text-to-ascii': [
+    { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'ABC' },
+  ],
+  'ascii-to-text': [
+    { name: 'text', label: 'ASCII Values', type: 'textarea', placeholder: '65 66 67' },
+  ],
+  'word-frequency': [
+    { name: 'text', label: 'Text Content', type: 'textarea', placeholder: 'Paste text to analyze...' },
+  ],
+  'roman-numeral-converter': [
+    { name: 'text', label: 'Number or Roman Numeral', type: 'text', placeholder: '2024 or MMXXIV' },
+  ],
+  'countdown-calculator': [
+    { name: 'text', label: 'Target Date', type: 'text', placeholder: '2025-12-31' },
+  ],
+
+  // ── Student & Everyday Extended ─────────────────────────────
+  'compound-interest-calculator': [
+    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '100000' },
+    { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '10' },
+    { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '5' },
+    { name: 'compound_per_year', label: 'Compounds Per Year', type: 'number', defaultValue: '12' },
+  ],
+  'simple-interest-calculator': [
+    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '50000' },
+    { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8' },
+    { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '3' },
+  ],
+  'salary-calculator': [
+    { name: 'value', label: 'Annual Salary (₹)', type: 'number', defaultValue: '1200000' },
+  ],
+  'fuel-cost-calculator': [
+    { name: 'value', label: 'Distance (km)', type: 'number', defaultValue: '500' },
+    { name: 'total', label: 'Mileage (km/L)', type: 'number', defaultValue: '15' },
+    { name: 'price', label: 'Fuel Price (₹/L)', type: 'number', defaultValue: '100' },
+  ],
+  'electricity-bill-calculator': [
+    { name: 'value', label: 'Units Consumed', type: 'number', defaultValue: '300' },
+    { name: 'total', label: 'Rate Per Unit (₹)', type: 'number', defaultValue: '7' },
+  ],
+  'speed-distance-time': [
+    { name: 'value', label: 'Value 1', type: 'number', defaultValue: '100' },
+    { name: 'total', label: 'Value 2', type: 'number', defaultValue: '2' },
+    {
+      name: 'mode', label: 'Calculate', type: 'select', defaultValue: 'speed',
+      options: [
+        { label: 'Speed (Distance ÷ Time)', value: 'speed' },
+        { label: 'Distance (Speed × Time)', value: 'distance' },
+        { label: 'Time (Distance ÷ Speed)', value: 'time' },
+      ],
+    },
+  ],
+  'profit-loss-calculator': [
+    { name: 'value', label: 'Cost Price (₹)', type: 'number', defaultValue: '100' },
+    { name: 'total', label: 'Selling Price (₹)', type: 'number', defaultValue: '150' },
+  ],
+  'cgpa-to-percentage': [
+    { name: 'value', label: 'CGPA / Percentage Value', type: 'number', defaultValue: '8.5' },
+    {
+      name: 'mode', label: 'Conversion Mode', type: 'select', defaultValue: 'cgpa_to_pct',
+      options: [
+        { label: 'CGPA → Percentage', value: 'cgpa_to_pct' },
+        { label: 'Percentage → CGPA', value: 'pct_to_cgpa' },
+      ],
+    },
+  ],
+  'date-difference': [
+    { name: 'text', label: 'Date 1 (YYYY-MM-DD)', type: 'text', placeholder: '2000-01-15' },
+    { name: 'text2', label: 'Date 2 (YYYY-MM-DD, optional)', type: 'text', placeholder: '2025-01-15' },
+  ],
+  'time-zone-converter': [
+    { name: 'text', label: 'Time (HH:MM)', type: 'text', placeholder: '14:30' },
+    {
+      name: 'from_tz', label: 'From Timezone', type: 'select', defaultValue: 'IST',
+      options: [
+        { label: 'IST (India)', value: 'IST' }, { label: 'UTC', value: 'UTC' },
+        { label: 'EST (US Eastern)', value: 'EST' }, { label: 'PST (US Pacific)', value: 'PST' },
+        { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
+        { label: 'CET (Central Europe)', value: 'CET' }, { label: 'SGT (Singapore)', value: 'SGT' },
+      ],
+    },
+    {
+      name: 'to_tz', label: 'To Timezone', type: 'select', defaultValue: 'UTC',
+      options: [
+        { label: 'IST (India)', value: 'IST' }, { label: 'UTC', value: 'UTC' },
+        { label: 'EST (US Eastern)', value: 'EST' }, { label: 'PST (US Pacific)', value: 'PST' },
+        { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
+        { label: 'CET (Central Europe)', value: 'CET' }, { label: 'SGT (Singapore)', value: 'SGT' },
+      ],
+    },
+  ],
+  'password-strength-checker': [
+    { name: 'text', label: 'Password to Check', type: 'password', placeholder: 'Enter password...' },
+  ],
+  'text-to-hex': [
+    { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'Hello World' },
+  ],
+  'hex-to-text': [
+    { name: 'text', label: 'Hex Input', type: 'textarea', placeholder: '48 65 6c 6c 6f' },
+  ],
+  'text-to-unicode': [
+    { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'Hello' },
+  ],
+  'unicode-to-text': [
+    { name: 'text', label: 'Unicode Input', type: 'textarea', placeholder: '\\u0048\\u0065\\u006c' },
+  ],
+  'string-hash-generator': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'text-statistics': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here...' },
+  ],
+  'case-converter-advanced': [
+    { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'hello world example' },
+    {
+      name: 'mode', label: 'Target Case', type: 'select', defaultValue: 'camelCase',
+      options: [
+        { label: 'camelCase', value: 'camelCase' },
+        { label: 'PascalCase', value: 'PascalCase' },
+        { label: 'snake_case', value: 'snake_case' },
+        { label: 'SCREAMING_SNAKE', value: 'SCREAMING_SNAKE' },
+        { label: 'kebab-case', value: 'kebab-case' },
+        { label: 'dot.case', value: 'dot.case' },
+        { label: 'Title Case', value: 'title' },
+        { label: 'aLtErNaTiNg', value: 'alternating' },
+        { label: 'iNVERSE', value: 'inverse' },
+      ],
+    },
+  ],
+  'coin-flip': [
+    { name: 'count', label: 'Number of Flips', type: 'number', defaultValue: '1' },
+  ],
+  'dice-roller': [
+    { name: 'value', label: 'Number of Sides', type: 'number', defaultValue: '6' },
+    { name: 'count', label: 'Number of Dice', type: 'number', defaultValue: '1' },
+  ],
+  'stopwatch-calculator': [
+    { name: 'text', label: 'Time (HH:MM:SS or seconds)', type: 'text', placeholder: '3661 or 01:01:01' },
+  ],
+  'scientific-calculator': [
+    { name: 'text', label: 'Math Expression', type: 'textarea', placeholder: 'sqrt(144) + 2^3 + sin(pi/2)' },
+  ],
+  'unit-price-calculator': [
+    { name: 'value', label: 'Total Price (₹)', type: 'number', defaultValue: '250' },
+    { name: 'total', label: 'Quantity', type: 'number', defaultValue: '5' },
+    { name: 'unit', label: 'Unit Label', type: 'text', defaultValue: 'kg' },
+  ],
+  'number-to-words': [
+    { name: 'text', label: 'Number', type: 'text', placeholder: '123456' },
+  ],
+
+  // ─── Developer Tools ───
+  'lorem-ipsum-generator': [
+    { name: 'count', label: 'Count', type: 'number', defaultValue: '5' },
+    { name: 'unit', label: 'Unit', type: 'select', defaultValue: 'paragraphs', options: [
+      { label: 'Paragraphs', value: 'paragraphs' },
+      { label: 'Sentences', value: 'sentences' },
+      { label: 'Words', value: 'words' },
+    ]},
+  ],
+  'regex-tester': [
+    { name: 'pattern', label: 'Regex Pattern', type: 'text', placeholder: '\\b\\w+@\\w+\\.\\w+\\b' },
+    { name: 'text', label: 'Test Text', type: 'textarea', placeholder: 'Enter text to test against...' },
+    { name: 'flags', label: 'Flags (i, m, s)', type: 'text', defaultValue: 'i' },
+  ],
+  'diff-checker': [
+    { name: 'text1', label: 'Text 1 (Original)', type: 'textarea', placeholder: 'Paste original text...' },
+    { name: 'text2', label: 'Text 2 (Modified)', type: 'textarea', placeholder: 'Paste modified text...' },
+  ],
+  'json-formatter': [
+    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"name":"ishu","tools":["pdf","image"]}' },
+    { name: 'indent', label: 'Indent Spaces', type: 'number', defaultValue: '2' },
+  ],
+  'json-minifier': [
+    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: 'Paste formatted JSON...' },
+  ],
+  'url-encoder': [
+    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'Hello World & ISHU TOOLS!' },
+  ],
+  'url-decoder': [
+    { name: 'text', label: 'URL-encoded Text', type: 'textarea', placeholder: 'Hello%20World%20%26%20ISHU' },
+  ],
+  'html-encoder': [
+    { name: 'text', label: 'HTML to Encode', type: 'textarea', placeholder: '<h1>ISHU TOOLS</h1>' },
+  ],
+  'html-decoder': [
+    { name: 'text', label: 'Encoded HTML', type: 'textarea', placeholder: '&lt;h1&gt;ISHU TOOLS&lt;/h1&gt;' },
+  ],
+  'base64-encode': [
+    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'Enter text to encode to Base64...' },
+  ],
+  'base64-decode': [
+    { name: 'text', label: 'Base64 Text', type: 'textarea', placeholder: 'Enter Base64 encoded text...' },
+  ],
+  'uuid-generator': [
+    { name: 'count', label: 'Number of UUIDs', type: 'number', defaultValue: '5' },
+  ],
+  'hash-generator': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text to generate hashes...' },
+  ],
+  'jwt-decoder': [
+    { name: 'text', label: 'JWT Token', type: 'textarea', placeholder: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+  ],
+  'unix-timestamp-converter': [
+    { name: 'text', label: 'Timestamp or Date', type: 'text', placeholder: '1713168000 or 2024-04-15 or now' },
+    { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'auto', options: [
+      { label: 'Auto Detect', value: 'auto' },
+      { label: 'Timestamp → Date', value: 'to_date' },
+      { label: 'Date → Timestamp', value: 'to_timestamp' },
+    ]},
+  ],
+  'css-minifier': [
+    { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body {\n  color: red;\n  margin: 0;\n}' },
+  ],
+  'js-minifier': [
+    { name: 'text', label: 'JavaScript Code', type: 'textarea', placeholder: 'function hello() {\n  console.log("Hi!");\n}' },
+  ],
+  'html-minifier': [
+    { name: 'text', label: 'HTML Code', type: 'textarea', placeholder: '<div>\n  <p>Hello World</p>\n</div>' },
+  ],
+  'markdown-to-html': [
+    { name: 'text', label: 'Markdown Text', type: 'textarea', placeholder: '# Heading\n\n**Bold** and *italic* text' },
+  ],
+  'html-to-markdown': [
+    { name: 'text', label: 'HTML Code', type: 'textarea', placeholder: '<h1>Heading</h1><p><strong>Bold</strong></p>' },
+  ],
+  'json-to-csv-text': [
+    { name: 'text', label: 'JSON Array', type: 'textarea', placeholder: '[{"name":"Ishu","age":22},{"name":"Tool","age":1}]' },
+  ],
+  'csv-to-json-text': [
+    { name: 'text', label: 'CSV Data', type: 'textarea', placeholder: 'name,age\nIshu,22\nTool,1' },
+  ],
+  'cron-expression-parser': [
+    { name: 'text', label: 'Cron Expression', type: 'text', placeholder: '*/5 * * * *' },
+  ],
+  'sql-formatter': [
+    { name: 'text', label: 'SQL Query', type: 'textarea', placeholder: 'SELECT * FROM users WHERE age > 18 ORDER BY name' },
+  ],
+  'xml-formatter': [
+    { name: 'text', label: 'XML Data', type: 'textarea', placeholder: '<root><item>value</item></root>' },
+  ],
+  'yaml-to-json': [
+    { name: 'text', label: 'YAML Text', type: 'textarea', placeholder: 'name: Ishu\nage: 22\ntools:\n  - pdf\n  - image' },
+  ],
+  'json-to-yaml': [
+    { name: 'text', label: 'JSON Text', type: 'textarea', placeholder: '{"name":"Ishu","tools":["pdf","image"]}' },
+  ],
+  'text-escape-unescape': [
+    { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Enter text with special characters...' },
+    { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'escape', options: [
+      { label: 'Escape', value: 'escape' },
+      { label: 'Unescape', value: 'unescape' },
+    ]},
+  ],
+  'ip-lookup': [
+    { name: 'text', label: 'IP Address (leave empty for your IP)', type: 'text', placeholder: 'Leave empty or type IP' },
+  ],
+  'char-code-converter': [
+    { name: 'text', label: 'Characters or Code Points', type: 'textarea', placeholder: 'ABC or 65 66 67' },
+    { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'to_codes', options: [
+      { label: 'Characters → Codes', value: 'to_codes' },
+      { label: 'Codes → Characters', value: 'from_codes' },
+    ]},
+  ],
+
+  // ─── Color Tools ───
+  'color-picker': [
+    { name: 'text', label: 'HEX Color', type: 'text', defaultValue: '#3b82f6' },
+  ],
+  'hex-to-rgb': [
+    { name: 'text', label: 'HEX Color Code', type: 'text', placeholder: '#FF5733 or FF5733' },
+  ],
+  'rgb-to-hex': [
+    { name: 'r', label: 'Red (0-255)', type: 'number', defaultValue: '59' },
+    { name: 'g', label: 'Green (0-255)', type: 'number', defaultValue: '130' },
+    { name: 'b', label: 'Blue (0-255)', type: 'number', defaultValue: '246' },
+  ],
+  'color-palette-generator': [
+    { name: 'text', label: 'Base Color (HEX)', type: 'text', defaultValue: '#3b82f6' },
+  ],
+  'rgb-to-hsl': [
+    { name: 'r', label: 'Red (0-255)', type: 'number', defaultValue: '59' },
+    { name: 'g', label: 'Green (0-255)', type: 'number', defaultValue: '130' },
+    { name: 'b', label: 'Blue (0-255)', type: 'number', defaultValue: '246' },
+  ],
+  'color-contrast-checker': [
+    { name: 'foreground', label: 'Foreground Color (HEX)', type: 'text', defaultValue: '#000000' },
+    { name: 'background', label: 'Background Color (HEX)', type: 'text', defaultValue: '#ffffff' },
+  ],
+  'gradient-generator': [
+    { name: 'color1', label: 'Color 1', type: 'text', defaultValue: '#667eea' },
+    { name: 'color2', label: 'Color 2', type: 'text', defaultValue: '#764ba2' },
+    { name: 'direction', label: 'Direction', type: 'select', defaultValue: 'to right', options: [
+      { label: 'To Right', value: 'to right' },
+      { label: 'To Left', value: 'to left' },
+      { label: 'To Bottom', value: 'to bottom' },
+      { label: 'To Top', value: 'to top' },
+      { label: '45°', value: '45deg' },
+      { label: '135°', value: '135deg' },
+    ]},
+  ],
+
+  // ─── Security Tools ───
+  'password-generator': [
+    { name: 'length', label: 'Password Length', type: 'number', defaultValue: '16' },
+    { name: 'count', label: 'Number of Passwords', type: 'number', defaultValue: '5' },
+    { name: 'uppercase', label: 'Include Uppercase', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'lowercase', label: 'Include Lowercase', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'digits', label: 'Include Numbers', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'symbols', label: 'Include Symbols', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'password-strength-checker': [
+    { name: 'text', label: 'Password to Check', type: 'password', placeholder: 'Enter password...' },
+  ],
+  'md5-generator': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'sha256-generator': [
+    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
+  ],
+  'bcrypt-generator': [
+    { name: 'text', label: 'Password to Hash', type: 'password', placeholder: 'Enter password...' },
+  ],
+
+  // ─── Unit Converters ───
+  'temperature-converter': [
+    { name: 'value', label: 'Temperature Value', type: 'number', defaultValue: '100' },
+    { name: 'from_unit', label: 'From Unit', type: 'select', defaultValue: 'celsius', options: [
+      { label: 'Celsius', value: 'celsius' },
+      { label: 'Fahrenheit', value: 'fahrenheit' },
+      { label: 'Kelvin', value: 'kelvin' },
+    ]},
+  ],
+  'length-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'meter', options: [
+      { label: 'Meter', value: 'meter' }, { label: 'Kilometer', value: 'kilometer' },
+      { label: 'Centimeter', value: 'centimeter' }, { label: 'Millimeter', value: 'millimeter' },
+      { label: 'Mile', value: 'mile' }, { label: 'Yard', value: 'yard' },
+      { label: 'Foot', value: 'foot' }, { label: 'Inch', value: 'inch' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'foot', options: [
+      { label: 'Meter', value: 'meter' }, { label: 'Kilometer', value: 'kilometer' },
+      { label: 'Centimeter', value: 'centimeter' }, { label: 'Millimeter', value: 'millimeter' },
+      { label: 'Mile', value: 'mile' }, { label: 'Yard', value: 'yard' },
+      { label: 'Foot', value: 'foot' }, { label: 'Inch', value: 'inch' },
+    ]},
+  ],
+  'weight-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kg', options: [
+      { label: 'Kilogram', value: 'kg' }, { label: 'Gram', value: 'g' },
+      { label: 'Pound', value: 'lb' }, { label: 'Ounce', value: 'oz' },
+      { label: 'Ton', value: 'ton' }, { label: 'Stone', value: 'stone' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'lb', options: [
+      { label: 'Kilogram', value: 'kg' }, { label: 'Gram', value: 'g' },
+      { label: 'Pound', value: 'lb' }, { label: 'Ounce', value: 'oz' },
+      { label: 'Ton', value: 'ton' }, { label: 'Stone', value: 'stone' },
+    ]},
+  ],
+  'speed-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '100' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'km/h', options: [
+      { label: 'km/h', value: 'km/h' }, { label: 'mph', value: 'mph' },
+      { label: 'm/s', value: 'm/s' }, { label: 'knots', value: 'knots' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mph', options: [
+      { label: 'km/h', value: 'km/h' }, { label: 'mph', value: 'mph' },
+      { label: 'm/s', value: 'm/s' }, { label: 'knots', value: 'knots' },
+    ]},
+  ],
+  'data-storage-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'gb', options: [
+      { label: 'Bytes', value: 'bytes' }, { label: 'KB', value: 'kb' },
+      { label: 'MB', value: 'mb' }, { label: 'GB', value: 'gb' },
+      { label: 'TB', value: 'tb' }, { label: 'PB', value: 'pb' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mb', options: [
+      { label: 'Bytes', value: 'bytes' }, { label: 'KB', value: 'kb' },
+      { label: 'MB', value: 'mb' }, { label: 'GB', value: 'gb' },
+      { label: 'TB', value: 'tb' }, { label: 'PB', value: 'pb' },
+    ]},
+  ],
+  'area-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'sqm', options: [
+      { label: 'Square Meter', value: 'sqm' }, { label: 'Square Foot', value: 'sqft' },
+      { label: 'Acre', value: 'acre' }, { label: 'Hectare', value: 'hectare' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'sqft', options: [
+      { label: 'Square Meter', value: 'sqm' }, { label: 'Square Foot', value: 'sqft' },
+      { label: 'Acre', value: 'acre' }, { label: 'Hectare', value: 'hectare' },
+    ]},
+  ],
+  'volume-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'liter', options: [
+      { label: 'Liter', value: 'liter' }, { label: 'Milliliter', value: 'ml' },
+      { label: 'Gallon', value: 'gallon' }, { label: 'Cup', value: 'cup' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'gallon', options: [
+      { label: 'Liter', value: 'liter' }, { label: 'Milliliter', value: 'ml' },
+      { label: 'Gallon', value: 'gallon' }, { label: 'Cup', value: 'cup' },
+    ]},
+  ],
+  'time-zone-converter': [
+    { name: 'time', label: 'Time (HH:MM or "now")', type: 'text', defaultValue: 'now' },
+    { name: 'from_timezone', label: 'From Timezone', type: 'select', defaultValue: 'UTC', options: [
+      { label: 'UTC', value: 'UTC' }, { label: 'IST (India)', value: 'IST' },
+      { label: 'EST (US East)', value: 'EST' }, { label: 'PST (US West)', value: 'PST' },
+      { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
+      { label: 'CET (Europe)', value: 'CET' },
+    ]},
+    { name: 'to_timezone', label: 'To Timezone', type: 'select', defaultValue: 'IST', options: [
+      { label: 'UTC', value: 'UTC' }, { label: 'IST (India)', value: 'IST' },
+      { label: 'EST (US East)', value: 'EST' }, { label: 'PST (US West)', value: 'PST' },
+      { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
+      { label: 'CET (Europe)', value: 'CET' },
+    ]},
+  ],
+  'energy-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kcal', options: [
+      { label: 'Joule', value: 'j' }, { label: 'Kilojoule', value: 'kj' },
+      { label: 'Calorie', value: 'cal' }, { label: 'Kilocalorie', value: 'kcal' },
+      { label: 'kWh', value: 'kwh' }, { label: 'BTU', value: 'btu' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'j', options: [
+      { label: 'Joule', value: 'j' }, { label: 'Kilojoule', value: 'kj' },
+      { label: 'Calorie', value: 'cal' }, { label: 'Kilocalorie', value: 'kcal' },
+      { label: 'kWh', value: 'kwh' }, { label: 'BTU', value: 'btu' },
+    ]},
+  ],
+  'pressure-converter': [
+    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
+    { name: 'from_unit', label: 'From', type: 'select', defaultValue: 'atm', options: [
+      { label: 'Pascal', value: 'pa' }, { label: 'Bar', value: 'bar' },
+      { label: 'ATM', value: 'atm' }, { label: 'PSI', value: 'psi' },
+      { label: 'mmHg', value: 'mmhg' },
+    ]},
+    { name: 'to_unit', label: 'To', type: 'select', defaultValue: 'psi', options: [
+      { label: 'Pascal', value: 'pa' }, { label: 'Bar', value: 'bar' },
+      { label: 'ATM', value: 'atm' }, { label: 'PSI', value: 'psi' },
+      { label: 'mmHg', value: 'mmhg' },
+    ]},
+  ],
+
+  // ─── Social Media Tools ───
+  'instagram-post-resizer': [
+    { name: 'aspect', label: 'Aspect Ratio', type: 'select', defaultValue: 'square', options: [
+      { label: 'Square (1:1) - 1080x1080', value: 'square' },
+      { label: 'Portrait (4:5) - 1080x1350', value: 'portrait' },
+      { label: 'Landscape (1.91:1) - 1080x566', value: 'landscape' },
+    ]},
+  ],
+  'youtube-thumbnail-maker': [],
+  'twitter-header-maker': [],
+  'facebook-cover-maker': [],
+  'linkedin-banner-maker': [],
+  'whatsapp-dp-maker': [],
 }
 
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }
+

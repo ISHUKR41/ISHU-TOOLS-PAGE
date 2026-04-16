@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
+  <url>
+    <loc>https://ishutools.com/</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- All Tools Page -->
+  <url>
+    <loc>https://ishutools.com/tools</loc>
+    <lastmod>2026-04-16</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Category Landing Pages -->
+  <url><loc>https://ishutools.com/category/pdf-core</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/category/pdf-security</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/pdf-advanced</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/image-core</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/category/image-effects</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/image-enhance</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/image-layout</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/document-convert</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/category/office-suite</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/text-ai</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/text-ops</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/text-cleanup</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/utility</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/developer-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/math-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/color-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/security-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/conversion-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/social-media</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/student-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/format-lab</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/ocr-vision</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://ishutools.com/category/ebook-convert</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/data-tools</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/category/batch-automation</loc><lastmod>2026-04-16</lastmod><changefreq>weekly</changefreq><priority>0.75</priority></url>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- PDF Core Tools -->
+  <!-- ══════════════════════════════════════ -->
+  <url><loc>https://ishutools.com/tools/merge-pdf</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/split-pdf</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-pdf</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/rotate-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/watermark-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/optimize-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/scan-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/repair-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-jpg</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-png</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/jpg-to-pdf</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/image-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <!-- PDF Security -->
+  <url><loc>https://ishutools.com/tools/protect-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/unlock-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/redact-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/sign-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-security</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/remove-metadata-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/whiteout-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- PDF Advanced -->
+  <url><loc>https://ishutools.com/tools/organize-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/crop-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/page-numbers-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/compare-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/extract-text-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/extract-images-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/grayscale-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/edit-metadata-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-pdfa</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/edit-pdf-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/add-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/add-image-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
+  <!-- Office Suite -->
+  <url><loc>https://ishutools.com/tools/pdf-to-word</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/word-to-pdf</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-excel</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/excel-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-pptx</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/pptx-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-docx</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/docx-to-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/powerpoint-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-powerpoint</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-ppt</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/ppt-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-from-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-converter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/wps-to-pdf</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Image Core -->
+  <url><loc>https://ishutools.com/tools/compress-image</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-image</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://ishutools.com/tools/crop-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/rotate-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-to-jpg</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-from-jpg</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/reduce-image-size-in-kb</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-kb</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/html-to-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/freehand-crop</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/crop-png</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Image Effects -->
+  <url><loc>https://ishutools.com/tools/watermark-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/grayscale-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/blur-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pixelate-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/meme-generator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/photo-editor</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/remove-image-object</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
+  <!-- Image Enhancement -->
+  <url><loc>https://ishutools.com/tools/sharpen-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/brighten-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/contrast-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/invert-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/increase-image-quality</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/upscale-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/unblur-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/beautify-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/super-resolution</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/retouch-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/black-and-white-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/check-image-dpi</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/convert-dpi</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/image-color-picker</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/posterize-image</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/image-histogram</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/picture-to-pixel-art</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/photo-blemish-remover</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/color-code-from-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/motion-blur-image</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/unblur-face</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Image Layout -->
+  <url><loc>https://ishutools.com/tools/flip-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/add-border-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/thumbnail-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/image-collage</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/add-text-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/add-logo-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/join-images</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/split-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/circle-crop-image</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/square-crop-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/passport-photo-maker</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/passport-size-photo</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/social-media-resize</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-for-instagram</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/instagram-grid</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-for-whatsapp</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-for-youtube</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/generate-signature</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-image-pixel</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-image-in-cm</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-image-in-mm</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-image-in-inch</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/bulk-image-resizer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/a4-size-resize</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/image-splitter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/add-name-dob-image</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/merge-photo-signature</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/resize-signature</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/zoom-out-image</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/add-white-border-image</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Image Compression Targets -->
+  <url><loc>https://ishutools.com/tools/compress-to-5kb</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-10kb</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-20kb</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-50kb</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-100kb</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-200kb</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-500kb</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/compress-to-1mb</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Text & AI -->
+  <url><loc>https://ishutools.com/tools/translate-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/summarize-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/summarize-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/translate-text</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/chat-with-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/ai-summarizer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-viewer</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-intelligence</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- OCR & Vision -->
+  <url><loc>https://ishutools.com/tools/ocr-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/ocr-image</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/image-to-text</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/remove-background</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/blur-face</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/blur-background</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pixelate-face</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/censor-photo</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-ocr</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/jpg-to-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/png-to-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
+  <!-- Developer Tools -->
+  <url><loc>https://ishutools.com/tools/json-formatter</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/base64-encode</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/base64-decode</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/url-encode</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/url-decode</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/html-encode</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/html-decode</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/jwt-decode</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/regex-tester</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/diff-checker</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/uuid-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/hash-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/unix-timestamp-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/json-to-yaml</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/yaml-to-json</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/css-minifier</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/js-minifier</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/html-minifier</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/markdown-to-html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/html-to-markdown</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/sql-formatter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/xml-formatter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/cron-expression-parser</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/lorem-ipsum-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/ip-lookup</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/json-minifier</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/text-escape-unescape</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Color Tools -->
+  <url><loc>https://ishutools.com/tools/color-picker</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/hex-to-rgb</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/rgb-to-hex</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/rgb-to-hsl</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/color-palette-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/gradient-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/color-contrast-checker</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Math & Calculators -->
+  <url><loc>https://ishutools.com/tools/percentage-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/bmi-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/age-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/scientific-calculator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/loan-emi-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/compound-interest-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/simple-interest-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/gpa-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/discount-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/tip-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/average-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/salary-calculator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/fuel-cost-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/electricity-bill-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/cgpa-to-percentage</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/profit-loss-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/number-to-words</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/speed-distance-time</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/unit-price-calculator</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Security Tools -->
+  <url><loc>https://ishutools.com/tools/password-generator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/password-strength-checker</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/md5-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/sha256-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/bcrypt-generator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Unit Converters -->
+  <url><loc>https://ishutools.com/tools/temperature-converter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/length-converter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/weight-converter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/speed-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/area-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/data-storage-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/volume-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/time-zone-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/energy-converter</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/pressure-converter</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Student & Everyday -->
+  <url><loc>https://ishutools.com/tools/number-base-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/text-reverse</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/text-to-binary</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/binary-to-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/morse-code</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/random-number-generator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/roman-numeral-converter</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/countdown-calculator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/date-difference</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/coin-flip</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/dice-roller</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/word-frequency</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/text-statistics</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/case-converter-advanced</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+
+  <!-- Text Operations -->
+  <url><loc>https://ishutools.com/tools/word-count-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/case-converter-text</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/extract-keywords-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/slug-generator-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Text Cleanup -->
+  <url><loc>https://ishutools.com/tools/remove-extra-spaces-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/sort-lines-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/deduplicate-lines-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/find-replace-text</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Utility -->
+  <url><loc>https://ishutools.com/tools/qr-code-generator</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/extract-metadata</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- SEO Tools -->
+  <url><loc>https://ishutools.com/tools/meta-tag-generator</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/keyword-density</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/readability-score</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/character-counter</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/open-graph-generator</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Social Media -->
+  <url><loc>https://ishutools.com/tools/instagram-post-resizer</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/youtube-thumbnail-maker</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/twitter-header-maker</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/facebook-cover-maker</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/linkedin-banner-maker</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/whatsapp-dp-maker</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Format Lab & eBook -->
+  <url><loc>https://ishutools.com/tools/png-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/webp-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/gif-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/bmp-to-pdf</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://ishutools.com/tools/jpg-to-png</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/png-to-jpg</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/image-to-webp</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/heic-to-jpg</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/webp-to-jpg</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/jpeg-to-png</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/png-to-jpeg</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/epub-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-epub</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-rtf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/rtf-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Data & Export -->
+  <url><loc>https://ishutools.com/tools/pdf-to-txt</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-json</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-csv</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-markdown</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/json-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/csv-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/xml-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Document Convert -->
+  <url><loc>https://ishutools.com/tools/html-to-pdf</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/md-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/txt-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/url-to-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/create-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- Page Operations -->
+  <url><loc>https://ishutools.com/tools/extract-pages</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/delete-pages</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/rearrange-pages</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://ishutools.com/tools/edit-pdf</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ishutools.com/tools/annotate-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/highlight-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+
+  <!-- PDF Insights -->
+  <url><loc>https://ishutools.com/tools/pdf-page-count</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/reverse-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/flatten-pdf</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://ishutools.com/tools/pdf-to-html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+</urlset>

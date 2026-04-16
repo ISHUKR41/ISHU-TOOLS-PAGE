@@ -18,7 +18,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark'>IT</span>
             <span>
               <strong>ISHU TOOLS</strong>
-              <small>295+ free PDF, Image & AI tools</small>
+              <small>Indian Student Hub University Tools</small>
             </span>
           </Link>
 
@@ -112,7 +112,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
 
             <div className='mobile-nav-section'>
               <span className='mobile-nav-label'>
-                <Zap size={14} /> AI &amp; Text
+                <Zap size={14} /> AI & Text
               </span>
               <div className='mobile-nav-grid'>
                 {[
@@ -120,6 +120,33 @@ export default function SiteShell({ children }: PropsWithChildren) {
                   { to: '/tools/translate-pdf', label: 'Translate PDF' },
                   { to: '/tools/summarize-pdf', label: 'Summarize PDF' },
                   { to: '/tools/chat-with-pdf', label: 'Chat with PDF' },
+                ].map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className='mobile-nav-link'
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className='mobile-nav-section'>
+              <span className='mobile-nav-label'>
+                <Settings size={14} /> Developer & Student Tools
+              </span>
+              <div className='mobile-nav-grid'>
+                {[
+                  { to: '/tools/json-formatter', label: 'JSON Format' },
+                  { to: '/tools/base64-encode', label: 'Base64' },
+                  { to: '/tools/password-generator', label: 'Password Gen' },
+                  { to: '/tools/uuid-generator', label: 'UUID Gen' },
+                  { to: '/tools/bmi-calculator', label: 'BMI Calculator' },
+                  { to: '/tools/percentage-calculator', label: 'Percentage' },
+                  { to: '/tools/scientific-calculator', label: 'Scientific Calc' },
+                  { to: '/tools/compound-interest-calculator', label: 'Compound Interest' },
                 ].map((link) => (
                   <Link
                     key={link.to}
@@ -148,7 +175,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark sm'>IT</span>
             <div>
               <strong>ISHU TOOLS</strong>
-              <p>Professional PDF, Image &amp; Text processing with 295+ free workflows.</p>
+              <p>Indian Student Hub University Tools — 383+ free PDF, Image, Developer & AI workflows.</p>
             </div>
           </div>
           <div className='footer-links'>
@@ -177,17 +204,17 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <Link to='/tools/convert-image'>Convert Image</Link>
             </div>
             <div className='footer-col'>
-              <strong>AI Tools</strong>
-              <Link to='/tools/translate-pdf'>Translate PDF</Link>
-              <Link to='/tools/summarize-pdf'>Summarize PDF</Link>
-              <Link to='/tools/chat-with-pdf'>Chat with PDF</Link>
-              <Link to='/tools/ocr-image'>OCR Image</Link>
+              <strong>AI & Developer</strong>
+              <Link to='/tools/json-formatter'>JSON Formatter</Link>
+              <Link to='/tools/password-generator'>Password Gen</Link>
+              <Link to='/tools/bmi-calculator'>BMI Calculator</Link>
+              <Link to='/tools/scientific-calculator'>Scientific Calc</Link>
               <Link to='/tools/qr-code-generator'>QR Generator</Link>
             </div>
           </div>
         </div>
         <div className='footer-bottom'>
-          <span>© 2025 ISHU TOOLS · All tools are free to use</span>
+          <span>© 2025 ISHU TOOLS (Indian Student Hub University Tools) · All tools are free to use</span>
           <div className='footer-social'>
             <a href='https://www.linkedin.com/in/ishu-kumar-5a0940281/' target='_blank' rel='noreferrer'>LinkedIn</a>
             <a href='https://www.instagram.com/ishukr10' target='_blank' rel='noreferrer'>Instagram</a>
