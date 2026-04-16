@@ -1776,6 +1776,184 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Keyword Density Checker — SEO Analysis Free',
     faq: [],
   },
+
+  // ════════════════════════════════════════════════
+  //  STUDENT TOOLS
+  // ════════════════════════════════════════════════
+  'grade-calculator': {
+    title: 'Grade Calculator — Calculate Your Grade & Percentage Free | ISHU TOOLS',
+    description: 'Calculate your final grade and percentage online for free. Enter marks and max marks to get instant grade results. Best grade calculator for students. No signup.',
+    keywords: [
+      'grade calculator', 'marks calculator', 'calculate grade', 'percentage grade calculator',
+      'final grade calculator', 'student grade calculator', 'ishu grade calculator',
+      'ishu tools grade', 'calculate marks percentage', 'grade percentage calculator online',
+      'how to calculate grade', 'grade calculator for students', 'marks to percentage',
+    ],
+    h1: 'Grade Calculator — Calculate Marks & Percentage Free',
+    faq: [
+      {
+        question: 'How do I calculate my grade percentage?',
+        answer: 'Enter your obtained marks and total marks into the Grade Calculator. The tool instantly calculates your percentage and displays the corresponding letter grade (A, B, C, etc.).',
+      },
+      {
+        question: 'Is the Grade Calculator free?',
+        answer: 'Yes! ISHU TOOLS Grade Calculator is completely free. No signup, no watermark, unlimited use for all students.',
+      },
+    ],
+  },
+
+  'attendance-calculator': {
+    title: 'Attendance Calculator — Check Attendance Percentage Free | ISHU TOOLS',
+    description: 'Calculate your attendance percentage online for free. Check if you have enough attendance and how many classes you can miss. Best attendance calculator for students. No signup.',
+    keywords: [
+      'attendance calculator', 'attendance percentage calculator', 'calculate attendance',
+      'attendance checker', 'how many classes can i miss', 'minimum attendance calculator',
+      'ishu attendance calculator', 'ishu tools attendance', 'college attendance calculator',
+      'attendance percentage online', 'classes required calculator', '75 percent attendance',
+    ],
+    h1: 'Attendance Calculator — Check Your Attendance % Free',
+    faq: [
+      {
+        question: 'How do I calculate my attendance percentage?',
+        answer: 'Enter the number of classes attended and total classes held. The Attendance Calculator instantly shows your attendance percentage and how many more classes you can miss.',
+      },
+      {
+        question: 'What is the minimum attendance required?',
+        answer: 'Most colleges require 75% attendance. Our attendance calculator helps you track this and plan accordingly.',
+      },
+    ],
+  },
+
+  'citation-generator': {
+    title: 'Citation Generator — Free APA, MLA, Chicago Citations | ISHU TOOLS',
+    description: 'Generate citations in APA, MLA, Chicago, and Harvard format for free. Create academic references for books, websites, journals, and more. No signup required.',
+    keywords: [
+      'citation generator', 'apa citation generator', 'mla citation generator',
+      'chicago citation generator', 'harvard citation', 'reference generator',
+      'bibliography generator', 'academic citation tool', 'ishu citation generator',
+      'ishu tools citation', 'free citation generator', 'cite a website', 'cite a book',
+      'citation maker', 'research paper citation', 'citation format generator',
+    ],
+    h1: 'Citation Generator — APA, MLA, Chicago Format Free',
+    faq: [
+      {
+        question: 'Which citation formats does the generator support?',
+        answer: 'ISHU TOOLS Citation Generator supports APA, MLA, Chicago, and Harvard citation formats — the most commonly used in academic writing.',
+      },
+      {
+        question: 'Is the citation generator accurate?',
+        answer: 'Yes, the generator follows the official guidelines for each citation style. Always double-check against your institution\'s specific requirements.',
+      },
+    ],
+  },
+
+  'flashcard-generator': {
+    title: 'Flashcard Generator — Create Study Flashcards Free | ISHU TOOLS',
+    description: 'Create study flashcards online for free. Generate question-answer flashcards from any topic to boost your learning and exam preparation. No signup needed.',
+    keywords: [
+      'flashcard generator', 'create flashcards', 'study flashcards', 'online flashcards',
+      'flashcard maker', 'question answer flashcards', 'study card generator',
+      'ishu flashcard generator', 'ishu tools flashcards', 'free flashcard maker',
+      'exam flashcards', 'revision cards', 'flashcard creator for students',
+    ],
+    h1: 'Flashcard Generator — Create Study Cards Free',
+    faq: [
+      {
+        question: 'How do I create flashcards with ISHU TOOLS?',
+        answer: 'Enter your topic, question, and answer, then click Generate. The Flashcard Generator creates printable or downloadable flashcards instantly for free.',
+      },
+      {
+        question: 'Can I use flashcards for exam preparation?',
+        answer: 'Absolutely! Flashcards are one of the most effective study methods for memorizing facts, formulas, vocabulary, and concepts for exams.',
+      },
+    ],
+  },
+
+  'study-planner': {
+    title: 'Study Planner — Create Your Study Schedule Free | ISHU TOOLS',
+    description: 'Create a personalized study schedule and planner online for free. Organize your exam preparation with a structured study plan. Best study planner for students. No signup.',
+    keywords: [
+      'study planner', 'study schedule maker', 'create study plan', 'exam study planner',
+      'study timetable generator', 'study schedule creator', 'ishu study planner',
+      'ishu tools study planner', 'free study planner', 'exam preparation planner',
+      'student study planner', 'study schedule for students', 'weekly study plan',
+    ],
+    h1: 'Study Planner — Create Your Study Schedule Free',
+    faq: [
+      {
+        question: 'How do I create a study plan with ISHU TOOLS?',
+        answer: 'Enter your subjects, exam dates, and available study hours. The Study Planner generates a personalized daily and weekly study schedule to keep you on track.',
+      },
+      {
+        question: 'Is the study planner free?',
+        answer: 'Yes! ISHU TOOLS Study Planner is completely free. No signup, no limits — just your personalized study schedule.',
+      },
+    ],
+  },
+
+  'reading-time-calculator': {
+    title: 'Reading Time Calculator — Estimate Read Time Free | ISHU TOOLS',
+    description: 'Calculate how long it takes to read any text or article online for free. Estimate reading time in minutes for blogs, essays, books, and more. No signup needed.',
+    keywords: [
+      'reading time calculator', 'estimate reading time', 'how long to read',
+      'reading time estimator', 'words per minute calculator', 'article reading time',
+      'blog read time', 'ishu reading time calculator', 'ishu tools reading time',
+      'text reading time', 'book reading time calculator', 'wpm calculator',
+    ],
+    h1: 'Reading Time Calculator — Estimate Read Time Free',
+    faq: [
+      {
+        question: 'How is reading time calculated?',
+        answer: 'Reading time is calculated based on an average adult reading speed of 200-250 words per minute (WPM). Paste your text and the tool instantly estimates how long it takes to read.',
+      },
+    ],
+  },
+
+  'plagiarism-risk-checker': {
+    title: 'Plagiarism Risk Checker — Check for Plagiarism Risk Free | ISHU TOOLS',
+    description: 'Check your text for plagiarism risk online for free. Identify potentially plagiarized content in essays, assignments, and articles. No signup required.',
+    keywords: [
+      'plagiarism checker', 'plagiarism risk checker', 'check plagiarism online',
+      'free plagiarism checker', 'plagiarism detector', 'essay plagiarism check',
+      'ishu plagiarism checker', 'ishu tools plagiarism', 'plagiarism risk tool',
+      'assignment plagiarism checker', 'plagiarism check for students',
+      'detect plagiarism free', 'plagiarism percentage checker',
+    ],
+    h1: 'Plagiarism Risk Checker — Check Plagiarism Free',
+    faq: [
+      {
+        question: 'How accurate is the plagiarism risk checker?',
+        answer: 'The ISHU TOOLS Plagiarism Risk Checker analyzes your text for common patterns and repeated phrases that indicate potential plagiarism. It provides a risk score to help you identify areas that need to be rewritten.',
+      },
+      {
+        question: 'Is the plagiarism checker free?',
+        answer: 'Yes! Completely free — no signup, no credits, no limits. Check as many documents as you need.',
+      },
+    ],
+  },
+
+  'resume-bullet-generator': {
+    title: 'Resume Bullet Generator — Create Resume Bullet Points Free | ISHU TOOLS',
+    description: 'Generate professional resume bullet points online for free. Create impactful achievement-oriented resume bullets for any job or role. No signup required.',
+    keywords: [
+      'resume bullet generator', 'resume bullet points', 'generate resume bullets',
+      'resume point generator', 'cv bullet generator', 'resume writing tool',
+      'achievement bullet points resume', 'ishu resume bullet generator',
+      'ishu tools resume', 'free resume bullet maker', 'resume action verbs',
+      'professional resume bullets', 'resume bullet creator for students',
+    ],
+    h1: 'Resume Bullet Generator — Professional Resume Points Free',
+    faq: [
+      {
+        question: 'How do I use the Resume Bullet Generator?',
+        answer: 'Enter your role, skills, and key achievements. The generator creates strong, action-oriented resume bullet points that stand out to recruiters and ATS systems.',
+      },
+      {
+        question: 'What makes a good resume bullet point?',
+        answer: 'Good resume bullets start with strong action verbs, quantify achievements, and focus on impact. Our generator follows these best practices to create high-quality resume bullets.',
+      },
+    ],
+  },
 }
 
 /**

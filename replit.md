@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 raw registry entries, 422 unique tool slugs after backend/API deduplication, across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 tools across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -28,7 +28,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
-- `frontend/src/lib/seoData.ts` — per-tool SEO data (156+ handcrafted entries)
+- `frontend/src/lib/seoData.ts` — per-tool SEO data (134 handcrafted entries + auto-generator fallback)
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
 - `frontend/src/hooks/useCatalogData.ts` — caches and defensively deduplicates categories+tools from API
 - `scripts/generate_seo_pages.py` — generates static per-tool/per-category SEO HTML and sitemap after frontend builds for better crawler coverage on deployed static hosting
@@ -38,10 +38,10 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 ## SEO Features
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
 - Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList)
-- Per-tool FAQ JSON-LD (from seoData.ts — 156+ handcrafted entries)
+- Per-tool FAQ JSON-LD (from seoData.ts — 134 handcrafted entries incl. all 8 student tools)
 - Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
-- sitemap.xml: generated dynamically from current tool slugs + categories + homepage + /tools
+- sitemap.xml: static file with all 422 tool URLs + 33 category pages + homepage (457 total); FastAPI also serves a dynamic sitemap at /sitemap.xml
 - Comprehensive long-tail keywords per tool in seoData.ts, including fallback student, mobile, no-login, privacy, and category-intent terms for every future tool
 - Category pages include enriched meta tags, canonical URLs, Open Graph/Twitter metadata, CollectionPage JSON-LD, popular tool links, and long-tail category copy
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
@@ -52,15 +52,25 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Dark bg: #03060e — accent: #3bd0ff (teal-blue) — hero gradient: teal-to-purple
 - Font: Space Grotesk (display), Manrope (body)
 - Hero V2: animated orbs, grid overlay, large gradient heading, stats counter, ticker, trust badges
-- Tool card: per-category accent, hover radial glow, spring animation, CSS glow effect
-- Animations: Framer Motion (page, cards, hero sections), CSS keyframes (orbs, ticker, pulse, floatOrb)
+- Tool card: per-category accent, CSS-only hover (translateY + rotateX/Y), radial glow pseudo-element
+- Animations: Framer Motion (page transitions only), CSS keyframes (orbs, ticker, pulse, floatOrb)
+- Tool section entrance: `animation-timeline: view()` scroll-driven fade-in in Chrome, graceful @supports fallback
 - Mega-menu: 6-column dropdown with 12 links per category
 - Responsive: full mobile support with mobile nav panel
 - Custom scrollbar styling with accent color
-- FAQ accordion with open animations
+- FAQ accordion with +/× indicator, smooth height animation
 - Gradient border for CTA buttons
+- How It Works: 4-step layout with Lucide icons (MousePointerClick, Upload, Download, CheckCircle)
 - Social chip/trust badge hover effects
-- Reduced-motion and slow-device CSS guards disable expensive animations; mobile disables heavy blur on major surfaces for smoother performance
+- Reduced-motion and slow-device CSS guards disable expensive animations; mobile disables heavy blur
+
+## Performance Optimizations
+- Removed 449 Framer Motion `whileHover` event listeners from ToolCard — replaced with pure CSS GPU-composited transforms (`translateY(-6px) rotateX/Y`)
+- `content-visibility: auto; contain-intrinsic-size: 0 600px` on every `.tool-section` — sections render lazily as they scroll into view
+- `will-change: transform` on animated hero elements and card pseudo-elements
+- CSS-only hover effects instead of JS event listeners on tool cards
+- `color-mix(in srgb, ...)` for accent-tinted borders — no extra DOM elements
+- Tool count badge in section heading rendered inline without extra wrapper components
 
 ## Tool "How to use" Steps (getToolUsageSteps in toolPresentation.ts)
 Per-category smart steps:

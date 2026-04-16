@@ -1,6 +1,6 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Search } from 'lucide-react'
+import { Search, MousePointerClick, Upload, Download, CheckCircle } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
@@ -175,23 +175,31 @@ export default function HomePage() {
         {/* How it Works Section — SEO rich */}
         {!loading && !error && (
           <section className='how-it-works-section'>
-            <span className='section-kicker'>Simple & Fast</span>
+            <span className='section-kicker'>Simple &amp; Fast</span>
             <h2>How ISHU TOOLS Works</h2>
+            <p style={{ color: 'var(--muted)', maxWidth: '42rem', margin: '0 auto 0.5rem', fontSize: '0.97rem' }}>
+              Get things done in seconds — no account, no watermark, no cost.
+            </p>
             <div className='steps-grid'>
               <div className='step-card'>
-                <div className='step-number'>1</div>
-                <h3>Choose a Tool</h3>
-                <p>Search from {tools.length}+ free tools across {categories.length} categories — PDF, Image, Developer, Math, and more.</p>
+                <div className='step-number'><MousePointerClick size={20} /></div>
+                <h3>1. Choose a Tool</h3>
+                <p>Search from {tools.length}+ free tools across {categories.length} categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
               </div>
               <div className='step-card'>
-                <div className='step-number'>2</div>
-                <h3>Upload or Enter Data</h3>
-                <p>Upload your files or enter text/data. Drag & drop supported. All files processed securely.</p>
+                <div className='step-number'><Upload size={20} /></div>
+                <h3>2. Upload or Enter Data</h3>
+                <p>Drag &amp; drop your files or enter text and values. Multi-file uploads supported. All files are processed securely with no storage.</p>
               </div>
               <div className='step-card'>
-                <div className='step-number'>3</div>
-                <h3>Run & Download</h3>
-                <p>Click "Run" and download your result instantly. No signup, no watermark, no limits. 100% free.</p>
+                <div className='step-number'><Download size={20} /></div>
+                <h3>3. Run &amp; Download</h3>
+                <p>Click "Run" and get your result instantly. Download the processed file or copy the output. No signup, no watermark, 100% free.</p>
+              </div>
+              <div className='step-card'>
+                <div className='step-number'><CheckCircle size={20} /></div>
+                <h3>4. Done — Every Time</h3>
+                <p>All tools are production-ready, accurate, and reliable. Works on all devices — mobile, tablet, laptop, desktop. No app needed.</p>
               </div>
             </div>
           </section>
@@ -205,23 +213,39 @@ export default function HomePage() {
             <div className='faq-list'>
               <details className='faq-item'>
                 <summary className='faq-question'>What is ISHU TOOLS?</summary>
-                <p className='faq-answer'>ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with {tools.length}+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar, it's designed for students and professionals — no signup, no watermark, completely free.</p>
+                <p className='faq-answer'>ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with {tools.length}+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar, it is designed for students and professionals — no signup, no watermark, completely free.</p>
               </details>
               <details className='faq-item'>
                 <summary className='faq-question'>Is ISHU TOOLS free to use?</summary>
-                <p className='faq-answer'>Yes! ISHU TOOLS is 100% free. All tools are available without any signup, registration, or payment. There are no watermarks, no limits, and no hidden charges.</p>
+                <p className='faq-answer'>Yes! ISHU TOOLS is 100% free. All {tools.length}+ tools are available without any signup, registration, or payment. There are no watermarks, no limits, and no hidden charges. Every tool works instantly online.</p>
               </details>
               <details className='faq-item'>
-                <summary className='faq-question'>Is my data safe?</summary>
-                <p className='faq-answer'>Absolutely! All uploaded files are processed securely and automatically deleted after processing. We never store, share, or access your files. Your privacy is our top priority.</p>
+                <summary className='faq-question'>Is my data safe on ISHU TOOLS?</summary>
+                <p className='faq-answer'>Absolutely! All uploaded files are processed securely on our servers and automatically deleted after processing. We never store, share, or access your files. Your privacy is our top priority. All processing happens server-side with no cloud storage.</p>
               </details>
               <details className='faq-item'>
                 <summary className='faq-question'>Can I use ISHU TOOLS on mobile?</summary>
-                <p className='faq-answer'>Yes! ISHU TOOLS is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktop computers.</p>
+                <p className='faq-answer'>Yes! ISHU TOOLS is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktop computers. No app download needed. Just open the website in your mobile browser and start using any tool.</p>
               </details>
               <details className='faq-item'>
                 <summary className='faq-question'>How many tools does ISHU TOOLS have?</summary>
                 <p className='faq-answer'>ISHU TOOLS currently offers {tools.length}+ tools across {categories.length} categories including PDF Tools, Image Tools, Developer Tools, Math Calculators, Text Tools, Color Tools, Unit Converters, Security Tools, and Social Media Tools. New tools are added regularly.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>What PDF tools does ISHU TOOLS offer?</summary>
+                <p className='faq-answer'>ISHU TOOLS offers comprehensive PDF tools including: Merge PDF, Split PDF, Compress PDF, PDF to Word, Word to PDF, PDF to JPG, JPG to PDF, PDF to Excel, Excel to PDF, PDF to PowerPoint, OCR PDF, Protect PDF, Unlock PDF, Rotate PDF, Watermark PDF, and many more — all free with no signup.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>What image tools are available on ISHU TOOLS?</summary>
+                <p className='faq-answer'>ISHU TOOLS has 60+ image tools: Compress Image, Resize Image, Crop Image, Remove Background, Convert Image formats (JPG/PNG/WEBP/HEIC), Passport Photo Maker, Watermark Image, Add Border, Blur Image, Sharpen Image, Invert Image, Meme Generator, Social Media Resize tools, and more.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>Does ISHU TOOLS have student calculator tools?</summary>
+                <p className='faq-answer'>Yes! ISHU TOOLS has dedicated student tools: GPA Calculator, CGPA to Percentage converter, BMI Calculator, Age Calculator, Percentage Calculator, Scientific Calculator, Loan EMI Calculator, Simple Interest, Compound Interest, Discount Calculator, Grade Calculator, Attendance Calculator, and more.</p>
+              </details>
+              <details className='faq-item'>
+                <summary className='faq-question'>Is ISHU TOOLS better than iLovePDF or SmallPDF?</summary>
+                <p className='faq-answer'>ISHU TOOLS offers all the same PDF tools as iLovePDF and SmallPDF, plus image tools, developer utilities, calculators, and more — all completely free with no signup, no watermark, and no file size limits. ISHU TOOLS is the best free alternative to iLovePDF, SmallPDF, and PDFCandy.</p>
               </details>
             </div>
           </section>

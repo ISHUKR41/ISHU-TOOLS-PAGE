@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import type { CSSProperties } from 'react'
 
 import { getCategoryTheme } from '../../../lib/toolPresentation'
@@ -16,19 +15,21 @@ export default function ToolCategorySection({ category, tools }: ToolCategorySec
   if (tools.length === 0) return null
 
   return (
-    <motion.section
+    <section
       className='tool-section'
       style={{ '--tool-accent': theme.accent } as CSSProperties}
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
     >
       <header className='section-heading'>
-        <div>
+        <div className='section-heading-left'>
           <span className='section-kicker' style={{ color: theme.accent }}>
             {theme.label}
           </span>
-          <h2>{category.label}</h2>
+          <div className='section-heading-title-row'>
+            <h2>{category.label}</h2>
+            <span className='tool-count-badge' style={{ '--badge-color': theme.accent } as CSSProperties}>
+              {tools.length} tools
+            </span>
+          </div>
         </div>
         <p>{category.description}</p>
       </header>
@@ -43,6 +44,6 @@ export default function ToolCategorySection({ category, tools }: ToolCategorySec
           />
         ))}
       </div>
-    </motion.section>
+    </section>
   )
 }

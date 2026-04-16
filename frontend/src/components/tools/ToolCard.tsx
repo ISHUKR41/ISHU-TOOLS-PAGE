@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,11 +13,9 @@ type ToolCardProps = {
 
 export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardProps) {
   return (
-    <motion.article
+    <article
       className='tool-card'
       style={{ '--tool-accent': accentColor || '#3bd0ff' } as CSSProperties}
-      whileHover={{ y: -6, rotateX: 4, rotateY: -4 }}
-      transition={{ type: 'spring', stiffness: 250, damping: 20 }}
     >
       <Link to={`/tools/${tool.slug}`} className='tool-card-link'>
         <div className='tool-card-header'>
@@ -38,6 +35,6 @@ export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardP
           <span>{tool.accepts_multiple ? 'Multi-file' : 'Single-file'}</span>
         </div>
       </Link>
-    </motion.article>
+    </article>
   )
 }
