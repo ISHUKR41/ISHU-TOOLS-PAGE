@@ -474,36 +474,119 @@ export function getToolOutputLabel(tool: ToolDefinition): string {
 }
 
 export function getToolUsageSteps(tool: ToolDefinition): string[] {
-  const commonTail = 'Run the tool and download the generated output immediately.'
+  const isTextInput = tool.input_kind === 'text'
 
   if (tool.category === 'pdf-security') {
     return [
-      'Upload the PDF you want to secure, unlock, redact, or clean.',
-      'Provide the required password or keyword settings for the operation.',
-      commonTail,
+      'Upload the PDF you want to secure, unlock, redact, or sign.',
+      'Enter the required password, keyword, or signature settings.',
+      'Click Run and download your secured PDF instantly.',
     ]
   }
 
-  if (tool.category === 'text-ai') {
+  if (tool.category === 'text-ai' || tool.slug.includes('translate')) {
     return [
-      'Upload a source file or paste the text you want to process.',
-      'Choose the target language or AI-style transformation options.',
-      commonTail,
+      'Paste your text or upload a source document.',
+      'Select the target language or AI processing option.',
+      'Click Run to get the translated or transformed result instantly.',
     ]
   }
 
   if (tool.category.startsWith('image')) {
     return [
-      'Upload one or more images depending on the workflow.',
-      'Tune the visual settings like size, quality, angle, or overlay text.',
-      commonTail,
+      'Upload one or more images (JPG, PNG, WEBP, etc.).',
+      'Adjust settings like size, quality, angle, or overlay options.',
+      'Click Run and download your processed image immediately.',
+    ]
+  }
+
+  if (tool.slug.includes('qr') || tool.slug.includes('barcode')) {
+    return [
+      'Enter the URL, text, or data to encode.',
+      'Customize size, format, or error correction level.',
+      'Click Generate, then download your QR code or barcode image.',
+    ]
+  }
+
+  if (tool.slug.includes('password') && tool.slug.includes('generator')) {
+    return [
+      'Set the desired password length.',
+      'Toggle character types: uppercase, lowercase, numbers, symbols.',
+      'Click Generate to instantly create a strong, secure password.',
+    ]
+  }
+
+  if (
+    tool.category === 'math-tools' ||
+    tool.category === 'unit-converter' ||
+    tool.slug.includes('calculator') ||
+    tool.slug.includes('converter')
+  ) {
+    return [
+      'Enter your values into the input fields.',
+      'Select units or category if applicable.',
+      'Click Calculate / Convert to see your result instantly.',
+    ]
+  }
+
+  if (tool.category === 'color-tools') {
+    return [
+      'Enter a color value (HEX, RGB, HSL) or use the color picker.',
+      'Adjust any palette or gradient options as needed.',
+      'Copy the converted values or download the generated palette.',
+    ]
+  }
+
+  if (tool.category === 'hash-crypto' || tool.category === 'security-tools') {
+    return [
+      'Paste the text, file, or value you want to hash or encrypt.',
+      'Choose the algorithm (MD5, SHA-256, SHA-512, etc.) if applicable.',
+      'Click Run to get your hash or encrypted output instantly.',
+    ]
+  }
+
+  if (tool.category === 'student-tools' || tool.category === 'seo-tools') {
+    return [
+      'Fill in the required details or paste the relevant data.',
+      'Adjust any advanced options shown in the form.',
+      'Click Run and copy or download the generated result.',
+    ]
+  }
+
+  if (
+    tool.category === 'developer' ||
+    tool.category === 'code-tools' ||
+    tool.category === 'format-lab' ||
+    isTextInput
+  ) {
+    const actionWord = tool.slug.includes('generator') ? 'click Generate' : 'click Run'
+    return [
+      'Paste your code, text, or data into the input area.',
+      'Adjust any options like indent size, format, or encoding type.',
+      `${actionWord} to get the formatted, validated, or generated output instantly — no signup needed.`,
+    ]
+  }
+
+  if (tool.category.startsWith('pdf')) {
+    return [
+      'Upload your PDF file(s) — drag & drop or browse.',
+      'Set any page range, output format, or quality options.',
+      'Click Run and download the converted or processed PDF.',
+    ]
+  }
+
+  if (tool.category.includes('document') || tool.category.includes('office') || tool.category.includes('ebook')) {
+    return [
+      'Upload your document (DOCX, PPTX, XLSX, etc.).',
+      'Select the output format and any conversion options.',
+      'Click Run and download the converted file in seconds.',
     ]
   }
 
   return [
-    'Upload the required source files for this workflow.',
+    'Upload the required source file(s) or enter your data.',
     'Adjust the tool-specific settings shown in the form.',
-    commonTail,
+    'Click Run and download or copy your result — completely free.',
   ]
 }
 

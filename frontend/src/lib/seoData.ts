@@ -1070,6 +1070,599 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   },
 
   // ════════════════════════════════════════════════
+  //  DEVELOPER TOOLS (EXPANDED)
+  // ════════════════════════════════════════════════
+  'json-formatter': {
+    title: 'JSON Formatter — Beautify & Validate JSON Online Free | ISHU TOOLS',
+    description: 'Format, beautify, validate, and minify JSON online for free. Fix JSON syntax errors instantly. Best free JSON formatter and validator. No signup, no watermark.',
+    keywords: [
+      'json formatter', 'json beautifier', 'format json', 'json validator', 'json pretty print',
+      'json formatter online', 'json formatter free', 'beautify json', 'minify json',
+      'json viewer', 'ishu tools json', 'json formatter online free', 'best json formatter',
+      'ishu json formatter', 'json syntax checker', 'json editor online',
+      'validate json online', 'json lint', 'json parser online',
+    ],
+    h1: 'JSON Formatter — Beautify & Validate JSON Free',
+    faq: [
+      { question: 'How to format JSON online?', answer: 'Paste your JSON into ISHU TOOLS JSON Formatter and click "Run". Your JSON will be instantly formatted with proper indentation and syntax highlighting.' },
+      { question: 'Is ISHU TOOLS JSON Formatter better than JSONLint?', answer: 'ISHU TOOLS JSON Formatter offers format, validate, and minify in one tool — completely free, no ads, and no signup required.' },
+    ],
+  },
+  'xml-formatter': {
+    title: 'XML Formatter — Beautify XML Online Free | ISHU TOOLS',
+    description: 'Format and beautify XML documents online for free. Validate XML syntax and pretty print with proper indentation. No signup required.',
+    keywords: [
+      'xml formatter', 'xml beautifier', 'format xml', 'xml validator', 'xml pretty print',
+      'xml formatter online', 'xml formatter free', 'beautify xml', 'ishu tools xml',
+      'xml editor online', 'ishu xml formatter', 'validate xml online',
+    ],
+    h1: 'XML Formatter — Beautify XML Free',
+    faq: [],
+  },
+  'uuid-generator': {
+    title: 'UUID Generator — Generate UUID v4 Online Free | ISHU TOOLS',
+    description: 'Generate unique UUID v4 identifiers online for free. Create multiple UUIDs at once. Copy to clipboard instantly. No signup required.',
+    keywords: [
+      'uuid generator', 'uuid v4 generator', 'generate uuid', 'unique id generator',
+      'guid generator', 'uuid online', 'uuid generator free', 'ishu tools uuid',
+      'random uuid', 'ishu uuid generator', 'unique identifier generator',
+      'generate guid online', 'uuid v4 online free',
+    ],
+    h1: 'UUID Generator — Generate Unique IDs Free',
+    faq: [
+      { question: 'What is a UUID?', answer: 'UUID (Universally Unique Identifier) is a 128-bit identifier used in software development. UUID v4 is randomly generated and has an extremely low probability of collision.' },
+    ],
+  },
+  'password-generator': {
+    title: 'Password Generator — Create Strong Passwords Free | ISHU TOOLS',
+    description: 'Generate strong, secure, random passwords online for free. Choose length, character types, symbols, and numbers. Best free password generator. No signup.',
+    keywords: [
+      'password generator', 'strong password generator', 'random password generator',
+      'secure password', 'password creator', 'generate password online',
+      'ishu tools password generator', 'strong password', 'complex password generator',
+      'ishu password generator', 'free password generator', 'safe password maker',
+    ],
+    h1: 'Password Generator — Create Strong Passwords Free',
+    faq: [
+      { question: 'How to generate a strong password?', answer: 'Use ISHU TOOLS Password Generator — set length (16+ chars), enable symbols, numbers, uppercase and lowercase letters. A strong password is long, random, and unique.' },
+    ],
+  },
+  'regex-tester': {
+    title: 'Regex Tester — Test Regular Expressions Online Free | ISHU TOOLS',
+    description: 'Test and debug regular expressions online for free. Real-time regex matching with match highlighting. Supports JavaScript regex. No signup required.',
+    keywords: [
+      'regex tester', 'regular expression tester', 'regex online', 'regex checker',
+      'regex debugger', 'regex validator', 'test regex online', 'ishu tools regex',
+      'javascript regex tester', 'ishu regex tester', 'regex matcher online free',
+    ],
+    h1: 'Regex Tester — Test Regular Expressions Free',
+    faq: [],
+  },
+  'base64-encode': {
+    title: 'Base64 Encoder — Encode Text to Base64 Online Free | ISHU TOOLS',
+    description: 'Encode text or files to Base64 online for free. Convert string to Base64 format instantly. Best Base64 encoder. No signup required.',
+    keywords: [
+      'base64 encoder', 'encode base64', 'text to base64', 'base64 encode online',
+      'base64 converter', 'string to base64', 'ishu tools base64', 'base64 generator',
+      'base64 encode free', 'ishu base64 encoder', 'base64 encoding tool',
+    ],
+    h1: 'Base64 Encoder — Encode to Base64 Free',
+    faq: [],
+  },
+  'base64-decode': {
+    title: 'Base64 Decoder — Decode Base64 to Text Online Free | ISHU TOOLS',
+    description: 'Decode Base64 encoded strings back to text or files online for free. Instant Base64 decoder. No signup required.',
+    keywords: [
+      'base64 decoder', 'decode base64', 'base64 to text', 'base64 decode online',
+      'base64 converter', 'ishu tools base64 decoder', 'ishu base64 decode',
+      'decode base64 string', 'base64 decoding tool',
+    ],
+    h1: 'Base64 Decoder — Decode Base64 Free',
+    faq: [],
+  },
+  'diff-checker': {
+    title: 'Diff Checker — Compare Two Texts Online Free | ISHU TOOLS',
+    description: 'Compare two texts or files side by side and find differences online for free. Highlight changes, additions, and deletions. No signup required.',
+    keywords: [
+      'diff checker', 'text comparison', 'compare text', 'diff tool', 'text diff',
+      'find difference in text', 'compare two files', 'ishu tools diff checker',
+      'code diff', 'ishu diff checker', 'text compare online free',
+    ],
+    h1: 'Diff Checker — Compare Texts Online Free',
+    faq: [],
+  },
+  'qr-code-generator': {
+    title: 'QR Code Generator — Create QR Codes Online Free | ISHU TOOLS',
+    description: 'Generate QR codes for URLs, text, email, phone, WiFi, and more online for free. Download as PNG or SVG. Customize colors and size. No signup.',
+    keywords: [
+      'qr code generator', 'create qr code', 'qr generator', 'qr code maker',
+      'free qr code generator', 'qr code creator', 'generate qr code online',
+      'ishu tools qr code', 'custom qr code', 'ishu qr code generator',
+      'qr code for website', 'qr code png download',
+    ],
+    h1: 'QR Code Generator — Create Custom QR Codes Free',
+    faq: [
+      { question: 'How to create a QR code for free?', answer: 'Go to ISHU TOOLS QR Code Generator, enter your URL or text, customize the color and size, and click "Run". Download your QR code as PNG instantly.' },
+    ],
+  },
+  'barcode-generator': {
+    title: 'Barcode Generator — Generate Barcodes Online Free | ISHU TOOLS',
+    description: 'Generate barcodes (Code128, Code39, EAN-13, EAN-8, UPC-A) online for free. Download barcode as PNG. No signup required.',
+    keywords: [
+      'barcode generator', 'create barcode', 'barcode maker', 'free barcode generator',
+      'code128 generator', 'ean13 generator', 'upc barcode', 'ishu tools barcode',
+      'ishu barcode generator', 'barcode creator online', 'generate barcode online free',
+    ],
+    h1: 'Barcode Generator — Create Barcodes Free',
+    faq: [],
+  },
+  'hash-generator': {
+    title: 'Hash Generator — MD5 SHA256 SHA512 Hash Online Free | ISHU TOOLS',
+    description: 'Generate MD5, SHA1, SHA256, SHA512 hashes online for free. Hash any text or file instantly. No signup required.',
+    keywords: [
+      'hash generator', 'md5 generator', 'sha256 generator', 'sha512 generator',
+      'hash calculator', 'md5 hash online', 'sha256 hash online', 'ishu tools hash',
+      'hash text online', 'ishu hash generator', 'checksum generator',
+    ],
+    h1: 'Hash Generator — MD5 SHA256 Free',
+    faq: [],
+  },
+
+  // ════════════════════════════════════════════════
+  //  STUDENT EXAM PHOTO TOOLS
+  // ════════════════════════════════════════════════
+  'ssc-photo-resizer': {
+    title: 'SSC Photo Resizer — Resize Photo for SSC Exam Free | ISHU TOOLS',
+    description: 'Resize and compress photos as per SSC CGL, CHSL, MTS exam requirements online for free. Exact size, format, and file size specifications. No signup.',
+    keywords: [
+      'ssc photo resizer', 'ssc exam photo size', 'ssc cgl photo size', 'ssc chsl photo',
+      'resize photo for ssc', 'ssc photo format', 'ishu tools ssc photo',
+      'ssc photo compress', 'ishu ssc photo resizer', 'ssc exam photo requirements',
+    ],
+    h1: 'SSC Photo Resizer — Exam Photo Free',
+    faq: [],
+  },
+  'resize-for-pan-card': {
+    title: 'PAN Card Photo Resizer — Resize Photo for PAN Card Free | ISHU TOOLS',
+    description: 'Resize photo for PAN card application as per NSDL/UTIITSL requirements. Correct size, format, and file size. No signup required.',
+    keywords: [
+      'pan card photo size', 'resize photo for pan card', 'pan card photo resizer',
+      'nsdl photo size', 'pan card photo requirements', 'ishu tools pan photo',
+      'ishu pan card resizer', 'pan card photo format',
+    ],
+    h1: 'PAN Card Photo Resizer — Free Online',
+    faq: [],
+  },
+  'resize-image-for-upsc': {
+    title: 'UPSC Photo Resizer — Resize Photo for UPSC Exam Free | ISHU TOOLS',
+    description: 'Resize photo and signature for UPSC Civil Services, IAS, IFS exam registration. Correct specifications. No signup.',
+    keywords: [
+      'upsc photo resizer', 'upsc photo size', 'resize photo for upsc',
+      'ias exam photo', 'upsc signature size', 'ishu tools upsc photo',
+      'upsc photo requirements', 'ishu upsc photo resizer',
+    ],
+    h1: 'UPSC Photo Resizer — Exam Registration Free',
+    faq: [],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE TOOLS (EXPANDED)
+  // ════════════════════════════════════════════════
+  'grayscale-image': {
+    title: 'Grayscale Image — Convert Photo to Black & White Free | ISHU TOOLS',
+    description: 'Convert any image to grayscale or black and white online for free. No signup, no watermark. Works with JPG, PNG, WEBP instantly.',
+    keywords: [
+      'grayscale image', 'black and white photo', 'convert image to grayscale',
+      'grayscale converter', 'photo to grayscale', 'black white filter online',
+      'ishu tools grayscale', 'ishu grayscale image', 'grayscale image online free',
+      'black and white image converter', 'desaturate image online',
+    ],
+    h1: 'Grayscale Image — Convert to Black & White Free',
+    faq: [
+      { question: 'How to convert image to grayscale online?', answer: 'Upload your image to ISHU TOOLS Grayscale Image tool, click "Run", and download your black and white image instantly. Works with JPG, PNG, WEBP — no signup needed.' },
+    ],
+  },
+  'blur-image': {
+    title: 'Blur Image — Add Blur Effect to Photo Online Free | ISHU TOOLS',
+    description: 'Add blur effect to images online for free. Apply Gaussian blur to photos for privacy or artistic effect. No signup, no watermark.',
+    keywords: [
+      'blur image', 'blur photo online', 'add blur to image', 'blur effect photo',
+      'gaussian blur online', 'photo blur tool', 'ishu tools blur image',
+      'ishu blur image', 'blur image online free', 'image blur effect',
+    ],
+    h1: 'Blur Image — Add Blur Effect Free',
+    faq: [],
+  },
+  'flip-image': {
+    title: 'Flip Image — Mirror Photo Horizontally & Vertically Free | ISHU TOOLS',
+    description: 'Flip images horizontally or vertically online for free. Mirror your photos instantly. No signup, no watermark. Supports JPG, PNG, WEBP.',
+    keywords: [
+      'flip image', 'mirror image', 'flip photo', 'horizontal flip', 'vertical flip',
+      'flip image online', 'mirror photo online', 'ishu tools flip image',
+      'ishu flip image', 'flip image online free', 'image flipper',
+    ],
+    h1: 'Flip Image — Mirror Photos Free Online',
+    faq: [],
+  },
+  'sharpen-image': {
+    title: 'Sharpen Image — Make Photos Clearer & Sharper Free | ISHU TOOLS',
+    description: 'Sharpen blurry images online for free. Enhance photo clarity and detail with our online image sharpener. No signup required.',
+    keywords: [
+      'sharpen image', 'image sharpener', 'sharpen photo online', 'make image clearer',
+      'enhance image sharpness', 'photo sharpener', 'ishu tools sharpen image',
+      'ishu sharpen image', 'sharpen image online free', 'unblur photo online',
+    ],
+    h1: 'Sharpen Image — Make Photos Crisp & Clear Free',
+    faq: [],
+  },
+  'brighten-image': {
+    title: 'Brighten Image — Adjust Photo Brightness Online Free | ISHU TOOLS',
+    description: 'Brighten dark images or adjust photo brightness online for free. Control brightness and contrast to perfect your photos. No signup required.',
+    keywords: [
+      'brighten image', 'brighten photo', 'adjust brightness', 'photo brightness',
+      'image brightness tool', 'lighten image online', 'ishu tools brighten image',
+      'ishu brighten image', 'brighten image online free', 'make image brighter',
+    ],
+    h1: 'Brighten Image — Adjust Brightness Free',
+    faq: [],
+  },
+  'invert-image': {
+    title: 'Invert Image — Create Negative Effect Photo Free | ISHU TOOLS',
+    description: 'Invert image colors to create a negative effect online for free. Apply color inversion filter to any photo instantly. No signup required.',
+    keywords: [
+      'invert image', 'image invert', 'negative effect photo', 'color inversion',
+      'invert colors online', 'photo negative effect', 'ishu tools invert image',
+      'ishu invert image', 'invert image online free', 'image negative filter',
+    ],
+    h1: 'Invert Image — Create Negative Effect Free',
+    faq: [],
+  },
+  'image-collage': {
+    title: 'Image Collage Maker — Create Photo Collage Online Free | ISHU TOOLS',
+    description: 'Create beautiful photo collages online for free. Combine multiple images into one collage. No signup, no watermark.',
+    keywords: [
+      'image collage', 'photo collage maker', 'collage creator', 'make photo collage',
+      'combine photos', 'collage online free', 'ishu tools collage',
+      'ishu image collage', 'photo collage maker free', 'image grid maker',
+    ],
+    h1: 'Image Collage Maker — Create Photo Collages Free',
+    faq: [],
+  },
+  'add-text-image': {
+    title: 'Add Text to Image — Write on Photos Online Free | ISHU TOOLS',
+    description: 'Add custom text, captions, or labels to images online for free. Choose font, size, color, and position. No signup, no watermark.',
+    keywords: [
+      'add text to image', 'write on photo', 'text on image', 'caption photo',
+      'add caption to image', 'image text tool', 'ishu tools add text image',
+      'ishu add text image', 'add text photo online free', 'photo caption maker',
+    ],
+    h1: 'Add Text to Image — Write on Photos Free',
+    faq: [],
+  },
+  'add-border-image': {
+    title: 'Add Border to Image — Photo Frame & Border Online Free | ISHU TOOLS',
+    description: 'Add borders and frames to images online for free. Choose border color, width, and style. No signup, no watermark.',
+    keywords: [
+      'add border to image', 'photo border', 'image frame', 'add frame to photo',
+      'image border tool', 'picture frame online', 'ishu tools add border',
+      'ishu add border image', 'photo border maker free', 'image border online',
+    ],
+    h1: 'Add Border to Image — Photo Frames Free',
+    faq: [],
+  },
+  'circle-crop-image': {
+    title: 'Circle Crop Image — Crop Photo to Circle Shape Free | ISHU TOOLS',
+    description: 'Crop images to a circle shape online for free. Perfect for profile pictures, avatars, and social media. No signup, no watermark.',
+    keywords: [
+      'circle crop image', 'crop photo to circle', 'circular image crop',
+      'profile picture crop', 'avatar maker', 'round image online',
+      'ishu tools circle crop', 'ishu circle crop image', 'circle image crop free',
+      'circular photo crop online', 'profile picture circle',
+    ],
+    h1: 'Circle Crop Image — Round Photo Crop Free',
+    faq: [],
+  },
+  'remove-background': {
+    title: 'Remove Background — AI Background Remover Free | ISHU TOOLS',
+    description: 'Remove image background automatically with AI online for free. Get transparent PNG output instantly. Best AI background remover. No signup.',
+    keywords: [
+      'remove background', 'background remover', 'remove image background',
+      'ai background remover', 'transparent background', 'cut out background',
+      'ishu tools remove background', 'ishu remove background', 'bg remover online free',
+      'remove bg free', 'photo background eraser', 'remove background from photo',
+    ],
+    h1: 'Remove Background — AI Background Remover Free',
+    faq: [
+      { question: 'How to remove image background for free?', answer: 'Upload your image to ISHU TOOLS Remove Background tool. AI automatically removes the background and gives you a transparent PNG — completely free, no signup, no watermark.' },
+    ],
+  },
+  'jpg-to-png': {
+    title: 'JPG to PNG — Convert JPG to PNG Online Free | ISHU TOOLS',
+    description: 'Convert JPG images to PNG format online for free. Maintain quality, supports transparency. Batch conversion. No signup, no watermark.',
+    keywords: [
+      'jpg to png', 'convert jpg to png', 'jpeg to png converter', 'jpg png converter',
+      'image format converter', 'ishu tools jpg to png', 'ishu jpg to png',
+      'jpg to png free', 'jpg to png online', 'convert jpeg to png free',
+    ],
+    h1: 'JPG to PNG Converter — Free Online',
+    faq: [],
+  },
+  'png-to-jpg': {
+    title: 'PNG to JPG — Convert PNG to JPG Online Free | ISHU TOOLS',
+    description: 'Convert PNG images to JPG/JPEG format online for free. Control quality settings. No signup, no watermark. Works instantly.',
+    keywords: [
+      'png to jpg', 'convert png to jpg', 'png to jpeg converter', 'png jpg converter',
+      'ishu tools png to jpg', 'ishu png to jpg', 'png to jpg free',
+      'png to jpeg online', 'convert png to jpeg free', 'image format converter',
+    ],
+    h1: 'PNG to JPG Converter — Free Online',
+    faq: [],
+  },
+  'image-to-webp': {
+    title: 'Image to WebP — Convert to WebP Format Online Free | ISHU TOOLS',
+    description: 'Convert JPG, PNG, WEBP, GIF images to WebP format online for free. Smaller file size, faster loading. No signup required.',
+    keywords: [
+      'image to webp', 'convert to webp', 'jpg to webp', 'png to webp',
+      'webp converter', 'webp format', 'ishu tools webp converter',
+      'ishu image to webp', 'image to webp free', 'webp image converter online',
+    ],
+    h1: 'Image to WebP — Convert Images Free',
+    faq: [],
+  },
+  'webp-to-jpg': {
+    title: 'WebP to JPG — Convert WebP to JPG Online Free | ISHU TOOLS',
+    description: 'Convert WebP images to JPG/JPEG format online for free. No signup, no watermark. Fast and instant conversion.',
+    keywords: [
+      'webp to jpg', 'convert webp to jpg', 'webp to jpeg', 'webp to png',
+      'webp converter', 'ishu tools webp to jpg', 'ishu webp to jpg',
+      'webp to jpg free', 'webp to jpg online', 'convert webp to jpeg free',
+    ],
+    h1: 'WebP to JPG Converter — Free Online',
+    faq: [],
+  },
+  'thumbnail-image': {
+    title: 'Image Thumbnail Generator — Create Thumbnails Free | ISHU TOOLS',
+    description: 'Create image thumbnails online for free. Resize images to thumbnail size for web, YouTube, or social media. No signup required.',
+    keywords: [
+      'image thumbnail', 'thumbnail generator', 'create thumbnail', 'thumbnail maker',
+      'youtube thumbnail maker', 'image resize to thumbnail', 'ishu tools thumbnail',
+      'ishu thumbnail generator', 'thumbnail image online free',
+    ],
+    h1: 'Image Thumbnail Generator — Create Thumbnails Free',
+    faq: [],
+  },
+  'join-images': {
+    title: 'Join Images — Merge Multiple Images Online Free | ISHU TOOLS',
+    description: 'Join and merge multiple images side by side or vertically online for free. Combine photos into one image. No signup required.',
+    keywords: [
+      'join images', 'merge images', 'combine images', 'stitch images online',
+      'merge photos', 'image merger', 'ishu tools join images',
+      'ishu join images', 'combine multiple images free', 'merge images online',
+    ],
+    h1: 'Join Images — Merge & Combine Photos Free',
+    faq: [],
+  },
+  'split-image': {
+    title: 'Split Image — Cut Photo into Multiple Parts Free | ISHU TOOLS',
+    description: 'Split images into multiple equal parts online for free. Cut photos into grid sections for Instagram or printing. No signup required.',
+    keywords: [
+      'split image', 'cut image', 'divide image', 'image splitter',
+      'instagram grid maker', 'photo cutter', 'ishu tools split image',
+      'ishu split image', 'split image online free', 'image grid splitter',
+    ],
+    h1: 'Split Image — Cut Photos into Parts Free',
+    faq: [],
+  },
+  'image-color-picker': {
+    title: 'Image Color Picker — Pick Colors from Photos Online Free | ISHU TOOLS',
+    description: 'Pick colors from any image online for free. Get HEX, RGB, and HSL color codes from photos. Best image color picker tool. No signup.',
+    keywords: [
+      'image color picker', 'pick color from image', 'color picker from photo',
+      'eyedropper online', 'hex color from image', 'rgb from photo',
+      'ishu tools color picker', 'ishu image color picker', 'color picker online free',
+    ],
+    h1: 'Image Color Picker — Get Colors from Photos Free',
+    faq: [],
+  },
+
+  // ════════════════════════════════════════════════
+  //  TEXT & DEVELOPER TOOLS (EXPANDED)
+  // ════════════════════════════════════════════════
+  'word-count-text': {
+    title: 'Word Counter — Count Words, Characters & Sentences Free | ISHU TOOLS',
+    description: 'Count words, characters, sentences, and paragraphs in your text online for free. Instant word and character counter. No signup required.',
+    keywords: [
+      'word counter', 'word count', 'character counter', 'count words online',
+      'word count tool', 'text word counter', 'ishu tools word counter',
+      'ishu word counter', 'word counter online free', 'words characters sentences',
+      'text statistics', 'count characters online', 'essay word counter',
+    ],
+    h1: 'Word Counter — Count Words & Characters Free',
+    faq: [
+      { question: 'How to count words online for free?', answer: 'Paste your text into ISHU TOOLS Word Counter and get instant counts for words, characters, sentences, and paragraphs — completely free, no signup needed.' },
+    ],
+  },
+  'case-converter-text': {
+    title: 'Case Converter — Convert Text to Upper/Lowercase Free | ISHU TOOLS',
+    description: 'Convert text to uppercase, lowercase, title case, sentence case, and camelCase online for free. Best text case converter tool. No signup.',
+    keywords: [
+      'case converter', 'text case converter', 'uppercase converter', 'lowercase converter',
+      'title case', 'sentence case', 'camelcase converter', 'ishu tools case converter',
+      'convert text case online', 'ishu case converter', 'text formatting tool',
+    ],
+    h1: 'Case Converter — Change Text Case Free Online',
+    faq: [],
+  },
+  'slug-generator-text': {
+    title: 'Slug Generator — Create URL Slugs from Text Free | ISHU TOOLS',
+    description: 'Generate SEO-friendly URL slugs from any text online for free. Convert titles to URL slugs instantly. No signup required.',
+    keywords: [
+      'slug generator', 'url slug generator', 'seo slug', 'url friendly text',
+      'slug maker', 'permalink generator', 'ishu tools slug generator',
+      'ishu slug generator', 'slug generator online free', 'text to url slug',
+    ],
+    h1: 'Slug Generator — Create URL Slugs Free',
+    faq: [],
+  },
+  'remove-extra-spaces-text': {
+    title: 'Remove Extra Spaces — Clean Up Text Spaces Online Free | ISHU TOOLS',
+    description: 'Remove extra spaces, double spaces, and leading/trailing whitespace from text online for free. Clean and format text instantly. No signup.',
+    keywords: [
+      'remove extra spaces', 'remove double spaces', 'trim whitespace',
+      'clean text spaces', 'text cleaner', 'strip whitespace online',
+      'ishu tools remove spaces', 'ishu remove extra spaces', 'text space remover free',
+    ],
+    h1: 'Remove Extra Spaces — Clean Text Free',
+    faq: [],
+  },
+  'sort-lines-text': {
+    title: 'Sort Lines — Sort Text Lines Alphabetically Free | ISHU TOOLS',
+    description: 'Sort lines of text alphabetically, numerically, or in reverse order online for free. Line sorter tool with deduplication. No signup.',
+    keywords: [
+      'sort lines', 'sort text lines', 'line sorter', 'alphabetical sort',
+      'sort text online', 'text sorter', 'ishu tools sort lines',
+      'ishu sort lines', 'sort text lines online free', 'alphabetize list',
+    ],
+    h1: 'Sort Lines — Alphabetize Text Free Online',
+    faq: [],
+  },
+  'deduplicate-lines-text': {
+    title: 'Remove Duplicate Lines — Deduplicate Text Online Free | ISHU TOOLS',
+    description: 'Remove duplicate lines from text online for free. Keep unique lines only. Perfect for cleaning lists, CSV data, and code. No signup.',
+    keywords: [
+      'remove duplicate lines', 'deduplicate lines', 'remove duplicates from list',
+      'unique lines tool', 'duplicate line remover', 'ishu tools deduplicate',
+      'ishu remove duplicate lines', 'remove duplicate text online free',
+    ],
+    h1: 'Remove Duplicate Lines — Deduplicate Text Free',
+    faq: [],
+  },
+  'find-replace-text': {
+    title: 'Find & Replace Text — Replace Words in Text Online Free | ISHU TOOLS',
+    description: 'Find and replace text or words in bulk online for free. Supports plain text, case-sensitive search, and regex. No signup required.',
+    keywords: [
+      'find replace text', 'find and replace', 'text replace tool',
+      'replace words in text', 'bulk text replace', 'ishu tools find replace',
+      'ishu find replace text', 'find replace online free', 'text search replace',
+    ],
+    h1: 'Find & Replace Text — Bulk Replace Free Online',
+    faq: [],
+  },
+  'extract-keywords-text': {
+    title: 'Extract Keywords — Keyword Extractor from Text Free | ISHU TOOLS',
+    description: 'Extract important keywords from any text online for free. Keyword extraction for SEO, NLP, and content analysis. No signup.',
+    keywords: [
+      'extract keywords', 'keyword extractor', 'keyword extraction', 'text keyword tool',
+      'seo keyword extractor', 'extract keywords from text', 'ishu tools keyword extractor',
+      'ishu extract keywords', 'keyword extraction online free', 'nlp keyword tool',
+    ],
+    h1: 'Extract Keywords — Keyword Extractor Free',
+    faq: [],
+  },
+  'reading-time-text': {
+    title: 'Reading Time Calculator — Estimate Article Reading Time Free | ISHU TOOLS',
+    description: 'Calculate estimated reading time for any article or text online for free. Know how long it takes to read your content. No signup.',
+    keywords: [
+      'reading time calculator', 'estimate reading time', 'article reading time',
+      'words per minute', 'wpm calculator', 'ishu tools reading time',
+      'ishu reading time calculator', 'reading time online free', 'read time estimator',
+    ],
+    h1: 'Reading Time Calculator — Estimate Read Time Free',
+    faq: [],
+  },
+  'lorem-ipsum-generator': {
+    title: 'Lorem Ipsum Generator — Generate Placeholder Text Free | ISHU TOOLS',
+    description: 'Generate lorem ipsum placeholder text for web design, mockups, and prototypes online for free. Control paragraphs, words, and sentences. No signup.',
+    keywords: [
+      'lorem ipsum generator', 'placeholder text', 'dummy text generator',
+      'lorem ipsum online', 'generate lorem ipsum', 'filler text generator',
+      'ishu tools lorem ipsum', 'ishu lorem ipsum generator', 'lorem ipsum free',
+      'lipsum generator', 'placeholder content generator',
+    ],
+    h1: 'Lorem Ipsum Generator — Placeholder Text Free',
+    faq: [],
+  },
+  'url-encode': {
+    title: 'URL Encoder — Encode URL Online Free | ISHU TOOLS',
+    description: 'Encode URLs and special characters for safe web transmission online for free. Percent-encode any URL instantly. No signup required.',
+    keywords: [
+      'url encoder', 'encode url', 'url encoding', 'percent encode url',
+      'url encode online', 'encode special characters', 'ishu tools url encoder',
+      'ishu url encode', 'url encoder online free', 'uri encoder',
+    ],
+    h1: 'URL Encoder — Encode URLs Free Online',
+    faq: [],
+  },
+  'url-decode': {
+    title: 'URL Decoder — Decode URL Online Free | ISHU TOOLS',
+    description: 'Decode percent-encoded URLs back to readable text online for free. URL decoding tool. No signup required.',
+    keywords: [
+      'url decoder', 'decode url', 'url decoding', 'percent decode url',
+      'url decode online', 'decode encoded url', 'ishu tools url decoder',
+      'ishu url decode', 'url decoder online free', 'uri decoder',
+    ],
+    h1: 'URL Decoder — Decode URLs Free Online',
+    faq: [],
+  },
+  'html-encode': {
+    title: 'HTML Encoder — Encode HTML Entities Online Free | ISHU TOOLS',
+    description: 'Encode HTML entities and special characters for safe display online for free. Convert <, >, &, quotes to HTML entities. No signup.',
+    keywords: [
+      'html encoder', 'html entities', 'encode html', 'html escape',
+      'html entity encoder', 'ishu tools html encoder', 'ishu html encode',
+      'html encode online free', 'html special characters', 'html escape tool',
+    ],
+    h1: 'HTML Encoder — Encode HTML Entities Free',
+    faq: [],
+  },
+  'html-decode': {
+    title: 'HTML Decoder — Decode HTML Entities Online Free | ISHU TOOLS',
+    description: 'Decode HTML entities back to normal characters online for free. Convert &amp;, &lt;, &gt; and other entities to readable text. No signup.',
+    keywords: [
+      'html decoder', 'html entities decoder', 'decode html', 'html unescape',
+      'html entity decoder', 'ishu tools html decoder', 'ishu html decode',
+      'html decode online free', 'decode html entities online',
+    ],
+    h1: 'HTML Decoder — Decode HTML Entities Free',
+    faq: [],
+  },
+  'morse-code': {
+    title: 'Morse Code Translator — Text to Morse Code Free | ISHU TOOLS',
+    description: 'Convert text to Morse code and Morse code back to text online for free. Audio playback support. No signup required.',
+    keywords: [
+      'morse code translator', 'text to morse code', 'morse code converter',
+      'morse code decoder', 'morse code encoder', 'ishu tools morse code',
+      'ishu morse code translator', 'morse code translator online free',
+      'learn morse code', 'morse code generator',
+    ],
+    h1: 'Morse Code Translator — Text to Morse Free',
+    faq: [],
+  },
+  'text-to-binary': {
+    title: 'Text to Binary — Convert Text to Binary Code Free | ISHU TOOLS',
+    description: 'Convert text to binary code and binary back to text online for free. Learn how binary encoding works. No signup required.',
+    keywords: [
+      'text to binary', 'binary converter', 'binary code', 'text binary converter',
+      'convert text to binary', 'binary to text', 'ishu tools text to binary',
+      'ishu text to binary', 'text to binary online free', 'binary encoding',
+    ],
+    h1: 'Text to Binary — Convert Text to Binary Free',
+    faq: [],
+  },
+  'random-number-generator': {
+    title: 'Random Number Generator — Generate Random Numbers Free | ISHU TOOLS',
+    description: 'Generate random numbers within any range online for free. Set min, max, and count. Generate unique random integers. No signup.',
+    keywords: [
+      'random number generator', 'random number', 'generate random numbers',
+      'random integer generator', 'number randomizer', 'ishu tools random number',
+      'ishu random number generator', 'random number generator online free',
+      'lottery number generator', 'dice random number',
+    ],
+    h1: 'Random Number Generator — Generate Random Numbers Free',
+    faq: [],
+  },
+
+  // ════════════════════════════════════════════════
   //  SEO TOOLS
   // ════════════════════════════════════════════════
   'meta-tag-generator': {

@@ -18,14 +18,14 @@ export default function AllToolsPage() {
 
   useEffect(() => {
     applyDocumentBranding(
-      'All Tools — 400+ Free Online Tools | ISHU TOOLS',
-      'Browse all 400+ free online tools. PDF tools, image tools, developer tools, math calculators, text tools, and more. No signup, no watermark.',
+      'All Tools — 441+ Free Online Tools | ISHU TOOLS',
+      'Browse all 441+ free online tools. PDF tools, image tools, developer tools, math calculators, text tools, and more. No signup, no watermark.',
       '#3bd0ff',
     )
 
     // SEO meta
     const desc = document.querySelector('meta[name="description"]')
-    if (desc) desc.setAttribute('content', 'Browse all 400+ free online tools at ISHU TOOLS. PDF merge, compress, convert, image resize, developer tools, calculators, and more. No signup, no watermark, free forever.')
+    if (desc) desc.setAttribute('content', 'Browse all 441+ free online tools at ISHU TOOLS. PDF merge, compress, convert, image resize, developer tools, calculators, and more. No signup, no watermark, free forever.')
 
     let kw = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null
     if (kw) kw.content = 'all tools, free online tools, ishu tools, pdf tools, image tools, developer tools, math tools, student tools'
