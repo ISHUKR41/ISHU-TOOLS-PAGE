@@ -1,0 +1,108 @@
+### Backend:
+
+* Advanced logic and architecture
+* High performance and scalability
+
+* Error-free processing
+
+---
+
+## Tools Requirements
+
+* Every tool must be *100% functional*
+* No demo or incomplete tools
+* No bugs or incorrect outputs
+* High accuracy and reliability
+* Same quality as *top professional tools websites*
+
+Current issues:
+
+* Many tools are missing → *add more tools*
+* Many tools are not working → *fix all*
+* Some tools give wrong results → *correct them*
+
+👉 Final goal:
+Every tool must be *fully working, production-ready, accurate, and reliable*
+
+---
+
+## Add More Tools
+
+Add tools that:
+
+* Are useful for *students*
+* Are useful for *general users*
+* Are commonly used by people daily
+
+Also:
+
+* Organize all tools into *proper categories*
+* Make navigation clean and easy
+
+---
+
+## Technical Flexibility
+
+You are free to:
+
+* Use *any programming language*
+* Use *any libraries, frameworks, APIs*
+* Install any required tools or repositories
+
+Focus on:
+
+* Best performance
+* Best accuracy
+* Best user experience
+
+---
+
+## Deployment Status
+
+* The previous issue is now *fixed (development issue resolved)*
+* Still ensure the website:
+
+  * Runs properly everywhere
+  * Shows correct output
+  * Works smoothly online
+
+---
+
+## UI/UX Design
+
+* Make the website *fully modern and professional*
+* Add *smooth animations and effects*
+* Follow *reference designs from the .txt file*
+* Ensure design improvements do *not affect tool functionality*
+
+---
+
+## Additional Changes
+
+
+* Improve overall structure and layout
+* Keep everything clean and optimized
+
+---
+
+## Final Expectations
+
+* Everything must be *fully complete*
+* All tools must be *production-level*
+* Website must feel like a *top-tier professional platform*
+* Continuous improvement should be possible
+* No compromise on quality
+
+---
+
+## Summary
+
+* Strong SEO + AI SEO (rank #1 goal)
+* Use .txt file as *major reference*
+* Fully working tools (no errors)
+* Add missing tools
+* Advanced frontend + backend
+* Fully responsive and fast
+* Modern UI/UX with smooth animations
+* Use any tech required
+* Follow reference websites, effects, and components
