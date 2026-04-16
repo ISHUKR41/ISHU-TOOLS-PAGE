@@ -1,61 +1,77 @@
 # ISHU TOOLS
 
 ## Overview
-A fully functional, professional web platform with 295 PDF, Image, Text, and AI tools. Dark-themed, animated, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 349+ unique tools (441+ including variants) across 26 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
   - Port: 5000 (dev server)
   - Entry: `frontend/src/main.tsx`
   - Routing: React Router v6
-  - Key pages: HomePage (`/`), ToolPage (`/tools/:slug`)
-  - Layout: `SiteShell` wraps all pages — nav + footer
+  - Key pages: HomePage (`/`), ToolPage (`/tools/:slug`), CategoryPage (`/category/:id`), AllToolsPage (`/tools`)
+  - Layout: `SiteShell` wraps all pages — mega-menu nav + expanded footer
 - **Backend**: FastAPI (Python)
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
   - Tool handlers: `backend/app/tools/handlers.py`
-  - All 295 tools have registered handlers (verified 0 missing)
+  - 431 registered handlers (GRAND TOTAL including extra/new handlers)
 
 ## Key Files
-- `backend/app/registry.py` — 295 tool definitions (slug, title, category, tags, input_kind)
-- `backend/app/tools/handlers.py` — all handler functions
-- `backend/app/main.py` — FastAPI app with non-ASCII header sanitization
-- `frontend/src/index.css` — all CSS (dark theme, animations, gradient text)
-- `frontend/src/components/layout/SiteShell.tsx` — nav header + footer
+- `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
+- `backend/app/tools/handlers.py` — all handler functions (431 total)
+- `backend/app/main.py` — FastAPI app with /sitemap.xml + /robots.txt dynamic endpoints
+- `frontend/src/index.css` — all CSS (dark theme, hero-v2, mega-menu, animations, responsive)
+- `frontend/src/components/layout/SiteShell.tsx` — mega-menu nav + expanded footer (9 links/col)
 - `frontend/src/features/tool/toolFields.ts` — per-tool form field configs
-- `frontend/src/features/tool/ToolPage.tsx` — generic tool runner UI
+- `frontend/src/features/tool/ToolPage.tsx` — generic tool runner with FAQ/SEO sections
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar
-- `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid
-- `frontend/src/features/home/components/HeroSection.tsx` — hero banner
+- `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
+- `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign
+- `frontend/src/lib/seoData.ts` — per-tool SEO data (title, desc, keywords, FAQ)
+- `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers
+- `frontend/src/hooks/useCatalogData.ts` — deduplicates categories+tools from API
+- `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
+- `frontend/public/sitemap.xml` — 414 tools + 33 categories = 448 URLs
 
-## Tool Categories (22 total)
-- PDF Core: merge, split, compress, rotate, watermark, protect, unlock, OCR
-- PDF Conversion: to/from Word, Excel, PPT, images, ebook formats
-- PDF Advanced: rearrange pages, compare, flatten, annotate, sign, redact
-- Image Core: compress, resize, crop, flip, rotate, convert, remove-bg
-- Image Effects: watermark, blur, grayscale, pixelate, meme, collage
-- Document Convert: docx/xlsx/pptx/csv to/from PDF, HTML to PDF, Markdown
-- Text/AI: translate, summarize, OCR, QR code, word count, barcode
-- And more: page operations, metadata, security, formats...
-
-## Backend Libraries
-FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-headless, rembg, rapidocr, deep-translator, python-docx, python-pptx, openpyxl, qrcode, bs4, httpx
+## SEO Features
+- Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
+- Per-tool JSON-LD structured data (WebApplication, Organization)
+- Per-tool FAQ JSON-LD (from seoData.ts)
+- Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
+- robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
+- sitemap.xml: 414 tool slugs + 33 categories + homepage + /tools = 450 URLs
+- Comprehensive long-tail keywords per tool in seoData.ts
 
 ## Design System
-- Dark theme: background #020d18, accent #3bd0ff (teal-blue), gradient text on H1
+- Dark bg: #03060e — accent: #3bd0ff (teal-blue) — hero gradient: teal-to-purple
 - Font: Space Grotesk (display), Manrope (body)
-- Tool card colors: per-category accent colors via getCategoryTheme()
-- Animations: Framer Motion for page transitions and hover effects
+- Hero V2: animated orbs, grid overlay, large gradient heading, stats counter, ticker, trust badges
+- Tool card: per-category accent, hover radial glow, spring animation
+- Animations: Framer Motion (page, cards, hero sections), CSS keyframes (orbs, ticker, pulse)
+- Mega-menu: 6-column dropdown with 12 links per category
+- Responsive: full mobile support with mobile nav panel
+
+## Tool Categories (26 unique after deduplication)
+- PDF Core, PDF Security, PDF Advanced, PDF Insights
+- Image Core, Image Effects, Image Enhance, Image Layout
+- Document Convert, Office Suite, OCR Vision, eBook Convert, Vector Lab
+- Text AI, Text Cleanup, Text Ops, Format Lab
+- Developer Tools, Code Tools, Color Tools, Hash/Crypto, SEO Tools
+- Math Tools, Unit Converter, Student Tools, Security Tools, Conversion Tools, Social Media
+- Batch Automation, Page Ops, Data Tools, Archive Lab
+
+## Backend Libraries
+FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-headless, rembg, rapidocr, deep-translator, python-docx, python-pptx, openpyxl, qrcode, bs4, httpx, python-barcode
 
 ## Important Bugs Fixed
-- Compress PDF: now returns original file when compression fails to improve size
-- HTTP header encoding: non-ASCII characters in X-Tool-Message are now sanitized globally
-- Em dash in message strings replaced with regular hyphens
-- header-and-footer tool added to registry, handler, and toolFields
+- Compress PDF: returns original when compression fails
+- HTTP header encoding: non-ASCII chars in X-Tool-Message sanitized globally
+- Duplicate categories/tools in registry: deduplicated in useCatalogData.ts (client-side)
+- robots.txt was incorrectly blocking /assets/, *.js$, *.css$ — now fixed (SPA crawlability)
 
 ## Social Links
-- LinkedIn: https://linkedin.com/in/ishu
+- LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/
 - Instagram: @ishukr10
 - YouTube: @ishu-fun
 - X/Twitter: @ISHU_IITP

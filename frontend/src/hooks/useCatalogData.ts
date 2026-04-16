@@ -68,10 +68,26 @@ export function useCatalogData() {
         const [categoryRecords, toolRecords] = await Promise.all([fetchCategories(), fetchTools()])
         if (!mounted) return
 
-        setCategories(categoryRecords)
-        setTools(toolRecords)
+        // Deduplicate categories by id (registry may have duplicate declarations)
+        const seenCats = new Set<string>()
+        const uniqueCategories = categoryRecords.filter((cat) => {
+          if (seenCats.has(cat.id)) return false
+          seenCats.add(cat.id)
+          return true
+        })
+
+        // Deduplicate tools by slug
+        const seenSlugs = new Set<string>()
+        const uniqueTools = toolRecords.filter((tool) => {
+          if (seenSlugs.has(tool.slug)) return false
+          seenSlugs.add(tool.slug)
+          return true
+        })
+
+        setCategories(uniqueCategories)
+        setTools(uniqueTools)
         setError(null)
-        writeCatalogCache(categoryRecords, toolRecords)
+        writeCatalogCache(uniqueCategories, uniqueTools)
       } catch (err) {
         if (!mounted) return
         if (!cached) {

@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 import importlib.util
 import platform
@@ -6,7 +7,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from .models import ToolDefinition
 from .registry import CATEGORIES, TOOLS
@@ -38,6 +39,61 @@ def get_tool(slug: str) -> ToolDefinition:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/sitemap.xml", response_class=Response)
+def sitemap_xml() -> Response:
+    today = date.today().strftime("%Y-%m-%d")
+    base = "https://ishutools.com"
+
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>']
+    lines.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    lines.append(f'  <url><loc>{base}/</loc><lastmod>{today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>')
+    lines.append(f'  <url><loc>{base}/tools</loc><lastmod>{today}</lastmod><changefreq>daily</changefreq><priority>0.95</priority></url>')
+
+    seen_cats: set[str] = set()
+    for cat in CATEGORIES:
+        if cat.id not in seen_cats:
+            seen_cats.add(cat.id)
+            lines.append(f'  <url><loc>{base}/category/{cat.id}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.90</priority></url>')
+
+    HIGH_PRIORITY = {
+        "merge-pdf", "compress-pdf", "pdf-to-word", "word-to-pdf", "jpg-to-pdf",
+        "pdf-to-jpg", "compress-image", "resize-image", "remove-background",
+        "ocr-pdf", "json-formatter", "bmi-calculator", "password-generator",
+        "qr-code-generator", "remove-background", "pdf-to-excel",
+    }
+    seen_slugs: set[str] = set()
+    for tool in TOOLS:
+        if tool.slug not in seen_slugs:
+            seen_slugs.add(tool.slug)
+            priority = "0.95" if tool.slug in HIGH_PRIORITY else "0.85"
+            lines.append(f'  <url><loc>{base}/tools/{tool.slug}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>{priority}</priority></url>')
+
+    lines.append("</urlset>")
+    xml_content = "\n".join(lines)
+    return Response(content=xml_content, media_type="application/xml")
+
+
+@app.get("/robots.txt", response_class=Response)
+def robots_txt() -> Response:
+    content = """User-agent: *
+Allow: /
+Allow: /tools/
+Allow: /category/
+Sitemap: https://ishutools.com/sitemap.xml
+Crawl-delay: 1
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+"""
+    return Response(content=content, media_type="text/plain")
 
 
 def _is_module_available(module_name: str) -> bool:

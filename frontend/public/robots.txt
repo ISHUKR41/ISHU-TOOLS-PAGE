@@ -1,5 +1,6 @@
 # ISHU TOOLS — robots.txt
 # https://ishutools.com
+# 441+ Free Online Tools for Students & Professionals
 
 User-agent: *
 Allow: /
@@ -9,14 +10,8 @@ Allow: /category/
 # Sitemap
 Sitemap: https://ishutools.com/sitemap.xml
 
-# Crawl-delay (be nice to crawlers)
-Crawl-delay: 1
-
-# Block non-essential paths
+# Only block API routes (not assets - SPA needs JS accessible)
 Disallow: /api/
-Disallow: /assets/
-Disallow: *.js$
-Disallow: *.css$
 
 # Allow specific bots full access
 User-agent: Googlebot
@@ -37,4 +32,13 @@ User-agent: Baiduspider
 Allow: /
 
 User-agent: YandexBot
+Allow: /
+
+User-agent: facebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
 Allow: /
