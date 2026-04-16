@@ -1795,6 +1795,54 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'facebook-cover-maker': [],
   'linkedin-banner-maker': [],
   'whatsapp-dp-maker': [],
+  'citation-generator': [
+    { name: 'title', label: 'Source Title', type: 'text', placeholder: 'Article, book, or webpage title' },
+    { name: 'author', label: 'Author', type: 'text', placeholder: 'Author name' },
+    { name: 'year', label: 'Year', type: 'text', placeholder: '2026' },
+    { name: 'publisher', label: 'Publisher / Website', type: 'text', placeholder: 'Journal, publisher, or website' },
+    { name: 'url', label: 'URL', type: 'text', placeholder: 'https://example.com/source' },
+    { name: 'accessed', label: 'Accessed Date', type: 'text', placeholder: '16 Apr 2026' },
+    { name: 'source_type', label: 'Source Type', type: 'select', defaultValue: 'website', options: [
+      { label: 'Website', value: 'website' },
+      { label: 'Book', value: 'book' },
+      { label: 'Journal Article', value: 'article' },
+      { label: 'Report', value: 'report' },
+    ]},
+    { name: 'style', label: 'Citation Style', type: 'select', defaultValue: 'apa', options: [
+      { label: 'APA', value: 'apa' },
+      { label: 'MLA', value: 'mla' },
+      { label: 'Chicago', value: 'chicago' },
+    ]},
+  ],
+  'flashcard-generator': [
+    { name: 'text', label: 'Study Notes', type: 'textarea', placeholder: 'Paste notes, chapter summary, or lecture points...' },
+    { name: 'count', label: 'Number of Flashcards', type: 'number', defaultValue: '10' },
+  ],
+  'study-planner': [
+    { name: 'subjects', label: 'Subjects', type: 'textarea', placeholder: 'Math, Physics, Chemistry, English' },
+    { name: 'exam_date', label: 'Exam Date', type: 'text', placeholder: 'YYYY-MM-DD' },
+    { name: 'hours_per_day', label: 'Hours Per Day', type: 'number', defaultValue: '3' },
+  ],
+  'grade-calculator': [
+    { name: 'scores', label: 'Scores', type: 'textarea', placeholder: '90/100, 45/50, 18/20' },
+  ],
+  'attendance-calculator': [
+    { name: 'attended', label: 'Classes Attended', type: 'number', defaultValue: '45' },
+    { name: 'total', label: 'Total Classes', type: 'number', defaultValue: '60' },
+    { name: 'target', label: 'Target %', type: 'number', defaultValue: '75' },
+  ],
+  'reading-time-calculator': [
+    { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste article, essay, speech, or notes...' },
+    { name: 'wpm', label: 'Reading Speed (WPM)', type: 'number', defaultValue: '200' },
+  ],
+  'plagiarism-risk-checker': [
+    { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Paste assignment, essay, or paragraph...' },
+  ],
+  'resume-bullet-generator': [
+    { name: 'role', label: 'Role / Context', type: 'text', placeholder: 'Frontend Intern, Student Project, Volunteer' },
+    { name: 'task', label: 'Work / Achievement', type: 'textarea', placeholder: 'Built a dashboard that tracked weekly study progress' },
+    { name: 'metric', label: 'Metric / Result', type: 'text', placeholder: 'reduced manual work by 40%' },
+  ],
 }
 
 export function getToolFields(slug: string): ToolField[] {

@@ -20,32 +20,71 @@ export function getToolSEO(slug: string, toolTitle: string, toolDescription: str
   if (custom) return custom
 
   const t = toolTitle.toLowerCase()
+  const categoryLabel = getCategoryLabel(category)
+  const intentKeywords = buildIntentKeywords(slug, t, categoryLabel)
+  const conciseDescription = toolDescription.endsWith('.') ? toolDescription : `${toolDescription}.`
   return {
-    title: `${toolTitle} — Free Online ${getCategoryLabel(category)} | ${SITE}`,
-    description: `${toolDescription} Use ${toolTitle} for free at ${SITE} (Indian Student Hub University Tools). No signup, no watermark, no limits. Fast, secure, and trusted by millions of students and professionals worldwide.`,
+    title: `${toolTitle} Online Free — Fast ${categoryLabel} | ${SITE}`,
+    description: `${conciseDescription} Use this free ${t} online on ${SITE}. Built for students, creators, developers, and daily users with no signup, no watermark, mobile support, and privacy-focused processing.`,
     keywords: [
       t, `free ${t}`, `online ${t}`, `${t} tool`, `${t} online free`, `best ${t}`,
       `${t} for students`, `${t} no signup`, `ishu ${t}`, `ishu tools ${t}`,
       slug.replace(/-/g, ' '), category.replace(/-/g, ' '),
       'ishu tools', 'ishutools', 'free online tools', 'student tools', 'no signup',
       'indian student hub university tools', 'ishu kumar tools',
+      ...intentKeywords,
     ],
-    h1: `${toolTitle} — Free Online`,
+    h1: `${toolTitle} Online Free`,
     faq: [
       {
         question: `How to use ${toolTitle} online for free?`,
-        answer: `Visit ISHU TOOLS, navigate to ${toolTitle}, upload your file or enter your data, and click "Run". The tool processes instantly — no signup, no watermark, completely free. Works on all devices including mobile.`,
+        answer: `Open ${toolTitle} on ISHU TOOLS, upload your file or enter your data, adjust the available options, and click "Run". The tool processes quickly with no signup, no watermark, and full mobile support.`,
       },
       {
         question: `Is ${toolTitle} on ISHU TOOLS safe and private?`,
-        answer: `Yes! All files are processed securely on our servers and automatically deleted after processing. We never store, share, or access your files. ${SITE} prioritizes your privacy and data security.`,
+        answer: `Yes. ${SITE} is designed for secure processing, clear outputs, and privacy-focused workflows. Use the tool only with files and text you are allowed to process.`,
       },
       {
         question: `Can I use ${toolTitle} on my phone or tablet?`,
         answer: `Absolutely! ${SITE} is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktops. No app download needed.`,
       },
+      {
+        question: `Why choose ISHU TOOLS for ${toolTitle}?`,
+        answer: `${SITE} combines fast tool pages, simple navigation, student-focused workflows, Ishu-branded utility keywords, and reliable output handling so everyday tasks feel professional and easy.`,
+      },
     ],
   }
+}
+
+function buildIntentKeywords(slug: string, title: string, categoryLabel: string): string[] {
+  const base = slug.replace(/-/g, ' ')
+  const keywords = [
+    `${base} for students`,
+    `${base} for college`,
+    `${base} for school`,
+    `${base} mobile friendly`,
+    `${base} fast online`,
+    `${base} privacy focused`,
+    `${base} without login`,
+    `free ${categoryLabel.toLowerCase()} by ishu`,
+    `ishu student hub ${base}`,
+    `indian student ${base} tool`,
+  ]
+
+  if (slug.includes('pdf')) {
+    keywords.push(`${title} without watermark`, `${title} unlimited free`, `${title} for documents`)
+  }
+  if (slug.includes('image') || slug.includes('photo') || slug.includes('jpg') || slug.includes('png')) {
+    keywords.push(`${title} for photos`, `${title} high quality`, `${title} resize compress edit`)
+  }
+  if (slug.includes('calculator') || categoryLabel.toLowerCase().includes('student')) {
+    keywords.push(`${title} accurate calculator`, `${title} homework helper`, `${title} exam tool`)
+  }
+  if (categoryLabel.toLowerCase().includes('developer') || slug.includes('json') || slug.includes('code')) {
+    keywords.push(`${title} developer utility`, `${title} code formatter`, `${title} web developer tool`)
+  }
+
+  return keywords
 }
 
 export function getToolJsonLd(slug: string, title: string, description: string, category: string): object {

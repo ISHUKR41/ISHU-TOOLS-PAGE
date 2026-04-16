@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 441+ tools (414+ after client-side deduplication) across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 raw registry entries, 422 unique tool slugs after client-side deduplication, across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, animated, SEO-optimized, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -14,8 +14,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
-  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py`
-  - 441 registered tools total (deduplicated to ~414 on frontend)
+  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py`
+  - 449 raw registry entries, 422 unique tool slugs, and 439 available backend handlers
 
 ## Key Files
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
@@ -32,7 +32,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
 - `frontend/src/hooks/useCatalogData.ts` — deduplicates categories+tools from API
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
-- `frontend/public/sitemap.xml` — 414 tools + 33 categories = 448 URLs
+- `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
 ## SEO Features
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
@@ -40,8 +40,9 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Per-tool FAQ JSON-LD (from seoData.ts — 156+ handcrafted entries)
 - Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
-- sitemap.xml: 414 tool slugs + 33 categories + homepage + /tools = 450 URLs
-- Comprehensive long-tail keywords per tool in seoData.ts
+- sitemap.xml: generated dynamically from current tool slugs + categories + homepage + /tools
+- Comprehensive long-tail keywords per tool in seoData.ts, including fallback student, mobile, no-login, privacy, and category-intent terms for every future tool
+- Category pages include enriched meta tags, canonical URLs, Open Graph/Twitter metadata, CollectionPage JSON-LD, popular tool links, and long-tail category copy
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
 
 ## Design System
@@ -56,6 +57,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - FAQ accordion with open animations
 - Gradient border for CTA buttons
 - Social chip/trust badge hover effects
+- Reduced-motion and slow-device CSS guards disable expensive animations; mobile disables heavy blur on major surfaces for smoother performance
 
 ## Tool "How to use" Steps (getToolUsageSteps in toolPresentation.ts)
 Per-category smart steps:
@@ -91,6 +93,7 @@ FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-hea
 - robots.txt was incorrectly blocking /assets/, *.js$, *.css$ — now fixed (SPA crawlability)
 - Tool "How to use" steps now correctly show per-category steps (not generic file upload for all)
 - QR code generator now shows correct steps (not the generic developer tool steps)
+- Added 8 real student/everyday tools: Citation Generator, Flashcard Generator, Study Planner, Grade Calculator, Attendance Calculator, Reading Time Calculator, Plagiarism Risk Checker, Resume Bullet Generator
 
 ## Social Links
 - LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/

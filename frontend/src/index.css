@@ -3918,6 +3918,60 @@ h3 {
   display: block;
 }
 
+.tool-seo-chip-row,
+.category-seo-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tool-seo-chip-row span,
+.category-seo-keywords a {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: rgba(235, 248, 255, 0.78);
+  background: rgba(255, 255, 255, 0.055);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.category-tools-grid,
+.directory-stack {
+  content-visibility: auto;
+  contain-intrinsic-size: 900px;
+}
+
+@media (prefers-reduced-motion: reduce), (update: slow) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .orb-a,
+  .orb-b,
+  .hero-orb,
+  .status-dot-pulse,
+  .btn-primary-hero::after {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .surface-panel,
+  .site-header,
+  .mega-menu,
+  .tool-main-panel,
+  .category-hero {
+    backdrop-filter: none !important;
+  }
+}
+
 /* Enhanced social chip hover */
 .social-chip {
   transition: background 150ms ease, color 150ms ease, border-color 150ms ease, transform 150ms ease;

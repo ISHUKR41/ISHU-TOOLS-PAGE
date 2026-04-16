@@ -5,6 +5,7 @@ All production-ready with real, accurate logic.
 """
 from __future__ import annotations
 import base64, csv, hashlib, html, io, json, math, os, re, secrets, string, sys, uuid
+from collections import Counter
 from datetime import datetime, timezone, timedelta
 from typing import Any
 
@@ -757,6 +758,195 @@ def handle_loan_emi(files, payload, output_dir):
     })
 
 
+def handle_citation_generator(files, payload, output_dir):
+    style = str(payload.get("style", "apa")).strip().lower()
+    source_type = str(payload.get("source_type", "website")).strip().lower()
+    title = str(payload.get("title") or payload.get("text") or "Untitled source").strip()
+    author = str(payload.get("author", "")).strip()
+    year = str(payload.get("year", "n.d.")).strip() or "n.d."
+    publisher = str(payload.get("publisher", "")).strip()
+    url = str(payload.get("url", "")).strip()
+    accessed = str(payload.get("accessed", "")).strip()
+
+    author_part = author or "Unknown author"
+    publisher_part = f" {publisher}." if publisher else ""
+    url_part = f" {url}" if url else ""
+    accessed_part = f" Accessed {accessed}." if accessed else ""
+
+    if style == "mla":
+        citation = f'{author_part}. "{title}." {publisher or source_type.title()}, {year}.{url_part}{accessed_part}'
+    elif style == "chicago":
+        citation = f'{author_part}. "{title}." {publisher or source_type.title()}. {year}.{url_part}{accessed_part}'
+    else:
+        citation = f"{author_part}. ({year}). {title}.{publisher_part}{url_part}"
+
+    return ExecutionResult(
+        kind="json",
+        message=f"{style.upper()} citation generated",
+        data={"text": citation.strip(), "style": style, "source_type": source_type},
+    )
+
+
+def handle_flashcard_generator(files, payload, output_dir):
+    text = str(payload.get("text", "")).strip()
+    count = max(1, min(30, int(payload.get("count", 10))))
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if len(s.strip()) > 20]
+    words = re.findall(r"\b[A-Za-z][A-Za-z-]{4,}\b", text)
+    common = []
+    seen = set()
+    for word in words:
+        key = word.lower()
+        if key not in seen:
+            seen.add(key)
+            common.append(word)
+    cards = []
+    for idx, sentence in enumerate(sentences[:count]):
+        key_term = common[idx % len(common)] if common else "this concept"
+        cards.append({
+            "question": f"What should you remember about {key_term}?",
+            "answer": sentence,
+        })
+    if not cards and text:
+        cards.append({"question": "What is the main point of these notes?", "answer": text[:500]})
+    output = "\n\n".join(f"Q{index + 1}. {card['question']}\nA. {card['answer']}" for index, card in enumerate(cards))
+    return ExecutionResult(kind="json", message=f"Generated {len(cards)} flashcards", data={"text": output, "flashcards": cards})
+
+
+def handle_study_planner(files, payload, output_dir):
+    subjects_raw = str(payload.get("subjects") or payload.get("text") or "Math, Science, English").strip()
+    subjects = [item.strip() for item in re.split(r"[,;\n]+", subjects_raw) if item.strip()]
+    if not subjects:
+        subjects = ["Revision"]
+    hours_per_day = max(0.5, min(16.0, float(payload.get("hours_per_day", 3))))
+    exam_date_raw = str(payload.get("exam_date", "")).strip()
+    today = datetime.now().date()
+    try:
+        exam_date = datetime.strptime(exam_date_raw, "%Y-%m-%d").date() if exam_date_raw else today + timedelta(days=14)
+    except ValueError:
+        exam_date = today + timedelta(days=14)
+    days = max(1, min(120, (exam_date - today).days or 1))
+    daily_blocks = []
+    for day_index in range(days):
+        subject = subjects[day_index % len(subjects)]
+        secondary = subjects[(day_index + 1) % len(subjects)] if len(subjects) > 1 else subject
+        date_label = (today + timedelta(days=day_index)).strftime("%d %b %Y")
+        daily_blocks.append(
+            f"Day {day_index + 1} ({date_label}): {hours_per_day:.1f}h total — "
+            f"{subject} concept revision, {secondary} practice questions, 20 min quick recap."
+        )
+    output = "Study Plan\n" + "\n".join(daily_blocks)
+    return ExecutionResult(kind="json", message=f"Study plan created for {days} days", data={"text": output, "days": days, "subjects": subjects})
+
+
+def handle_grade_calculator(files, payload, output_dir):
+    raw = str(payload.get("scores") or payload.get("text") or "").strip()
+    pairs = re.findall(r"(\d+(?:\.\d+)?)\s*/\s*(\d+(?:\.\d+)?)", raw)
+    if pairs:
+        earned = sum(float(a) for a, _ in pairs)
+        total = sum(float(b) for _, b in pairs)
+    else:
+        earned = float(payload.get("earned", 0))
+        total = float(payload.get("total", 100))
+    if total <= 0:
+        return ExecutionResult(kind="json", message="Invalid total marks", data={"error": "Total marks must be greater than zero"})
+    percent = earned / total * 100
+    if percent >= 90:
+        grade = "A+"
+    elif percent >= 80:
+        grade = "A"
+    elif percent >= 70:
+        grade = "B"
+    elif percent >= 60:
+        grade = "C"
+    elif percent >= 50:
+        grade = "D"
+    else:
+        grade = "Needs improvement"
+    text = f"Earned: {earned:g}/{total:g}\nPercentage: {percent:.2f}%\nGrade: {grade}"
+    return ExecutionResult(kind="json", message=f"Grade: {grade} ({percent:.2f}%)", data={"text": text, "percentage": round(percent, 2), "grade": grade})
+
+
+def handle_attendance_calculator(files, payload, output_dir):
+    attended = int(float(payload.get("attended", 0)))
+    total = int(float(payload.get("total", 0)))
+    target = float(payload.get("target", 75))
+    if total <= 0 or attended < 0 or attended > total:
+        return ExecutionResult(kind="json", message="Invalid attendance values", data={"error": "Use attended <= total and total > 0"})
+    current = attended / total * 100
+    needed = 0
+    while ((attended + needed) / (total + needed) * 100) < target and needed < 10000:
+        needed += 1
+    can_miss = 0
+    while total + can_miss + 1 > 0 and (attended / (total + can_miss + 1) * 100) >= target:
+        can_miss += 1
+    text = (
+        f"Current attendance: {current:.2f}% ({attended}/{total})\n"
+        f"Target attendance: {target:.2f}%\n"
+        f"Classes needed to reach target: {needed}\n"
+        f"Classes you can miss while staying above target: {can_miss}"
+    )
+    return ExecutionResult(kind="json", message=f"Attendance: {current:.2f}%", data={"text": text, "current": round(current, 2), "needed": needed, "can_miss": can_miss})
+
+
+def handle_reading_time_calculator(files, payload, output_dir):
+    text = str(payload.get("text", ""))
+    wpm = max(50, min(800, int(float(payload.get("wpm", 200)))))
+    words = re.findall(r"\S+", text)
+    word_count = len(words)
+    reading_minutes = word_count / wpm if word_count else 0
+    speaking_minutes = word_count / 130 if word_count else 0
+    result = (
+        f"Words: {word_count}\n"
+        f"Characters: {len(text)}\n"
+        f"Reading speed: {wpm} WPM\n"
+        f"Estimated reading time: {reading_minutes:.1f} minutes\n"
+        f"Estimated speaking time: {speaking_minutes:.1f} minutes"
+    )
+    return ExecutionResult(kind="json", message=f"Reading time: {reading_minutes:.1f} min", data={"text": result, "words": word_count, "reading_minutes": round(reading_minutes, 1)})
+
+
+def handle_plagiarism_risk_checker(files, payload, output_dir):
+    text = str(payload.get("text", "")).strip()
+    words = [w.lower() for w in re.findall(r"\b[\w'-]+\b", text)]
+    total = len(words)
+    if total < 20:
+        return ExecutionResult(kind="json", message="Text too short for risk analysis", data={"text": "Add at least 20 words for a useful repetition and uniqueness check."})
+    unique_ratio = len(set(words)) / total
+    trigrams = [" ".join(words[i:i + 3]) for i in range(max(0, total - 2))]
+    repeated = [phrase for phrase, n in Counter(trigrams).most_common(10) if n > 1]
+    risk_score = 0
+    if unique_ratio < 0.45:
+        risk_score += 45
+    elif unique_ratio < 0.6:
+        risk_score += 25
+    risk_score += min(45, len(repeated) * 8)
+    risk_score = min(100, risk_score)
+    level = "Low" if risk_score < 30 else "Medium" if risk_score < 65 else "High"
+    output = (
+        f"Plagiarism risk signals: {level} ({risk_score}/100)\n"
+        f"Words: {total}\n"
+        f"Unique word ratio: {unique_ratio:.2f}\n"
+        f"Repeated 3-word phrases: {len(repeated)}\n\n"
+        f"Most repeated phrases:\n" + ("\n".join(f"- {item}" for item in repeated) if repeated else "- None found") +
+        "\n\nNote: This checks repetition and originality risk signals. It does not compare against the live web."
+    )
+    return ExecutionResult(kind="json", message=f"{level} plagiarism-risk signals", data={"text": output, "risk_score": risk_score, "level": level})
+
+
+def handle_resume_bullet_generator(files, payload, output_dir):
+    role = str(payload.get("role", "student project")).strip()
+    task = str(payload.get("task") or payload.get("text") or "completed an important project").strip()
+    metric = str(payload.get("metric", "")).strip()
+    verbs = ["Designed", "Built", "Improved", "Led", "Optimized"]
+    metric_part = f", resulting in {metric}" if metric else " with measurable improvement"
+    bullets = [
+        f"{verb} {task} for {role}{metric_part}."
+        for verb in verbs
+    ]
+    output = "\n".join(f"- {bullet}" for bullet in bullets)
+    return ExecutionResult(kind="json", message="Resume bullets generated", data={"text": output, "bullets": bullets})
+
+
 # ═══════════════════════════════════════════════════════════
 # HANDLER REGISTRY
 # ═══════════════════════════════════════════════════════════
@@ -803,4 +993,12 @@ EXTRA_TOOL_HANDLERS: dict[str, ToolHandler] = {
     "scientific-calculator": handle_scientific_calculator_improved,
     "compound-interest-calculator": handle_compound_interest,
     "loan-emi-calculator": handle_loan_emi,
+    "citation-generator": handle_citation_generator,
+    "flashcard-generator": handle_flashcard_generator,
+    "study-planner": handle_study_planner,
+    "grade-calculator": handle_grade_calculator,
+    "attendance-calculator": handle_attendance_calculator,
+    "reading-time-calculator": handle_reading_time_calculator,
+    "plagiarism-risk-checker": handle_plagiarism_risk_checker,
+    "resume-bullet-generator": handle_resume_bullet_generator,
 }

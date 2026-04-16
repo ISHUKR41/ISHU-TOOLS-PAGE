@@ -222,6 +222,10 @@ export default function ToolPage() {
     () => (tool ? getCategoryTheme(tool.category) : getCategoryTheme('pdf-core')),
     [tool],
   )
+  const seo = useMemo(
+    () => (tool ? getToolSEO(tool.slug, tool.title, tool.description, tool.category) : null),
+    [tool],
+  )
 
   useEffect(() => {
     const defaults: Record<string, string> = {}
@@ -456,8 +460,15 @@ export default function ToolPage() {
                       {tool.accepts_multiple ? 'Multi-file' : 'Single-file'}
                     </span>
                   </div>
-                  <h1>{tool.title}</h1>
+                  <h1>{seo?.h1 || tool.title}</h1>
                   <p>{tool.description}</p>
+                  {seo && (
+                    <div className='tool-seo-chip-row' aria-label='Tool keywords'>
+                      {seo.keywords.slice(0, 6).map((keyword) => (
+                        <span key={keyword}>{keyword}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 

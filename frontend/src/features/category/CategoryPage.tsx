@@ -9,6 +9,17 @@ import { useCatalogData } from '../../hooks/useCatalogData'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolIcon from '../../components/tools/ToolIcon'
 
+function upsertMeta(selector: string, attributes: Record<string, string>) {
+  let element = document.querySelector(selector) as HTMLMetaElement | HTMLLinkElement | null
+  if (!element) {
+    element = selector.startsWith('link')
+      ? document.createElement('link')
+      : document.createElement('meta')
+    document.head.appendChild(element)
+  }
+  Object.entries(attributes).forEach(([key, value]) => element?.setAttribute(key, value))
+}
+
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>()
   const { categories, tools, loading, error } = useCatalogData()
@@ -31,48 +42,61 @@ export default function CategoryPage() {
   useEffect(() => {
     if (!category) return
 
-    const title = `${category.label} — Free Online Tools | ISHU TOOLS`
-    const desc = `${category.description} ${categoryTools.length}+ free ${category.label.toLowerCase()} tools online. No signup, no watermark. ISHU TOOLS.`
+    const title = `${category.label} Online Free — ${categoryTools.length}+ Tools | ISHU TOOLS`
+    const desc = `${category.description} Explore ${categoryTools.length}+ free ${category.label.toLowerCase()} on ISHU TOOLS for students, creators, developers, and daily users. No signup, no watermark, mobile friendly.`
+    const categoryUrl = `https://ishutools.com/category/${categoryId}`
+    const toolNames = categoryTools.slice(0, 12).map((tool) => tool.title)
 
     applyDocumentBranding(title, desc, theme.accent)
 
-    const metaDesc = document.querySelector('meta[name="description"]')
-    if (metaDesc) metaDesc.setAttribute('content', desc)
-    else {
-      const m = document.createElement('meta')
-      m.name = 'description'
-      m.content = desc
-      document.head.appendChild(m)
-    }
-
-    let metaKw = document.querySelector('meta[name="keywords"]') as HTMLMetaElement | null
     const keywords = [
       category.label.toLowerCase(),
       `free ${category.label.toLowerCase()}`,
       `${category.label.toLowerCase()} online`,
       `ishu tools ${category.label.toLowerCase()}`,
-      'ishu tools', 'free online tools', 'no signup', 'no watermark',
+      `${category.label.toLowerCase()} for students`,
+      `${category.label.toLowerCase()} no signup`,
+      `${category.label.toLowerCase()} mobile friendly`,
+      ...toolNames.map((name) => name.toLowerCase()),
+      'ishu tools', 'ishutools', 'indian student hub university tools', 'free online tools', 'no signup', 'no watermark',
     ].join(', ')
-    if (metaKw) metaKw.content = keywords
-    else {
-      metaKw = document.createElement('meta')
-      metaKw.name = 'keywords'
-      metaKw.content = keywords
-      document.head.appendChild(metaKw)
-    }
 
-    // Canonical
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
-    if (canonical) canonical.href = `https://ishutools.com/category/${categoryId}`
-    else {
-      canonical = document.createElement('link')
-      canonical.rel = 'canonical'
-      canonical.href = `https://ishutools.com/category/${categoryId}`
-      document.head.appendChild(canonical)
-    }
+    upsertMeta('meta[name="description"]', { name: 'description', content: desc })
+    upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywords })
+    upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: categoryUrl })
+    upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title })
+    upsertMeta('meta[property="og:description"]', { property: 'og:description', content: desc })
+    upsertMeta('meta[property="og:url"]', { property: 'og:url', content: categoryUrl })
+    upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
+    upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
+    upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: desc })
+
+    const existingJsonLd = document.getElementById('category-jsonld')
+    if (existingJsonLd) existingJsonLd.remove()
+    const script = document.createElement('script')
+    script.id = 'category-jsonld'
+    script.type = 'application/ld+json'
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: title,
+      description: desc,
+      url: categoryUrl,
+      isPartOf: { '@type': 'WebSite', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: categoryTools.slice(0, 50).map((tool, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: tool.title,
+          url: `https://ishutools.com/tools/${tool.slug}`,
+        })),
+      },
+    })
+    document.head.appendChild(script)
 
     return () => {
-      document.querySelector('link[rel="canonical"]')?.remove()
+      document.getElementById('category-jsonld')?.remove()
     }
   }, [category, categoryTools, categoryId, theme])
 
@@ -130,6 +154,13 @@ export default function CategoryPage() {
           </span>
           <h1 style={{ color: theme.accent }}>{category.label}</h1>
           <p>{category.description}</p>
+          <div className='category-seo-keywords' aria-label='Popular searches'>
+            {categoryTools.slice(0, 8).map((tool) => (
+              <Link key={tool.slug} to={`/tools/${tool.slug}`}>
+                {tool.title}
+              </Link>
+            ))}
+          </div>
         </motion.section>
 
         {/* Tools Grid */}
@@ -175,6 +206,12 @@ export default function CategoryPage() {
               </li>
             ))}
           </ul>
+          <h3>Why students and daily users choose this category</h3>
+          <p>
+            These tools are organized for quick decisions: clear names, dedicated pages, mobile-friendly forms,
+            privacy-focused processing, and direct download or copy results. Popular searches include free {category.label.toLowerCase()},
+            ISHU {category.label.toLowerCase()}, no-signup {category.label.toLowerCase()}, and fast online {category.label.toLowerCase()} for students.
+          </p>
         </section>
       </div>
     </SiteShell>
