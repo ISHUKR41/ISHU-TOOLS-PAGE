@@ -1,12 +1,60 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Search, MousePointerClick, Upload, Download, CheckCircle } from 'lucide-react'
+import { Search, MousePointerClick, Upload, Download, CheckCircle, ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images, Calculator, Star } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
+
+const BENTO_FEATURES = [
+  {
+    icon: Zap, accent: '#56a6ff', span: 'span-2 large',
+    stat: '422+', title: 'Free Professional Tools',
+    desc: 'PDF, Image, Developer, Math, Text, AI, Color, Security, Unit Converter — every tool you need, completely free.',
+  },
+  {
+    icon: ShieldCheck, accent: '#3ee58f', span: '',
+    title: '100% Private & Secure',
+    desc: 'Files are processed server-side and deleted immediately. We never store, share, or access your data.',
+  },
+  {
+    icon: Smartphone, accent: '#f472b6', span: '',
+    title: 'Works on All Devices',
+    desc: 'Fully responsive design — works perfectly on phones, tablets, and desktops. No app needed.',
+  },
+  {
+    icon: Globe, accent: '#f59e0b', span: '',
+    title: 'No Signup. Ever.',
+    desc: 'Every tool is instant-access. No account, no email, no payment, no watermarks. Just results.',
+  },
+  {
+    icon: Code2, accent: '#a78bfa', span: '',
+    title: 'Developer Utilities',
+    desc: 'JWT decoder, JSON/YAML converters, formatters, minifiers, hash generators — built for developers.',
+  },
+  {
+    icon: FileText, accent: '#22d3ee', span: '',
+    title: 'Complete PDF Suite',
+    desc: 'Merge, split, compress, convert, OCR, protect, annotate — the most complete free PDF toolkit.',
+  },
+  {
+    icon: Images, accent: '#fb923c', span: '',
+    title: '80+ Image Tools',
+    desc: 'Compress, resize, crop, convert, remove background, passport photo, social media resizers and more.',
+  },
+  {
+    icon: Calculator, accent: '#34d399', span: '',
+    title: 'Student Calculators',
+    desc: 'GPA, CGPA, BMI, EMI, compound interest, percentage, attendance — essential tools for students.',
+  },
+  {
+    icon: Star, accent: '#e879f9', span: 'span-2',
+    title: 'Better Than iLovePDF, SmallPDF & iLoveIMG',
+    desc: 'ISHU TOOLS combines PDF + Image + Developer + Math tools in one platform — all free, no watermark, no limits. The most complete free alternative to iLovePDF, SmallPDF, PDFCandy, iLoveIMG, and pi7.org.',
+  },
+]
 
 const socialLinks = [
   {
@@ -154,8 +202,35 @@ export default function HomePage() {
 
 
 
+        {/* Features Bento Grid — SEO: competitor comparison, value proposition */}
+        <section className='features-bento-section'>
+          <span className='section-kicker'>Why ISHU TOOLS?</span>
+          <h2>Everything You Need. 100% Free. Always.</h2>
+          <p>The most complete free online toolkit — more tools than iLovePDF, iLoveIMG, SmallPDF, PDFCandy, and pi7.org combined.</p>
+          <div className='bento-grid'>
+            {BENTO_FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className={`bento-card${f.span ? ' ' + f.span : ''}`}
+                style={{ '--bento-accent': f.accent } as CSSProperties}
+              >
+                <div className='bento-icon'><f.icon size={20} /></div>
+                {f.stat && <span className='bento-stat'>{f.stat}</span>}
+                <h3>{f.title}</h3>
+                <p>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section id='tool-directory' className='directory-stack'>
-          {loading && <p className='status-text'>Loading categories and tools...</p>}
+          {loading && (
+            <div className='skeleton-grid' aria-label='Loading tools...'>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className='skeleton-card' style={{ minHeight: i % 3 === 0 ? '200px' : '160px' }} />
+              ))}
+            </div>
+          )}
           {error && <p className='status-text error'>{error}</p>}
 
           {!loading && !error && groupedSections.length === 0 && (

@@ -1,7 +1,8 @@
 /**
- * ISHU TOOLS — Per-tool SEO Data (COMPREHENSIVE)
- * Every tool gets unique title, description, keywords, and FAQ for Google ranking.
- * Optimized for: high-volume, long-tail, Ishu-branded, niche keywords.
+ * ISHU TOOLS — Per-tool SEO Data (COMPREHENSIVE v2)
+ * Every tool gets unique title, description, keywords, and FAQ for Google #1 ranking.
+ * Optimized for: high-volume, long-tail, competitor comparison, Ishu-branded, niche keywords.
+ * 422+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
  */
 
 export interface ToolSEO {
@@ -19,122 +20,254 @@ export function getToolSEO(slug: string, toolTitle: string, toolDescription: str
   const generated = createGeneratedSEO(slug, toolTitle, toolDescription, category)
   const custom = TOOL_SEO_MAP[slug]
   if (custom) return mergeToolSEO(custom, generated)
-
   return generated
 }
 
+// ─── Smart auto-generator: produces specific, high-quality SEO for every tool ───
 function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: string, category: string): ToolSEO {
   const t = toolTitle.toLowerCase()
   const categoryLabel = getCategoryLabel(category)
-  const intentKeywords = buildIntentKeywords(slug, t, categoryLabel)
-  const conciseDescription = toolDescription.endsWith('.') ? toolDescription : `${toolDescription}.`
-  return {
-    title: `${toolTitle} Online Free — Fast ${categoryLabel} | ${SITE}`,
-    description: `${conciseDescription} Use this free ${t} online on ${SITE}. Built for students, creators, developers, and daily users with no signup, no watermark, mobile support, and privacy-focused processing.`,
-    keywords: [
-      t, `free ${t}`, `online ${t}`, `${t} tool`, `${t} online free`, `best ${t}`,
-      `${t} for students`, `${t} no signup`, `ishu ${t}`, `ishu tools ${t}`,
-      slug.replace(/-/g, ' '), category.replace(/-/g, ' '),
-      'ishu tools', 'ishutools', 'free online tools', 'student tools', 'no signup',
-      'indian student hub university tools', 'ishu kumar tools',
-      ...intentKeywords,
-    ],
-    h1: `${toolTitle} Online Free`,
-    faq: [
-      {
-        question: `How to use ${toolTitle} online for free?`,
-        answer: `Open ${toolTitle} on ISHU TOOLS, upload your file or enter your data, adjust the available options, and click "Run". The tool processes quickly with no signup, no watermark, and full mobile support.`,
-      },
-      {
-        question: `Is ${toolTitle} on ISHU TOOLS safe and private?`,
-        answer: `Yes. ${SITE} is designed for secure processing, clear outputs, and privacy-focused workflows. Use the tool only with files and text you are allowed to process.`,
-      },
-      {
-        question: `Can I use ${toolTitle} on my phone or tablet?`,
-        answer: `Absolutely! ${SITE} is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktops. No app download needed.`,
-      },
-      {
-        question: `Why choose ISHU TOOLS for ${toolTitle}?`,
-        answer: `${SITE} combines fast tool pages, simple navigation, student-focused workflows, Ishu-branded utility keywords, and reliable output handling so everyday tasks feel professional and easy.`,
-      },
-    ],
+  const base = slug.replace(/-/g, ' ')
+
+  // ── Detect tool type for specific content ──
+  const isPdf = slug.includes('pdf') || category.includes('pdf')
+  const isImage = category.includes('image') || slug.includes('image') || slug.includes('-jpg') || slug.includes('-png') || slug.includes('-webp') || slug.includes('-heic')
+  const isConvert = slug.includes('-to-')
+  const isCompress = slug.includes('compress') || slug.includes('minify') || slug.includes('reduce')
+  const isCalculator = slug.includes('calculator') || slug.includes('-calc') || category === 'math-tools'
+  const isDeveloper = category.includes('developer') || category === 'code-tools' || category === 'format-lab'
+  const isOCR = slug.includes('ocr') || slug.includes('-to-text') || slug.includes('text-from')
+  const isSecurity = category === 'security-tools' || category === 'hash-crypto' || slug.includes('hash') || slug.includes('encrypt') || slug.includes('password')
+  const isSocial = category === 'social-media'
+  const isStudent = category === 'student-tools'
+  const isConverter = category === 'conversion-tools' || category === 'unit-converter'
+  const isColor = category === 'color-tools'
+  const isSEO = category === 'seo-tools'
+
+  // ── Generate the best title for the tool type ──
+  let title: string
+  if (isConvert && toolTitle.toLowerCase().includes(' to ')) {
+    const [from, to] = toolTitle.split(/ to /i)
+    title = `${from.trim()} to ${to.trim()} Converter Online Free | ${SITE}`
+  } else if (isCompress && isPdf) {
+    title = `${toolTitle} — Reduce PDF Size Online Free | ${SITE}`
+  } else if (isCompress && isImage) {
+    title = `${toolTitle} — Reduce Image Size Free Online | ${SITE}`
+  } else if (isOCR) {
+    title = `${toolTitle} — Extract Text Online Free | ${SITE}`
+  } else if (isCalculator) {
+    title = `${toolTitle} — Free Online Calculator | ${SITE}`
+  } else if (isDeveloper) {
+    title = `${toolTitle} Online — Free Developer Tool | ${SITE}`
+  } else if (isSecurity) {
+    title = `${toolTitle} Online Free — Secure Hash & Encrypt | ${SITE}`
+  } else if (isSocial) {
+    title = `${toolTitle} Free Online — Social Media Image Tool | ${SITE}`
+  } else if (isColor) {
+    title = `${toolTitle} Online Free — Color Design Tool | ${SITE}`
+  } else if (isPdf) {
+    title = `${toolTitle} Online Free — Fast PDF Tool | ${SITE}`
+  } else if (isImage) {
+    title = `${toolTitle} Online Free — Fast Image Tool | ${SITE}`
+  } else {
+    title = `${toolTitle} Online Free — ${categoryLabel} | ${SITE}`
   }
+
+  // ── Generate specific, keyword-rich description ──
+  let description: string
+  const noSignup = 'No signup, no watermark, no file size limit.'
+  if (isPdf) {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. ${noSignup} Best free alternative to iLovePDF, SmallPDF, and PDFCandy — works on all devices.`
+  } else if (isImage) {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. ${noSignup} Best free alternative to iLoveIMG and pi7.org — fast, accurate, mobile-friendly.`
+  } else if (isCalculator) {
+    description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Accurate results instantly — no signup, no app. Best free ${base} for students, college, and professionals in India.`
+  } else if (isDeveloper) {
+    description = `Free ${t} online for developers. ${toolDescription.replace(/\.$/, '')}. Instant results, no registration. Best free ${base} tool for web developers and engineers.`
+  } else if (isOCR) {
+    description = `${toolTitle} online for free. Extract text from images and PDFs with high accuracy. ${noSignup} Best free OCR tool — works on all devices with no app required.`
+  } else if (isSecurity || isSecurity) {
+    description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Secure, fast, and accurate. No signup required. Best free ${base} tool for developers and security professionals.`
+  } else if (isSocial) {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Perfect dimensions for social media. ${noSignup} Works on mobile and desktop.`
+  } else if (isConverter) {
+    description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Fast, accurate unit conversion with no signup. Best free ${base} tool for students and professionals.`
+  } else {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Fast, accurate, ${noSignup} Built for students and professionals — works on all devices.`
+  }
+  // Trim description to 160 chars max for SEO
+  if (description.length > 160) description = description.substring(0, 157) + '...'
+
+  // ── Build comprehensive keyword list ──
+  const keywords = buildComprehensiveKeywords(slug, t, base, categoryLabel, {
+    isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isStudent, isConverter, isColor, isSEO,
+  })
+
+  // ── Generate tool-specific FAQs ──
+  const faq = generateSmartFAQs(slug, toolTitle, categoryLabel, { isPdf, isImage, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter })
+
+  return { title, description, keywords, h1: `${toolTitle} — Free Online Tool`, faq }
+}
+
+function buildComprehensiveKeywords(
+  slug: string, title: string, base: string, categoryLabel: string,
+  flags: Record<string, boolean>
+): string[] {
+  const kw: string[] = [
+    title, `free ${title}`, `online ${title}`, `${title} tool`, `${title} online free`,
+    `best ${title}`, `${title} for students`, `${title} no signup`,
+    `ishu ${title}`, `ishu tools ${title}`, `ishutools ${title}`,
+    base, `free ${base}`, `online ${base}`, `${base} online free`,
+    `${base} for students`, `${base} for college`, `${base} without login`,
+    `${base} without signup`, `${base} no watermark`, `${base} unlimited free`,
+    `${base} high accuracy`, `${base} professional`, `${base} india`,
+    `${base} mobile`, `${base} fast online`,
+    `ishu kumar ${base}`, `ishu student hub ${base}`, `indian student ${base}`,
+    'ishu tools', 'ishutools', 'free online tools', 'student tools',
+    'indian student hub university tools', 'ishu kumar tools',
+    `free ${categoryLabel.toLowerCase()} tool`,
+  ]
+
+  if (flags.isPdf) kw.push(
+    `${title} ilovepdf alternative`, `${title} smallpdf alternative`,
+    `${title} pdfcandy alternative`, `${title} adobe alternative`,
+    `${base} free pdf tool`, `${base} pdf online`,
+    `best free pdf tool`, `pdf tool no signup`, `pdf tool no watermark`,
+  )
+  if (flags.isImage) kw.push(
+    `${title} iloveimg alternative`, `${title} pi7 alternative`,
+    `${title} canva alternative`, `${base} free image tool`,
+    `best free image tool`, `image tool no signup`,
+    `${base} photo editor`, `${base} high quality`,
+  )
+  if (flags.isCompress) kw.push(
+    `reduce ${base}`, `${base} smaller file`, `${base} file size reduce`,
+    `compress ${base} online`, `${base} without quality loss`,
+  )
+  if (flags.isConvert) kw.push(
+    `convert ${base}`, `${base} converter`, `${base} conversion online`,
+    `best ${base} converter`, `fast ${base} conversion`,
+  )
+  if (flags.isCalculator) kw.push(
+    `${base} accurate`, `${base} formula`, `${base} for exam`,
+    `${base} for college`, `${base} for school`,
+    `${base} homework helper`, `${base} exam preparation`,
+    `student calculator`, `online calculator`, `free calculator india`,
+  )
+  if (flags.isDeveloper) kw.push(
+    `${title} developer tool`, `${title} web developer`,
+    `${title} api tool`, `${base} online tool`,
+    `developer tools online`, `free developer utilities`,
+  )
+  if (flags.isOCR) kw.push(
+    `extract text online`, `image to text free`, `ocr online free`,
+    `${base} high accuracy`, `${base} indian languages`,
+  )
+  if (flags.isSecurity) kw.push(
+    `${base} secure`, `${base} encryption`, `${base} free`,
+    `hash generator online`, `encrypt online free`,
+  )
+  if (flags.isSocial) kw.push(
+    `${base} instagram`, `${base} youtube`, `${base} facebook`,
+    `social media image resizer`, `free social media tools`,
+  )
+  if (flags.isConverter) kw.push(
+    `unit converter online`, `${base} units`,
+    `${base} formula`, `${base} calculation`,
+    `free unit converter`, `convert units online`,
+  )
+
+  return Array.from(new Set(kw)).slice(0, 80)
+}
+
+function generateSmartFAQs(
+  slug: string, toolTitle: string, categoryLabel: string,
+  flags: Record<string, boolean>
+): { question: string; answer: string }[] {
+  const faqs: { question: string; answer: string }[] = []
+
+  // How to use
+  faqs.push({
+    question: `How to use ${toolTitle} online for free?`,
+    answer: `Visit ISHU TOOLS and open ${toolTitle}. ${
+      flags.isPdf || flags.isImage
+        ? 'Drag and drop your file or click to browse. Adjust any settings, then click "Run" to process.'
+        : flags.isCalculator
+        ? 'Enter your values into the input fields and click "Calculate" to get instant accurate results.'
+        : 'Enter your data or paste your content, adjust options, and click "Run" for instant results.'
+    } Everything is free — no signup, no watermark, no app needed.`,
+  })
+
+  // Is it free / limits
+  faqs.push({
+    question: `Is ${toolTitle} completely free to use?`,
+    answer: `Yes! ${toolTitle} on ISHU TOOLS is 100% free with no signup, no registration, no payment, and no hidden charges. There are no file size limits, no daily use limits, and no watermarks on output.`,
+  })
+
+  // Safety/privacy
+  if (flags.isPdf || flags.isImage) {
+    faqs.push({
+      question: `Is my file safe when using ${toolTitle}?`,
+      answer: `Absolutely. ${toolTitle} on ISHU TOOLS processes your files securely on our server and automatically deletes them after processing. We never store, share, or access your files. Your data stays private.`,
+    })
+  }
+
+  // Competitor comparison
+  if (flags.isPdf) {
+    faqs.push({
+      question: `Is ${toolTitle} better than iLovePDF or SmallPDF?`,
+      answer: `${toolTitle} on ISHU TOOLS offers the same quality as iLovePDF and SmallPDF — completely free, with no signup, no watermark, no file limits, and no ads. ISHU TOOLS is the best free alternative to iLovePDF, SmallPDF, and PDFCandy.`,
+    })
+  }
+  if (flags.isImage) {
+    faqs.push({
+      question: `Is ${toolTitle} better than iLoveIMG or pi7.org?`,
+      answer: `${toolTitle} on ISHU TOOLS is a top free alternative to iLoveIMG and pi7.org. It's completely free, requires no signup, produces no watermarks, and works on all devices including mobile.`,
+    })
+  }
+
+  // Mobile support
+  faqs.push({
+    question: `Can I use ${toolTitle} on mobile or tablet?`,
+    answer: `Yes! ISHU TOOLS is fully responsive and ${toolTitle} works perfectly on all devices — smartphones, tablets, laptops, and desktops. No app download required. Just open the website in your mobile browser.`,
+  })
+
+  // Accuracy (for calculators/converters)
+  if (flags.isCalculator || flags.isConverter) {
+    faqs.push({
+      question: `How accurate is ${toolTitle}?`,
+      answer: `${toolTitle} on ISHU TOOLS uses standard formulas and verified algorithms to deliver highly accurate results. It's suitable for students, professionals, exams, assignments, and everyday use.`,
+    })
+  }
+
+  // Developer tools
+  if (flags.isDeveloper) {
+    faqs.push({
+      question: `What file formats does ${toolTitle} support?`,
+      answer: `${toolTitle} on ISHU TOOLS supports all standard input formats relevant to this tool. It handles large inputs, special characters, and complex structures — making it suitable for professional development workflows.`,
+    })
+  }
+
+  return faqs.slice(0, 6)
 }
 
 function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
   const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 90)
   const faq = [...custom.faq]
-
   for (const item of generated.faq) {
-    if (!faq.some((existing) => existing.question === item.question)) {
-      faq.push(item)
-    }
+    if (!faq.some((existing) => existing.question === item.question)) faq.push(item)
   }
-
-  return {
-    ...custom,
-    keywords,
-    faq: faq.slice(0, 8),
-  }
+  return { ...custom, keywords, faq: faq.slice(0, 8) }
 }
 
+/** @deprecated kept for backward compat — use buildComprehensiveKeywords */
 function buildIntentKeywords(slug: string, title: string, categoryLabel: string): string[] {
   const base = slug.replace(/-/g, ' ')
-  const keywords = [
-    `${base} for students`,
-    `${base} for college`,
-    `${base} for school`,
-    `${base} for exam preparation`,
-    `${base} for university assignments`,
-    `${base} mobile friendly`,
-    `${base} fast online`,
-    `${base} privacy focused`,
-    `${base} without login`,
-    `${base} without signup`,
-    `${base} no watermark`,
-    `${base} unlimited free`,
-    `${base} high accuracy`,
-    `${base} professional tool`,
-    `${base} daily use`,
-    `${base} india`,
-    `${base} hindi english users`,
-    `free ${categoryLabel.toLowerCase()} by ishu`,
-    `ishu student hub ${base}`,
-    `ishu kumar ${base}`,
-    `ishutools ${base}`,
-    `indian student ${base} tool`,
+  return [
+    `${base} for students`, `${base} mobile friendly`, `${base} without login`,
+    `${base} without signup`, `${base} no watermark`, `free ${categoryLabel.toLowerCase()} by ishu`,
+    `ishu student hub ${base}`, `ishu kumar ${base}`, `ishutools ${base}`,
   ]
-
-  if (slug.includes('pdf')) {
-    keywords.push(
-      `${title} without watermark`,
-      `${title} unlimited free`,
-      `${title} for documents`,
-      `${title} ilovepdf alternative`,
-      `${title} pdfcandy alternative`,
-      `${title} smallpdf alternative`,
-      `${title} secure pdf processing`,
-    )
-  }
-  if (slug.includes('image') || slug.includes('photo') || slug.includes('jpg') || slug.includes('png')) {
-    keywords.push(
-      `${title} for photos`,
-      `${title} high quality`,
-      `${title} resize compress edit`,
-      `${title} iloveimg alternative`,
-      `${title} pi7 alternative`,
-      `${title} social media image tool`,
-      `${title} passport photo helper`,
-    )
-  }
-  if (slug.includes('calculator') || categoryLabel.toLowerCase().includes('student')) {
-    keywords.push(`${title} accurate calculator`, `${title} homework helper`, `${title} exam tool`, `${title} college helper`, `${title} student productivity`)
-  }
-  if (categoryLabel.toLowerCase().includes('developer') || slug.includes('json') || slug.includes('code')) {
-    keywords.push(`${title} developer utility`, `${title} code formatter`, `${title} web developer tool`, `${title} frontend backend helper`, `${title} api utility`)
-  }
-
-  return Array.from(new Set(keywords))
 }
 
 export function getToolJsonLd(slug: string, title: string, description: string, category: string): object {
@@ -1952,6 +2085,1134 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
         question: 'What makes a good resume bullet point?',
         answer: 'Good resume bullets start with strong action verbs, quantify achievements, and focus on impact. Our generator follows these best practices to create high-quality resume bullets.',
       },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  PDF FORMAT-LAB (Conversion Tools)
+  // ════════════════════════════════════════════════
+  'png-to-pdf': {
+    title: 'PNG to PDF Converter Online Free — No Signup | ISHU TOOLS',
+    description: 'Convert PNG images to PDF online for free. Combine multiple PNG files into one PDF. No signup, no watermark. Best free PNG to PDF converter — better than iLovePDF.',
+    keywords: ['png to pdf', 'convert png to pdf', 'png to pdf converter', 'png to pdf free', 'png to pdf online', 'multiple png to pdf', 'image to pdf', 'ishu png to pdf', 'ishu tools png to pdf', 'ilovepdf alternative', 'png to pdf no signup', 'png to pdf no watermark'],
+    h1: 'PNG to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert PNG to PDF for free?', answer: 'Upload your PNG file(s) on ISHU TOOLS PNG to PDF tool. Click Run and download the converted PDF instantly. No signup, no watermark, 100% free.' },
+      { question: 'Can I convert multiple PNG files to one PDF?', answer: 'Yes! You can upload multiple PNG images and combine them all into a single PDF file. Drag and drop them in your preferred order before converting.' },
+    ],
+  },
+  'webp-to-pdf': {
+    title: 'WEBP to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert WEBP images to PDF online for free. Fast, accurate WEBP to PDF conversion — no signup, no watermark. Best free WEBP to PDF tool online.',
+    keywords: ['webp to pdf', 'convert webp to pdf', 'webp to pdf converter', 'webp to pdf free', 'webp to pdf online', 'ishu webp to pdf', 'webp to pdf no signup'],
+    h1: 'WEBP to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert WEBP to PDF online?', answer: 'Upload your WEBP file on ISHU TOOLS WEBP to PDF tool. Click Run and download the converted PDF. Free, no signup.' },
+    ],
+  },
+  'gif-to-pdf': {
+    title: 'GIF to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert GIF files to PDF online for free. Extract frames or convert animated GIFs to PDF. No signup required. Best free GIF to PDF converter.',
+    keywords: ['gif to pdf', 'convert gif to pdf', 'gif to pdf converter', 'gif to pdf free', 'gif to pdf online', 'ishu gif to pdf', 'animated gif to pdf'],
+    h1: 'GIF to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert GIF to PDF?', answer: 'Upload your GIF file on ISHU TOOLS. Select conversion options and click Run. The PDF will be ready in seconds — completely free.' },
+    ],
+  },
+  'bmp-to-pdf': {
+    title: 'BMP to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert BMP images to PDF online for free. Fast BMP to PDF conversion — no signup, no watermark. Best free BMP to PDF tool.',
+    keywords: ['bmp to pdf', 'convert bmp to pdf', 'bmp to pdf free', 'bitmap to pdf', 'ishu bmp to pdf'],
+    h1: 'BMP to PDF — Free Online Converter',
+    faq: [{ question: 'How to convert BMP to PDF?', answer: 'Upload your BMP image, click Run, and download the PDF. Free and instant on ISHU TOOLS.' }],
+  },
+  'heic-to-pdf': {
+    title: 'HEIC to PDF Converter Online Free — iPhone Photos | ISHU TOOLS',
+    description: 'Convert HEIC photos to PDF online for free. Works with iPhone HEIC/HEIF images. No signup, no watermark. Best free HEIC to PDF converter.',
+    keywords: ['heic to pdf', 'heif to pdf', 'convert heic to pdf', 'iphone photo to pdf', 'heic to pdf free', 'heic to pdf online', 'ishu heic to pdf', 'apple heic converter'],
+    h1: 'HEIC to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert HEIC to PDF?', answer: 'Upload your HEIC/HEIF file from your iPhone or iPad. ISHU TOOLS converts it to PDF instantly — free, no signup.' },
+      { question: 'Does ISHU TOOLS support iPhone HEIC photos?', answer: 'Yes! ISHU TOOLS fully supports HEIC and HEIF images from iPhones, iPads, and other Apple devices.' },
+    ],
+  },
+  'tiff-to-pdf': {
+    title: 'TIFF to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert TIFF images to PDF online for free. High-quality TIFF to PDF conversion — no signup, no watermark. Best free TIFF to PDF converter.',
+    keywords: ['tiff to pdf', 'tif to pdf', 'convert tiff to pdf', 'tiff to pdf free', 'tiff to pdf online', 'ishu tiff to pdf'],
+    h1: 'TIFF to PDF — Free Online Converter',
+    faq: [{ question: 'How to convert TIFF to PDF?', answer: 'Upload your TIFF file on ISHU TOOLS, click Run, and download the converted PDF. Free, instant, no signup.' }],
+  },
+  'pdf-to-tiff': {
+    title: 'PDF to TIFF Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF to TIFF images online for free. High-quality PDF to TIFF export. No signup, no watermark. Best free PDF to TIFF converter.',
+    keywords: ['pdf to tiff', 'pdf to tif', 'convert pdf to tiff', 'pdf to tiff free', 'pdf to tiff online', 'ishu pdf to tiff'],
+    h1: 'PDF to TIFF Converter — Free Online',
+    faq: [{ question: 'How to convert PDF to TIFF?', answer: 'Upload your PDF, click Run, and download the TIFF images. Free on ISHU TOOLS — no signup, no watermark.' }],
+  },
+  'pdf-to-svg': {
+    title: 'PDF to SVG Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF to SVG vector format online for free. Perfect for web and design use. No signup, no watermark. Best free PDF to SVG converter.',
+    keywords: ['pdf to svg', 'convert pdf to svg', 'pdf to vector', 'pdf to svg free', 'pdf to svg online', 'ishu pdf to svg', 'pdf to svg converter'],
+    h1: 'PDF to SVG — Free Online Converter',
+    faq: [{ question: 'How to convert PDF to SVG?', answer: 'Upload your PDF on ISHU TOOLS, click Run, and download the SVG. Free, no signup.' }],
+  },
+  'svg-to-pdf': {
+    title: 'SVG to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert SVG vector files to PDF online for free. Perfect for printing SVG designs. No signup, no watermark. Best free SVG to PDF tool.',
+    keywords: ['svg to pdf', 'convert svg to pdf', 'vector to pdf', 'svg to pdf free', 'svg to pdf online', 'ishu svg to pdf'],
+    h1: 'SVG to PDF — Free Online Converter',
+    faq: [{ question: 'How to convert SVG to PDF?', answer: 'Upload your SVG file, click Run, and download the PDF. Free on ISHU TOOLS.' }],
+  },
+  'pdf-to-rtf': {
+    title: 'PDF to RTF Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF to RTF (Rich Text Format) online for free. Edit PDF content in Word and other editors. No signup. Best free PDF to RTF converter.',
+    keywords: ['pdf to rtf', 'convert pdf to rtf', 'pdf to rich text', 'pdf to rtf free', 'pdf to rtf online', 'ishu pdf to rtf'],
+    h1: 'PDF to RTF Converter — Free Online',
+    faq: [{ question: 'How to convert PDF to RTF?', answer: 'Upload your PDF, click Run, and download the RTF. Free on ISHU TOOLS, no signup.' }],
+  },
+  'rtf-to-pdf': {
+    title: 'RTF to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert RTF (Rich Text Format) to PDF online for free. No signup, no watermark. Best free RTF to PDF converter.',
+    keywords: ['rtf to pdf', 'convert rtf to pdf', 'rich text to pdf', 'rtf to pdf free', 'rtf to pdf online', 'ishu rtf to pdf'],
+    h1: 'RTF to PDF — Free Online Converter',
+    faq: [{ question: 'How to convert RTF to PDF?', answer: 'Upload your RTF file, click Run, and download the PDF. Free on ISHU TOOLS.' }],
+  },
+  'pdf-to-odt': {
+    title: 'PDF to ODT Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF to ODT (OpenDocument Text) online for free. Open your PDF in LibreOffice or OpenOffice. No signup. Best free PDF to ODT converter.',
+    keywords: ['pdf to odt', 'convert pdf to odt', 'pdf to openoffice', 'pdf to libreoffice', 'pdf to odt free', 'ishu pdf to odt'],
+    h1: 'PDF to ODT Converter — Free Online',
+    faq: [{ question: 'How to convert PDF to ODT?', answer: 'Upload your PDF on ISHU TOOLS, click Run, and download the ODT. Free, no signup, works with LibreOffice.' }],
+  },
+  'odt-to-pdf': {
+    title: 'ODT to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert ODT (OpenDocument Text) to PDF online for free. Convert LibreOffice and OpenOffice documents to PDF. No signup. Best free ODT to PDF converter.',
+    keywords: ['odt to pdf', 'convert odt to pdf', 'openoffice to pdf', 'libreoffice to pdf', 'odt to pdf free', 'ishu odt to pdf'],
+    h1: 'ODT to PDF — Free Online Converter',
+    faq: [{ question: 'How to convert ODT to PDF?', answer: 'Upload your ODT file, click Run, and download the PDF. Free on ISHU TOOLS, no signup.' }],
+  },
+  'pdf-to-epub': {
+    title: 'PDF to EPUB Converter Online Free — eBook | ISHU TOOLS',
+    description: 'Convert PDF to EPUB eBook format online for free. Read PDFs on Kindle, Kobo, and other e-readers. No signup. Best free PDF to EPUB converter.',
+    keywords: ['pdf to epub', 'convert pdf to epub', 'pdf to ebook', 'pdf to kindle', 'pdf to epub free', 'pdf to epub online', 'ishu pdf to epub', 'pdf to epub converter'],
+    h1: 'PDF to EPUB — Free Online eBook Converter',
+    faq: [
+      { question: 'How to convert PDF to EPUB?', answer: 'Upload your PDF on ISHU TOOLS PDF to EPUB tool. Click Run and download the EPUB file ready for your e-reader. Free, no signup.' },
+      { question: 'Can I read the converted EPUB on Kindle?', answer: 'The EPUB format is widely supported on Kobo, Apple Books, and most e-readers. For Kindle, you may need to convert EPUB to MOBI format additionally.' },
+    ],
+  },
+  'epub-to-pdf': {
+    title: 'EPUB to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert EPUB eBook files to PDF online for free. Perfect for printing or sharing eBooks. No signup, no watermark. Best free EPUB to PDF converter.',
+    keywords: ['epub to pdf', 'convert epub to pdf', 'ebook to pdf', 'epub to pdf free', 'epub to pdf online', 'ishu epub to pdf', 'epub converter'],
+    h1: 'EPUB to PDF Converter — Free Online',
+    faq: [{ question: 'How to convert EPUB to PDF?', answer: 'Upload your EPUB file, click Run, and download the PDF. Free on ISHU TOOLS, no signup.' }],
+  },
+  'txt-to-pdf': {
+    title: 'TXT to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert TXT text files to PDF online for free. Format and convert plain text to professional PDF documents. No signup. Best free TXT to PDF converter.',
+    keywords: ['txt to pdf', 'text to pdf', 'convert txt to pdf', 'txt to pdf free', 'txt to pdf online', 'plain text to pdf', 'ishu txt to pdf', 'notepad to pdf'],
+    h1: 'TXT to PDF — Free Online Converter',
+    faq: [
+      { question: 'How to convert TXT to PDF?', answer: 'Upload your TXT file on ISHU TOOLS, click Run, and download the PDF. Convert plain text files to formatted PDF documents for free.' },
+    ],
+  },
+  'md-to-pdf': {
+    title: 'Markdown to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert Markdown (.md) files to PDF online for free. Preserve formatting, headings, code blocks, and tables. No signup. Best free Markdown to PDF converter.',
+    keywords: ['markdown to pdf', 'md to pdf', 'convert markdown to pdf', 'markdown pdf converter', 'md to pdf free', 'md to pdf online', '.md to pdf', 'ishu markdown to pdf', 'readme to pdf'],
+    h1: 'Markdown to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert Markdown to PDF?', answer: 'Upload your .md file on ISHU TOOLS, click Run, and download the PDF. Formatting, code blocks, headings, and tables are preserved.' },
+      { question: 'Does the PDF preserve Markdown formatting?', answer: 'Yes! Headings, bold, italic, lists, code blocks, tables, and other Markdown elements are accurately rendered in the PDF output.' },
+    ],
+  },
+  'url-to-pdf': {
+    title: 'URL to PDF Converter Online Free — Save Webpage as PDF | ISHU TOOLS',
+    description: 'Convert any webpage URL to PDF online for free. Save websites as PDF documents. No signup, no watermark. Best free URL to PDF / website to PDF converter.',
+    keywords: ['url to pdf', 'website to pdf', 'webpage to pdf', 'convert url to pdf', 'save website as pdf', 'url to pdf free', 'url to pdf online', 'ishu url to pdf', 'web page to pdf', 'html to pdf online'],
+    h1: 'URL to PDF — Save Webpage as PDF Free',
+    faq: [
+      { question: 'How to convert a URL to PDF?', answer: 'Enter the webpage URL in the URL to PDF tool on ISHU TOOLS. Click Run and download the PDF. Save any website as a PDF for free.' },
+      { question: 'Does URL to PDF work for all websites?', answer: 'URL to PDF works for most publicly accessible websites. Pages requiring login or with heavy JavaScript may have limited support.' },
+    ],
+  },
+  'create-pdf': {
+    title: 'Create PDF Online Free — Build PDF from Scratch | ISHU TOOLS',
+    description: 'Create PDF documents online for free. Build PDFs from text, images, and content. No signup, no watermark. Best free online PDF creator.',
+    keywords: ['create pdf', 'make pdf online', 'build pdf', 'create pdf free', 'create pdf online', 'pdf creator online', 'ishu create pdf', 'pdf maker free', 'online pdf creator'],
+    h1: 'Create PDF Online — Free PDF Builder',
+    faq: [
+      { question: 'How to create a PDF online for free?', answer: 'Use ISHU TOOLS Create PDF tool to build a PDF document from text and images. Add your content, format it, and download the PDF instantly — free, no signup.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  PDF PAGE OPERATIONS
+  // ════════════════════════════════════════════════
+  'extract-pages': {
+    title: 'Extract Pages from PDF Free Online | ISHU TOOLS',
+    description: 'Extract specific pages from a PDF online for free. Select page ranges or individual pages to save as a new PDF. No signup. Best free PDF page extractor.',
+    keywords: ['extract pages from pdf', 'pdf page extractor', 'extract pdf pages', 'save pages from pdf', 'extract pages free', 'extract pages online', 'ishu extract pages', 'ishu tools extract pages', 'pdf split pages', 'ilovepdf alternative'],
+    h1: 'Extract Pages from PDF — Free Online',
+    faq: [
+      { question: 'How to extract pages from a PDF?', answer: 'Upload your PDF on ISHU TOOLS Extract Pages tool. Enter the page numbers you want to keep (e.g., 1,3,5-8). Click Run and download the new PDF with only those pages.' },
+      { question: 'Can I extract multiple page ranges?', answer: 'Yes! You can specify individual pages (1,3,7) and ranges (2-5) in any combination to extract exactly the pages you need.' },
+    ],
+  },
+  'delete-pages': {
+    title: 'Delete Pages from PDF Free Online | ISHU TOOLS',
+    description: 'Delete or remove specific pages from a PDF online for free. Select pages to remove and save the rest as a new PDF. No signup. Best free PDF page remover.',
+    keywords: ['delete pages from pdf', 'remove pages from pdf', 'pdf page remover', 'delete pdf pages', 'remove pdf pages free', 'delete pages online', 'ishu delete pages', 'ishu tools delete pages'],
+    h1: 'Delete Pages from PDF — Free Online',
+    faq: [
+      { question: 'How to delete pages from a PDF?', answer: 'Upload your PDF on ISHU TOOLS Delete Pages tool. Enter the page numbers to delete. Click Run and download the PDF with those pages removed.' },
+    ],
+  },
+  'rearrange-pages': {
+    title: 'Rearrange PDF Pages Online Free | ISHU TOOLS',
+    description: 'Rearrange and reorder pages in a PDF online for free. Drag to change page order and save as a new PDF. No signup. Best free PDF page reorder tool.',
+    keywords: ['rearrange pdf pages', 'reorder pdf pages', 'pdf page order', 'rearrange pages free', 'reorder pages online', 'ishu rearrange pages', 'pdf organizer', 'sort pdf pages'],
+    h1: 'Rearrange PDF Pages — Free Online',
+    faq: [
+      { question: 'How to rearrange pages in a PDF?', answer: 'Upload your PDF on ISHU TOOLS Rearrange Pages tool. Enter the new page order and click Run to download the reordered PDF.' },
+    ],
+  },
+  'header-footer-pdf': {
+    title: 'Add Header and Footer to PDF Free Online | ISHU TOOLS',
+    description: 'Add custom headers and footers to PDF files online for free. Customize text, page numbers, date, and position. No signup. Best free PDF header footer tool.',
+    keywords: ['add header to pdf', 'add footer to pdf', 'pdf header footer', 'header footer pdf free', 'add header footer pdf online', 'ishu header footer pdf', 'pdf page header'],
+    h1: 'Add Header and Footer to PDF — Free Online',
+    faq: [
+      { question: 'How to add a header and footer to a PDF?', answer: 'Upload your PDF, enter the header and footer text, customize positioning, and click Run. Download the PDF with your custom headers and footers — free on ISHU TOOLS.' },
+    ],
+  },
+  'add-text-pdf': {
+    title: 'Add Text to PDF Online Free | ISHU TOOLS',
+    description: 'Add text annotations to PDF files online for free. Insert custom text at any position on PDF pages. No signup. Best free add text to PDF tool.',
+    keywords: ['add text to pdf', 'insert text in pdf', 'annotate pdf', 'pdf text editor', 'add text pdf free', 'add text pdf online', 'ishu add text pdf', 'type on pdf free'],
+    h1: 'Add Text to PDF — Free Online',
+    faq: [
+      { question: 'How to add text to a PDF for free?', answer: 'Upload your PDF on ISHU TOOLS Add Text tool. Enter your text and set the position. Click Run to download the PDF with the added text.' },
+    ],
+  },
+  'grayscale-pdf': {
+    title: 'Convert PDF to Grayscale Free Online | ISHU TOOLS',
+    description: 'Convert colored PDF to grayscale/black and white online for free. Reduce PDF file size by removing color. No signup. Best free PDF grayscale converter.',
+    keywords: ['pdf to grayscale', 'grayscale pdf', 'pdf black and white', 'convert pdf to grayscale', 'pdf grayscale free', 'pdf grayscale online', 'ishu grayscale pdf', 'remove color from pdf'],
+    h1: 'Grayscale PDF — Convert to Black & White Free',
+    faq: [
+      { question: 'How to convert a PDF to grayscale?', answer: 'Upload your PDF on ISHU TOOLS Grayscale PDF tool. Click Run and download the black and white PDF — free, no signup.' },
+    ],
+  },
+  'whiteout-pdf': {
+    title: 'Whiteout PDF Online Free — Cover PDF Content | ISHU TOOLS',
+    description: 'Whiteout and cover sections of PDF files online for free. Hide confidential content by painting it white. No signup. Best free PDF whiteout tool.',
+    keywords: ['whiteout pdf', 'pdf whiteout free', 'cover pdf text', 'white out pdf', 'hide pdf content', 'ishu whiteout pdf', 'redact pdf white', 'cover text pdf'],
+    h1: 'Whiteout PDF — Cover PDF Content Free',
+    faq: [
+      { question: 'How to whiteout content in a PDF?', answer: 'Upload your PDF on ISHU TOOLS Whiteout tool. Mark the areas to cover and click Run. The selected areas will be covered with white — perfect for hiding sensitive information.' },
+    ],
+  },
+  'edit-metadata-pdf': {
+    title: 'Edit PDF Metadata Online Free | ISHU TOOLS',
+    description: 'Edit and modify PDF metadata (title, author, subject, keywords) online for free. No signup. Best free PDF metadata editor online.',
+    keywords: ['edit pdf metadata', 'pdf metadata editor', 'change pdf author', 'modify pdf metadata', 'pdf metadata free', 'edit metadata pdf online', 'ishu edit pdf metadata'],
+    h1: 'Edit PDF Metadata — Free Online',
+    faq: [
+      { question: 'How to edit PDF metadata?', answer: 'Upload your PDF on ISHU TOOLS Edit Metadata tool. Change the title, author, subject, and keywords. Click Run and download the updated PDF.' },
+    ],
+  },
+  'remove-metadata-pdf': {
+    title: 'Remove PDF Metadata Online Free | ISHU TOOLS',
+    description: 'Remove all metadata from PDF files online for free. Protect your privacy by stripping author, creation date, and other PDF metadata. No signup.',
+    keywords: ['remove pdf metadata', 'strip pdf metadata', 'delete pdf metadata', 'pdf metadata remover', 'privacy pdf', 'anonymous pdf', 'ishu remove pdf metadata', 'remove pdf information'],
+    h1: 'Remove PDF Metadata — Protect PDF Privacy Free',
+    faq: [
+      { question: 'How to remove metadata from a PDF?', answer: 'Upload your PDF on ISHU TOOLS Remove Metadata tool. Click Run to strip all metadata (author, creation date, software info) from the PDF. Download the clean, private PDF.' },
+    ],
+  },
+  'page-numbers-pdf': {
+    title: 'Add Page Numbers to PDF Free Online | ISHU TOOLS',
+    description: 'Add page numbers to PDF files online for free. Choose position, font, and format. No signup, no watermark. Best free PDF page numbering tool.',
+    keywords: ['add page numbers to pdf', 'pdf page numbers', 'number pdf pages', 'page number pdf free', 'add pagination to pdf', 'ishu page numbers pdf', 'pdf numbering tool'],
+    h1: 'Add Page Numbers to PDF — Free Online',
+    faq: [
+      { question: 'How to add page numbers to a PDF?', answer: 'Upload your PDF on ISHU TOOLS Page Numbers tool. Choose position (bottom center, top right, etc.), font size, and starting number. Click Run to download the numbered PDF.' },
+    ],
+  },
+  'extract-text-pdf': {
+    title: 'Extract Text from PDF Free Online | ISHU TOOLS',
+    description: 'Extract all text content from PDF files online for free. Copy and save text from PDFs without copy protection. No signup. Best free PDF text extractor.',
+    keywords: ['extract text from pdf', 'pdf text extractor', 'copy text from pdf', 'get text from pdf', 'pdf to text', 'extract text pdf free', 'ishu extract text pdf', 'pdf content extractor'],
+    h1: 'Extract Text from PDF — Free Online',
+    faq: [
+      { question: 'How to extract text from a PDF?', answer: 'Upload your PDF on ISHU TOOLS Extract Text tool. Click Run to extract all text content. Copy or download the extracted text — free, no signup.' },
+    ],
+  },
+  'extract-images-pdf': {
+    title: 'Extract Images from PDF Free Online | ISHU TOOLS',
+    description: 'Extract all images from PDF files online for free. Download images embedded in PDF documents as JPG or PNG. No signup. Best free PDF image extractor.',
+    keywords: ['extract images from pdf', 'pdf image extractor', 'get images from pdf', 'download pdf images', 'extract images pdf free', 'ishu extract images pdf', 'save images from pdf'],
+    h1: 'Extract Images from PDF — Free Online',
+    faq: [
+      { question: 'How to extract images from a PDF?', answer: 'Upload your PDF on ISHU TOOLS Extract Images tool. Click Run to extract all embedded images. Download them as JPG or PNG files for free.' },
+    ],
+  },
+  'summarize-pdf': {
+    title: 'Summarize PDF Online Free — AI PDF Summarizer | ISHU TOOLS',
+    description: 'Summarize PDF documents online for free using AI. Get key points and summaries from long PDFs in seconds. No signup. Best free AI PDF summarizer.',
+    keywords: ['summarize pdf', 'pdf summarizer', 'ai pdf summary', 'pdf summary free', 'summarize pdf online', 'ishu summarize pdf', 'pdf key points extractor', 'ai summarize pdf', 'pdf summary generator'],
+    h1: 'AI PDF Summarizer — Summarize PDF Free',
+    faq: [
+      { question: 'How to summarize a PDF using AI?', answer: 'Upload your PDF on ISHU TOOLS AI Summarizer. Click Run to get an AI-generated summary of the key points. Perfect for research papers, reports, and long documents.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  OFFICE SUITE
+  // ════════════════════════════════════════════════
+  'docx-to-pdf': {
+    title: 'DOCX to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert Word DOCX files to PDF online for free. Preserves formatting, fonts, and layout. No signup, no watermark. Best free Word to PDF converter online.',
+    keywords: ['docx to pdf', 'word to pdf', 'convert docx to pdf', 'word document to pdf', 'docx to pdf free', 'docx to pdf online', 'doc to pdf', 'ishu docx to pdf', 'microsoft word to pdf', 'ilovepdf word to pdf', 'smallpdf word to pdf'],
+    h1: 'DOCX to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert Word to PDF for free?', answer: 'Upload your DOCX or DOC file on ISHU TOOLS. Click Run and download the PDF instantly. Formatting, fonts, tables, and images are preserved.' },
+      { question: 'Does ISHU TOOLS preserve Word formatting in PDF?', answer: 'Yes! The DOCX to PDF converter preserves fonts, headings, tables, images, and the overall layout of your Word document.' },
+    ],
+  },
+  'powerpoint-to-pdf': {
+    title: 'PowerPoint to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert PowerPoint PPTX/PPT presentations to PDF online for free. Preserve slides, images, and formatting. No signup. Best free PPT to PDF converter.',
+    keywords: ['powerpoint to pdf', 'pptx to pdf', 'ppt to pdf', 'convert powerpoint to pdf', 'presentation to pdf', 'pptx to pdf free', 'pptx to pdf online', 'ishu powerpoint to pdf', 'slides to pdf', 'ppt converter'],
+    h1: 'PowerPoint to PDF Converter — Free Online',
+    faq: [
+      { question: 'How to convert PowerPoint to PDF?', answer: 'Upload your PPTX or PPT file on ISHU TOOLS. Click Run and download the PDF. All slides are converted with their images and formatting intact.' },
+    ],
+  },
+  'convert-to-pdf': {
+    title: 'Convert Any File to PDF Online Free | ISHU TOOLS',
+    description: 'Convert any document to PDF online for free. Supports Word, Excel, PowerPoint, images, and more. No signup. Best free document to PDF converter.',
+    keywords: ['convert to pdf', 'file to pdf', 'document to pdf', 'convert any file to pdf', 'convert to pdf free', 'file converter to pdf', 'ishu convert to pdf', 'online pdf converter'],
+    h1: 'Convert to PDF — Universal PDF Converter Free',
+    faq: [
+      { question: 'What files can I convert to PDF?', answer: 'ISHU TOOLS supports converting Word, Excel, PowerPoint, images (JPG, PNG, WEBP, GIF), text files, and more to PDF — all free, no signup.' },
+    ],
+  },
+  // ════════════════════════════════════════════════
+  //  IMAGE CORE
+  // ════════════════════════════════════════════════
+  'rotate-image': {
+    title: 'Rotate Image Online Free — Rotate JPG, PNG, WEBP | ISHU TOOLS',
+    description: 'Rotate images online for free. Rotate JPG, PNG, WEBP, and GIF images 90°, 180°, 270°, or custom angle. No signup, no watermark. Best free image rotator.',
+    keywords: ['rotate image', 'rotate photo', 'rotate jpg', 'rotate png', 'rotate image free', 'rotate image online', 'image rotator', 'rotate picture', 'ishu rotate image', 'rotate image 90 degrees', 'flip image', 'turn image'],
+    h1: 'Rotate Image Online — Free Photo Rotator',
+    faq: [
+      { question: 'How to rotate an image online for free?', answer: 'Upload your image on ISHU TOOLS Rotate Image tool. Choose 90°, 180°, or 270° rotation. Click Run and download the rotated image — free, no signup.' },
+      { question: 'Can I rotate multiple images at once?', answer: 'Yes, you can upload and rotate multiple images in one batch. All supported formats (JPG, PNG, WEBP, GIF) can be rotated.' },
+    ],
+  },
+  'convert-to-jpg': {
+    title: 'Convert Image to JPG Online Free | ISHU TOOLS',
+    description: 'Convert any image to JPG/JPEG online for free. Supports PNG, WEBP, GIF, BMP, TIFF, HEIC to JPG. No signup, no watermark. Best free image to JPG converter.',
+    keywords: ['convert to jpg', 'image to jpg', 'png to jpg', 'webp to jpg', 'gif to jpg', 'heic to jpg', 'convert to jpeg', 'image converter to jpg', 'ishu convert to jpg', 'photo to jpg free', 'bulk image to jpg'],
+    h1: 'Convert to JPG — Free Image Converter',
+    faq: [
+      { question: 'How to convert any image to JPG?', answer: 'Upload your image (PNG, WEBP, GIF, HEIC, etc.) on ISHU TOOLS Convert to JPG. Click Run and download the JPG. Free, no signup.' },
+      { question: 'Does conversion to JPG reduce quality?', answer: 'You can choose the output quality level. High quality settings preserve visual fidelity while slightly reducing file size.' },
+    ],
+  },
+  'convert-from-jpg': {
+    title: 'Convert JPG to Other Formats Free Online | ISHU TOOLS',
+    description: 'Convert JPG images to PNG, WEBP, GIF, BMP, and other formats online for free. No signup, no watermark. Best free JPG to PNG and JPG to WEBP converter.',
+    keywords: ['jpg to png', 'jpg to webp', 'jpg to gif', 'convert jpg to png', 'convert from jpg', 'jpeg to png', 'jpg format converter', 'ishu convert from jpg', 'jpg to other formats'],
+    h1: 'Convert from JPG — Free Image Format Converter',
+    faq: [
+      { question: 'How to convert JPG to PNG?', answer: 'Upload your JPG file on ISHU TOOLS Convert from JPG. Select the output format (PNG, WEBP, GIF). Click Run and download the converted image.' },
+    ],
+  },
+  'compress-to-kb': {
+    title: 'Compress Image to Target KB Free Online | ISHU TOOLS',
+    description: 'Compress images to a specific file size in KB online for free. Reduce JPG, PNG to 20KB, 50KB, 100KB, 200KB, or any target. Best free compress image to KB tool.',
+    keywords: ['compress image to kb', 'reduce image to kb', 'compress to 20kb', 'compress to 50kb', 'compress to 100kb', 'image size reducer kb', 'resize image to kb', 'compress jpg to kb', 'ishu compress to kb', 'reduce photo size kb', 'compress image size free', 'pi7 compress kb alternative'],
+    h1: 'Compress Image to Target KB — Free Online',
+    faq: [
+      { question: 'How to compress image to specific KB?', answer: 'Upload your image on ISHU TOOLS Compress to KB tool. Enter your target file size in KB (e.g., 50KB). Click Run — the tool automatically reduces quality until the target size is reached.' },
+      { question: 'Can I compress to exact file sizes like 20KB or 200KB?', answer: 'Yes! You can specify any target KB size. The tool intelligently adjusts quality to hit the target while preserving as much visual quality as possible.' },
+    ],
+  },
+  'html-to-image': {
+    title: 'HTML to Image Converter Online Free | ISHU TOOLS',
+    description: 'Convert HTML code or webpage URL to JPG or PNG image online for free. Screenshot web pages as images. No signup. Best free HTML to image converter.',
+    keywords: ['html to image', 'html to jpg', 'html to png', 'webpage to image', 'url to image', 'convert html to image', 'screenshot webpage', 'html to image free', 'ishu html to image', 'website screenshot free'],
+    h1: 'HTML to Image — Convert Webpage to Image Free',
+    faq: [
+      { question: 'How to convert HTML to image?', answer: 'Enter your HTML code or URL on ISHU TOOLS HTML to Image tool. Select output format (JPG or PNG). Click Run and download the image screenshot.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE LAYOUT & RESIZE
+  // ════════════════════════════════════════════════
+  'resize-image-in-cm': {
+    title: 'Resize Image in Centimeters Online Free | ISHU TOOLS',
+    description: 'Resize images to exact centimeter dimensions online for free. Perfect for print, documents, and official photo requirements. No signup. Best free CM image resizer.',
+    keywords: ['resize image in cm', 'resize image centimeters', 'image size in cm', 'resize photo cm', 'resize image 3.5x4.5cm', 'resize image 4x6cm', 'ishu resize image cm', 'image resize centimeter'],
+    h1: 'Resize Image in CM — Free Online Photo Resizer',
+    faq: [
+      { question: 'How to resize an image to specific centimeter dimensions?', answer: 'Upload your image on ISHU TOOLS Resize in CM. Enter width and height in centimeters. Set DPI for print quality. Click Run and download the resized image.' },
+    ],
+  },
+  'resize-image-in-mm': {
+    title: 'Resize Image in Millimeters Online Free | ISHU TOOLS',
+    description: 'Resize images to exact millimeter dimensions online for free. Perfect for official photos, forms, and printing. No signup. Best free MM image resizer.',
+    keywords: ['resize image in mm', 'resize image millimeters', 'image size mm', 'resize photo mm', 'ishu resize image mm', 'image resize millimeter', 'photo resize mm free'],
+    h1: 'Resize Image in MM — Free Online Photo Resizer',
+    faq: [
+      { question: 'How to resize an image in millimeters?', answer: 'Upload your image on ISHU TOOLS Resize in MM. Enter dimensions in millimeters. Click Run to resize and download.' },
+    ],
+  },
+  'resize-image-in-inch': {
+    title: 'Resize Image in Inches Online Free | ISHU TOOLS',
+    description: 'Resize images to exact inch dimensions online for free. Perfect for US standard photo sizes (4x6, 5x7, 8x10 inch). No signup. Best free inch image resizer.',
+    keywords: ['resize image in inches', 'resize photo inches', 'image size inches', '4x6 inch photo', '5x7 inch photo', '8x10 photo resize', 'ishu resize image inch', 'photo resize inch free'],
+    h1: 'Resize Image in Inches — Free Online Photo Resizer',
+    faq: [
+      { question: 'How to resize image to specific inch dimensions?', answer: 'Upload your image on ISHU TOOLS Resize in Inches. Enter width and height in inches. Set DPI (300 for print quality). Click Run.' },
+    ],
+  },
+  'add-logo-image': {
+    title: 'Add Logo to Image Online Free — Watermark with Logo | ISHU TOOLS',
+    description: 'Add a logo or custom watermark to images online for free. Place your logo on photos with adjustable size, position, and opacity. No signup. Best free logo watermark tool.',
+    keywords: ['add logo to image', 'logo watermark', 'add watermark logo', 'image logo overlay', 'add logo free', 'add logo to photo', 'ishu add logo image', 'logo overlay image', 'brand image with logo', 'watermark with logo'],
+    h1: 'Add Logo to Image — Free Online Watermark Tool',
+    faq: [
+      { question: 'How to add a logo to an image?', answer: 'Upload your base image and logo on ISHU TOOLS. Choose placement (corner, center), adjust size and opacity. Click Run and download the branded image.' },
+    ],
+  },
+  'square-crop-image': {
+    title: 'Square Crop Image Online Free — 1:1 Ratio | ISHU TOOLS',
+    description: 'Crop images to a perfect square online for free. Create 1:1 ratio images for Instagram, profile photos, and social media. No signup. Best free square image crop tool.',
+    keywords: ['square crop image', 'crop image square', '1x1 image crop', 'instagram square crop', 'square photo cropper', 'ishu square crop', 'profile photo square', 'square image free'],
+    h1: 'Square Crop Image — 1:1 Ratio Free Online',
+    faq: [
+      { question: 'How to crop image to square?', answer: 'Upload your image on ISHU TOOLS Square Crop tool. The tool automatically creates a perfect 1:1 square crop. Download for Instagram, profiles, or any square format.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  SOCIAL MEDIA TOOLS
+  // ════════════════════════════════════════════════
+  'instagram-post-resizer': {
+    title: 'Instagram Post Resizer Free Online — Perfect IG Dimensions | ISHU TOOLS',
+    description: 'Resize images for Instagram posts online for free. Get perfect Instagram dimensions (1080x1080, 1080x1350, 1080x566). No signup, no watermark. Best free Instagram image resizer.',
+    keywords: ['instagram post resizer', 'resize for instagram', 'instagram image size', 'instagram photo resize', 'instagram dimensions', '1080x1080 resize', 'instagram post size free', 'ishu instagram resizer', 'social media image resizer', 'instagram square resize'],
+    h1: 'Instagram Post Resizer — Free Online',
+    faq: [
+      { question: 'What are the correct Instagram post dimensions?', answer: 'Instagram supports three main formats: Square 1080x1080px, Portrait 1080x1350px, and Landscape 1080x566px. ISHU TOOLS automatically resizes your image to these perfect dimensions.' },
+      { question: 'How to resize image for Instagram?', answer: 'Upload your image on ISHU TOOLS Instagram Post Resizer. Choose your preferred Instagram format. Click Run and download — ready to upload to Instagram.' },
+    ],
+  },
+  'youtube-thumbnail-maker': {
+    title: 'YouTube Thumbnail Maker Free Online — 1280x720 | ISHU TOOLS',
+    description: 'Create and resize YouTube thumbnails online for free. Perfect 1280x720px YouTube thumbnail dimensions. No signup, no watermark. Best free YouTube thumbnail maker.',
+    keywords: ['youtube thumbnail maker', 'youtube thumbnail size', 'resize youtube thumbnail', 'youtube thumbnail 1280x720', 'youtube thumbnail free', 'youtube thumbnail creator', 'ishu youtube thumbnail', 'yt thumbnail maker', 'youtube thumbnail dimensions'],
+    h1: 'YouTube Thumbnail Maker — Free Online',
+    faq: [
+      { question: 'What is the best YouTube thumbnail size?', answer: 'The recommended YouTube thumbnail size is 1280x720 pixels (16:9 ratio) with a maximum file size of 2MB. ISHU TOOLS creates thumbnails in the exact right dimensions.' },
+      { question: 'How to create a YouTube thumbnail for free?', answer: 'Upload your image on ISHU TOOLS YouTube Thumbnail Maker. The tool resizes it to 1280x720px automatically. Download and upload directly to YouTube.' },
+    ],
+  },
+  'twitter-header-maker': {
+    title: 'Twitter/X Header Maker Free Online — 1500x500 | ISHU TOOLS',
+    description: 'Create and resize Twitter/X banner headers online for free. Perfect 1500x500px Twitter header dimensions. No signup. Best free Twitter banner maker.',
+    keywords: ['twitter header maker', 'twitter banner size', 'x header maker', 'twitter profile banner', 'twitter header 1500x500', 'twitter banner free', 'ishu twitter header', 'social media banner maker', 'x banner creator'],
+    h1: 'Twitter/X Header Maker — Free Online',
+    faq: [
+      { question: 'What is the correct Twitter/X header size?', answer: 'The recommended Twitter/X header size is 1500x500 pixels. ISHU TOOLS resizes your image to this exact size for a perfect Twitter banner.' },
+    ],
+  },
+  'facebook-cover-maker': {
+    title: 'Facebook Cover Photo Maker Free Online | ISHU TOOLS',
+    description: 'Create and resize Facebook cover photos online for free. Perfect 820x312px Facebook cover dimensions. No signup. Best free Facebook cover maker.',
+    keywords: ['facebook cover maker', 'facebook cover photo size', 'facebook banner', 'facebook cover 820x312', 'facebook cover free', 'ishu facebook cover', 'social media cover maker', 'fb cover maker'],
+    h1: 'Facebook Cover Photo Maker — Free Online',
+    faq: [
+      { question: 'What is the correct Facebook cover photo size?', answer: 'The ideal Facebook cover photo size is 820x312 pixels for desktop. ISHU TOOLS resizes your image to these exact dimensions for a perfect Facebook cover.' },
+    ],
+  },
+  'linkedin-banner-maker': {
+    title: 'LinkedIn Banner Maker Free Online | ISHU TOOLS',
+    description: 'Create and resize LinkedIn profile banners online for free. Perfect 1584x396px LinkedIn background dimensions. No signup. Best free LinkedIn banner maker.',
+    keywords: ['linkedin banner maker', 'linkedin background size', 'linkedin profile banner', 'linkedin cover photo', 'linkedin banner free', 'ishu linkedin banner', 'professional linkedin banner', 'linkedin background 1584x396'],
+    h1: 'LinkedIn Banner Maker — Free Online',
+    faq: [
+      { question: 'What is the correct LinkedIn banner size?', answer: 'LinkedIn recommends a background banner size of 1584x396 pixels. ISHU TOOLS creates the perfect LinkedIn banner in the right dimensions.' },
+    ],
+  },
+  'whatsapp-dp-maker': {
+    title: 'WhatsApp DP Maker Free Online — Profile Photo Resizer | ISHU TOOLS',
+    description: 'Resize images for WhatsApp profile photo (DP) online for free. Create perfect circular WhatsApp DP. No signup. Best free WhatsApp DP maker.',
+    keywords: ['whatsapp dp maker', 'whatsapp profile photo', 'whatsapp dp size', 'whatsapp photo resize', 'whatsapp dp free', 'ishu whatsapp dp', 'profile photo resizer', 'wa dp maker', 'whatsapp profile picture size'],
+    h1: 'WhatsApp DP Maker — Free Profile Photo Resizer',
+    faq: [
+      { question: 'How to make a WhatsApp DP for free?', answer: 'Upload your photo on ISHU TOOLS WhatsApp DP Maker. The tool resizes and crops it for the perfect WhatsApp profile photo. Download and set as your DP.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  DEVELOPER TOOLS
+  // ════════════════════════════════════════════════
+  'jwt-decode': {
+    title: 'JWT Decoder Online Free — Decode JSON Web Token | ISHU TOOLS',
+    description: 'Decode and inspect JWT tokens online for free. View header, payload, and signature of JSON Web Tokens. No signup. Best free JWT decoder for developers.',
+    keywords: ['jwt decoder', 'decode jwt', 'jwt token decoder', 'json web token decoder', 'jwt online', 'jwt decode free', 'jwt inspector', 'ishu jwt decoder', 'jwt payload decoder', 'jwt.io alternative', 'debug jwt'],
+    h1: 'JWT Decoder — Decode JSON Web Token Free',
+    faq: [
+      { question: 'How to decode a JWT token?', answer: 'Paste your JWT token in the ISHU TOOLS JWT Decoder. It instantly shows the header, payload, and signature — decoded and formatted. Free, no signup.' },
+      { question: 'Is it safe to decode JWT on ISHU TOOLS?', answer: 'JWT tokens are decoded client-side in your browser. Your tokens are never sent to any server. Perfect for debugging tokens in development.' },
+    ],
+  },
+  'unix-timestamp': {
+    title: 'Unix Timestamp Converter Online Free | ISHU TOOLS',
+    description: 'Convert Unix timestamps to human-readable dates and vice versa online for free. Instant epoch time conversion. No signup. Best free Unix timestamp converter.',
+    keywords: ['unix timestamp converter', 'epoch time converter', 'timestamp to date', 'date to timestamp', 'unix time converter', 'epoch converter free', 'ishu unix timestamp', 'convert epoch to date', 'unix time online'],
+    h1: 'Unix Timestamp Converter — Free Online',
+    faq: [
+      { question: 'How to convert a Unix timestamp to a date?', answer: 'Enter the Unix timestamp in the ISHU TOOLS converter. Click Run to see the human-readable date and time in multiple formats — UTC, local, ISO 8601.' },
+      { question: 'What is a Unix timestamp?', answer: 'A Unix timestamp is the number of seconds since January 1, 1970 (UTC). It\'s widely used in programming, APIs, and databases to represent points in time.' },
+    ],
+  },
+  'json-to-yaml': {
+    title: 'JSON to YAML Converter Online Free | ISHU TOOLS',
+    description: 'Convert JSON to YAML online for free. Instant, accurate JSON to YAML transformation. No signup. Best free JSON to YAML converter for developers.',
+    keywords: ['json to yaml', 'convert json to yaml', 'json yaml converter', 'json to yml', 'json to yaml free', 'json to yaml online', 'ishu json to yaml', 'developer tools', 'config converter'],
+    h1: 'JSON to YAML Converter — Free Online',
+    faq: [
+      { question: 'How to convert JSON to YAML?', answer: 'Paste your JSON in the ISHU TOOLS JSON to YAML converter. Click Run to get the YAML output instantly. Copy or download the result — free, no signup.' },
+    ],
+  },
+  'yaml-to-json': {
+    title: 'YAML to JSON Converter Online Free | ISHU TOOLS',
+    description: 'Convert YAML to JSON online for free. Instant, accurate YAML to JSON transformation. No signup. Best free YAML to JSON converter for developers.',
+    keywords: ['yaml to json', 'convert yaml to json', 'yaml json converter', 'yml to json', 'yaml to json free', 'yaml to json online', 'ishu yaml to json', 'developer tools'],
+    h1: 'YAML to JSON Converter — Free Online',
+    faq: [
+      { question: 'How to convert YAML to JSON?', answer: 'Paste your YAML in the ISHU TOOLS YAML to JSON converter. Click Run to get JSON output instantly — free, no signup.' },
+    ],
+  },
+  'json-minifier': {
+    title: 'JSON Minifier Online Free — Compress JSON | ISHU TOOLS',
+    description: 'Minify and compress JSON online for free. Remove whitespace and reduce JSON file size for production. No signup. Best free JSON minifier for developers.',
+    keywords: ['json minifier', 'minify json', 'compress json', 'json compress free', 'json minify online', 'ishu json minifier', 'uglify json', 'json size reducer'],
+    h1: 'JSON Minifier — Compress JSON Free Online',
+    faq: [
+      { question: 'How to minify JSON online?', answer: 'Paste your JSON in ISHU TOOLS JSON Minifier. Click Run to remove all whitespace and compress the JSON. Copy or download the minified output.' },
+    ],
+  },
+  'minify-css': {
+    title: 'CSS Minifier Online Free — Compress CSS | ISHU TOOLS',
+    description: 'Minify and compress CSS code online for free. Reduce CSS file size for faster website loading. No signup. Best free CSS minifier for web developers.',
+    keywords: ['css minifier', 'minify css', 'compress css', 'css compress online', 'css minify free', 'ishu css minifier', 'uglify css', 'css size reducer', 'optimize css'],
+    h1: 'CSS Minifier — Compress CSS Free Online',
+    faq: [
+      { question: 'How to minify CSS online for free?', answer: 'Paste your CSS code in ISHU TOOLS CSS Minifier. Click Run to compress it — removes comments, spaces, and newlines. Copy the minified CSS for production.' },
+    ],
+  },
+  'minify-js': {
+    title: 'JavaScript Minifier Online Free — Compress JS | ISHU TOOLS',
+    description: 'Minify and compress JavaScript code online for free. Reduce JS file size for faster page load. No signup. Best free JavaScript minifier for developers.',
+    keywords: ['javascript minifier', 'js minifier', 'minify javascript', 'compress js', 'js minify online', 'javascript compress free', 'ishu js minifier', 'uglify javascript', 'minimize js'],
+    h1: 'JavaScript Minifier — Compress JS Free Online',
+    faq: [
+      { question: 'How to minify JavaScript online?', answer: 'Paste your JavaScript in ISHU TOOLS JS Minifier. Click Run to compress and minify the code. Copy the minified output for production deployment.' },
+    ],
+  },
+  'minify-html': {
+    title: 'HTML Minifier Online Free — Compress HTML | ISHU TOOLS',
+    description: 'Minify and compress HTML code online for free. Reduce HTML file size by removing whitespace and comments. No signup. Best free HTML minifier.',
+    keywords: ['html minifier', 'minify html', 'compress html', 'html compress online', 'html minify free', 'ishu html minifier', 'uglify html', 'optimize html'],
+    h1: 'HTML Minifier — Compress HTML Free Online',
+    faq: [
+      { question: 'How to minify HTML?', answer: 'Paste your HTML code in ISHU TOOLS HTML Minifier. Click Run to remove whitespace, comments, and unnecessary characters. Copy the compressed HTML.' },
+    ],
+  },
+  'sql-formatter': {
+    title: 'SQL Formatter & Beautifier Online Free | ISHU TOOLS',
+    description: 'Format and beautify SQL queries online for free. Make SQL readable with proper indentation and styling. No signup. Best free SQL formatter for developers.',
+    keywords: ['sql formatter', 'sql beautifier', 'format sql', 'sql pretty print', 'sql format online', 'sql formatter free', 'ishu sql formatter', 'sql query formatter', 'prettify sql'],
+    h1: 'SQL Formatter — Beautify SQL Free Online',
+    faq: [
+      { question: 'How to format SQL queries online?', answer: 'Paste your SQL query in ISHU TOOLS SQL Formatter. Click Run to format it with proper indentation and keywords. Copy the formatted SQL.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  HASH & CRYPTO
+  // ════════════════════════════════════════════════
+  'md5-hash': {
+    title: 'MD5 Hash Generator Online Free | ISHU TOOLS',
+    description: 'Generate MD5 hash from text or files online for free. Fast, accurate MD5 checksum calculation. No signup. Best free MD5 generator for developers.',
+    keywords: ['md5 generator', 'md5 hash', 'generate md5', 'md5 checksum', 'md5 hash free', 'md5 online', 'ishu md5 generator', 'md5 hash calculator', 'file md5 hash'],
+    h1: 'MD5 Hash Generator — Free Online',
+    faq: [
+      { question: 'How to generate an MD5 hash?', answer: 'Enter your text or upload a file in ISHU TOOLS MD5 Generator. Click Run to get the MD5 hash instantly. Free, no signup.' },
+      { question: 'What is MD5 used for?', answer: 'MD5 is used for checksums, data integrity verification, and file fingerprinting. Note: MD5 is not recommended for cryptographic security — use SHA-256 for that.' },
+    ],
+  },
+  'sha256-hash': {
+    title: 'SHA-256 Hash Generator Online Free | ISHU TOOLS',
+    description: 'Generate SHA-256 hash from text or files online for free. Secure cryptographic hash generation. No signup. Best free SHA-256 generator.',
+    keywords: ['sha256 generator', 'sha-256 hash', 'generate sha256', 'sha256 checksum', 'sha256 free', 'sha256 online', 'ishu sha256', 'sha256 hash calculator', 'secure hash generator'],
+    h1: 'SHA-256 Hash Generator — Free Online',
+    faq: [
+      { question: 'How to generate SHA-256 hash?', answer: 'Enter your text in ISHU TOOLS SHA-256 Generator. Click Run to get the secure hash instantly. Perfect for data integrity verification and cryptography.' },
+    ],
+  },
+  'sha512-hash': {
+    title: 'SHA-512 Hash Generator Online Free | ISHU TOOLS',
+    description: 'Generate SHA-512 hash from text or files online for free. Most secure hash algorithm for data integrity. No signup. Best free SHA-512 generator.',
+    keywords: ['sha512 generator', 'sha-512 hash', 'generate sha512', 'sha512 free', 'sha512 online', 'ishu sha512', 'sha512 hash calculator', 'secure hash 512'],
+    h1: 'SHA-512 Hash Generator — Free Online',
+    faq: [
+      { question: 'How to generate SHA-512 hash?', answer: 'Enter your text in ISHU TOOLS SHA-512 Generator. Click Run for the SHA-512 hash — stronger than MD5 and SHA-256.' },
+    ],
+  },
+  'bcrypt-hash': {
+    title: 'BCrypt Hash Generator Online Free | ISHU TOOLS',
+    description: 'Generate BCrypt password hashes online for free. Secure password hashing with adjustable cost factor. No signup. Best free BCrypt generator for developers.',
+    keywords: ['bcrypt generator', 'bcrypt hash', 'generate bcrypt', 'password hash', 'bcrypt free', 'bcrypt online', 'ishu bcrypt', 'secure password hashing', 'bcrypt cost factor'],
+    h1: 'BCrypt Hash Generator — Free Online',
+    faq: [
+      { question: 'How to generate a BCrypt hash?', answer: 'Enter your password in ISHU TOOLS BCrypt Generator. Choose the cost factor (10-14 recommended). Click Run for the secure BCrypt hash.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  COLOR TOOLS
+  // ════════════════════════════════════════════════
+  'rgb-to-hex': {
+    title: 'RGB to HEX Color Converter Online Free | ISHU TOOLS',
+    description: 'Convert RGB color values to HEX color codes online for free. Instant, accurate RGB to HEX conversion. No signup. Best free RGB to HEX converter for designers.',
+    keywords: ['rgb to hex', 'rgb to hex converter', 'convert rgb to hex', 'color converter', 'rgb hex code', 'rgb to hex free', 'ishu rgb to hex', 'color code converter', 'rgb to hexadecimal'],
+    h1: 'RGB to HEX Color Converter — Free Online',
+    faq: [
+      { question: 'How to convert RGB to HEX?', answer: 'Enter your RGB values (0-255 for each channel) in ISHU TOOLS RGB to HEX converter. Click Run to get the HEX color code instantly.' },
+    ],
+  },
+  'rgb-to-hsl': {
+    title: 'RGB to HSL Color Converter Online Free | ISHU TOOLS',
+    description: 'Convert RGB color values to HSL (Hue, Saturation, Lightness) online for free. Accurate color conversion. No signup. Best free RGB to HSL converter.',
+    keywords: ['rgb to hsl', 'rgb to hsl converter', 'convert rgb to hsl', 'hsl color converter', 'ishu rgb to hsl', 'color code hsl', 'rgb hsl conversion'],
+    h1: 'RGB to HSL Converter — Free Online',
+    faq: [
+      { question: 'How to convert RGB to HSL?', answer: 'Enter your RGB values in ISHU TOOLS RGB to HSL converter. Get the Hue (0-360°), Saturation (0-100%), and Lightness (0-100%) values instantly.' },
+    ],
+  },
+  'color-palette-generator': {
+    title: 'Color Palette Generator Online Free | ISHU TOOLS',
+    description: 'Generate beautiful color palettes online for free. Create complementary, analogous, and triadic color schemes. No signup. Best free color palette generator for designers.',
+    keywords: ['color palette generator', 'color scheme generator', 'generate color palette', 'color palette free', 'color palette online', 'ishu color palette', 'complementary colors', 'color scheme maker', 'design color palette'],
+    h1: 'Color Palette Generator — Free Online',
+    faq: [
+      { question: 'How to generate a color palette?', answer: 'Enter a base color in ISHU TOOLS Color Palette Generator. Select the palette type (complementary, analogous, triadic). Click Run to generate a beautiful matching palette.' },
+    ],
+  },
+  'color-contrast-checker': {
+    title: 'Color Contrast Checker Online Free — WCAG | ISHU TOOLS',
+    description: 'Check color contrast ratios online for free. Verify WCAG 2.1 accessibility compliance for text and background colors. No signup. Best free color contrast checker.',
+    keywords: ['color contrast checker', 'wcag contrast checker', 'color accessibility checker', 'contrast ratio tool', 'color contrast free', 'ishu color contrast', 'accessibility color check', 'web accessibility colors', 'wcag aa aaa compliance'],
+    h1: 'Color Contrast Checker — WCAG Accessibility Free',
+    faq: [
+      { question: 'How to check color contrast for accessibility?', answer: 'Enter foreground and background colors in ISHU TOOLS Color Contrast Checker. It instantly shows the contrast ratio and WCAG AA/AAA compliance status.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  MATH TOOLS
+  // ════════════════════════════════════════════════
+  'average-calculator': {
+    title: 'Average Calculator Online Free — Mean, Median, Mode | ISHU TOOLS',
+    description: 'Calculate average (mean), median, and mode online for free. Handles any set of numbers. No signup. Best free average calculator for students and math.',
+    keywords: ['average calculator', 'mean calculator', 'median calculator', 'mode calculator', 'calculate average free', 'average online', 'ishu average calculator', 'statistics calculator', 'mean median mode free'],
+    h1: 'Average Calculator — Mean, Median, Mode Free',
+    faq: [
+      { question: 'How to calculate average online?', answer: 'Enter your numbers (separated by commas or newlines) in ISHU TOOLS Average Calculator. Click Run to get mean, median, mode, and range instantly.' },
+    ],
+  },
+  'salary-calculator': {
+    title: 'Salary Calculator Online Free — Take-Home Pay | ISHU TOOLS',
+    description: 'Calculate net salary and take-home pay online for free. India salary calculator with tax deductions. No signup. Best free salary calculator for employees.',
+    keywords: ['salary calculator', 'take home pay calculator', 'net salary calculator', 'salary after tax', 'monthly salary calculator', 'ishu salary calculator', 'india salary calculator', 'ctc to inhand calculator', 'salary breakdown calculator'],
+    h1: 'Salary Calculator — Take-Home Pay Free',
+    faq: [
+      { question: 'How to calculate net salary?', answer: 'Enter your gross salary, tax deductions, and allowances in ISHU TOOLS Salary Calculator. Click Run to see your net take-home pay breakdown.' },
+    ],
+  },
+  'fuel-cost-calculator': {
+    title: 'Fuel Cost Calculator Online Free — Trip Cost | ISHU TOOLS',
+    description: 'Calculate fuel cost for any trip online for free. Enter distance, fuel efficiency, and price per liter. No signup. Best free fuel cost calculator for India.',
+    keywords: ['fuel cost calculator', 'trip cost calculator', 'petrol cost calculator', 'diesel cost calculator', 'fuel expense calculator', 'ishu fuel calculator', 'travel cost calculator', 'fuel mileage calculator', 'petrol calculator india'],
+    h1: 'Fuel Cost Calculator — Trip Cost Free',
+    faq: [
+      { question: 'How to calculate fuel cost for a trip?', answer: 'Enter distance (km), fuel efficiency (km/L), and fuel price (₹/L) in ISHU TOOLS Fuel Cost Calculator. Click Run to get the total trip fuel cost.' },
+    ],
+  },
+  'electricity-bill-calculator': {
+    title: 'Electricity Bill Calculator Online Free — India | ISHU TOOLS',
+    description: 'Calculate electricity bill online for free. Enter units consumed and tariff rate. No signup. Best free electricity bill estimator for India.',
+    keywords: ['electricity bill calculator', 'electric bill calculator', 'units to rupees calculator', 'electricity cost calculator', 'power bill estimator', 'ishu electricity calculator', 'monthly electricity bill india', 'kwh calculator india'],
+    h1: 'Electricity Bill Calculator — Free Online India',
+    faq: [
+      { question: 'How to calculate electricity bill?', answer: 'Enter units consumed and rate per unit in ISHU TOOLS Electricity Bill Calculator. Click Run to get the estimated monthly electricity bill.' },
+    ],
+  },
+  'speed-distance-time': {
+    title: 'Speed Distance Time Calculator Online Free | ISHU TOOLS',
+    description: 'Calculate speed, distance, or time online for free. Use the SDT formula for physics problems. No signup. Best free speed distance time calculator for students.',
+    keywords: ['speed distance time calculator', 'sdt calculator', 'calculate speed', 'calculate distance', 'calculate time', 'physics calculator', 'ishu speed calculator', 'speed formula calculator', 'distance time calculator'],
+    h1: 'Speed Distance Time Calculator — Free Online',
+    faq: [
+      { question: 'How to calculate speed, distance, or time?', answer: 'Enter any two values in ISHU TOOLS Speed Distance Time Calculator. Click Run to calculate the third. Perfect for physics problems and travel planning.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  OCR & VISION
+  // ════════════════════════════════════════════════
+  'jpg-to-text': {
+    title: 'JPG to Text OCR Online Free — Extract Text from Image | ISHU TOOLS',
+    description: 'Extract text from JPG images using OCR online for free. Convert image text to editable text. No signup. Best free JPG to text OCR tool.',
+    keywords: ['jpg to text', 'image to text', 'ocr jpg', 'extract text from jpg', 'jpg ocr free', 'photo to text', 'ishu jpg to text', 'jpeg to text', 'picture to text', 'ocr online free'],
+    h1: 'JPG to Text — Free OCR Online',
+    faq: [
+      { question: 'How to extract text from JPG image?', answer: 'Upload your JPG image on ISHU TOOLS JPG to Text. Click Run to extract all text using OCR. Copy the extracted text — free, no signup.' },
+      { question: 'What languages does the OCR support?', answer: 'ISHU TOOLS OCR supports English and major international languages. For best accuracy, use clear, high-resolution images with good contrast.' },
+    ],
+  },
+  'png-to-text': {
+    title: 'PNG to Text OCR Online Free — Extract Text from PNG | ISHU TOOLS',
+    description: 'Extract text from PNG images using OCR online for free. Convert PNG screenshots to editable text. No signup. Best free PNG to text OCR.',
+    keywords: ['png to text', 'image to text png', 'ocr png', 'extract text from png', 'png ocr free', 'screenshot to text', 'ishu png to text', 'ocr screenshot free'],
+    h1: 'PNG to Text — Free OCR Online',
+    faq: [
+      { question: 'How to extract text from PNG?', answer: 'Upload your PNG image on ISHU TOOLS PNG to Text. Click Run to get the extracted text using OCR. Perfect for screenshots, scanned documents, and image text.' },
+    ],
+  },
+  'pdf-ocr': {
+    title: 'PDF OCR Online Free — Make PDF Searchable | ISHU TOOLS',
+    description: 'Perform OCR on PDF files online for free. Convert scanned PDFs to searchable and selectable text. No signup. Best free PDF OCR tool.',
+    keywords: ['pdf ocr', 'ocr pdf', 'scanned pdf to text', 'searchable pdf', 'pdf text recognition', 'pdf ocr free', 'ishu pdf ocr', 'make pdf searchable', 'optical character recognition pdf'],
+    h1: 'PDF OCR — Make Scanned PDF Searchable Free',
+    faq: [
+      { question: 'How to perform OCR on a PDF?', answer: 'Upload your scanned PDF on ISHU TOOLS PDF OCR. Click Run to convert it to a searchable, text-selectable PDF. Download the OCR-processed PDF for free.' },
+    ],
+  },
+  'blur-background': {
+    title: 'Blur Background Online Free — Portrait Effect | ISHU TOOLS',
+    description: 'Blur image backgrounds online for free. Create professional portrait bokeh effects. No signup. Best free background blur tool for photos.',
+    keywords: ['blur background', 'blur image background', 'background blur free', 'blur background photo', 'bokeh effect', 'portrait blur', 'ishu blur background', 'photo background blur', 'remove sharp background'],
+    h1: 'Blur Background — Free Online Portrait Effect',
+    faq: [
+      { question: 'How to blur image background online?', answer: 'Upload your photo on ISHU TOOLS Blur Background. The tool detects the subject and blurs the background. Adjust blur intensity. Click Run and download.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  UNIT CONVERTERS
+  // ════════════════════════════════════════════════
+  'data-storage-converter': {
+    title: 'Data Storage Converter Online Free — Bytes, KB, MB, GB | ISHU TOOLS',
+    description: 'Convert between bytes, KB, MB, GB, TB online for free. Instant data storage unit conversion. No signup. Best free data storage size converter.',
+    keywords: ['data storage converter', 'bytes to kb', 'kb to mb', 'mb to gb', 'gb to tb', 'file size converter', 'data unit converter free', 'ishu data converter', 'storage size calculator'],
+    h1: 'Data Storage Converter — Bytes, KB, MB, GB Free',
+    faq: [
+      { question: 'How to convert bytes to KB or MB?', answer: 'Enter the value and select the source unit in ISHU TOOLS Data Storage Converter. Choose the target unit and click Run to get the conversion instantly.' },
+    ],
+  },
+  'volume-converter': {
+    title: 'Volume Converter Online Free — Liters, Gallons, ML | ISHU TOOLS',
+    description: 'Convert between volume units online for free. Liters, milliliters, gallons, quarts, pints, cups, fluid ounces. No signup. Best free volume unit converter.',
+    keywords: ['volume converter', 'liters to gallons', 'ml to liters', 'volume unit converter', 'liquid converter', 'volume conversion free', 'ishu volume converter', 'metric imperial volume'],
+    h1: 'Volume Converter — Free Online Unit Converter',
+    faq: [
+      { question: 'How to convert liters to gallons?', answer: 'Enter the value in ISHU TOOLS Volume Converter. Select liters as input and gallons as output. Click Run for instant conversion.' },
+    ],
+  },
+  'energy-converter': {
+    title: 'Energy Converter Online Free — Joules, Calories, kWh | ISHU TOOLS',
+    description: 'Convert between energy units online for free. Joules, calories, kilocalories, kWh, BTU. No signup. Best free energy unit converter.',
+    keywords: ['energy converter', 'joules to calories', 'calories to joules', 'kwh converter', 'energy unit converter free', 'ishu energy converter', 'calorie converter'],
+    h1: 'Energy Converter — Free Online Unit Converter',
+    faq: [
+      { question: 'How to convert joules to calories?', answer: 'Enter the value in ISHU TOOLS Energy Converter. Select joules as input and calories as output. Click Run for instant conversion.' },
+    ],
+  },
+  'pressure-converter': {
+    title: 'Pressure Converter Online Free — PSI, Bar, Pascal | ISHU TOOLS',
+    description: 'Convert between pressure units online for free. PSI, bar, pascal, atm, torr. No signup. Best free pressure unit converter.',
+    keywords: ['pressure converter', 'psi to bar', 'bar to psi', 'pascal converter', 'pressure unit converter free', 'ishu pressure converter', 'atm to bar'],
+    h1: 'Pressure Converter — Free Online Unit Converter',
+    faq: [
+      { question: 'How to convert PSI to bar?', answer: 'Enter the PSI value in ISHU TOOLS Pressure Converter. Select PSI as input and bar as output. Click Run for instant conversion.' },
+    ],
+  },
+  'data-size-converter': {
+    title: 'Data Size Converter Online Free | ISHU TOOLS',
+    description: 'Convert between digital data sizes online for free. Bytes, KB, MB, GB, TB, PB, and binary units. No signup. Best free data size converter.',
+    keywords: ['data size converter', 'file size converter', 'bytes kb mb gb', 'data conversion online', 'ishu data size converter', 'storage unit converter'],
+    h1: 'Data Size Converter — Free Online',
+    faq: [
+      { question: 'How to convert between data sizes?', answer: 'Enter the value and select source/target units in ISHU TOOLS Data Size Converter. Click Run for instant conversion between bytes, KB, MB, GB, and more.' },
+    ],
+  },
+  'speed-converter': {
+    title: 'Speed Converter Online Free — mph, kmh, m/s | ISHU TOOLS',
+    description: 'Convert between speed units online for free. mph, km/h, m/s, knots. No signup. Best free speed unit converter.',
+    keywords: ['speed converter', 'mph to kmh', 'kmh to mph', 'speed unit converter', 'velocity converter', 'ishu speed converter', 'miles per hour to km'],
+    h1: 'Speed Converter — Free Online Unit Converter',
+    faq: [
+      { question: 'How to convert mph to kmh?', answer: 'Enter the speed in ISHU TOOLS Speed Converter. Select mph as input and km/h as output. Click Run for instant conversion.' },
+    ],
+  },
+  'area-converter': {
+    title: 'Area Converter Online Free — sq ft, sq m, acres | ISHU TOOLS',
+    description: 'Convert between area units online for free. Square feet, square meters, acres, hectares, sq km. No signup. Best free area converter for real estate.',
+    keywords: ['area converter', 'sq ft to sq m', 'square feet to square meters', 'acres to hectares', 'area unit converter free', 'ishu area converter', 'land area converter india'],
+    h1: 'Area Converter — Free Online Unit Converter',
+    faq: [
+      { question: 'How to convert square feet to square meters?', answer: 'Enter the area in ISHU TOOLS Area Converter. Select sq ft as input and sq m as output. Click Run for instant conversion.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE ENHANCE
+  // ════════════════════════════════════════════════
+  'contrast-image': {
+    title: 'Adjust Image Contrast Online Free | ISHU TOOLS',
+    description: 'Adjust and enhance image contrast online for free. Increase or decrease contrast of JPG, PNG images. No signup. Best free image contrast adjuster.',
+    keywords: ['adjust image contrast', 'increase contrast image', 'image contrast free', 'contrast image online', 'ishu contrast image', 'enhance photo contrast'],
+    h1: 'Image Contrast Adjuster — Free Online',
+    faq: [{ question: 'How to adjust image contrast?', answer: 'Upload your image on ISHU TOOLS Contrast tool. Use the slider to increase or decrease contrast. Click Run and download the enhanced image.' }],
+  },
+  'check-image-dpi': {
+    title: 'Check Image DPI Online Free — DPI Checker | ISHU TOOLS',
+    description: 'Check and verify image DPI (dots per inch) resolution online for free. Perfect for print preparation. No signup. Best free DPI checker.',
+    keywords: ['check image dpi', 'dpi checker', 'image resolution checker', 'dpi of image', 'image dpi free', 'ishu dpi checker', 'print dpi checker', 'image resolution tool'],
+    h1: 'Image DPI Checker — Check Resolution Free',
+    faq: [
+      { question: 'How to check image DPI?', answer: 'Upload your image on ISHU TOOLS DPI Checker. Click Run to instantly see the DPI (dots per inch) resolution — essential for print and professional publishing.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  SEO TOOLS
+  // ════════════════════════════════════════════════
+  'readability-score': {
+    title: 'Readability Score Checker Online Free | ISHU TOOLS',
+    description: 'Check content readability score online for free. Get Flesch-Kincaid and Gunning Fog reading level scores. No signup. Best free readability analyzer.',
+    keywords: ['readability score', 'readability checker', 'reading level checker', 'flesch kincaid score', 'content readability', 'ishu readability', 'text reading level', 'seo readability tool'],
+    h1: 'Readability Score Checker — Free Online',
+    faq: [
+      { question: 'How to check text readability?', answer: 'Paste your content in ISHU TOOLS Readability Checker. Click Run to get Flesch-Kincaid score, grade level, and reading time — perfect for SEO content optimization.' },
+    ],
+  },
+  'open-graph-generator': {
+    title: 'Open Graph Meta Tag Generator Free Online | ISHU TOOLS',
+    description: 'Generate Open Graph meta tags for your website online for free. Optimize social media sharing previews for Facebook, Twitter, LinkedIn. No signup.',
+    keywords: ['open graph generator', 'og meta tags', 'social media meta tags', 'open graph free', 'og image generator', 'ishu open graph', 'facebook meta tags', 'twitter card generator'],
+    h1: 'Open Graph Meta Tag Generator — Free Online',
+    faq: [
+      { question: 'How to generate Open Graph meta tags?', answer: 'Enter your page title, description, image URL, and type in ISHU TOOLS Open Graph Generator. Click Run to get the HTML meta tags ready to paste into your website.' },
+    ],
+  },
+  'character-counter': {
+    title: 'Character Counter Online Free — Count Chars & Words | ISHU TOOLS',
+    description: 'Count characters, words, sentences, and paragraphs online for free. Real-time character count with and without spaces. No signup. Best free character counter.',
+    keywords: ['character counter', 'count characters', 'word counter', 'letter counter', 'character count free', 'character counter online', 'ishu character counter', 'text length checker', 'string length counter'],
+    h1: 'Character Counter — Count Characters & Words Free',
+    faq: [
+      { question: 'How to count characters in text?', answer: 'Paste your text in ISHU TOOLS Character Counter. It instantly shows character count (with and without spaces), word count, sentence count, and reading time.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  BATCH & DATA TOOLS
+  // ════════════════════════════════════════════════
+  'csv-to-json': {
+    title: 'CSV to JSON Converter Online Free | ISHU TOOLS',
+    description: 'Convert CSV files to JSON online for free. Instant, accurate CSV to JSON transformation. No signup. Best free CSV to JSON converter for developers.',
+    keywords: ['csv to json', 'convert csv to json', 'csv json converter', 'csv to json free', 'csv to json online', 'ishu csv to json', 'spreadsheet to json'],
+    h1: 'CSV to JSON Converter — Free Online',
+    faq: [
+      { question: 'How to convert CSV to JSON?', answer: 'Upload your CSV file or paste CSV data in ISHU TOOLS. Click Run to convert to JSON. Copy or download the JSON output — free, no signup.' },
+    ],
+  },
+  'json-to-csv': {
+    title: 'JSON to CSV Converter Online Free | ISHU TOOLS',
+    description: 'Convert JSON to CSV spreadsheet format online for free. Flatten JSON arrays to CSV. No signup. Best free JSON to CSV converter.',
+    keywords: ['json to csv', 'convert json to csv', 'json csv converter', 'json to csv free', 'json to spreadsheet', 'ishu json to csv'],
+    h1: 'JSON to CSV Converter — Free Online',
+    faq: [
+      { question: 'How to convert JSON to CSV?', answer: 'Paste your JSON data in ISHU TOOLS JSON to CSV converter. Click Run to get the CSV spreadsheet. Download for Excel, Google Sheets, or any CSV-compatible app.' },
+    ],
+  },
+  'pdf-to-csv': {
+    title: 'PDF to CSV Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF tables to CSV format online for free. Extract tabular data from PDFs to CSV. No signup. Best free PDF to CSV converter.',
+    keywords: ['pdf to csv', 'convert pdf to csv', 'pdf table to csv', 'pdf data to csv', 'pdf to csv free', 'ishu pdf to csv', 'extract table from pdf'],
+    h1: 'PDF to CSV Converter — Free Online',
+    faq: [
+      { question: 'How to convert PDF to CSV?', answer: 'Upload your PDF with tables on ISHU TOOLS PDF to CSV. Click Run to extract the table data as CSV. Download and open in Excel or Google Sheets.' },
+    ],
+  },
+  'pdf-to-markdown': {
+    title: 'PDF to Markdown Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF documents to Markdown format online for free. Perfect for documentation and static site generators. No signup. Best free PDF to Markdown converter.',
+    keywords: ['pdf to markdown', 'pdf to md', 'convert pdf to markdown', 'pdf markdown converter', 'pdf to md free', 'ishu pdf to markdown', 'pdf to docs'],
+    h1: 'PDF to Markdown — Free Online Converter',
+    faq: [{ question: 'How to convert PDF to Markdown?', answer: 'Upload your PDF on ISHU TOOLS PDF to Markdown. Click Run to get the Markdown text. Perfect for GitHub README files, documentation, and static sites.' }],
+  },
+  'merge-text-files': {
+    title: 'Merge Text Files Online Free | ISHU TOOLS',
+    description: 'Merge multiple text files into one online for free. Combine TXT files in order. No signup. Best free text file merger.',
+    keywords: ['merge text files', 'combine text files', 'merge txt files', 'join text files', 'merge text free', 'ishu merge text files'],
+    h1: 'Merge Text Files — Free Online',
+    faq: [{ question: 'How to merge text files?', answer: 'Upload multiple TXT files on ISHU TOOLS Merge Text Files. Arrange the order and click Run. Download the combined text file — free, no signup.' }],
+  },
+
+  // ════════════════════════════════════════════════
+  //  STUDENT & UTILITY TOOLS
+  // ════════════════════════════════════════════════
+  'number-base-converter': {
+    title: 'Number Base Converter Online Free — Binary, Hex, Decimal | ISHU TOOLS',
+    description: 'Convert between number bases online for free. Binary, decimal, hexadecimal, octal conversion. No signup. Best free number base converter for CS students.',
+    keywords: ['number base converter', 'binary to decimal', 'decimal to binary', 'hex converter', 'octal converter', 'number system converter', 'ishu number base', 'binary hex decimal octal converter'],
+    h1: 'Number Base Converter — Binary, Hex, Decimal Free',
+    faq: [
+      { question: 'How to convert binary to decimal?', answer: 'Enter the binary number in ISHU TOOLS Number Base Converter. Select binary as input and decimal as output. Click Run for instant conversion.' },
+      { question: 'What number bases does the converter support?', answer: 'The converter supports binary (base-2), octal (base-8), decimal (base-10), hexadecimal (base-16), and any custom base between 2 and 36.' },
+    ],
+  },
+  'binary-to-text': {
+    title: 'Binary to Text Converter Online Free | ISHU TOOLS',
+    description: 'Convert binary code to readable text online for free. Decode binary numbers to ASCII text. No signup. Best free binary to text converter.',
+    keywords: ['binary to text', 'convert binary to text', 'binary decoder', 'binary to ascii', 'binary text converter', 'ishu binary to text', 'decode binary'],
+    h1: 'Binary to Text Converter — Free Online',
+    faq: [
+      { question: 'How to convert binary to text?', answer: 'Enter binary code (0s and 1s) in ISHU TOOLS Binary to Text converter. Click Run to decode it to readable ASCII text instantly.' },
+    ],
+  },
+  'text-to-ascii': {
+    title: 'Text to ASCII Converter Online Free | ISHU TOOLS',
+    description: 'Convert text to ASCII code values online for free. Get ASCII codes for any character or string. No signup. Best free text to ASCII converter.',
+    keywords: ['text to ascii', 'ascii code converter', 'text ascii values', 'string to ascii', 'ishu text to ascii', 'ascii code generator'],
+    h1: 'Text to ASCII Converter — Free Online',
+    faq: [
+      { question: 'How to convert text to ASCII codes?', answer: 'Enter your text in ISHU TOOLS Text to ASCII converter. Click Run to get the ASCII decimal and hex values for each character.' },
+    ],
+  },
+  'ascii-to-text': {
+    title: 'ASCII to Text Converter Online Free | ISHU TOOLS',
+    description: 'Convert ASCII codes to readable text online for free. Decode ASCII decimal or hex values to characters. No signup. Best free ASCII to text converter.',
+    keywords: ['ascii to text', 'ascii decoder', 'ascii to string', 'convert ascii to text', 'ishu ascii to text', 'ascii code to character'],
+    h1: 'ASCII to Text Converter — Free Online',
+    faq: [
+      { question: 'How to convert ASCII to text?', answer: 'Enter ASCII decimal or hex codes in ISHU TOOLS ASCII to Text converter. Click Run to decode them to readable characters.' },
+    ],
+  },
+  'text-reverse': {
+    title: 'Reverse Text Online Free — Flip Text Backwards | ISHU TOOLS',
+    description: 'Reverse text and strings online for free. Flip text backwards, mirror words, and reverse sentences. No signup. Best free text reverser.',
+    keywords: ['reverse text', 'flip text', 'backwards text', 'mirror text', 'reverse string', 'text reverser free', 'ishu reverse text', 'reverse words online', 'text backwards'],
+    h1: 'Reverse Text — Flip Text Backwards Free',
+    faq: [
+      { question: 'How to reverse text online?', answer: 'Paste your text in ISHU TOOLS Reverse Text tool. Click Run to flip the entire text backwards instantly. Free, no signup.' },
+    ],
+  },
+  'extract-metadata': {
+    title: 'Extract Image Metadata Online Free — EXIF Viewer | ISHU TOOLS',
+    description: 'Extract and view image metadata (EXIF data) online for free. See camera settings, GPS location, date, and more. No signup. Best free EXIF viewer.',
+    keywords: ['extract metadata', 'exif viewer', 'image metadata viewer', 'photo metadata', 'exif data extractor', 'ishu extract metadata', 'view image metadata', 'photo info viewer'],
+    h1: 'Extract Image Metadata — Free EXIF Viewer',
+    faq: [
+      { question: 'How to view image EXIF metadata?', answer: 'Upload your photo on ISHU TOOLS Extract Metadata. Click Run to see all EXIF data including camera model, settings, GPS coordinates, date, and more.' },
+    ],
+  },
+  'remove-image-metadata': {
+    title: 'Remove Image Metadata Online Free — Strip EXIF | ISHU TOOLS',
+    description: 'Remove all metadata from images online for free. Strip EXIF data, GPS location, and camera info for privacy. No signup. Best free image metadata remover.',
+    keywords: ['remove image metadata', 'strip exif data', 'remove photo metadata', 'delete image exif', 'privacy photo cleaner', 'ishu remove image metadata', 'exif remover', 'anonymous photo'],
+    h1: 'Remove Image Metadata — Strip EXIF Free',
+    faq: [
+      { question: 'How to remove metadata from images?', answer: 'Upload your photo on ISHU TOOLS Remove Image Metadata. Click Run to strip all EXIF data (GPS location, camera info, etc.). Download the clean, private image.' },
+    ],
+  },
+  'pdf-to-bmp': {
+    title: 'PDF to BMP Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF to BMP images online for free. High-quality PDF to bitmap conversion. No signup. Best free PDF to BMP converter.',
+    keywords: ['pdf to bmp', 'convert pdf to bmp', 'pdf to bitmap', 'pdf to bmp free', 'ishu pdf to bmp'],
+    h1: 'PDF to BMP Converter — Free Online',
+    faq: [{ question: 'How to convert PDF to BMP?', answer: 'Upload your PDF on ISHU TOOLS PDF to BMP. Click Run and download the BMP images — one per page, for free.' }],
+  },
+  'pdf-to-gif': {
+    title: 'PDF to GIF Converter Online Free | ISHU TOOLS',
+    description: 'Convert PDF pages to GIF images online for free. Create animated GIFs from PDF slides. No signup. Best free PDF to GIF converter.',
+    keywords: ['pdf to gif', 'convert pdf to gif', 'pdf to animated gif', 'pdf to gif free', 'ishu pdf to gif'],
+    h1: 'PDF to GIF Converter — Free Online',
+    faq: [{ question: 'How to convert PDF to GIF?', answer: 'Upload your PDF on ISHU TOOLS PDF to GIF. Click Run to convert each page to GIF images or create an animated GIF — free.' }],
+  },
+  'pdf-to-image': {
+    title: 'PDF to Image Converter Online Free — JPG, PNG | ISHU TOOLS',
+    description: 'Convert PDF pages to high-quality images online for free. Export any PDF page as JPG, PNG, or WEBP. No signup. Best free PDF to image converter.',
+    keywords: ['pdf to image', 'pdf to jpg', 'pdf to png', 'convert pdf to image', 'pdf image extractor', 'pdf to picture', 'pdf to image free', 'ishu pdf to image', 'pdf pages to images'],
+    h1: 'PDF to Image Converter — JPG, PNG Free',
+    faq: [
+      { question: 'How to convert PDF to image?', answer: 'Upload your PDF on ISHU TOOLS PDF to Image. Choose output format (JPG, PNG, WEBP). Click Run to convert each page to an image. Download all images in a ZIP.' },
+    ],
+  },
+  'image-to-pdf': {
+    title: 'Image to PDF Converter Online Free | ISHU TOOLS',
+    description: 'Convert images to PDF online for free. Supports JPG, PNG, WEBP, GIF, BMP. Combine multiple images into one PDF. No signup. Best free image to PDF converter.',
+    keywords: ['image to pdf', 'photo to pdf', 'convert image to pdf', 'images to pdf', 'image to pdf free', 'jpg png to pdf', 'ishu image to pdf', 'multiple images to pdf'],
+    h1: 'Image to PDF — Free Online Converter',
+    faq: [
+      { question: 'How to convert images to PDF?', answer: 'Upload your images (JPG, PNG, WEBP, etc.) on ISHU TOOLS Image to PDF. Arrange the order. Click Run to combine them into a PDF. Free, no signup.' },
+    ],
+  },
+  'scan-to-pdf': {
+    title: 'Scan to PDF Online Free — Mobile Scanner | ISHU TOOLS',
+    description: 'Convert scanned documents and photos to PDF online for free. Perfect for scanning documents with your phone. No signup. Best free scan to PDF tool.',
+    keywords: ['scan to pdf', 'mobile scanner pdf', 'document scanner pdf', 'photo to pdf scan', 'scan document free', 'ishu scan to pdf', 'mobile document scanner', 'scan app free'],
+    h1: 'Scan to PDF — Free Mobile Document Scanner',
+    faq: [
+      { question: 'How to scan a document to PDF?', answer: 'Take a photo of your document or upload a scanned image. ISHU TOOLS Scan to PDF automatically enhances and converts it to a PDF document. Free, no app needed.' },
+    ],
+  },
+  'pdf-page-count': {
+    title: 'PDF Page Count Checker Online Free | ISHU TOOLS',
+    description: 'Check the number of pages in a PDF online for free. Instantly see PDF page count and file info. No signup. Best free PDF page counter.',
+    keywords: ['pdf page count', 'count pdf pages', 'pdf pages counter', 'pdf page number checker', 'pdf info viewer', 'ishu pdf page count', 'how many pages pdf'],
+    h1: 'PDF Page Count — Check PDF Pages Free',
+    faq: [
+      { question: 'How to count pages in a PDF?', answer: 'Upload your PDF on ISHU TOOLS PDF Page Count. Click Run to instantly see the total page count and other file information.' },
+    ],
+  },
+  'reverse-pdf': {
+    title: 'Reverse PDF Pages Online Free | ISHU TOOLS',
+    description: 'Reverse the order of pages in a PDF online for free. Flip page order from last to first. No signup. Best free PDF page reverser.',
+    keywords: ['reverse pdf', 'reverse pdf pages', 'flip pdf order', 'reverse page order pdf', 'pdf reverser', 'ishu reverse pdf', 'invert pdf pages'],
+    h1: 'Reverse PDF Pages — Free Online',
+    faq: [{ question: 'How to reverse PDF pages?', answer: 'Upload your PDF on ISHU TOOLS Reverse PDF. Click Run to flip the page order (last page becomes first). Download the reversed PDF — free.' }],
+  },
+  'pixelate-image': {
+    title: 'Pixelate Image Online Free — Blur Face & Mosaic | ISHU TOOLS',
+    description: 'Pixelate images online for free. Create mosaic effects, blur faces, and censor areas. No signup. Best free image pixelation tool.',
+    keywords: ['pixelate image', 'pixel art effect', 'mosaic image', 'pixelate face', 'censor image', 'blur with pixels', 'ishu pixelate image', 'pixel effect free', 'pixelate photo'],
+    h1: 'Pixelate Image — Free Online Mosaic Tool',
+    faq: [
+      { question: 'How to pixelate an image online?', answer: 'Upload your image on ISHU TOOLS Pixelate. Adjust the pixelation level. Click Run to create the mosaic/pixel effect. Download the pixelated image.' },
+    ],
+  },
+  'pixelate-face': {
+    title: 'Pixelate Face in Photo Online Free | ISHU TOOLS',
+    description: 'Pixelate and blur faces in photos online for free. Automatically detect and censor faces for privacy. No signup. Best free face pixelation tool.',
+    keywords: ['pixelate face', 'blur face online', 'censor face photo', 'face pixelation free', 'privacy face blur', 'ishu pixelate face', 'face blurring tool', 'anonymize face photo'],
+    h1: 'Pixelate Face — Censor Faces in Photos Free',
+    faq: [
+      { question: 'How to pixelate a face in a photo?', answer: 'Upload your photo on ISHU TOOLS Pixelate Face. The tool automatically detects faces and applies pixelation. Perfect for privacy protection and social media posts.' },
+    ],
+  },
+  'photo-editor': {
+    title: 'Online Photo Editor Free — Edit Photos in Browser | ISHU TOOLS',
+    description: 'Edit photos online for free. Adjust brightness, contrast, saturation, apply filters and effects. No signup, no download. Best free online photo editor.',
+    keywords: ['online photo editor', 'free photo editor', 'edit photo online', 'photo editing free', 'image editor online', 'ishu photo editor', 'browser photo editor', 'adjust photo free', 'photo effects online'],
+    h1: 'Online Photo Editor — Edit Photos Free',
+    faq: [
+      { question: 'How to edit photos online for free?', answer: 'Upload your photo on ISHU TOOLS Photo Editor. Adjust brightness, contrast, saturation, apply filters. Click Run and download the edited photo — free, no signup.' },
+    ],
+  },
+  'remove-image-object': {
+    title: 'Remove Object from Photo Online Free | ISHU TOOLS',
+    description: 'Remove unwanted objects from photos online for free. Erase objects, people, and blemishes from images using AI. No signup. Best free object removal tool.',
+    keywords: ['remove object from photo', 'erase object photo', 'object removal free', 'ai object removal', 'remove person from photo', 'photo object eraser', 'ishu remove object', 'unwanted object remover'],
+    h1: 'Remove Object from Photo — Free AI Tool',
+    faq: [
+      { question: 'How to remove objects from photos?', answer: 'Upload your photo on ISHU TOOLS Remove Object tool. Mark the object to remove. Click Run — AI fills in the background. Download the clean photo.' },
+    ],
+  },
+  'pdf-security': {
+    title: 'PDF Security — Password Protect PDF Online Free | ISHU TOOLS',
+    description: 'Add security and password protection to PDF files online for free. Encrypt and restrict PDF access. No signup. Best free PDF security tool.',
+    keywords: ['pdf security', 'protect pdf password', 'encrypt pdf', 'pdf password protection', 'secure pdf online', 'ishu pdf security', 'lock pdf free', 'pdf encryption free'],
+    h1: 'PDF Security — Protect & Encrypt PDF Free',
+    faq: [
+      { question: 'How to add security to a PDF?', answer: 'Upload your PDF on ISHU TOOLS PDF Security. Set a password and choose permission levels (print, copy, edit). Click Run and download the encrypted, protected PDF.' },
+    ],
+  },
+  'json-prettify': {
+    title: 'JSON Prettify & Beautifier Online Free | ISHU TOOLS',
+    description: 'Prettify and beautify JSON data online for free. Format minified JSON with proper indentation. No signup. Best free JSON formatter.',
+    keywords: ['json prettify', 'json beautifier', 'format json', 'json formatter online', 'pretty print json', 'ishu json prettify', 'json indent'],
+    h1: 'JSON Prettify — Beautify JSON Free Online',
+    faq: [
+      { question: 'How to prettify JSON online?', answer: 'Paste minified JSON in ISHU TOOLS JSON Prettify. Click Run for formatted, indented JSON. Copy or download the beautified output.' },
+    ],
+  },
+  'batch-convert-images': {
+    title: 'Batch Image Converter Online Free — Convert Multiple Images | ISHU TOOLS',
+    description: 'Convert multiple images to different formats in one go online for free. Batch convert JPG, PNG, WEBP. No signup. Best free batch image converter.',
+    keywords: ['batch image converter', 'convert multiple images', 'bulk image converter', 'batch convert images free', 'ishu batch images', 'bulk image conversion'],
+    h1: 'Batch Image Converter — Convert Multiple Images Free',
+    faq: [
+      { question: 'How to batch convert images?', answer: 'Upload multiple images on ISHU TOOLS Batch Convert Images. Choose the output format. Click Run to convert all images at once. Download as a ZIP file.' },
+    ],
+  },
+  'images-to-zip': {
+    title: 'Images to ZIP — Compress Images to ZIP Online Free | ISHU TOOLS',
+    description: 'Compress and archive multiple images into a ZIP file online for free. Easy file sharing and download. No signup. Best free images to ZIP tool.',
+    keywords: ['images to zip', 'compress images zip', 'photos to zip', 'zip images free', 'archive images', 'ishu images to zip', 'bulk image zip'],
+    h1: 'Images to ZIP — Free Online Archive Tool',
+    faq: [
+      { question: 'How to compress images to ZIP?', answer: 'Upload your images on ISHU TOOLS Images to ZIP. Click Run to create a ZIP archive. Download the ZIP with all images packed inside — free.' },
+    ],
+  },
+  'pdf-to-txt': {
+    title: 'PDF to TXT Converter Online Free — Extract Text | ISHU TOOLS',
+    description: 'Convert PDF to plain text (TXT) online for free. Extract all text content from PDF files. No signup. Best free PDF to text converter.',
+    keywords: ['pdf to txt', 'pdf to text', 'convert pdf to txt', 'extract text from pdf', 'pdf text extractor', 'pdf to txt free', 'ishu pdf to txt'],
+    h1: 'PDF to TXT — Extract Text from PDF Free',
+    faq: [
+      { question: 'How to convert PDF to TXT?', answer: 'Upload your PDF on ISHU TOOLS PDF to TXT. Click Run to extract all text. Download as a .txt file — free, no signup.' },
+    ],
+  },
+  'prettify-css': {
+    title: 'CSS Prettifier & Formatter Online Free | ISHU TOOLS',
+    description: 'Format and beautify CSS code online for free. Convert minified CSS to readable formatted code. No signup. Best free CSS formatter.',
+    keywords: ['css formatter', 'css beautifier', 'prettify css', 'format css online', 'css pretty print', 'ishu css formatter', 'css code formatter'],
+    h1: 'CSS Formatter — Beautify CSS Free Online',
+    faq: [
+      { question: 'How to format minified CSS?', answer: 'Paste your minified CSS in ISHU TOOLS CSS Prettifier. Click Run to format it with proper indentation and spacing. Copy the readable, formatted CSS.' },
+    ],
+  },
+  'ai-summarizer': {
+    title: 'AI Text Summarizer Online Free | ISHU TOOLS',
+    description: 'Summarize long text and articles online for free using AI. Get concise summaries of any content. No signup. Best free AI text summarizer.',
+    keywords: ['ai summarizer', 'text summarizer', 'article summarizer', 'summarize text free', 'ai summary generator', 'ishu ai summarizer', 'auto summarize text', 'content summarizer'],
+    h1: 'AI Text Summarizer — Free Online',
+    faq: [
+      { question: 'How to summarize text using AI?', answer: 'Paste your text or article in ISHU TOOLS AI Summarizer. Click Run for an AI-generated concise summary. Perfect for research, studying, and content creation.' },
+    ],
+  },
+  'split-text-file': {
+    title: 'Split Text File Online Free | ISHU TOOLS',
+    description: 'Split large text files into smaller parts online for free. Divide TXT files by lines, size, or delimiter. No signup. Best free text file splitter.',
+    keywords: ['split text file', 'split txt file', 'divide text file', 'text file splitter', 'ishu split text', 'large file splitter'],
+    h1: 'Split Text File — Free Online Tool',
+    faq: [
+      { question: 'How to split a large text file?', answer: 'Upload your text file on ISHU TOOLS Split Text File. Choose split method (by lines or size). Click Run to split it into smaller parts. Download each part separately.' },
     ],
   },
 }

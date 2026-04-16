@@ -4518,3 +4518,366 @@ h3 {
     max-width: 100%;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   SHIMMER LOADING SKELETON
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton-card {
+  border-radius: 20px;
+  min-height: 260px;
+  border: 1px solid rgba(145, 180, 255, 0.08);
+  background: linear-gradient(90deg,
+    rgba(13,19,35,0.9) 25%,
+    rgba(20,30,55,0.7) 50%,
+    rgba(13,19,35,0.9) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FEATURES / BENTO GRID SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.features-bento-section {
+  padding: 3.5rem 0 1rem;
+  text-align: center;
+}
+
+.features-bento-section > .section-kicker { display: block; margin-bottom: 0.5rem; }
+.features-bento-section > h2 {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, #fff 50%, rgba(255,255,255,0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.features-bento-section > p {
+  color: var(--muted);
+  max-width: 44rem;
+  margin: 0 auto 2rem;
+  font-size: 0.97rem;
+  line-height: 1.65;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  margin: 0 auto;
+}
+
+.bento-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 1.6rem;
+  border: 1px solid rgba(145, 180, 255, 0.1);
+  background: linear-gradient(160deg, rgba(13, 19, 35, 0.88), rgba(7, 11, 22, 0.95));
+  overflow: hidden;
+  text-align: left;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.22s;
+}
+
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, color-mix(in srgb, var(--bento-accent, #3bd0ff) 15%, transparent), transparent 55%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.bento-card:hover {
+  border-color: color-mix(in srgb, var(--bento-accent, #3bd0ff) 50%, transparent);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 24px color-mix(in srgb, var(--bento-accent, #3bd0ff) 18%, transparent);
+  transform: translateY(-3px);
+}
+
+.bento-card.span-2 { grid-column: span 2; }
+.bento-card.span-full { grid-column: 1 / -1; }
+
+.bento-icon {
+  width: 44px; height: 44px;
+  border-radius: 13px;
+  display: grid; place-items: center;
+  margin-bottom: 1rem;
+  background: color-mix(in srgb, var(--bento-accent, #3bd0ff) 15%, rgba(255,255,255,0.04));
+  border: 1px solid color-mix(in srgb, var(--bento-accent, #3bd0ff) 30%, transparent);
+  color: var(--bento-accent, #3bd0ff);
+  position: relative; z-index: 1;
+}
+
+.bento-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.45rem;
+  position: relative; z-index: 1;
+}
+
+.bento-card p {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+  position: relative; z-index: 1;
+}
+
+.bento-stat {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--bento-accent, #3bd0ff);
+  display: block;
+  margin-bottom: 0.2rem;
+  position: relative; z-index: 1;
+}
+
+.bento-card.large { padding: 2rem; }
+.bento-card.large .bento-icon { width: 52px; height: 52px; border-radius: 16px; margin-bottom: 1.2rem; }
+.bento-card.large h3 { font-size: 1.18rem; margin-bottom: 0.6rem; }
+.bento-card.large p { font-size: 0.92rem; }
+
+@media (max-width: 900px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bento-card.span-2 { grid-column: span 1; }
+}
+@media (max-width: 600px) {
+  .bento-grid { grid-template-columns: 1fr; }
+  .bento-card.span-2, .bento-card.span-full { grid-column: span 1; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENHANCED TOOL CARD — SPOTLIGHT GLOW ON HOVER
+   ══════════════════════════════════════════════════════════════════ */
+.tool-card-link {
+  --card-shine: rgba(59,208,255,0);
+}
+
+.tool-card-link:hover {
+  --card-shine: color-mix(in srgb, var(--tool-accent) 10%, transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   IMPROVED CATEGORY SECTION ENTRANCE
+   ══════════════════════════════════════════════════════════════════ */
+.tool-category-section {
+  animation: sectionSlideUp 0.4s ease both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}
+
+@supports not (animation-timeline: view()) {
+  .tool-category-section {
+    animation: sectionSlideUp 0.5s ease both;
+  }
+}
+
+@keyframes sectionSlideUp {
+  from { opacity: 0.3; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SEARCH INPUT — GLOW FOCUS EFFECT
+   ══════════════════════════════════════════════════════════════════ */
+.search-input {
+  position: relative;
+  transition: box-shadow 0.25s;
+}
+
+.search-input:focus-within {
+  box-shadow: 0 0 0 2px rgba(59, 208, 255, 0.35), 0 4px 20px rgba(59, 208, 255, 0.1);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENHANCED HOW-IT-WORKS — CONNECTING LINE
+   ══════════════════════════════════════════════════════════════════ */
+.steps-grid {
+  position: relative;
+}
+
+.steps-grid::before {
+  content: '';
+  position: absolute;
+  top: 56px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,208,255,0.3), rgba(59,208,255,0.3), transparent);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .steps-grid::before { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CATEGORY SECTION COUNT BADGE PULSE
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--section-accent, #3bd0ff) 30%, transparent); }
+  50%       { box-shadow: 0 0 0 5px transparent; }
+}
+
+.tool-count-badge {
+  animation: badgePulse 3s ease infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TOOL PAGE — ENHANCED SEO CONTENT SECTION
+   ══════════════════════════════════════════════════════════════════ */
+.seo-content-section {
+  border-radius: 18px;
+  border: 1px solid rgba(145, 180, 255, 0.1);
+  background: linear-gradient(160deg, rgba(10,16,30,0.6), rgba(6,9,18,0.7));
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.seo-content-section h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(145,180,255,0.1);
+}
+
+.seo-content-section p {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BACK-TO-TOP BUTTON
+   ══════════════════════════════════════════════════════════════════ */
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(59, 208, 255, 0.15);
+  border: 1px solid rgba(59, 208, 255, 0.35);
+  color: #3bd0ff;
+  display: grid; place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.25s, transform 0.25s, background 0.2s;
+  z-index: 9000;
+  backdrop-filter: blur(8px);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background: rgba(59, 208, 255, 0.25);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL CTA BANNER
+   ══════════════════════════════════════════════════════════════════ */
+.cta-banner {
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg,
+    rgba(59, 208, 255, 0.12) 0%,
+    rgba(59, 208, 255, 0.04) 50%,
+    rgba(59, 208, 255, 0.1) 100%
+  );
+  border: 1px solid rgba(59, 208, 255, 0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(59,208,255,0.3), transparent 40%, rgba(168,139,250,0.2));
+  z-index: -1;
+  pointer-events: none;
+}
+
+.cta-banner h2 {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  font-weight: 800;
+  margin: 0 0 0.6rem;
+  color: #fff;
+}
+
+.cta-banner p {
+  color: var(--muted);
+  font-size: 0.97rem;
+  margin: 0 0 1.4rem;
+}
+
+.cta-banner .btn-primary-hero {
+  display: inline-flex;
+  margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SMOOTH SCROLL SNAP FOR ANCHOR LINKS
+   ══════════════════════════════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DARK SCROLLBAR
+   ══════════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(3, 6, 14, 0.6); }
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 208, 255, 0.25);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(59, 208, 255, 0.4); }
+
+/* ══════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ══════════════════════════════════════════════════════════════════ */
+@media print {
+  .hero-v2, .hero-section-full, nav, .trust-row, .ticker-wrap { display: none !important; }
+  body { background: white; color: black; }
+  .tool-card-link { border: 1px solid #ddd; background: white; color: black; }
+}
+

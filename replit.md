@@ -21,32 +21,32 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
 - `backend/app/tools/handlers.py` — main handler functions
 - `backend/app/main.py` — FastAPI app with /sitemap.xml + /robots.txt dynamic endpoints
-- `frontend/src/index.css` — all CSS (dark theme, hero-v2, mega-menu, animations, responsive) ~3700+ lines
+- `frontend/src/index.css` — all CSS (dark theme, hero-v2, mega-menu, animations, responsive, bento-grid, shimmer skeleton) ~4880 lines
 - `frontend/src/components/layout/SiteShell.tsx` — mega-menu nav + expanded footer (9 links/col)
 - `frontend/src/features/tool/toolFields.ts` — per-tool form field configs
 - `frontend/src/features/tool/ToolPage.tsx` — generic tool runner with FAQ/SEO sections
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
-- `frontend/src/lib/seoData.ts` — per-tool SEO data (134 handcrafted entries + auto-generator fallback)
+- `frontend/src/lib/seoData.ts` — per-tool SEO data (286 handcrafted entries + smart auto-generator v2 fallback)
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
 - `frontend/src/hooks/useCatalogData.ts` — caches and defensively deduplicates categories+tools from API
 - `scripts/generate_seo_pages.py` — generates static per-tool/per-category SEO HTML and sitemap after frontend builds for better crawler coverage on deployed static hosting
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
 - `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
-## SEO Features
+## SEO Features (Comprehensive v2)
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
 - Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList)
-- Per-tool FAQ JSON-LD (from seoData.ts — 134 handcrafted entries incl. all 8 student tools)
+- Per-tool FAQ JSON-LD from seoData.ts — 286 handcrafted entries covering all major tools
+- Smart auto-generator v2 (createGeneratedSEO) — produces specific competitor-aware SEO for all remaining tools based on tool type detection (isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO) with tool-specific FAQs and competitor comparison keywords
+- Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images); jwt.io (developer)
 - Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
-- sitemap.xml: static file with all 422 tool URLs + 33 category pages + homepage (457 total); FastAPI also serves a dynamic sitemap at /sitemap.xml
-- Comprehensive long-tail keywords per tool in seoData.ts, including fallback student, mobile, no-login, privacy, and category-intent terms for every future tool
-- Category pages include enriched meta tags, canonical URLs, Open Graph/Twitter metadata, CollectionPage JSON-LD, popular tool links, and long-tail category copy
+- sitemap.xml: static file with all 422 tool URLs + 33 category pages + homepage (457 total)
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
-- Static build-time SEO pages are generated for every `/tools/:slug` and `/category/:id` route with route-specific title, description, keywords, canonical/hreflang, OG/Twitter, FAQ/Breadcrumb/WebApplication/CollectionPage JSON-LD, and a fresh sitemap.
-- Tool pages now show deduplicated intent keyword chips and AI search-intent copy covering student, mobile, no-signup, privacy, alternative-tool, and branded Ishu queries.
+- Tool pages show deduplicated intent keyword chips covering student, mobile, no-signup, privacy, alternative-tool, and branded Ishu queries
+- Homepage features: "Why ISHU TOOLS" bento-grid comparison section with competitor mentions
 
 ## Design System
 - Dark bg: #03060e — accent: #3bd0ff (teal-blue) — hero gradient: teal-to-purple
