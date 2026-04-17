@@ -11,7 +11,6 @@ import {
   ImageIcon,
   LoaderCircle,
   RefreshCw,
-  Trash2,
   Upload,
   X,
   Zap,
@@ -27,6 +26,8 @@ import { applyDocumentBranding, getCategoryTheme, getToolAccept } from '../../li
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
 import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
+import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
+import { useToast } from '../../components/ui/Toast'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -74,6 +75,7 @@ type FilePreviewItem = {
 
 export default function ToolPage() {
   const { slug } = useParams<{ slug: string }>()
+  const toast = useToast()
 
   const [tool, setTool] = useState<ToolDefinition | null>(null)
   const [relatedTools, setRelatedTools] = useState<ToolDefinition[]>([])
@@ -355,15 +357,19 @@ export default function ToolPage() {
           setOutputImagePreview(objectUrl)
         }
 
+        toast.show(result.message || 'File is ready to download!', 'success')
         scrollToResult()
       } else {
         setJsonResult(result.payload)
         setRunMessage(result.payload.message || 'Tool completed successfully.')
+        toast.show(result.payload.message || 'Done!', 'success')
         scrollToResult()
       }
     } catch (err) {
       stopProgressSimulation(false)
-      setRunError(err instanceof Error ? err.message : 'Tool execution failed')
+      const errMsg = err instanceof Error ? err.message : 'Tool execution failed'
+      setRunError(errMsg)
+      toast.show(errMsg, 'error', 5000)
       scrollToResult()
     } finally {
       setRunning(false)
@@ -374,21 +380,17 @@ export default function ToolPage() {
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
+      toast.show('Copied to clipboard!', 'success', 2000)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      /* ignore */
+      toast.show('Copy failed — please copy manually.', 'error', 3000)
     }
   }
 
   if (toolLoading) {
     return (
       <SiteShell>
-        <div className='page-wrap'>
-          <div className='tool-loading-state'>
-            <LoaderCircle size={32} className='spin' />
-            <p>Loading tool workspace...</p>
-          </div>
-        </div>
+        <SkeletonToolPage />
       </SiteShell>
     )
   }
@@ -398,7 +400,9 @@ export default function ToolPage() {
       <SiteShell>
         <div className='page-wrap'>
           <div className='tool-error-state'>
-            <p className='status-text error'>{toolError || 'Tool not found'}</p>
+            <div className='tool-error-icon'>⚠️</div>
+            <h2>{toolError ? 'Tool Error' : 'Tool Not Found'}</h2>
+            <p className='status-text error'>{toolError || 'This tool does not exist or has been removed.'}</p>
             <Link to='/' className='inline-link'>
               ← Return to all tools
             </Link>

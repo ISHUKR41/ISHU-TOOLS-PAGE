@@ -7,6 +7,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 
 from .models import ToolDefinition
@@ -19,6 +20,7 @@ app = FastAPI(
     description="Backend API for ISHU TOOLS document and image operations.",
 )
 
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -121,8 +123,12 @@ def runtime_capabilities() -> dict:
     }
 
 
+_CACHE_CONTROL_STATIC = "public, max-age=300, stale-while-revalidate=60"
+_CACHE_CONTROL_TOOL = "public, max-age=600, stale-while-revalidate=120"
+
+
 @app.get("/api/categories")
-def categories() -> list[dict]:
+def categories() -> Response:
     seen: set[str] = set()
     records = []
     for category in CATEGORIES:
@@ -130,11 +136,12 @@ def categories() -> list[dict]:
             continue
         seen.add(category.id)
         records.append(category)
-    return [category.model_dump() for category in records]
+    data = [category.model_dump() for category in records]
+    return JSONResponse(content=data, headers={"Cache-Control": _CACHE_CONTROL_STATIC})
 
 
 @app.get("/api/tools")
-def list_tools(category: str | None = None, q: str | None = None) -> list[dict]:
+def list_tools(category: str | None = None, q: str | None = None) -> Response:
     seen: set[str] = set()
     records = []
     for tool in TOOLS:
@@ -156,13 +163,15 @@ def list_tools(category: str | None = None, q: str | None = None) -> list[dict]:
             or any(query in tag.lower() for tag in tool.tags)
         ]
 
-    return [tool.model_dump() for tool in records]
+    data = [tool.model_dump() for tool in records]
+    cache_header = _CACHE_CONTROL_STATIC if not q else "no-store"
+    return JSONResponse(content=data, headers={"Cache-Control": cache_header})
 
 
 @app.get("/api/tools/{slug}")
-def tool_details(slug: str) -> dict:
+def tool_details(slug: str) -> Response:
     tool = get_tool(slug)
-    return tool.model_dump()
+    return JSONResponse(content=tool.model_dump(), headers={"Cache-Control": _CACHE_CONTROL_TOOL})
 
 
 @app.post("/api/tools/{slug}/execute")
@@ -174,14 +183,54 @@ def run_tool(
     tool = get_tool(slug)
     handler = HANDLERS.get(slug)
     if not handler:
-        raise HTTPException(status_code=501, detail=f"Handler is not implemented for {tool.title}")
+        raise HTTPException(status_code=501, detail=f"Handler is not implemented for '{tool.title}'. Please check back later.")
 
     payload_data = parse_payload(payload)
+
+    # ── Validate file upload requirements ──
+    if tool.input_kind == "files" and not files:
+        raise HTTPException(
+            status_code=422,
+            detail=f"{tool.title} requires at least one file to be uploaded.",
+        )
+
+    # ── Validate individual file sizes (100 MB max per file) ──
+    MAX_FILE_SIZE = 100 * 1024 * 1024
+    for f in files:
+        if f.size and f.size > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File '{f.filename}' exceeds the maximum allowed size of 100 MB.",
+            )
+
+    # ── Validate dangerous filenames ──
+    ALLOWED_EXTENSIONS = {
+        ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif",
+        ".svg", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt", ".odt", ".rtf",
+        ".txt", ".md", ".html", ".htm", ".csv", ".json", ".xml", ".epub",
+        ".zip", ".heic", ".heif",
+    }
+    for f in files:
+        if f.filename:
+            ext = Path(f.filename).suffix.lower()
+            if ext and ext not in ALLOWED_EXTENSIONS:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"File type '{ext}' is not supported. Please upload a valid file.",
+                )
 
     job_id, input_dir, output_dir = create_job_workspace()
     saved_files = save_uploads(files, input_dir) if files else []
 
-    result = handler(saved_files, payload_data, output_dir)
+    try:
+        result = handler(saved_files, payload_data, output_dir)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Processing failed: {str(exc)[:200]}. Please try again with a valid file.",
+        ) from exc
 
     if result.kind == "json":
         return JSONResponse(
@@ -205,4 +254,4 @@ def run_tool(
             },
         )
 
-    raise HTTPException(status_code=500, detail="Tool execution did not produce a valid output")
+    raise HTTPException(status_code=500, detail="Tool execution did not produce a valid output. Please try again.")

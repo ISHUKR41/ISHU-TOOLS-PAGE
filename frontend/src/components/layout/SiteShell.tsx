@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers } from 'lucide-react'
+import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp } from 'lucide-react'
 import AnimatedBackdrop from './AnimatedBackdrop'
 
 type NavCategory = {
@@ -171,7 +171,18 @@ export default function SiteShell({ children }: PropsWithChildren) {
   const isHome = location.pathname === '/'
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
     <div className='site-shell' onClick={() => setMegaOpen(false)}>
@@ -309,6 +320,15 @@ export default function SiteShell({ children }: PropsWithChildren) {
       </header>
 
       <div className='site-content'>{children}</div>
+
+      <button
+        className={`back-to-top ${showBackToTop ? 'visible' : ''}`}
+        onClick={scrollToTop}
+        aria-label='Scroll to top'
+        title='Back to top'
+      >
+        <ArrowUp size={18} />
+      </button>
 
       <footer className='site-footer'>
         <div className='site-footer-inner'>

@@ -20,6 +20,43 @@ async function readError(res: Response): Promise<Error> {
   return new Error(await res.text())
 }
 
+// ─── Per-tool detail cache (memory + sessionStorage) ───
+const TOOL_DETAIL_CACHE: Map<string, { data: ToolDefinition; ts: number }> = new Map()
+const TOOL_DETAIL_TTL = 10 * 60 * 1000 // 10 minutes
+const TOOL_DETAIL_SS_PREFIX = 'ishu-tools:tool:'
+
+function readToolCache(slug: string): ToolDefinition | null {
+  const mem = TOOL_DETAIL_CACHE.get(slug)
+  if (mem && Date.now() - mem.ts < TOOL_DETAIL_TTL) return mem.data
+  try {
+    const raw = sessionStorage.getItem(TOOL_DETAIL_SS_PREFIX + slug)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { data: ToolDefinition; ts: number }
+    if (Date.now() - parsed.ts > TOOL_DETAIL_TTL) return null
+    TOOL_DETAIL_CACHE.set(slug, parsed)
+    return parsed.data
+  } catch {
+    return null
+  }
+}
+
+function writeToolCache(slug: string, data: ToolDefinition) {
+  const entry = { data, ts: Date.now() }
+  TOOL_DETAIL_CACHE.set(slug, entry)
+  try {
+    sessionStorage.setItem(TOOL_DETAIL_SS_PREFIX + slug, JSON.stringify(entry))
+  } catch {
+    // ignore if storage full
+  }
+}
+
+// ─── Runtime capabilities cache ───
+let runtimeCapCache: { data: RuntimeCapabilities; ts: number } | null = null
+const RUNTIME_CAP_TTL = 30 * 60 * 1000 // 30 minutes
+
+// ─── In-flight deduplication ───
+const IN_FLIGHT: Map<string, Promise<ToolDefinition>> = new Map()
+
 export async function fetchCategories(): Promise<ToolCategory[]> {
   const res = await fetch(`${API_BASE_URL}/api/categories`)
   if (!res.ok) throw await readError(res)
@@ -41,15 +78,39 @@ export async function fetchTools(params?: {
 }
 
 export async function fetchTool(slug: string): Promise<ToolDefinition> {
-  const res = await fetch(`${API_BASE_URL}/api/tools/${slug}`)
-  if (!res.ok) throw await readError(res)
-  return res.json()
+  // Return cached if fresh
+  const cached = readToolCache(slug)
+  if (cached) return cached
+
+  // Deduplicate in-flight requests for the same slug
+  const existing = IN_FLIGHT.get(slug)
+  if (existing) return existing
+
+  const promise = (async () => {
+    const res = await fetch(`${API_BASE_URL}/api/tools/${slug}`)
+    if (!res.ok) throw await readError(res)
+    const data: ToolDefinition = await res.json()
+    writeToolCache(slug, data)
+    return data
+  })()
+
+  IN_FLIGHT.set(slug, promise)
+  try {
+    return await promise
+  } finally {
+    IN_FLIGHT.delete(slug)
+  }
 }
 
 export async function fetchRuntimeCapabilities(): Promise<RuntimeCapabilities> {
+  if (runtimeCapCache && Date.now() - runtimeCapCache.ts < RUNTIME_CAP_TTL) {
+    return runtimeCapCache.data
+  }
   const res = await fetch(`${API_BASE_URL}/api/runtime-capabilities`)
   if (!res.ok) throw await readError(res)
-  return res.json()
+  const data: RuntimeCapabilities = await res.json()
+  runtimeCapCache = { data, ts: Date.now() }
+  return data
 }
 
 export async function checkHealth(): Promise<boolean> {

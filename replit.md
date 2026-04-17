@@ -71,6 +71,20 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - CSS-only hover effects instead of JS event listeners on tool cards
 - `color-mix(in srgb, ...)` for accent-tinted borders — no extra DOM elements
 - Tool count badge in section heading rendered inline without extra wrapper components
+- `useDebounce` and `useThrottle` hooks added at `frontend/src/hooks/useDebounce.ts` for fine-grained input rate-limiting
+- Backend GZip middleware enabled for all responses — compression for API payloads
+- Tool detail caching (memory + sessionStorage, 10-min TTL) with in-flight request deduplication in `toolsApi.ts`
+- Runtime capabilities cached 30 min — avoids repeated polls on every tool page
+
+## Error Handling & UX Polish
+- React `ErrorBoundary` wraps entire app (in `App.tsx`) with graceful recovery UI + reload/home buttons
+- `SkeletonToolPage` — full shimmer skeleton matching the tool page layout (hero, fields, sidebar) shown during tool loading
+- Toast notification system (`Toast.tsx` + `ToastProvider` in `App.tsx`) — success/error/info toasts with auto-dismiss, close button, and framer-motion entrance animation
+- Toast fires on tool success (file ready), tool error (with message), and clipboard copy confirmation
+- Back-to-top button in `SiteShell` — appears after 400px scroll with smooth animation
+- Backend handler exceptions caught and returned as clean 500 responses (no stack trace leakage)
+- File upload validation: 100 MB size limit + extension whitelist enforced server-side
+- Cache-Control headers on GET endpoints (categories/tools/tool-details) to reduce redundant API calls
 
 ## Tool "How to use" Steps (getToolUsageSteps in toolPresentation.ts)
 Per-category smart steps:
