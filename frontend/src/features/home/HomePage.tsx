@@ -86,7 +86,7 @@ export default function HomePage() {
   useEffect(() => {
     applyDocumentBranding(
       'ISHU TOOLS — Indian Student Hub University Tools',
-      '383+ free online tools for students & professionals. PDF, Image, Developer, Math, Text & AI tools — no signup, no watermark.',
+      '622+ free online tools for students & professionals. PDF, Image, Developer, Math, Text & AI tools — no signup, no watermark.',
       '#3bd0ff',
     )
   }, [])

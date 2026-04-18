@@ -159,7 +159,7 @@ function MegaMenu({ onClose }: MegaMenuProps) {
       </div>
       <div className='mega-menu-footer'>
         <Link to='/' className='mega-all-tools-btn' onClick={onClose}>
-          Browse all 441+ tools →
+          Browse all 622+ tools →
         </Link>
       </div>
     </div>
@@ -313,7 +313,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
 
             <Link to='/' className='mobile-all-tools-btn' onClick={() => setMobileOpen(false)}>
               <Layers size={16} />
-              Browse all 441+ tools
+              Browse all 622+ tools
             </Link>
           </div>
         )}
@@ -336,7 +336,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark sm'>IT</span>
             <div>
               <strong>ISHU TOOLS</strong>
-              <p>Indian Student Hub University Tools — 441+ free PDF, Image, Developer, Math, AI &amp; Text tools. No signup. No watermark. Completely free.</p>
+              <p>Indian Student Hub University Tools — 622+ free PDF, Image, Developer, Math, AI &amp; Text tools. No signup. No watermark. Completely free.</p>
               <div className='footer-trust-row'>
                 <span><Shield size={11} /> 100% Secure</span>
                 <span><Zap size={11} /> No Signup</span>
@@ -396,7 +396,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
           </div>
         </div>
         <div className='footer-bottom'>
-          <span>© {new Date().getFullYear()} ISHU TOOLS (Indian Student Hub University Tools) · 441+ tools · All free, no signup, no watermark</span>
+          <span>© {new Date().getFullYear()} ISHU TOOLS (Indian Student Hub University Tools) · 622+ tools · All free, no signup, no watermark</span>
           <div className='footer-social'>
             <a href='https://www.linkedin.com/in/ishu-kumar-5a0940281/' target='_blank' rel='noreferrer'>LinkedIn</a>
             <a href='https://www.instagram.com/ishukr10' target='_blank' rel='noreferrer'>Instagram</a>

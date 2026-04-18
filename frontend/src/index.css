@@ -5850,3 +5850,204 @@ button[type="submit"]:hover {
   body { background: white !important; color: black !important; }
 }
 
+/* ── Skeleton Shimmer Loading ─────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.1) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Glow Pulse for Featured Tools ───────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 208, 255, 0.15), 0 0 40px rgba(59, 208, 255, 0.05); }
+  50% { box-shadow: 0 0 30px rgba(59, 208, 255, 0.3), 0 0 60px rgba(59, 208, 255, 0.12); }
+}
+
+.featured-glow {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ── Floating badge animation ─────────────────────────────────── */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.float-anim {
+  animation: float-y 3.5s ease-in-out infinite;
+}
+
+/* ── Counter badge bounce ─────────────────────────────────────── */
+@keyframes pop-in {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.12) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.pop-in {
+  animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── "New" badge for fresh tools ─────────────────────────────── */
+.badge-new {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #3bd0ff, #a78bfa);
+  color: #000;
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* ── Gradient text utility ────────────────────────────────────── */
+.text-gradient-blue {
+  background: linear-gradient(135deg, #56a6ff, #3bd0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, #3ee58f, #06d6a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #a78bfa, #e777ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Card tilt effect (GPU) ───────────────────────────────────── */
+.tilt-on-hover {
+  transform-style: preserve-3d;
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ── Gradient border cards ────────────────────────────────────── */
+.gradient-border {
+  position: relative;
+  border-radius: 20px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  background: linear-gradient(135deg, rgba(59, 208, 255, 0.4), rgba(167, 139, 250, 0.3), rgba(62, 229, 143, 0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.gradient-border:hover::before {
+  opacity: 1;
+}
+
+/* ── PWA Install Banner ───────────────────────────────────────── */
+.pwa-banner {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(8, 13, 26, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(59, 208, 255, 0.25);
+  border-radius: 16px;
+  padding: 0.75rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10000;
+  animation: toast-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  max-width: calc(100vw - 2rem);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 208, 255, 0.08);
+}
+
+/* ── Page transition fade ─────────────────────────────────────── */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Hero background mesh gradient ───────────────────────────── */
+@keyframes mesh-drift {
+  0%, 100% { transform: rotate(0deg) translate(0, 0); }
+  33% { transform: rotate(120deg) translate(3%, -3%); }
+  66% { transform: rotate(240deg) translate(-3%, 3%); }
+}
+
+.mesh-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  pointer-events: none;
+  animation: mesh-drift 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Staggered list entrance ─────────────────────────────────── */
+.stagger-list > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-list > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-list > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-list > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-list > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-list > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-list > *:nth-child(n+7) { animation-delay: 300ms; }
+
+/* ── Horizontal scroll for mobile categories ─────────────────── */
+.category-pills-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.category-pills-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Smart reduced-motion overrides ─────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── High contrast mode fix ──────────────────────────────────── */
+@media (forced-colors: active) {
+  .tool-card-link, .spotlight-card, .category-pill {
+    border: 1px solid ButtonText !important;
+  }
+}
+

@@ -33,7 +33,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
-- `frontend/src/lib/seoData.ts` — per-tool SEO data (567 handcrafted entries covering ALL 563 unique tools + smart auto-generator v3 fallback)
+- `frontend/src/lib/seoData.ts` — per-tool SEO data (715 handcrafted entries, 200 keywords/tool, smart auto-generator v3 fallback with AI/Ishu/Hinglish patterns)
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
 - `frontend/src/hooks/useCatalogData.ts` — caches and defensively deduplicates categories+tools from API
 - `scripts/generate_seo_pages.py` — generates static per-tool/per-category SEO HTML and sitemap after frontend builds for better crawler coverage on deployed static hosting
@@ -49,7 +49,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Health tools: title = "X — Free Online Health Calculator | ISHU TOOLS"; description targets fitness/India
 - Finance tools: title = "X — Free Online Finance Calculator | ISHU TOOLS"; description targets Indian professionals
 - Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images)
-- Universal Ishu-branded keywords (160/tool): "ishu kumar tools", "ishu tools india", "ishu iitp", "ishu kumar iit patna"
+- Universal Ishu-branded keywords (200/tool): "ishu kumar tools", "ishu tools india", "ishu iitp", "ishu kumar iit patna", "ishu iit patna tools", Hinglish variants (kaise kare, bina signup ke), AI-powered patterns, device-specific and student-India long-tails
 - index.html: Person schema for Ishu Kumar (IIT Patna alumnus), 15-entry SiteNavigationElement, 9-question FAQ, enriched noscript with 60+ crawlable links in 6 categories
 - WebApplication schema: alumniOf IIT Patna, 3500+ aggregateRating
 - robots.txt: max-image-preview:large, max-snippet:-1, max-video-preview:-1 directives per page

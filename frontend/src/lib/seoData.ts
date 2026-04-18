@@ -238,22 +238,40 @@ function buildComprehensiveKeywords(
 
   // ── Add universal Ishu-branded keywords to every single tool ──
   kw.push(
+    // Ishu-brand core
     `ishu tools free`, `ishutools.com ${base}`, `ishu kumar tool`, `ishu student hub`,
     `ishu tools online`, `ishu tools india free`, `best free tools by ishu`,
     `ishu tools no watermark`, `ishu tools no signup`, `ishu tools student`,
+    `ishu kumar iit patna`, `ishu iit patna tools`, `ishu iitp tools`,
+    `ishu tools best`, `ishu tools 2025`, `ishu tools 2026`,
+    `ishutools ${title}`, `ishu kumar ${title}`,
+    `tools by ishu`, `ishu tools for india`, `indian student hub`,
     // Voice search & question-based keywords
     `how to ${base} free`, `how to ${base} online`, `best way to ${base} free`,
-    `${base} kaise kare`, `${base} kaise kare online`,
+    `${base} kaise kare`, `${base} kaise kare online`, `${base} kaise use kare`,
+    `what is the best ${base} tool`, `which is best ${base} free`,
     // Hindi / Hinglish variants
     `${base} free mein`, `free mai ${base}`, `${base} online karo`, `online ${base} karo free`,
+    `${base} free download nahi`, `${base} bina signup ke`,
     // Long-tail comparison queries
     `${base} alternative free`, `free ${base} tool online`, `${base} without registration`,
     `${base} without account`, `${base} no download`, `${base} website free`,
+    `${base} vs ilovepdf`, `${base} better than smallpdf`, `${base} free no limit`,
+    // AI & trending patterns
+    `ai powered ${base}`, `${base} ai tool free`, `smart ${base} online`,
+    `${base} fastest tool`, `${base} accurate online`,
     // General ranking keywords
     `best ${base} tool`, `top ${base} tool`, `${base} tool 2025`, `${base} tool 2026`,
+    `${base} online tool`, `${base} professional free`, `${base} high quality free`,
+    // Device-specific
+    `${base} on mobile free`, `${base} android free`, `${base} iphone free`,
+    `${base} tablet free`, `${base} laptop free`,
+    // Niche student India
+    `${base} for ssc students`, `${base} for college`, `${base} for engineering`,
+    `${base} for cbse students`, `${base} india 2026`,
   )
 
-  return Array.from(new Set(kw)).slice(0, 160)
+  return Array.from(new Set(kw)).slice(0, 200)
 }
 
 function generateSmartFAQs(
@@ -380,7 +398,7 @@ function generateSmartFAQs(
 }
 
 function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
-  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 160)
+  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 200)
   const faq = [...custom.faq]
   for (const item of generated.faq) {
     if (!faq.some((existing) => existing.question === item.question)) faq.push(item)
