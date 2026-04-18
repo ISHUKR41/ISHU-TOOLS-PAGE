@@ -5,6 +5,7 @@ import { AppRouter } from './app/router'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ToastProvider } from './components/ui/Toast'
 import ScrollToTop from './components/ui/ScrollToTop'
+import InstallPWA from './components/ui/InstallPWA'
 
 function AppLoader() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Suspense fallback={<AppLoader />}>
             <AppRouter />
           </Suspense>
+          <InstallPWA />
         </BrowserRouter>
       </ToastProvider>
     </ErrorBoundary>

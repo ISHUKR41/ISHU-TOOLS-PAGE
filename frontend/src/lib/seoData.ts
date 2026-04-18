@@ -3688,6 +3688,178 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Age Calculator — Exact Age in Seconds, Days & Hours Free',
     faq: [],
   },
+
+  // ─── Network Tools ───
+  'ip-address-lookup': {
+    title: 'IP Address Lookup — Find My IP & Geolocation Free | ISHU TOOLS',
+    description: 'Find your public IP address and detailed geolocation: country, city, region, ISP, timezone, and coordinates. Free IP checker — no signup.',
+    keywords: ['ip address lookup', 'what is my ip', 'my ip address', 'ip geolocation lookup', 'ip location finder', 'ip checker free', 'find ip address online', 'check my ip', 'ip address tracker', 'ip geolocation free'],
+    h1: 'IP Address Lookup — Free IP Geolocation & ISP Finder',
+    faq: [
+      { question: 'What is an IP address lookup?', answer: 'An IP lookup finds the geographic location, ISP, and network details associated with any IP address. This tool shows your current public IP address along with country, city, timezone, and ISP information.' },
+      { question: 'Is this IP lookup free?', answer: 'Yes, completely free with no signup required. Check your IP address anytime on any device.' },
+      { question: 'How accurate is the IP geolocation?', answer: 'IP geolocation is typically accurate to city or region level. It shows the location of your ISP\'s network, not your exact home address.' },
+    ],
+  },
+  'dns-lookup': {
+    title: 'DNS Lookup Tool — Check DNS Records Online Free | ISHU TOOLS',
+    description: 'Look up DNS records for any domain. Check A, AAAA, MX, CNAME, TXT, NS, SOA records instantly. Free online DNS checker — no signup needed.',
+    keywords: ['dns lookup', 'dns record lookup', 'check dns records', 'dns checker online', 'mx record lookup', 'cname lookup', 'a record lookup', 'txt record checker', 'ns record lookup', 'dns records tool free', 'domain dns checker'],
+    h1: 'DNS Lookup Tool — Check All DNS Records for Any Domain Free',
+    faq: [
+      { question: 'What is a DNS lookup?', answer: 'A DNS lookup queries the Domain Name System to find the DNS records associated with a domain name. This includes A records (IP addresses), MX records (mail servers), CNAME, TXT, NS, and more.' },
+      { question: 'How do I check DNS records for a domain?', answer: 'Simply enter the domain name in this tool and click Run. You\'ll see all DNS records including A, AAAA, MX, CNAME, TXT, NS, and SOA records.' },
+      { question: 'What is an MX record?', answer: 'An MX (Mail Exchanger) record specifies the mail servers responsible for accepting email for a domain. This helps diagnose email delivery issues.' },
+    ],
+  },
+  'whois-lookup': {
+    title: 'WHOIS Lookup — Domain Registration Info Free | ISHU TOOLS',
+    description: 'Look up WHOIS information for any domain. Find domain owner, registrar, creation date, expiry date, and nameservers. Free WHOIS checker.',
+    keywords: ['whois lookup', 'domain whois lookup', 'whois search', 'domain owner lookup', 'domain info', 'check domain registration', 'domain expiry checker', 'registrar lookup', 'whois tool free', 'domain registration info'],
+    h1: 'WHOIS Lookup — Free Domain Registration Info Checker',
+    faq: [
+      { question: 'What is WHOIS?', answer: 'WHOIS is a publicly accessible database that stores information about domain name registrations, including the registrant, registrar, registration date, expiry date, and nameservers.' },
+      { question: 'How do I find who owns a domain?', answer: 'Enter the domain name in this WHOIS lookup tool. You\'ll see the registrant information, registrar, and registration dates. Note that some registrants use privacy protection to hide their details.' },
+    ],
+  },
+  'ssl-certificate-checker': {
+    title: 'SSL Certificate Checker — Check HTTPS & TLS Expiry Free | ISHU TOOLS',
+    description: 'Check SSL/TLS certificate details for any website. View expiry date, days remaining, issuer, organization, and common name. Free SSL checker online.',
+    keywords: ['ssl certificate checker', 'ssl checker', 'ssl expiry checker', 'check ssl certificate', 'https checker', 'tls certificate checker', 'ssl certificate expiry', 'ssl certificate validator', 'website ssl check', 'ssl expiry date'],
+    h1: 'SSL Certificate Checker — Free HTTPS & TLS Certificate Validator',
+    faq: [
+      { question: 'How do I check if an SSL certificate is valid?', answer: 'Enter the domain name (e.g., example.com) in this tool. It will check the SSL certificate, show the expiry date, days remaining, and whether it is currently valid.' },
+      { question: 'What happens when an SSL certificate expires?', answer: 'When an SSL certificate expires, browsers show a security warning and may block access to the website. It\'s important to renew SSL certificates before they expire.' },
+      { question: 'Is this SSL checker free?', answer: 'Yes, completely free. Check any domain\'s SSL certificate status instantly with no signup required.' },
+    ],
+  },
+
+  // ─── Finance Tools ───
+  'emi-calculator-advanced': {
+    title: 'EMI Calculator — Monthly Loan EMI Calculator India Free | ISHU TOOLS',
+    description: 'Calculate your loan EMI instantly. Get monthly EMI, total interest, total amount paid, and a complete 12-month amortization schedule. Free EMI calculator for home, car, personal loans.',
+    keywords: ['emi calculator', 'loan emi calculator', 'home loan emi calculator', 'car loan emi calculator', 'personal loan emi', 'emi calculator india', 'monthly emi calculator', 'emi calculation formula', 'loan emi calculator online', 'emi calculator 2025'],
+    h1: 'EMI Calculator — Free Loan EMI Calculator with Amortization Schedule',
+    faq: [
+      { question: 'How is EMI calculated?', answer: 'EMI = [P × r × (1+r)^n] / [(1+r)^n - 1], where P is the principal loan amount, r is the monthly interest rate, and n is the number of monthly installments.' },
+      { question: 'What is EMI?', answer: 'EMI (Equated Monthly Installment) is a fixed payment amount made by a borrower to a lender on a specified date each calendar month. EMIs cover both principal and interest charges.' },
+      { question: 'What is an amortization schedule?', answer: 'An amortization schedule shows the breakdown of each EMI payment into principal and interest components, and the remaining balance after each payment.' },
+    ],
+  },
+  'gst-calculator-india': {
+    title: 'GST Calculator India — Calculate GST Amount Free | ISHU TOOLS',
+    description: 'Free GST calculator for India. Calculate GST amount, CGST, SGST, and total price for any amount and GST slab (5%, 12%, 18%, 28%). No signup needed.',
+    keywords: ['gst calculator', 'gst calculator india', 'calculate gst', 'gst amount calculator', 'cgst sgst calculator', 'gst inclusive calculator', 'gst exclusive calculator', 'gst rate calculator', 'goods and services tax calculator', 'gst calculator online india'],
+    h1: 'GST Calculator India — Free CGST, SGST & Total Tax Calculator',
+    faq: [
+      { question: 'How do I calculate GST in India?', answer: 'GST Amount = (Original Cost × GST Rate) / 100. For example, ₹1000 with 18% GST = ₹180 GST. Total = ₹1180. CGST and SGST are each half of the total GST.' },
+      { question: 'What are the GST slab rates in India?', answer: 'GST has 4 main slabs: 5% (essential goods), 12% (standard goods), 18% (most goods/services), and 28% (luxury/demerit goods). Some items like food essentials are exempt (0%).' },
+      { question: 'What is CGST and SGST?', answer: 'CGST (Central GST) goes to the central government and SGST (State GST) goes to the state government. They are each half of the total GST rate for intra-state transactions.' },
+    ],
+  },
+  'currency-converter': {
+    title: 'Currency Converter — Free Online Exchange Rate Calculator | ISHU TOOLS',
+    description: 'Convert currencies with live-ish exchange rates. USD, EUR, GBP, INR, JPY, AUD, CAD and 150+ currencies. Free currency calculator — no signup.',
+    keywords: ['currency converter', 'currency exchange calculator', 'usd to inr', 'usd to eur', 'inr to usd', 'exchange rate calculator', 'forex calculator', 'currency conversion online', 'foreign exchange converter', 'currency calculator free'],
+    h1: 'Currency Converter — Free Online Exchange Rate Calculator for 150+ Currencies',
+    faq: [
+      { question: 'How do I convert currencies?', answer: 'Select the "from" currency, enter the amount, select the "to" currency, and click Convert. The tool shows the converted amount and the exchange rate.' },
+      { question: 'Is this currency converter accurate?', answer: 'This tool uses fixed reference exchange rates for calculations. For live trading rates, always check with your bank or financial institution.' },
+      { question: 'Which currencies are supported?', answer: 'This converter supports 150+ currencies including USD, EUR, GBP, INR, JPY, AUD, CAD, CHF, CNY, and all major world currencies.' },
+    ],
+  },
+
+  // ─── Math Tools ───
+  'prime-number-checker': {
+    title: 'Prime Number Checker — Is It Prime? Free Online | ISHU TOOLS',
+    description: 'Check if any number is prime. Find prime factors, next prime, and all primes in a range. Free online prime number checker — instant results.',
+    keywords: ['prime number checker', 'is it prime', 'prime number tester', 'check if number is prime', 'prime factorization', 'prime number finder', 'list of prime numbers', 'prime number calculator', 'next prime number', 'prime numbers tool'],
+    h1: 'Prime Number Checker — Check If Any Number Is Prime Free',
+    faq: [
+      { question: 'What is a prime number?', answer: 'A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself. Examples: 2, 3, 5, 7, 11, 13...' },
+      { question: 'How do you check if a number is prime?', answer: 'A number is prime if it is greater than 1 and not divisible by any number from 2 to its square root. This tool instantly checks primality and shows the prime factorization.' },
+      { question: 'What is prime factorization?', answer: 'Prime factorization breaks down a composite number into its prime number factors. For example, 12 = 2 × 2 × 3.' },
+    ],
+  },
+  'fibonacci-generator': {
+    title: 'Fibonacci Generator — Fibonacci Sequence Calculator Free | ISHU TOOLS',
+    description: 'Generate Fibonacci sequence numbers online. Calculate any number of Fibonacci terms, find the nth Fibonacci number, and see the sum. Free and instant.',
+    keywords: ['fibonacci generator', 'fibonacci sequence calculator', 'fibonacci numbers', 'nth fibonacci number', 'fibonacci series generator', 'fibonacci calculator online', 'fibonacci number finder', 'fibonacci tool free'],
+    h1: 'Fibonacci Number Generator — Free Online Fibonacci Sequence Calculator',
+    faq: [
+      { question: 'What is the Fibonacci sequence?', answer: 'The Fibonacci sequence is a series where each number is the sum of the two preceding ones: 1, 1, 2, 3, 5, 8, 13, 21... It appears in nature, art, and mathematics.' },
+      { question: 'How do I find the nth Fibonacci number?', answer: 'Enter the desired count of Fibonacci terms and click Generate. The tool shows the complete sequence, the sum of all terms, and the last Fibonacci number.' },
+    ],
+  },
+  'statistics-calculator': {
+    title: 'Statistics Calculator — Mean, Median, Mode, Std Dev Free | ISHU TOOLS',
+    description: 'Free statistics calculator. Calculate mean, median, mode, standard deviation, variance, quartiles, IQR, and more from any dataset. No signup.',
+    keywords: ['statistics calculator', 'mean median mode calculator', 'standard deviation calculator', 'variance calculator', 'statistics solver', 'descriptive statistics calculator', 'quartile calculator', 'iqr calculator', 'data analysis calculator'],
+    h1: 'Statistics Calculator — Free Mean, Median, Mode, Standard Deviation Calculator',
+    faq: [],
+  },
+
+  // ─── Text Tools ───
+  'grammar-checker': {
+    title: 'Grammar Checker — Free Online Grammar & Spelling Check | ISHU TOOLS',
+    description: 'Free grammar checker online. Find grammar errors, spelling mistakes, punctuation issues, and get a writing quality score. No signup — instant results.',
+    keywords: ['grammar checker', 'grammar checker free', 'online grammar check', 'spelling and grammar checker', 'grammar correction tool', 'grammar error checker', 'free grammar tool', 'check grammar online', 'writing checker', 'english grammar checker'],
+    h1: 'Grammar Checker — Free Online Grammar & Spelling Correction Tool',
+    faq: [
+      { question: 'Is this grammar checker free?', answer: 'Yes, completely free with no signup, no limits, and no premium plans. Paste your text and get grammar corrections instantly.' },
+      { question: 'How does the grammar checker work?', answer: 'The tool analyzes your text for common grammar errors, spelling mistakes, punctuation issues, and style problems. It returns a quality score, individual issues, and suggested corrections.' },
+    ],
+  },
+  'plagiarism-checker': {
+    title: 'Plagiarism Checker — Free Online Uniqueness Score | ISHU TOOLS',
+    description: 'Free plagiarism checker for students and writers. Get a uniqueness score, repetition analysis, and content fingerprint. No signup, instant results.',
+    keywords: ['plagiarism checker free', 'plagiarism checker online', 'plagiarism detector', 'uniqueness checker', 'check plagiarism free', 'plagiarism tool for students', 'free plagiarism checker no login', 'plagiarism scanner', 'content originality checker'],
+    h1: 'Plagiarism Checker — Free Online Uniqueness & Originality Detector',
+    faq: [
+      { question: 'Is this plagiarism checker free?', answer: 'Yes, completely free with no account required. Paste your text and get an instant uniqueness score and analysis.' },
+      { question: 'How accurate is this plagiarism checker?', answer: 'This tool checks for repetition, common phrases, and text patterns to give a uniqueness score. For academic submissions, use in addition to official plagiarism detection tools.' },
+    ],
+  },
+  'word-frequency-counter': {
+    title: 'Word Frequency Counter — Analyze Word Occurrence in Text | ISHU TOOLS',
+    description: 'Count how often each word appears in your text. Get word frequency table sorted by count. Perfect for SEO analysis, content research, and writing.',
+    keywords: ['word frequency counter', 'word frequency analyzer', 'word count by word', 'text analysis tool', 'word occurrence counter', 'keyword frequency counter', 'word frequency table', 'text frequency analysis', 'content analysis tool'],
+    h1: 'Word Frequency Counter — Free Text Analysis & Word Occurrence Tool',
+    faq: [],
+  },
+
+  // ─── Health Tools ───
+  'calorie-calculator': {
+    title: 'Calorie Calculator — Daily Calorie Needs & TDEE Free | ISHU TOOLS',
+    description: 'Calculate your daily calorie needs (TDEE), BMR, and recommended macros. Free online calorie calculator for weight loss, gain, or maintenance. No signup.',
+    keywords: ['calorie calculator', 'tdee calculator', 'daily calorie calculator', 'calorie calculator for weight loss', 'calorie intake calculator', 'bmr calculator', 'calorie calculator india', 'how many calories do i need', 'daily calorie needs calculator', 'calorie deficit calculator'],
+    h1: 'Calorie Calculator — Free TDEE, BMR & Daily Calorie Needs Calculator',
+    faq: [
+      { question: 'What is TDEE?', answer: 'TDEE (Total Daily Energy Expenditure) is the total number of calories your body burns per day including exercise. This is your maintenance calorie level.' },
+      { question: 'How many calories should I eat per day?', answer: 'It depends on your age, weight, height, gender, and activity level. This calculator computes your TDEE — eat less to lose weight, more to gain weight.' },
+      { question: 'What is BMR?', answer: 'BMR (Basal Metabolic Rate) is the minimum number of calories your body needs at complete rest to maintain basic functions like breathing and circulation.' },
+    ],
+  },
+  'sleep-calculator': {
+    title: 'Sleep Calculator — Best Bedtime & Wake Up Time Free | ISHU TOOLS',
+    description: 'Find the best time to wake up or go to sleep based on 90-minute sleep cycles. Free sleep calculator for better sleep quality and energy.',
+    keywords: ['sleep calculator', 'best wake up time calculator', 'sleep cycle calculator', 'bedtime calculator', 'when should i wake up', 'sleep time calculator', 'rem sleep calculator', 'optimal sleep time', 'sleep calculator free'],
+    h1: 'Sleep Calculator — Find Your Perfect Bedtime & Wake-Up Time Free',
+    faq: [
+      { question: 'How does the sleep calculator work?', answer: 'Sleep happens in 90-minute cycles. This calculator finds wake-up times that align with the end of a sleep cycle, so you wake up feeling refreshed instead of groggy.' },
+      { question: 'How many sleep cycles do I need?', answer: 'Most adults need 5-6 complete sleep cycles (7.5-9 hours) per night for optimal health and energy. Less than 4 cycles (6 hours) leads to sleep deprivation.' },
+    ],
+  },
+  'water-intake-calculator': {
+    title: 'Water Intake Calculator — Daily Water Need Free | ISHU TOOLS',
+    description: 'Calculate your recommended daily water intake based on weight, activity level, and climate. Free hydration calculator in liters and glasses.',
+    keywords: ['water intake calculator', 'daily water intake calculator', 'how much water should i drink', 'water calculator', 'hydration calculator', 'water intake per day', 'water requirement calculator', 'daily water requirement', 'drink water calculator', 'water intake based on weight'],
+    h1: 'Water Intake Calculator — Free Daily Hydration Needs Calculator',
+    faq: [
+      { question: 'How much water should I drink per day?', answer: 'A general rule is 35ml per kg of body weight. A 70kg person needs about 2.45 liters per day. This increases with exercise, heat, and certain health conditions.' },
+      { question: 'Does coffee/tea count as water intake?', answer: 'Caffeinated beverages are mild diuretics and don\'t fully count. It\'s best to drink them in addition to your daily water target, not as a replacement.' },
+    ],
+  },
 }
 
 /**

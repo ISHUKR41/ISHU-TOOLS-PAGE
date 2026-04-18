@@ -225,6 +225,24 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(251, 191, 36, 0.22)',
     label: 'Finance & Tax',
   },
+  'network-tools': {
+    accent: '#818cf8',
+    surface: 'rgba(14, 13, 38, 0.88)',
+    glow: 'rgba(129, 140, 248, 0.22)',
+    label: 'Network & Domain',
+  },
+  'video-tools': {
+    accent: '#f87171',
+    surface: 'rgba(30, 14, 14, 0.88)',
+    glow: 'rgba(248, 113, 113, 0.22)',
+    label: 'Video Tools',
+  },
+  'productivity': {
+    accent: '#34d399',
+    surface: 'rgba(10, 25, 20, 0.86)',
+    glow: 'rgba(52, 211, 153, 0.22)',
+    label: 'Productivity',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([

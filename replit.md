@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **512+ handlers** across **27 categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, and **Finance & Tax**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **550+ handlers** across **28 categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax**, **Network & Domain**, **Video Tools**, and **Productivity**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -14,8 +14,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
-  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + **`health_finance_handlers.py`**
-  - **512 registered handlers** (most recent count)
+  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + `health_finance_handlers.py` + **`video_extra_handlers.py`**
+  - **550 registered handlers** (most recent count)
   - Rate limiting: 60 req/min per IP on the execute endpoint
   - Workspace cleanup: auto-removed via BackgroundTasks after every request
 
@@ -27,6 +27,9 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/components/layout/SiteShell.tsx` — mega-menu nav + expanded footer (9 links/col)
 - `frontend/src/features/tool/toolFields.ts` — per-tool form field configs
 - `frontend/src/features/tool/ToolPage.tsx` — generic tool runner with FAQ/SEO sections
+- `frontend/src/features/tool/components/SmartResultDisplay.tsx` — intelligent result renderer for 25+ tool types (EMI, GST, DNS, IP, matrices, color palettes, Fibonacci, stats, sleep, currency, etc.)
+- `frontend/src/components/ui/InstallPWA.tsx` — PWA install banner + floating install button
+- `frontend/public/sw.js` — service worker with cache-first/network-first strategies for offline use
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats

@@ -1,286 +1,391 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { 
-  FileText, Image, Wand2, Zap, Shield, Globe,
-  ArrowRight, Star, Users, Clock
-} from 'lucide-react';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import {
+  FileText, Image, Wand2, Zap, Shield, Globe, ArrowRight,
+  Calculator, Code2, Palette, Lock, BarChart3, Heart, Wifi,
+  DollarSign, Video, FileSearch, Type, SlidersHorizontal
+} from 'lucide-react'
 
 const categories = [
-  {
-    id: 'pdf-core',
-    title: 'PDF Tools',
-    description: 'Merge, split, compress, and convert PDFs',
-    icon: FileText,
-    color: 'from-blue-500 to-cyan-500',
-    toolCount: 80
-  },
-  {
-    id: 'image-core',
-    title: 'Image Tools',
-    description: 'Resize, compress, convert, and enhance images',
-    icon: Image,
-    color: 'from-purple-500 to-pink-500',
-    toolCount: 70
-  },
-  {
-    id: 'ocr-vision',
-    title: 'OCR & AI',
-    description: 'Extract text, remove backgrounds, blur faces',
-    icon: Wand2,
-    color: 'from-green-500 to-emerald-500',
-    toolCount: 15
-  },
-  {
-    id: 'batch-automation',
-    title: 'Batch Tools',
-    description: 'Process multiple files at once',
-    icon: Zap,
-    color: 'from-orange-500 to-red-500',
-    toolCount: 20
-  },
-  {
-    id: 'pdf-security',
-    title: 'Security',
-    description: 'Protect, unlock, and redact PDFs',
-    icon: Shield,
-    color: 'from-red-500 to-rose-500',
-    toolCount: 10
-  },
-  {
-    id: 'text-ops',
-    title: 'Text Tools',
-    description: 'Word count, translate, summarize',
-    icon: Globe,
-    color: 'from-indigo-500 to-blue-500',
-    toolCount: 20
-  },
-];
+  { id: 'pdf-core', label: 'PDF Tools', desc: 'Merge, split, compress & convert PDFs', icon: FileText, color: '#56a6ff', tools: '80+' },
+  { id: 'image-core', label: 'Image Tools', desc: 'Resize, compress, convert & enhance images', icon: Image, color: '#c084fc', tools: '70+' },
+  { id: 'ocr-vision', label: 'OCR & Vision', desc: 'Extract text, remove backgrounds, AI tools', icon: FileSearch, color: '#4ade80', tools: '20+' },
+  { id: 'text-ops', label: 'Text Tools', desc: 'Word count, summarize, translate & more', icon: Type, color: '#60a5fa', tools: '30+' },
+  { id: 'developer-tools', label: 'Developer', desc: 'JSON, base64, minify, regex & more', icon: Code2, color: '#34d399', tools: '50+' },
+  { id: 'math-tools', label: 'Math Tools', desc: 'Algebra, statistics, matrices & calculus', icon: Calculator, color: '#f59e0b', tools: '20+' },
+  { id: 'security-tools', label: 'Security', desc: 'Password, hash, encrypt & decrypt', icon: Lock, color: '#f87171', tools: '15+' },
+  { id: 'color-tools', label: 'Color Tools', desc: 'Color picker, palette generator & converter', icon: Palette, color: '#fb7185', tools: '10+' },
+  { id: 'seo-tools', label: 'SEO Tools', desc: 'Meta tags, sitemap, keyword analyzer', icon: BarChart3, color: '#38bdf8', tools: '15+' },
+  { id: 'finance-tools', label: 'Finance', desc: 'EMI, GST, currency & tax calculators', icon: DollarSign, color: '#fbbf24', tools: '10+' },
+  { id: 'health-tools', label: 'Health', desc: 'BMI, calorie, water & sleep calculators', icon: Heart, color: '#4ade80', tools: '10+' },
+  { id: 'network-tools', label: 'Network', desc: 'IP lookup, DNS, WHOIS & SSL checker', icon: Wifi, color: '#818cf8', tools: '8+' },
+  { id: 'video-tools', label: 'Video Tools', desc: 'Download videos from YouTube & more', icon: Video, color: '#f87171', tools: '5+' },
+  { id: 'productivity', label: 'Productivity', desc: 'Pomodoro, notepad, stopwatch & more', icon: Zap, color: '#34d399', tools: '10+' },
+  { id: 'student-tools', label: 'Student Tools', desc: 'CGPA, percentages, GK quiz & more', icon: SlidersHorizontal, color: '#a78bfa', tools: '20+' },
+  { id: 'batch-automation', label: 'Batch Tools', desc: 'Process multiple files at once', icon: Wand2, color: '#f59e0b', tools: '15+' },
+]
 
-const features = [
-  {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Process files in seconds with optimized algorithms'
-  },
-  {
-    icon: Shield,
-    title: 'Secure & Private',
-    description: 'Your files are processed securely and deleted after'
-  },
-  {
-    icon: Users,
-    title: 'No Registration',
-    description: 'Use all tools without creating an account'
-  },
-  {
-    icon: Clock,
-    title: '24/7 Available',
-    description: 'Access tools anytime, anywhere, on any device'
-  },
-];
+const stats = [
+  { value: '550+', label: 'Free Tools' },
+  { value: '1M+', label: 'Happy Users' },
+  { value: '10M+', label: 'Files Processed' },
+  { value: '100%', label: 'Always Free' },
+]
+
+const whyUs = [
+  { icon: '⚡', title: 'Lightning Fast', desc: 'Sub-second processing for most tools — no lag, no waiting.' },
+  { icon: '🔒', title: 'Privacy First', desc: 'Files are deleted immediately after processing. Zero retention.' },
+  { icon: '🚫', title: 'No Signup', desc: 'Use every single tool for free with zero registration.' },
+  { icon: '📱', title: 'Works Everywhere', desc: 'Mobile, tablet, laptop — perfect on any screen size.' },
+  { icon: '🌐', title: 'No Watermark', desc: 'Clean, professional output every time. What you see is what you get.' },
+  { icon: '♾️', title: 'Unlimited Use', desc: 'No daily limits, no quota, no premium plans required.' },
+]
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 },
+}
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 px-4">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl" />
-        
+    <div style={{ minHeight: '100vh' }}>
+      {/* ── HERO ── */}
+      <section style={{ textAlign: 'center', padding: '80px 24px 64px', position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative glow orbs */}
+        <div style={{ position: 'absolute', top: -80, left: '10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,208,255,0.13) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -40, right: '8%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.11) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
         <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ marginBottom: 20 }}
+        >
+          <span style={{
+            display: 'inline-block',
+            padding: '6px 18px',
+            borderRadius: 100,
+            border: '1px solid rgba(59,208,255,0.3)',
+            background: 'rgba(59,208,255,0.08)',
+            fontSize: 13,
+            fontWeight: 700,
+            color: 'var(--accent)',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}>
+            550+ Tools • 100% Free • No Signup
+          </span>
+        </motion.div>
+
+        <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative max-w-6xl mx-auto text-center"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={{
+            fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
+            fontWeight: 900,
+            fontFamily: 'var(--font-display)',
+            lineHeight: 1.08,
+            marginBottom: 20,
+            background: 'linear-gradient(135deg, #ffffff 0%, var(--accent) 40%, #a855f7 80%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.03em',
+          }}
         >
-          <motion.div
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-block mb-6"
-          >
-            <span className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-sm font-semibold">
-              200+ Tools Available
-            </span>
-          </motion.div>
+          ISHU TOOLS
+        </motion.h1>
 
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            ISHU TOOLS
-          </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Your all-in-one toolkit for PDF, image, and document processing.
-            Fast, secure, and completely free.
-          </p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'var(--muted)', maxWidth: 600, margin: '0 auto 36px', lineHeight: 1.7 }}
+        >
+          The <strong style={{ color: 'var(--text)' }}>free online toolkit</strong> trusted by millions. PDF, image, developer, math, text, AI tools — and much more. No limits, no signup.
+        </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-wrap gap-4 justify-center"
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.4 }}
+          style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 64 }}
+        >
+          <Link to="/tools" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '14px 32px', borderRadius: 12,
+            background: 'linear-gradient(135deg, var(--accent), #6366f1)',
+            color: '#fff', fontWeight: 700, fontSize: 16,
+            boxShadow: '0 8px 32px rgba(59,208,255,0.25)',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(59,208,255,0.35)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(59,208,255,0.25)' }}
           >
-            <Link
-              to="/tools"
-              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all flex items-center gap-2"
-            >
-              Explore Tools
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <a
-              href="#categories"
-              className="px-8 py-4 bg-white/10 backdrop-blur-sm rounded-lg font-semibold hover:bg-white/20 transition-all"
-            >
-              Learn More
-            </a>
-          </motion.div>
+            Explore All Tools <ArrowRight size={18} />
+          </Link>
+          <a href="#categories" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '14px 28px', borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.06)',
+            color: 'var(--text)', fontWeight: 600, fontSize: 16,
+            transition: 'background 0.2s, border-color 0.2s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.28)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)' }}
+          >
+            Browse Categories
+          </a>
+        </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8"
-          >
-            {[
-              { label: 'Tools', value: '200+' },
-              { label: 'Users', value: '1M+' },
-              { label: 'Files Processed', value: '10M+' },
-              { label: 'Rating', value: '4.9★' },
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  {stat.value}
-                </div>
-                <div className="text-gray-400 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
+        {/* Stats row */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          style={{ display: 'flex', justifyContent: 'center', gap: 0, flexWrap: 'wrap', maxWidth: 700, margin: '0 auto' }}
+        >
+          {stats.map((s, i) => (
+            <div key={i} style={{
+              flex: '1 1 150px', textAlign: 'center', padding: '20px 16px',
+              borderRight: i < stats.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
+            }}>
+              <div style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'var(--accent)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{s.label}</div>
+            </div>
+          ))}
         </motion.div>
       </section>
 
-      {/* Categories Section */}
-      <section id="categories" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Choose Your Category
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Select from our wide range of professional tools
-            </p>
-          </motion.div>
+      {/* ── CATEGORIES GRID ── */}
+      <section id="categories" style={{ padding: '64px 24px', maxWidth: 1280, margin: '0 auto' }}>
+        <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 48 }}>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-display)' }}>Browse by Category</h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 520, margin: '0 auto' }}>
+            16 categories, 550+ tools — everything you need in one place
+          </p>
+        </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          {categories.map((cat, i) => {
+            const Icon = cat.icon
+            return (
               <motion.div
-                key={category.id}
+                key={cat.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="group"
+                transition={{ delay: Math.min(i * 0.04, 0.5) }}
               >
                 <Link
-                  to={`/category/${category.id}`}
-                  className="block p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:border-white/20 transition-all"
+                  to={`/category/${cat.id}`}
+                  style={{
+                    display: 'block', padding: '22px 22px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16,
+                    transition: 'background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                    textDecoration: 'none', color: 'inherit',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = `${cat.color}08`
+                    el.style.borderColor = `${cat.color}35`
+                    el.style.transform = 'translateY(-3px)'
+                    el.style.boxShadow = `0 12px 32px ${cat.color}14`
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.background = 'rgba(255,255,255,0.03)'
+                    el.style.borderColor = 'rgba(255,255,255,0.08)'
+                    el.style.transform = ''
+                    el.style.boxShadow = ''
+                  }}
                 >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <category.icon className="w-7 h-7 text-white" />
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 12,
+                    background: `${cat.color}18`, border: `1px solid ${cat.color}35`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: 16, flexShrink: 0,
+                  }}>
+                    <Icon size={22} style={{ color: cat.color }} />
                   </div>
-                  
-                  <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-                  <p className="text-gray-400 mb-4">{category.description}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                      {category.toolCount} tools
-                    </span>
-                    <ArrowRight className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 5, color: 'var(--text)' }}>{cat.label}</div>
+                      <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>{cat.desc}</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: cat.color, background: `${cat.color}15`, padding: '3px 10px', borderRadius: 20, whiteSpace: 'nowrap' }}>
+                        {cat.tools}
+                      </span>
+                      <ArrowRight size={15} style={{ color: 'rgba(255,255,255,0.25)' }} />
+                    </div>
                   </div>
                 </Link>
               </motion.div>
-            ))}
-          </div>
+            )
+          })}
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-white/5">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Why Choose ISHU TOOLS?
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Built with modern technology for the best experience
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12"
-        >
-          <Star className="w-16 h-16 mx-auto mb-6 text-yellow-300" />
-          <h2 className="text-4xl font-bold mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join millions of users who trust ISHU TOOLS for their daily tasks
-          </p>
-          <Link
-            to="/tools"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:shadow-lg transition-all"
-          >
-            Start Using Tools
-            <ArrowRight className="w-5 h-5" />
+        <motion.div {...fadeUp} style={{ textAlign: 'center', marginTop: 36 }}>
+          <Link to="/tools" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '13px 28px', borderRadius: 12,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.05)',
+            color: 'var(--muted-strong)', fontWeight: 600, fontSize: 15,
+          }}>
+            View All 550+ Tools <ArrowRight size={16} />
           </Link>
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center text-gray-400">
-          <p className="mb-4">© 2024 ISHU TOOLS. All rights reserved.</p>
-          <p className="text-sm">
-            Made with ❤️ for everyone who needs powerful, free tools
+      {/* ── WHY ISHU TOOLS ── */}
+      <section style={{ padding: '64px 24px', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 48 }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-display)' }}>Why ISHU TOOLS?</h2>
+            <p style={{ color: 'var(--muted)', fontSize: 17 }}>Built for people, not profit</p>
+          </motion.div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+            {whyUs.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                style={{
+                  display: 'flex', gap: 16, padding: '20px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 14,
+                  alignItems: 'flex-start',
+                }}
+              >
+                <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 5 }}>{item.title}</div>
+                  <div style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.6 }}>{item.desc}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── POPULAR TOOLS QUICK LINKS ── */}
+      <section style={{ padding: '64px 24px', maxWidth: 1100, margin: '0 auto' }}>
+        <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 36 }}>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', fontWeight: 800, marginBottom: 10, fontFamily: 'var(--font-display)' }}>
+            Popular Tools
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 15 }}>Quick access to the most used tools</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}
+        >
+          {[
+            'compress-pdf', 'merge-pdf', 'pdf-to-jpg', 'jpg-to-pdf', 'remove-background',
+            'resize-image', 'compress-image', 'image-to-text', 'word-counter', 'character-counter',
+            'json-formatter', 'password-generator', 'ip-address-lookup', 'emi-calculator-advanced',
+            'gst-calculator-india', 'calorie-calculator', 'qr-code-generator', 'color-picker',
+            'grammar-checker', 'plagiarism-checker', 'currency-converter', 'base64-encoder',
+          ].map(slug => (
+            <Link
+              key={slug}
+              to={`/tools/${slug}`}
+              style={{
+                padding: '8px 16px', borderRadius: 8,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                fontSize: 13, fontWeight: 600,
+                color: 'var(--muted-strong)',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement
+                el.style.background = 'rgba(59,208,255,0.1)'
+                el.style.borderColor = 'rgba(59,208,255,0.3)'
+                el.style.color = 'var(--accent)'
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement
+                el.style.background = 'rgba(255,255,255,0.05)'
+                el.style.borderColor = 'rgba(255,255,255,0.1)'
+                el.style.color = 'var(--muted-strong)'
+              }}
+            >
+              {slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+            </Link>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ padding: '48px 24px 80px' }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          style={{
+            maxWidth: 760, margin: '0 auto', textAlign: 'center',
+            padding: '52px 40px',
+            background: 'linear-gradient(135deg, rgba(59,208,255,0.1), rgba(139,92,246,0.1))',
+            border: '1px solid rgba(59,208,255,0.2)',
+            borderRadius: 24,
+            boxShadow: '0 32px 80px rgba(0,0,0,0.3)',
+          }}
+        >
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🚀</div>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-display)' }}>
+            Ready to Get Started?
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 17, marginBottom: 32, lineHeight: 1.7 }}>
+            Join over 1 million users who use ISHU TOOLS every day for free. No account, no credit card, no limits.
           </p>
+          <Link to="/tools" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            padding: '15px 36px', borderRadius: 12,
+            background: 'linear-gradient(135deg, var(--accent), #818cf8)',
+            color: '#fff', fontWeight: 800, fontSize: 17,
+            boxShadow: '0 8px 32px rgba(59,208,255,0.3)',
+          }}>
+            Start Using Free Tools <ArrowRight size={20} />
+          </Link>
+        </motion.div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '32px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 8 }}>
+            © {new Date().getFullYear()} <strong style={{ color: 'var(--text)' }}>ISHU TOOLS</strong> (Indian Student Hub University Tools) — All Rights Reserved
+          </p>
+          <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
+            Free online tools for PDF, image, text, developer, math, health, finance & more
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 18, flexWrap: 'wrap' }}>
+            {['PDF Tools', 'Image Tools', 'Text Tools', 'Developer Tools', 'Calculator'].map(label => (
+              <Link key={label} to="/tools" style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', transition: 'color 0.2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--muted)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)' }}
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
         </div>
       </footer>
     </div>
-  );
+  )
 }

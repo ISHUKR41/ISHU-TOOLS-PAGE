@@ -1,27 +1,71 @@
 {
   "name": "ISHU TOOLS - Indian Student Hub University Tools",
   "short_name": "ISHU TOOLS",
-  "description": "485+ free online tools for students and professionals. PDF, Image, Developer, Math, Text & AI tools. No signup, no watermark.",
+  "description": "510+ free online tools for students and professionals. PDF, Image, Developer, Math, Text & AI tools. No signup, no watermark, no limits.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#0a0f1e",
   "theme_color": "#3bd0ff",
   "orientation": "any",
-  "categories": [
-    "utilities",
-    "productivity",
-    "education"
+  "categories": ["utilities", "productivity", "education"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "id": "/",
+  "shortcuts": [
+    {
+      "name": "Merge PDF",
+      "short_name": "Merge PDF",
+      "description": "Combine multiple PDF files",
+      "url": "/tools/merge-pdf",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Compress Image",
+      "short_name": "Compress",
+      "description": "Reduce image file size",
+      "url": "/tools/compress-image",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Remove Background",
+      "short_name": "Remove BG",
+      "description": "AI background remover",
+      "url": "/tools/remove-background",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "JSON Formatter",
+      "short_name": "JSON",
+      "description": "Format and validate JSON",
+      "url": "/tools/json-formatter",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
   ],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
-  "lang": "en",
-  "dir": "ltr",
-  "scope": "/",
-  "prefer_related_applications": false
+  "related_applications": [],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

@@ -131,7 +131,7 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 441
+  const toolLabel = toolCount > 0 ? toolCount : 550
 
   return (
     <motion.section
@@ -188,7 +188,7 @@ export default function HeroSection({
 
           <p className='hero-v2-subtitle'>
             Your ultimate free toolkit — <strong>{toolLabel}+</strong> professional-grade tools for
-            PDF, images, code, math, text &amp; AI. No signup. No watermark. No limits.
+            PDF, images, code, math, text, AI, finance &amp; health. No signup. No watermark. No limits.
           </p>
 
           <div className='hero-v2-actions'>

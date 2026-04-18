@@ -2132,6 +2132,295 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
+
+  // ─── Video Downloaders ───────────────────────────────────────────────
+  'video-downloader': [
+    { name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste YouTube, Instagram, Twitter, TikTok URL here...' },
+    {
+      name: 'quality',
+      label: 'Quality',
+      type: 'select',
+      defaultValue: 'best',
+      options: [
+        { label: 'Best Available', value: 'best' },
+        { label: '1080p Full HD', value: '1080' },
+        { label: '720p HD', value: '720' },
+        { label: '480p', value: '480' },
+        { label: '360p', value: '360' },
+      ],
+    },
+  ],
+  'youtube-video-downloader': [
+    { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL here... e.g. https://youtube.com/watch?v=...' },
+    {
+      name: 'quality',
+      label: 'Quality',
+      type: 'select',
+      defaultValue: 'best',
+      options: [
+        { label: 'Best Available', value: 'best' },
+        { label: '1080p Full HD', value: '1080' },
+        { label: '720p HD', value: '720' },
+        { label: '480p', value: '480' },
+        { label: '360p', value: '360' },
+      ],
+    },
+  ],
+  'youtube-to-mp3': [
+    { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL to extract audio as MP3...' },
+  ],
+  'instagram-downloader': [
+    { name: 'url', label: 'Instagram URL', type: 'text', placeholder: 'Paste Instagram reel, post, or story URL here...' },
+  ],
+
+  // ─── Network Tools ───────────────────────────────────────────────────
+  'ip-address-lookup': [
+    { name: 'ip', label: 'IP Address (optional)', type: 'text', placeholder: 'Leave empty to check your own IP, or enter any IP...' },
+  ],
+  'dns-lookup': [
+    { name: 'domain', label: 'Domain Name', type: 'text', placeholder: 'e.g. google.com, youtube.com, ishutools.com' },
+  ],
+  'whois-lookup': [
+    { name: 'domain', label: 'Domain Name', type: 'text', placeholder: 'e.g. google.com, amazon.com' },
+  ],
+  'ssl-certificate-checker': [
+    { name: 'domain', label: 'Website Domain', type: 'text', placeholder: 'e.g. google.com, github.com (without https://)' },
+  ],
+
+  // ─── Text Tools ──────────────────────────────────────────────────────
+  'text-to-morse': [
+    { name: 'text', label: 'Text or Morse Code', type: 'textarea', placeholder: 'Enter text to convert to Morse code, or Morse code to decode...' },
+    {
+      name: 'mode',
+      label: 'Mode',
+      type: 'select',
+      defaultValue: 'text-to-morse',
+      options: [
+        { label: 'Text → Morse Code', value: 'text-to-morse' },
+        { label: 'Morse Code → Text', value: 'morse-to-text' },
+      ],
+    },
+  ],
+  'ascii-art-generator': [
+    { name: 'text', label: 'Text to Convert', type: 'text', placeholder: 'Enter text (up to 20 characters)...' },
+  ],
+  'grammar-checker': [
+    { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste your English text here to check for grammar and spelling mistakes...' },
+  ],
+  'paraphrase-tool': [
+    { name: 'text', label: 'Text to Paraphrase', type: 'textarea', placeholder: 'Paste your text here to paraphrase it in different words...' },
+  ],
+  'plagiarism-detector': [
+    { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Paste your text to check for duplicate or copied content...' },
+  ],
+  'text-to-handwriting': [
+    { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Enter text to convert to handwriting style (max 500 characters)...' },
+  ],
+  'word-frequency-counter': [
+    { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste your text here to analyze word frequency...' },
+  ],
+
+  // ─── Math Tools ──────────────────────────────────────────────────────
+  'fibonacci-generator': [
+    { name: 'text', label: 'Number of Terms', type: 'number', defaultValue: '10', placeholder: 'How many Fibonacci numbers? (max 100)' },
+  ],
+  'prime-number-checker': [
+    { name: 'text', label: 'Number', type: 'number', placeholder: 'Enter a number to check if it is prime...' },
+  ],
+  'statistics-calculator': [
+    { name: 'text', label: 'Dataset (numbers)', type: 'textarea', placeholder: 'Enter numbers separated by commas or spaces... e.g. 4, 8, 15, 16, 23, 42' },
+  ],
+  'matrix-calculator': [
+    { name: 'matrix1', label: 'Matrix A (rows separated by ;, columns by ,)', type: 'textarea', placeholder: 'e.g. 1,2;3,4 for a 2x2 matrix', defaultValue: '1,2;3,4' },
+    {
+      name: 'operation',
+      label: 'Operation',
+      type: 'select',
+      defaultValue: 'multiply',
+      options: [
+        { label: 'Multiply A × B', value: 'multiply' },
+        { label: 'Add A + B', value: 'add' },
+        { label: 'Subtract A - B', value: 'subtract' },
+        { label: 'Transpose A', value: 'transpose' },
+        { label: 'Determinant of A', value: 'determinant' },
+      ],
+    },
+    { name: 'matrix2', label: 'Matrix B (optional, for multiply/add/subtract)', type: 'textarea', placeholder: 'e.g. 5,6;7,8', defaultValue: '5,6;7,8' },
+  ],
+  'equation-solver': [
+    { name: 'text', label: 'Equation', type: 'text', placeholder: 'e.g. x^2 + 5x + 6 = 0 or 2x + 4 = 10' },
+  ],
+
+  // ─── Finance Tools ───────────────────────────────────────────────────
+  'currency-converter': [
+    { name: 'amount', label: 'Amount', type: 'number', defaultValue: '1', placeholder: 'Enter amount...' },
+    {
+      name: 'from',
+      label: 'From Currency',
+      type: 'select',
+      defaultValue: 'USD',
+      options: [
+        { label: 'USD — US Dollar', value: 'USD' },
+        { label: 'INR — Indian Rupee', value: 'INR' },
+        { label: 'EUR — Euro', value: 'EUR' },
+        { label: 'GBP — British Pound', value: 'GBP' },
+        { label: 'AED — UAE Dirham', value: 'AED' },
+        { label: 'SGD — Singapore Dollar', value: 'SGD' },
+        { label: 'CAD — Canadian Dollar', value: 'CAD' },
+        { label: 'AUD — Australian Dollar', value: 'AUD' },
+        { label: 'JPY — Japanese Yen', value: 'JPY' },
+        { label: 'SAR — Saudi Riyal', value: 'SAR' },
+        { label: 'MYR — Malaysian Ringgit', value: 'MYR' },
+      ],
+    },
+    {
+      name: 'to',
+      label: 'To Currency',
+      type: 'select',
+      defaultValue: 'INR',
+      options: [
+        { label: 'INR — Indian Rupee', value: 'INR' },
+        { label: 'USD — US Dollar', value: 'USD' },
+        { label: 'EUR — Euro', value: 'EUR' },
+        { label: 'GBP — British Pound', value: 'GBP' },
+        { label: 'AED — UAE Dirham', value: 'AED' },
+        { label: 'SGD — Singapore Dollar', value: 'SGD' },
+        { label: 'CAD — Canadian Dollar', value: 'CAD' },
+        { label: 'AUD — Australian Dollar', value: 'AUD' },
+        { label: 'JPY — Japanese Yen', value: 'JPY' },
+        { label: 'SAR — Saudi Riyal', value: 'SAR' },
+        { label: 'MYR — Malaysian Ringgit', value: 'MYR' },
+      ],
+    },
+  ],
+  'gst-calculator-india': [
+    { name: 'amount', label: 'Amount (₹)', type: 'number', placeholder: 'Enter original amount...' },
+    {
+      name: 'gst_rate',
+      label: 'GST Rate (%)',
+      type: 'select',
+      defaultValue: '18',
+      options: [
+        { label: '0% — Exempt', value: '0' },
+        { label: '5% — Essential goods', value: '5' },
+        { label: '12% — Standard', value: '12' },
+        { label: '18% — Standard services', value: '18' },
+        { label: '28% — Luxury goods', value: '28' },
+      ],
+    },
+    {
+      name: 'type',
+      label: 'Calculation Type',
+      type: 'select',
+      defaultValue: 'exclusive',
+      options: [
+        { label: 'Exclusive — Add GST to amount', value: 'exclusive' },
+        { label: 'Inclusive — Extract GST from total', value: 'inclusive' },
+      ],
+    },
+  ],
+  'fuel-cost-calculator': [
+    { name: 'distance', label: 'Distance (km)', type: 'number', defaultValue: '100', placeholder: 'Distance in kilometers...' },
+    { name: 'fuel_price', label: 'Fuel Price (₹/litre)', type: 'number', defaultValue: '103', placeholder: 'Current fuel price per litre...' },
+    { name: 'mileage', label: 'Mileage (km/litre)', type: 'number', defaultValue: '15', placeholder: 'Your car mileage...' },
+  ],
+  'emi-calculator-advanced': [
+    { name: 'principal', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: 'Enter loan amount...' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: 'e.g. 8.5' },
+    { name: 'tenure', label: 'Loan Tenure (months)', type: 'number', defaultValue: '60', placeholder: 'e.g. 60 for 5 years' },
+  ],
+  'atm-pin-generator': [
+    {
+      name: 'length',
+      label: 'PIN Length',
+      type: 'select',
+      defaultValue: '4',
+      options: [
+        { label: '4 digits (ATM standard)', value: '4' },
+        { label: '6 digits (Modern ATMs)', value: '6' },
+      ],
+    },
+    { name: 'count', label: 'Number of PINs', type: 'number', defaultValue: '5', placeholder: '1-20 PINs' },
+  ],
+  'credit-card-validator': [
+    { name: 'text', label: 'Card Number', type: 'text', placeholder: 'Enter credit/debit card number (for testing only)...' },
+  ],
+  'ifsc-code-finder': [
+    { name: 'text', label: 'IFSC Code', type: 'text', placeholder: 'Enter 11-character IFSC code... e.g. SBIN0000001' },
+  ],
+  'number-to-words': [
+    { name: 'text', label: 'Number', type: 'number', placeholder: 'Enter a number to convert to words... e.g. 12345' },
+  ],
+
+  // ─── Health Tools ─────────────────────────────────────────────────────
+  'calorie-calculator': [
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: 'Your weight in kg...' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: 'Your height in cm...' },
+    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: 'Your age...' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'male',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+    {
+      name: 'activity',
+      label: 'Activity Level',
+      type: 'select',
+      defaultValue: 'moderate',
+      options: [
+        { label: 'Sedentary (desk job, no exercise)', value: 'sedentary' },
+        { label: 'Light (1-3 days exercise/week)', value: 'light' },
+        { label: 'Moderate (3-5 days exercise/week)', value: 'moderate' },
+        { label: 'Active (6-7 days exercise/week)', value: 'active' },
+        { label: 'Very Active (hard daily exercise)', value: 'very_active' },
+      ],
+    },
+  ],
+  'water-intake-calculator': [
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: 'Your weight in kg...' },
+    {
+      name: 'activity',
+      label: 'Activity Level',
+      type: 'select',
+      defaultValue: 'moderate',
+      options: [
+        { label: 'Low (sedentary)', value: 'low' },
+        { label: 'Moderate (light exercise)', value: 'moderate' },
+        { label: 'High (regular exercise)', value: 'high' },
+        { label: 'Very High (intense exercise)', value: 'very_high' },
+      ],
+    },
+    {
+      name: 'climate',
+      label: 'Climate',
+      type: 'select',
+      defaultValue: 'normal',
+      options: [
+        { label: 'Cold', value: 'cold' },
+        { label: 'Normal / Moderate', value: 'normal' },
+        { label: 'Hot', value: 'hot' },
+        { label: 'Very Hot (tropical/summer)', value: 'very_hot' },
+      ],
+    },
+  ],
+  'sleep-calculator': [
+    { name: 'wake_time', label: 'Wake Up Time', type: 'text', defaultValue: '06:30', placeholder: 'When do you want to wake up? e.g. 06:30' },
+    { name: 'sleep_time', label: 'Bedtime (optional)', type: 'text', placeholder: 'When are you going to sleep? e.g. 22:00 — leave empty to calculate bedtime' },
+  ],
+  'roman-numeral-converter': [
+    { name: 'text', label: 'Number or Roman Numeral', type: 'text', placeholder: 'Enter a number (e.g. 2024) or Roman numeral (e.g. MMXXIV)...' },
+  ],
+  'color-palette-generator': [
+    { name: 'color', label: 'Base Color (HEX)', type: 'text', defaultValue: '#3bd0ff', placeholder: 'Enter base color HEX code... e.g. #3bd0ff' },
+  ],
+  'bulk-image-compressor': [
+    { name: 'quality', label: 'Compression Quality', type: 'number', defaultValue: '75', placeholder: '1-95 (75 = good balance)' },
+  ],
 }
 
 export function getToolFields(slug: string): ToolField[] {

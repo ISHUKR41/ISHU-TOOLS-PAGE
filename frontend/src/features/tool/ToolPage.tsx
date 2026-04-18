@@ -28,6 +28,7 @@ import ToolSidebar from './components/ToolSidebar'
 import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
 import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
+import SmartResultDisplay from './components/SmartResultDisplay'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -801,43 +802,13 @@ export default function ToolPage() {
 
                   {jsonResult && (() => {
                     const d = jsonResult.data || {}
-                    const textFields = [
-                      'text',
-                      'content',
-                      'answer',
-                      'summary',
-                      'translated_text',
-                      'result',
-                      'extracted_text',
-                      'output',
-                    ]
-                    const found = textFields.find((k) => d[k])
                     return (
                       <div className='json-result-block'>
-                        {found && (
-                          <div className='json-text-result'>
-                            <div className='json-text-header'>
-                              <span>Result</span>
-                              <button
-                                type='button'
-                                className='copy-btn'
-                                onClick={() => handleCopyText(String(d[found]))}
-                              >
-                                <ClipboardCopy size={13} />
-                                {copied ? 'Copied!' : 'Copy'}
-                              </button>
-                            </div>
-                            <div className='json-text-body'>
-                              <p>{String(d[found])}</p>
-                            </div>
-                          </div>
-                        )}
-                        {Object.keys(d).filter((k) => k !== found && d[k] && typeof d[k] !== 'object').map((k) => (
-                          <div key={k} className='json-kv-row'>
-                            <span className='json-kv-key'>{k.replace(/_/g, ' ')}</span>
-                            <span className='json-kv-val'>{String(d[k])}</span>
-                          </div>
-                        ))}
+                        <SmartResultDisplay
+                          data={d as Record<string, unknown>}
+                          slug={tool.slug}
+                          accent={toolTheme.accent}
+                        />
                         <details className='json-details'>
                           <summary>Raw output data</summary>
                           <pre className='json-preview'>{JSON.stringify(jsonResult, null, 2)}</pre>

@@ -87,12 +87,26 @@ def sitemap_xml() -> Response:
         "ocr-pdf", "json-formatter", "bmi-calculator", "password-generator",
         "qr-code-generator", "pdf-to-excel",
         # Health & Finance — high-value SEO targets
-        "calorie-calculator", "gst-calculator", "sip-calculator",
+        "calorie-calculator", "gst-calculator-india", "sip-calculator",
         "income-tax-calculator", "roi-calculator", "budget-planner",
         "water-intake-calculator", "sleep-calculator", "bmr-calculator",
         "heart-rate-zones", "steps-to-km", "calories-burned-calculator",
         "number-to-words", "roman-numeral-converter", "date-calculator",
         "age-in-seconds", "random-name-generator", "random-number-generator",
+        # Network tools
+        "ip-address-lookup", "dns-lookup", "whois-lookup", "ssl-certificate-checker",
+        # Finance tools
+        "emi-calculator-advanced", "currency-converter", "fuel-cost-calculator",
+        "credit-card-validator", "ifsc-code-finder",
+        # Developer tools
+        "base64-encoder", "base64-decoder", "regex-tester", "jwt-decoder",
+        "hash-generator", "uuid-generator", "lorem-ipsum-generator",
+        # Math tools
+        "statistics-calculator", "prime-number-checker", "fibonacci-generator",
+        "equation-solver", "matrix-calculator",
+        # Text tools
+        "grammar-checker", "plagiarism-checker", "word-frequency-counter",
+        "paraphrase-tool", "text-to-morse",
     }
     seen_slugs: set[str] = set()
     for tool in TOOLS:

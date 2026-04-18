@@ -6483,3 +6483,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load health_finance_handlers: {e}")
 
 print(f"[handlers] FINAL GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge video downloader + extra tools handlers
+try:
+    from .video_extra_handlers import VIDEO_EXTRA_HANDLERS
+    HANDLERS.update(VIDEO_EXTRA_HANDLERS)
+    print(f"[handlers] Loaded {len(VIDEO_EXTRA_HANDLERS)} video/extra handlers (video/network/finance/math)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load video_extra_handlers: {e}")
+
+print(f"[handlers] COMPLETE GRAND TOTAL registered handlers: {len(HANDLERS)}")
