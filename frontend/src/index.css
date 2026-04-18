@@ -5560,3 +5560,284 @@ html {
   contain-intrinsic-size: auto 400px;
 }
 
+
+/* ══════════════════════════════════════════════════════════════════
+   PREMIUM DESIGN SYSTEM — Inspired by snipe.design, unicorn.studio,
+   manus.im, 21st.dev, landing.love
+   Modern glassmorphism + micro-interactions + aurora effects
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Enhanced Skeleton Loading ─────────────────────────────────── */
+@keyframes skeleton-wave {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-card,
+.skeleton,
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.03) 80%
+  ) !important;
+  background-size: 800px 100% !important;
+  animation: skeleton-wave 1.6s ease-in-out infinite !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── Glassmorphism Card Enhancement ───────────────────────────── */
+.spotlight-card {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease !important;
+  will-change: transform;
+}
+
+.spotlight-card:hover {
+  transform: translateY(-4px) scale(1.012) !important;
+}
+
+/* ── Tool Card Premium Hover ───────────────────────────────────── */
+.tool-card-grid-item {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
+  will-change: transform;
+  contain: layout style;
+}
+
+.tool-card-grid-item:hover {
+  transform: translateY(-3px) !important;
+}
+
+/* ── Aurora Gradient Background Layer ─────────────────────────── */
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+    opacity: 0.4;
+  }
+  33% {
+    transform: translate(5%, -8%) rotate(120deg) scale(1.15);
+    opacity: 0.55;
+  }
+  66% {
+    transform: translate(-5%, 5%) rotate(240deg) scale(0.9);
+    opacity: 0.35;
+  }
+}
+
+.aurora-orb-extra {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.25;
+  pointer-events: none;
+  animation: aurora-flow 18s ease-in-out infinite;
+}
+
+/* ── Gradient Noise Texture Overlay ───────────────────────────── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Section Entry Animations (intersection-based) ────────────── */
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: slide-up-fade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Premium Search Input ──────────────────────────────────────── */
+.search-bar-outer:focus-within {
+  box-shadow: 0 0 0 1px rgba(99, 179, 255, 0.5), 0 8px 32px rgba(99, 179, 255, 0.12), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Improved Tool Page Container ─────────────────────────────── */
+.tool-page-container {
+  animation: slide-up-fade 0.4s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+/* ── Enhanced Results Container ───────────────────────────────── */
+.result-display-container {
+  animation: slide-up-fade 0.35s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  border: 1px solid rgba(99, 179, 255, 0.1) !important;
+  background: rgba(5, 10, 25, 0.7) !important;
+  backdrop-filter: blur(20px) saturate(150%) !important;
+}
+
+/* ── Better Category Pills ─────────────────────────────────────── */
+.category-pill {
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.category-pill:hover {
+  transform: scale(1.05) !important;
+}
+
+.category-pill.active {
+  transform: scale(1.04) !important;
+}
+
+/* ── Focus Visible Ring (accessibility + style) ───────────────── */
+:focus-visible {
+  outline: 2px solid rgba(99, 179, 255, 0.7) !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+}
+
+/* ── Smooth Scroll Behavior ───────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Better Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 179, 255, 0.2);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(99, 179, 255, 0.4); }
+
+/* ── Button Micro-interactions ────────────────────────────────── */
+.btn-primary,
+.run-btn,
+button[type="submit"] {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease !important;
+}
+
+.btn-primary:hover,
+.run-btn:hover,
+button[type="submit"]:hover {
+  transform: translateY(-2px) !important;
+}
+
+.btn-primary:active,
+.run-btn:active {
+  transform: scale(0.97) !important;
+}
+
+/* ── Ripple effect on button click ───────────────────────────── */
+.btn-primary::after,
+.run-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 70%);
+  transform: scale(0);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+  border-radius: inherit;
+}
+
+.btn-primary:active::after,
+.run-btn:active::after {
+  transform: scale(2);
+  opacity: 1;
+  transition: none;
+}
+
+/* ── Loading Spinner Enhancement ─────────────────────────────── */
+.loading-spinner,
+.spin {
+  animation: spin 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Toast notification improvements ─────────────────────────── */
+.toast {
+  backdrop-filter: blur(20px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+/* ── Grid section staggered animations ───────────────────────── */
+.tool-card-grid-item:nth-child(1) { animation-delay: 0ms; }
+.tool-card-grid-item:nth-child(2) { animation-delay: 30ms; }
+.tool-card-grid-item:nth-child(3) { animation-delay: 60ms; }
+.tool-card-grid-item:nth-child(4) { animation-delay: 90ms; }
+.tool-card-grid-item:nth-child(5) { animation-delay: 120ms; }
+.tool-card-grid-item:nth-child(6) { animation-delay: 150ms; }
+.tool-card-grid-item:nth-child(n+7) { animation-delay: 180ms; }
+
+/* ── SEO / Tool Page Specific Improvements ───────────────────── */
+.tool-hero-description {
+  line-height: 1.75 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.tool-seo-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding-top: 2rem !important;
+}
+
+/* ── FAQ Section ─────────────────────────────────────────────── */
+.faq-item {
+  transition: background 0.2s ease, border-color 0.2s ease !important;
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(99, 179, 255, 0.2) !important;
+}
+
+/* ── Mobile touch improvements ───────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .spotlight-card:hover { transform: none !important; }
+  .tool-card-grid-item:hover { transform: none !important; }
+  .category-pill:hover { transform: none !important; }
+  .btn-primary:hover, .run-btn:hover { transform: none !important; }
+}
+
+/* ── Better responsive grid ──────────────────────────────────── */
+@media (max-width: 480px) {
+  .tool-card-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+  .category-pills-row {
+    gap: 0.35rem !important;
+  }
+}
+
+/* ── Print styles ─────────────────────────────────────────────── */
+@media print {
+  .site-header, .site-footer, .tool-sidebar { display: none !important; }
+  .tool-page-container { margin: 0; padding: 0; }
+  body { background: white !important; color: black !important; }
+}
+

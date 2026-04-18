@@ -1,11 +1,13 @@
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from datetime import date
+import hashlib
+import json
 import time
 from pathlib import Path
 import importlib.util
 import platform
 import shutil
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,6 +43,69 @@ def _check_rate_limit(ip: str) -> None:
             headers={"Retry-After": "60"},
         )
     _rate_buckets[ip].append(now)
+
+
+# ── In-memory LRU cache for text-only tool results ────────────────────────
+# Caches results from tools that process text/JSON payloads (no file uploads)
+# This dramatically speeds up repeated identical requests (calculators, converters, etc.)
+_CACHE_TTL_SECONDS = 300  # 5 minutes
+_CACHE_MAX_SIZE    = 500  # max cached entries
+
+class _TTLLRUCache:
+    """Simple LRU cache with per-entry TTL. Thread-safe enough for single-process FastAPI."""
+    def __init__(self, max_size: int, ttl: int):
+        self._cache: OrderedDict[str, tuple[float, Any]] = OrderedDict()
+        self._max_size = max_size
+        self._ttl = ttl
+        self._hits = 0
+        self._misses = 0
+
+    def _make_key(self, slug: str, payload: dict) -> str:
+        raw = json.dumps({"slug": slug, "payload": payload}, sort_keys=True, default=str)
+        return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+    def get(self, slug: str, payload: dict) -> dict | None:
+        key = self._make_key(slug, payload)
+        if key in self._cache:
+            ts, val = self._cache[key]
+            if time.time() - ts < self._ttl:
+                # Move to end (most recently used)
+                self._cache.move_to_end(key)
+                self._hits += 1
+                return val
+            else:
+                # Expired
+                del self._cache[key]
+        self._misses += 1
+        return None
+
+    def set(self, slug: str, payload: dict, value: dict) -> None:
+        key = self._make_key(slug, payload)
+        self._cache[key] = (time.time(), value)
+        self._cache.move_to_end(key)
+        # Evict LRU entries if over capacity
+        while len(self._cache) > self._max_size:
+            self._cache.popitem(last=False)
+
+    def stats(self) -> dict:
+        return {"size": len(self._cache), "hits": self._hits, "misses": self._misses, "max_size": self._max_size}
+
+
+_tool_cache = _TTLLRUCache(max_size=_CACHE_MAX_SIZE, ttl=_CACHE_TTL_SECONDS)
+
+# Tools whose results should NOT be cached (randomness/live data)
+_NO_CACHE_SLUGS = {
+    "uuid-generator", "password-generator", "random-number-generator",
+    "coin-flip", "dice-roller", "random-color-generator", "random-name-generator",
+    "love-calculator", "atm-pin-generator", "world-clock", "stopwatch",
+    "currency-converter",  # live rates
+    "ip-address-lookup", "dns-lookup", "whois-lookup", "ssl-certificate-checker",
+    "ip-lookup",
+}
+
+def _should_cache(slug: str, files: list) -> bool:
+    """Only cache text-only tool calls (no file uploads, no randomness)."""
+    return len(files) == 0 and slug not in _NO_CACHE_SLUGS
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
@@ -226,6 +291,12 @@ def _cleanup_workspace(job_dir: Path) -> None:
         pass
 
 
+@app.get("/api/cache/stats")
+def cache_stats() -> dict:
+    """Return LRU cache statistics for monitoring."""
+    return {"cache": _tool_cache.stats(), "rate_limit": {"window_s": _RATE_LIMIT_WINDOW, "max_requests": _RATE_LIMIT_REQUESTS}}
+
+
 @app.post("/api/tools/{slug}/execute")
 def run_tool(
     request: Request,
@@ -244,6 +315,16 @@ def run_tool(
         raise HTTPException(status_code=501, detail=f"Handler is not implemented for '{tool.title}'. Please check back later.")
 
     payload_data = parse_payload(payload)
+
+    # ── Check LRU cache for text-only tools ──────────────────────────────────
+    use_cache = _should_cache(slug, files)
+    if use_cache:
+        cached = _tool_cache.get(slug, payload_data)
+        if cached is not None:
+            return JSONResponse(
+                content=cached,
+                headers={"X-Cache": "HIT", "Cache-Control": "private, max-age=300"},
+            )
 
     # ── Validate file upload requirements ──
     if tool.input_kind == "files" and not files:
@@ -266,7 +347,7 @@ def run_tool(
         ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif",
         ".svg", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt", ".odt", ".rtf",
         ".txt", ".md", ".html", ".htm", ".csv", ".json", ".xml", ".epub",
-        ".zip", ".heic", ".heif",
+        ".zip", ".heic", ".heif", ".yaml", ".yml", ".mobi",
     }
     for f in files:
         if f.filename:
@@ -274,8 +355,15 @@ def run_tool(
             if ext and ext not in ALLOWED_EXTENSIONS:
                 raise HTTPException(
                     status_code=422,
-                    detail=f"File type '{ext}' is not supported. Please upload a valid file.",
+                    detail=f"File type '{ext}' is not supported. Allowed types: PDF, images, Office docs, text files.",
                 )
+
+    # ── Validate payload size (prevent abuse with huge text inputs) ──
+    if payload and len(payload) > 2 * 1024 * 1024:  # 2MB text limit
+        raise HTTPException(
+            status_code=413,
+            detail="Input text is too large (maximum 2 MB). Please reduce your input size.",
+        )
 
     job_id, input_dir, output_dir = create_job_workspace()
     job_root = input_dir.parent   # parent dir of input/ and output/
@@ -286,6 +374,9 @@ def run_tool(
     except HTTPException:
         background_tasks.add_task(_cleanup_workspace, job_root)
         raise
+    except ValueError as exc:
+        background_tasks.add_task(_cleanup_workspace, job_root)
+        raise HTTPException(status_code=422, detail=f"Invalid input: {str(exc)[:200]}") from exc
     except Exception as exc:
         background_tasks.add_task(_cleanup_workspace, job_root)
         raise HTTPException(
@@ -296,13 +387,18 @@ def run_tool(
     if result.kind == "json":
         # JSON results don't need the workspace — clean it up immediately
         background_tasks.add_task(_cleanup_workspace, job_root)
+        response_data = {
+            "status": "success",
+            "message": result.message,
+            "job_id": job_id,
+            "data": result.data or {},
+        }
+        # Store in LRU cache if eligible
+        if use_cache:
+            _tool_cache.set(slug, payload_data, response_data)
         return JSONResponse(
-            content={
-                "status": "success",
-                "message": result.message,
-                "job_id": job_id,
-                "data": result.data or {},
-            }
+            content=response_data,
+            headers={"X-Cache": "MISS"},
         )
 
     if result.kind == "file" and result.output_path and Path(result.output_path).exists():
