@@ -4149,6 +4149,223 @@ TOOLS.extend([
         tags=["whitespace remover", "remove spaces", "trim whitespace", "clean text", "space remover"],
         input_kind="text",
     ),
+
+    # ═══════════════════════════════════════════════════════
+    #  Phase 3: PDF Advanced Tools
+    # ═══════════════════════════════════════════════════════
+    ToolDefinition(
+        slug="grayscale-pdf",
+        title="Grayscale PDF",
+        description="Convert a color PDF to grayscale. Reduce file size and prepare for black-and-white printing.",
+        category="pdf-advanced",
+        tags=["grayscale", "black and white", "pdf", "convert", "print"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="flatten-pdf",
+        title="Flatten PDF",
+        description="Flatten PDF form fields and annotations into the page content. Prevents editing of filled forms.",
+        category="pdf-advanced",
+        tags=["flatten", "form fields", "annotations", "pdf"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="pdf-to-csv",
+        title="PDF to CSV",
+        description="Extract tabular data from PDF and export as CSV file. Perfect for spreadsheet import.",
+        category="data-tools",
+        tags=["pdf to csv", "extract table", "csv export", "data extraction"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="csv-to-pdf",
+        title="CSV to PDF",
+        description="Convert CSV spreadsheet data into a professionally formatted PDF table.",
+        category="data-tools",
+        tags=["csv to pdf", "table", "spreadsheet", "convert"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="pdf-header-footer",
+        title="PDF Header & Footer",
+        description="Add custom header text and footer with page numbers to every page of your PDF.",
+        category="pdf-advanced",
+        tags=["header", "footer", "page number", "pdf", "customize"],
+        input_kind="mixed",
+    ),
+
+    # ═══════════════════════════════════════════════════════
+    #  Phase 3: Image Effect Tools
+    # ═══════════════════════════════════════════════════════
+    ToolDefinition(
+        slug="blur-face",
+        title="Blur Face",
+        description="Automatically blur face regions in photos for privacy protection. Adjustable blur strength.",
+        category="image-effects",
+        tags=["blur face", "privacy", "censor", "face blur", "anonymize"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="pixelate-image",
+        title="Pixelate Image",
+        description="Apply pixelation effect to entire image. Choose pixel block size for desired mosaic effect.",
+        category="image-effects",
+        tags=["pixelate", "mosaic", "pixel", "censor", "effect"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="pixelate-face",
+        title="Pixelate Face",
+        description="Pixelate face regions in photos for privacy. Perfect for social media and documentation.",
+        category="image-effects",
+        tags=["pixelate face", "face censor", "privacy", "mosaic face"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="motion-blur",
+        title="Motion Blur",
+        description="Add cinematic motion blur effect to your images. Choose direction and intensity.",
+        category="image-effects",
+        tags=["motion blur", "speed effect", "cinematic", "blur", "dynamic"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="add-border-to-photo",
+        title="Add Border to Photo",
+        description="Add a colored border frame around your image. Choose width and color.",
+        category="image-layout",
+        tags=["border", "frame", "photo border", "image frame", "padding"],
+        input_kind="mixed",
+    ),
+    ToolDefinition(
+        slug="add-text-to-image",
+        title="Add Text to Image",
+        description="Overlay text on any image with custom font size, color, and position. Shadow effect included.",
+        category="image-effects",
+        tags=["text overlay", "add text", "caption", "watermark text", "label"],
+        input_kind="mixed",
+    ),
+    ToolDefinition(
+        slug="image-splitter",
+        title="Image Splitter",
+        description="Split any image into a grid of tiles. Perfect for puzzle creation and multi-post layouts.",
+        category="image-layout",
+        tags=["split image", "grid", "tiles", "puzzle", "image grid"],
+        input_kind="mixed",
+    ),
+    ToolDefinition(
+        slug="instagram-grid",
+        title="Instagram Grid Maker",
+        description="Split your image into a 3×3 grid for seamless Instagram profile layouts.",
+        category="image-layout",
+        tags=["instagram grid", "ig grid", "instagram layout", "social media", "3x3 grid"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="picture-to-pixel-art",
+        title="Picture to Pixel Art",
+        description="Convert any photo into retro pixel art style with reduced color palette.",
+        category="image-effects",
+        tags=["pixel art", "retro", "8-bit", "pixelated", "art style"],
+        input_kind="files",
+    ),
+
+    # ═══════════════════════════════════════════════════════
+    #  Phase 3: Student Tools
+    # ═══════════════════════════════════════════════════════
+    ToolDefinition(
+        slug="attendance-calculator",
+        title="Attendance Calculator",
+        description="Calculate attendance percentage, check if you meet 75% requirement, and find how many classes you can skip or need to attend.",
+        category="student-tools",
+        tags=["attendance", "attendance calculator", "college attendance", "75 percent", "student", "classes"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="grade-calculator",
+        title="Grade Calculator",
+        description="Calculate your grade, percentage, and GPA equivalent from marks. Supports Indian grading system.",
+        category="student-tools",
+        tags=["grade calculator", "gpa", "percentage", "marks to grade", "student"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="word-counter",
+        title="Word Counter",
+        description="Count words, characters, sentences, paragraphs. Also shows reading time and speaking time estimates.",
+        category="text-ops",
+        tags=["word counter", "character count", "reading time", "text analysis", "word count"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="citation-generator",
+        title="Citation Generator",
+        description="Generate citations in APA, MLA, and Chicago formats for websites, books, and journals.",
+        category="student-tools",
+        tags=["citation", "apa", "mla", "chicago", "reference", "bibliography", "academic"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="study-timer",
+        title="Study Timer (Pomodoro)",
+        description="Generate a personalized Pomodoro study schedule. Set work intervals, break times, and total study duration.",
+        category="student-tools",
+        tags=["pomodoro", "study timer", "focus timer", "productivity", "study schedule"],
+        input_kind="text",
+    ),
+
+    # ═══════════════════════════════════════════════════════
+    #  Phase 3: Everyday Tools
+    # ═══════════════════════════════════════════════════════
+    ToolDefinition(
+        slug="invoice-generator",
+        title="Invoice Generator",
+        description="Create professional PDF invoices with itemized billing, tax calculation, and company branding.",
+        category="utility",
+        tags=["invoice", "invoice generator", "billing", "receipt", "pdf invoice", "business"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="meme-generator",
+        title="Meme Generator",
+        description="Create memes with custom top and bottom text. Upload any image to make viral meme content.",
+        category="image-effects",
+        tags=["meme", "meme generator", "meme maker", "funny", "caption", "viral"],
+        input_kind="mixed",
+    ),
+    ToolDefinition(
+        slug="color-palette-generator",
+        title="Color Palette Generator",
+        description="Generate beautiful color palettes from any base color. Supports complementary, analogous, triadic, and monochromatic schemes.",
+        category="utility",
+        tags=["color palette", "color scheme", "design colors", "complementary", "analogous", "color generator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="favicon-generator",
+        title="Favicon Generator",
+        description="Generate all favicon sizes (16x16 to 256x256), ICO file, and Apple Touch Icon from any image.",
+        category="utility",
+        tags=["favicon", "favicon generator", "ico", "website icon", "apple touch icon"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="barcode-generator",
+        title="Barcode Generator",
+        description="Generate barcode images from any text or number. Download as PNG for printing or digital use.",
+        category="utility",
+        tags=["barcode", "barcode generator", "code128", "product barcode", "scan code"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="letter-generator",
+        title="Formal Letter Generator",
+        description="Generate professional formal letters as PDF. Enter sender, recipient, subject, and body text.",
+        category="utility",
+        tags=["letter", "formal letter", "letter generator", "business letter", "pdf letter"],
+        input_kind="text",
+    ),
 ])
 
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
+

@@ -6463,3 +6463,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load image_plus_handlers: {e}")
 
 print(f"[handlers] ULTIMATE TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge phase3 handlers (PDF advanced, Image effects, Student, Everyday)
+try:
+    from .phase3_handlers import PHASE3_HANDLERS
+    HANDLERS.update(PHASE3_HANDLERS)
+    print(f"[handlers] Loaded {len(PHASE3_HANDLERS)} phase3 handlers (pdf-adv/image-fx/student/everyday)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load phase3_handlers: {e}")
+
+print(f"[handlers] COMPLETE TOTAL registered handlers: {len(HANDLERS)}")

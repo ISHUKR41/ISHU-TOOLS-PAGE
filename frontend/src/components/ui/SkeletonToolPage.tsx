@@ -1,52 +1,51 @@
+/**
+ * SkeletonToolPage — Professional shimmer skeleton for the tool page.
+ * Shown while tool data is loading. Matches the real layout closely.
+ */
 export default function SkeletonToolPage() {
   return (
-    <div className='page-wrap tool-page-wrap'>
-      <div className='skeleton skeleton-back-link' style={{ width: 140, height: 20, borderRadius: 8, marginBottom: '1.5rem' }} />
+    <div className='skeleton-tool-page'>
+      {/* Breadcrumb skeleton */}
+      <div className='skeleton-breadcrumb'>
+        <div className='skeleton-shimmer skeleton-breadcrumb-item' />
+        <div className='skeleton-shimmer skeleton-breadcrumb-item skeleton-breadcrumb-item-short' />
+      </div>
 
-      <div className='tool-layout'>
-        <div className='tool-main-column'>
-          <div className='tool-main-panel sk-tool-panel'>
-            <div className='tool-page-hero'>
-              <div className='skeleton sk-tool-icon' />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className='skeleton sk-badge-row' />
-                <div className='skeleton sk-title' />
-                <div className='skeleton sk-desc' />
-                <div className='skeleton sk-desc short' />
-                <div className='sk-chip-row'>
-                  {[60, 80, 70, 90, 65, 75].map((w, i) => (
-                    <div key={i} className='skeleton sk-chip' style={{ width: w }} />
-                  ))}
-                </div>
-              </div>
-            </div>
+      {/* Hero section */}
+      <div className='skeleton-tool-hero'>
+        <div className='skeleton-shimmer skeleton-hero-icon' />
+        <div className='skeleton-hero-text'>
+          <div className='skeleton-shimmer skeleton-hero-title' />
+          <div className='skeleton-shimmer skeleton-hero-desc' />
+          <div className='skeleton-shimmer skeleton-hero-desc skeleton-hero-desc-short' />
+        </div>
+      </div>
 
-            <div className='sk-upload-area'>
-              <div className='skeleton sk-upload-label' />
-              <div className='skeleton sk-dropzone' />
-            </div>
+      {/* Content area */}
+      <div className='skeleton-tool-content'>
+        <div className='skeleton-tool-main'>
+          {/* Upload area skeleton */}
+          <div className='skeleton-shimmer skeleton-upload-area' />
 
-            <div className='sk-field-grid'>
-              {[1, 2].map((i) => (
-                <div key={i}>
-                  <div className='skeleton sk-field-label' />
-                  <div className='skeleton sk-field-input' />
-                </div>
-              ))}
-            </div>
-
-            <div className='skeleton sk-run-btn' />
+          {/* Fields skeleton */}
+          <div className='skeleton-fields'>
+            <div className='skeleton-shimmer skeleton-field' />
+            <div className='skeleton-shimmer skeleton-field' />
           </div>
+
+          {/* Button skeleton */}
+          <div className='skeleton-shimmer skeleton-button' />
         </div>
 
-        <div className='tool-sidebar'>
-          <div className='skeleton sk-sidebar-block' />
-          <div className='skeleton sk-sidebar-block short' />
-          <div className='sk-related-list'>
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className='skeleton sk-related-item' />
-            ))}
-          </div>
+        {/* Sidebar skeleton */}
+        <div className='skeleton-tool-sidebar'>
+          <div className='skeleton-shimmer skeleton-sidebar-title' />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className='skeleton-sidebar-item'>
+              <div className='skeleton-shimmer skeleton-sidebar-icon' />
+              <div className='skeleton-shimmer skeleton-sidebar-text' />
+            </div>
+          ))}
         </div>
       </div>
     </div>

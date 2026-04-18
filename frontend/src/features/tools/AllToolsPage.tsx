@@ -1,7 +1,7 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, ArrowRight, Zap, Globe } from 'lucide-react'
+import { Search, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 import SiteShell from '../../components/layout/SiteShell'

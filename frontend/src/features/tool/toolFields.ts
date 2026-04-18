@@ -1,4 +1,4 @@
-export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select'
+﻿export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select'
 
 export interface ToolField {
   name: string
@@ -997,209 +997,11 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'dxf-to-pdf': [],
   'pages-to-pdf': [],
 
-  // ── Developer Tools ─────────────────────────────────────────
-  'json-formatter': [
-    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"name":"ishu","score":95}' },
-  ],
-  'xml-formatter': [
-    { name: 'text', label: 'XML Input', type: 'textarea', placeholder: '<root><name>ishu</name></root>' },
-  ],
-  'base64-encode': [
-    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'Hello World' },
-  ],
-  'base64-decode': [
-    { name: 'text', label: 'Base64 Input', type: 'textarea', placeholder: 'SGVsbG8gV29ybGQ=' },
-  ],
-  'url-encode': [
-    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: 'hello world & more' },
-  ],
-  'url-decode': [
-    { name: 'text', label: 'URL-Encoded Text', type: 'textarea', placeholder: 'hello%20world%26more' },
-  ],
-  'html-encode': [
-    { name: 'text', label: 'Text to Encode', type: 'textarea', placeholder: '<h1>Hello</h1>' },
-  ],
-  'html-decode': [
-    { name: 'text', label: 'HTML-Encoded Text', type: 'textarea', placeholder: '&lt;h1&gt;Hello&lt;/h1&gt;' },
-  ],
-  'jwt-decode': [
-    { name: 'text', label: 'JWT Token', type: 'textarea', placeholder: 'eyJhbGciOiJIUzI1NiJ9...' },
-  ],
-  'regex-tester': [
-    { name: 'pattern', label: 'Regex Pattern', type: 'text', placeholder: '\\d+' },
-    { name: 'text', label: 'Test Text', type: 'textarea', placeholder: 'abc 123 def 456' },
-    { name: 'flags', label: 'Flags (i, m, s)', type: 'text', defaultValue: 'i' },
-  ],
-  'unix-timestamp': [
-    { name: 'text', label: 'Timestamp or Date', type: 'text', placeholder: '1700000000 or 2024-01-15' },
-  ],
-  'json-to-yaml': [
-    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"key":"value"}' },
-  ],
-  'yaml-to-json': [
-    { name: 'text', label: 'YAML Input', type: 'textarea', placeholder: 'key: value' },
-  ],
-
-  // ── Color Tools ─────────────────────────────────────────────
-  'hex-to-rgb': [
-    { name: 'text', label: 'HEX Color', type: 'text', placeholder: '#ff5733', defaultValue: '#3b82f6' },
-  ],
-  'rgb-to-hex': [
-    { name: 'text', label: 'RGB Values', type: 'text', placeholder: '255, 87, 51' },
-  ],
-  'rgb-to-hsl': [
-    { name: 'text', label: 'RGB Values', type: 'text', placeholder: '59, 130, 246' },
-  ],
-  'color-palette-generator': [
-    { name: 'text', label: 'Base Color (HEX)', type: 'text', placeholder: '#3b82f6', defaultValue: '#3b82f6' },
-  ],
-  'gradient-generator': [
-    { name: 'color1', label: 'Color 1', type: 'text', defaultValue: '#3b82f6' },
-    { name: 'color2', label: 'Color 2', type: 'text', defaultValue: '#8b5cf6' },
-    { name: 'angle', label: 'Angle (degrees)', type: 'number', defaultValue: '135' },
-  ],
-  'color-contrast-checker': [
-    { name: 'text', label: 'Foreground Color', type: 'text', defaultValue: '#000000' },
-    { name: 'background', label: 'Background Color', type: 'text', defaultValue: '#ffffff' },
-  ],
-
-  // ── Unit Converters ─────────────────────────────────────────
-  'length-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'm',
-      options: [
-        { label: 'Meters (m)', value: 'm' }, { label: 'Kilometers (km)', value: 'km' },
-        { label: 'Centimeters (cm)', value: 'cm' }, { label: 'Millimeters (mm)', value: 'mm' },
-        { label: 'Inches (in)', value: 'in' }, { label: 'Feet (ft)', value: 'ft' },
-        { label: 'Yards (yd)', value: 'yd' }, { label: 'Miles (mi)', value: 'mi' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'ft',
-      options: [
-        { label: 'Meters (m)', value: 'm' }, { label: 'Kilometers (km)', value: 'km' },
-        { label: 'Centimeters (cm)', value: 'cm' }, { label: 'Millimeters (mm)', value: 'mm' },
-        { label: 'Inches (in)', value: 'in' }, { label: 'Feet (ft)', value: 'ft' },
-        { label: 'Yards (yd)', value: 'yd' }, { label: 'Miles (mi)', value: 'mi' },
-      ],
-    },
-  ],
-  'weight-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kg',
-      options: [
-        { label: 'Grams (g)', value: 'g' }, { label: 'Kilograms (kg)', value: 'kg' },
-        { label: 'Milligrams (mg)', value: 'mg' }, { label: 'Pounds (lb)', value: 'lb' },
-        { label: 'Ounces (oz)', value: 'oz' }, { label: 'Metric Tons (t)', value: 't' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'lb',
-      options: [
-        { label: 'Grams (g)', value: 'g' }, { label: 'Kilograms (kg)', value: 'kg' },
-        { label: 'Milligrams (mg)', value: 'mg' }, { label: 'Pounds (lb)', value: 'lb' },
-        { label: 'Ounces (oz)', value: 'oz' }, { label: 'Metric Tons (t)', value: 't' },
-      ],
-    },
-  ],
-  'temperature-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '100' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'c',
-      options: [
-        { label: 'Celsius (°C)', value: 'c' }, { label: 'Fahrenheit (°F)', value: 'f' },
-        { label: 'Kelvin (K)', value: 'k' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'f',
-      options: [
-        { label: 'Celsius (°C)', value: 'c' }, { label: 'Fahrenheit (°F)', value: 'f' },
-        { label: 'Kelvin (K)', value: 'k' },
-      ],
-    },
-  ],
-  'data-size-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'gb',
-      options: [
-        { label: 'Bytes', value: 'b' }, { label: 'KB', value: 'kb' }, { label: 'MB', value: 'mb' },
-        { label: 'GB', value: 'gb' }, { label: 'TB', value: 'tb' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mb',
-      options: [
-        { label: 'Bytes', value: 'b' }, { label: 'KB', value: 'kb' }, { label: 'MB', value: 'mb' },
-        { label: 'GB', value: 'gb' }, { label: 'TB', value: 'tb' },
-      ],
-    },
-  ],
-  'speed-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '100' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'kmh',
-      options: [
-        { label: 'km/h', value: 'kmh' }, { label: 'mph', value: 'mph' },
-        { label: 'm/s', value: 'ms' }, { label: 'Knots', value: 'kn' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'mph',
-      options: [
-        { label: 'km/h', value: 'kmh' }, { label: 'mph', value: 'mph' },
-        { label: 'm/s', value: 'ms' }, { label: 'Knots', value: 'kn' },
-      ],
-    },
-  ],
-  'area-converter': [
-    { name: 'value', label: 'Value', type: 'number', defaultValue: '1' },
-    {
-      name: 'from_unit', label: 'From', type: 'select', defaultValue: 'sqm',
-      options: [
-        { label: 'Square Meters', value: 'sqm' }, { label: 'Square Kilometers', value: 'sqkm' },
-        { label: 'Square Feet', value: 'sqft' }, { label: 'Acres', value: 'acre' },
-        { label: 'Hectares', value: 'ha' },
-      ],
-    },
-    {
-      name: 'to_unit', label: 'To', type: 'select', defaultValue: 'sqft',
-      options: [
-        { label: 'Square Meters', value: 'sqm' }, { label: 'Square Kilometers', value: 'sqkm' },
-        { label: 'Square Feet', value: 'sqft' }, { label: 'Acres', value: 'acre' },
-        { label: 'Hectares', value: 'ha' },
-      ],
-    },
-  ],
-
-  // ── Hash & Crypto ───────────────────────────────────────────
-  'md5-hash': [
-    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
-  ],
-  'sha256-hash': [
-    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
-  ],
-  'sha512-hash': [
-    { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
-  ],
-  'uuid-generator': [
-    { name: 'count', label: 'Number of UUIDs', type: 'number', defaultValue: '5' },
-  ],
-  'password-generator': [
-    { name: 'length', label: 'Password Length', type: 'number', defaultValue: '16' },
-    { name: 'count', label: 'Number of Passwords', type: 'number', defaultValue: '5' },
-  ],
-  'lorem-ipsum-generator': [
-    { name: 'paragraphs', label: 'Number of Paragraphs', type: 'number', defaultValue: '3' },
-  ],
   'bcrypt-hash': [
     { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
   ],
 
-  // ── SEO Tools ───────────────────────────────────────────────
+  // â”€â”€ SEO Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'meta-tag-generator': [
     { name: 'text', label: 'Website Title', type: 'text', placeholder: 'My Amazing Website' },
     { name: 'description', label: 'Description', type: 'textarea', placeholder: 'A great website...' },
@@ -1222,7 +1024,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'image', label: 'Image URL', type: 'text', placeholder: 'https://example.com/image.png' },
   ],
 
-  // ── Code Tools ──────────────────────────────────────────────
+  // â”€â”€ Code Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'minify-css': [
     { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body { margin: 0; }' },
   ],
@@ -1235,21 +1037,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'prettify-css': [
     { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body{margin:0;padding:0}' },
   ],
-  'sql-formatter': [
-    { name: 'text', label: 'SQL Query', type: 'textarea', placeholder: 'SELECT * FROM users WHERE id=1' },
-  ],
-  'markdown-to-html': [
-    { name: 'text', label: 'Markdown Text', type: 'textarea', placeholder: '# Hello\n**Bold** text' },
-  ],
-  'html-to-markdown': [
-    { name: 'text', label: 'HTML Code', type: 'textarea', placeholder: '<h1>Hello</h1><p><b>Bold</b></p>' },
-  ],
-  'diff-checker': [
-    { name: 'text', label: 'Text 1', type: 'textarea', placeholder: 'Original text...' },
-    { name: 'text2', label: 'Text 2', type: 'textarea', placeholder: 'Modified text...' },
-  ],
 
-  // ── Math & Calculator Tools ─────────────────────────────────
+  // â”€â”€ Math & Calculator Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'percentage-calculator': [
     { name: 'value', label: 'Value', type: 'number', defaultValue: '25' },
     { name: 'total', label: 'Total / Base', type: 'number', defaultValue: '200' },
@@ -1258,7 +1047,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       options: [
         { label: 'What % is Value of Total', value: 'percentage' },
         { label: 'Value% of Total', value: 'of' },
-        { label: 'Percentage Change (old → new)', value: 'change' },
+        { label: 'Percentage Change (old â†’ new)', value: 'change' },
       ],
     },
   ],
@@ -1284,7 +1073,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'total', label: 'Discount %', type: 'number', defaultValue: '20' },
   ],
   'loan-emi-calculator': [
-    { name: 'value', label: 'Principal (₹)', type: 'number', defaultValue: '500000' },
+    { name: 'value', label: 'Principal (â‚¹)', type: 'number', defaultValue: '500000' },
     { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5' },
     { name: 'months', label: 'Tenure (months)', type: 'number', defaultValue: '60' },
   ],
@@ -1300,7 +1089,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     },
   ],
 
-  // ── Student & Everyday Tools ────────────────────────────────
+  // â”€â”€ Student & Everyday Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'number-base-converter': [
     { name: 'text', label: 'Number', type: 'text', placeholder: '255' },
     {
@@ -1325,8 +1114,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     {
       name: 'mode', label: 'Mode', type: 'select', defaultValue: 'encode',
       options: [
-        { label: 'Encode (Text → Morse)', value: 'encode' },
-        { label: 'Decode (Morse → Text)', value: 'decode' },
+        { label: 'Encode (Text â†’ Morse)', value: 'encode' },
+        { label: 'Decode (Morse â†’ Text)', value: 'decode' },
       ],
     },
   ],
@@ -1351,29 +1140,29 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Target Date', type: 'text', placeholder: '2025-12-31' },
   ],
 
-  // ── Student & Everyday Extended ─────────────────────────────
+  // â”€â”€ Student & Everyday Extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'compound-interest-calculator': [
-    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '100000' },
+    { name: 'value', label: 'Principal Amount (â‚¹)', type: 'number', defaultValue: '100000' },
     { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '10' },
     { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '5' },
     { name: 'compound_per_year', label: 'Compounds Per Year', type: 'number', defaultValue: '12' },
   ],
   'simple-interest-calculator': [
-    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '50000' },
+    { name: 'value', label: 'Principal Amount (â‚¹)', type: 'number', defaultValue: '50000' },
     { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8' },
     { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '3' },
   ],
   'salary-calculator': [
-    { name: 'value', label: 'Annual Salary (₹)', type: 'number', defaultValue: '1200000' },
+    { name: 'value', label: 'Annual Salary (â‚¹)', type: 'number', defaultValue: '1200000' },
   ],
   'fuel-cost-calculator': [
     { name: 'value', label: 'Distance (km)', type: 'number', defaultValue: '500' },
     { name: 'total', label: 'Mileage (km/L)', type: 'number', defaultValue: '15' },
-    { name: 'price', label: 'Fuel Price (₹/L)', type: 'number', defaultValue: '100' },
+    { name: 'price', label: 'Fuel Price (â‚¹/L)', type: 'number', defaultValue: '100' },
   ],
   'electricity-bill-calculator': [
     { name: 'value', label: 'Units Consumed', type: 'number', defaultValue: '300' },
-    { name: 'total', label: 'Rate Per Unit (₹)', type: 'number', defaultValue: '7' },
+    { name: 'total', label: 'Rate Per Unit (â‚¹)', type: 'number', defaultValue: '7' },
   ],
   'speed-distance-time': [
     { name: 'value', label: 'Value 1', type: 'number', defaultValue: '100' },
@@ -1381,23 +1170,23 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     {
       name: 'mode', label: 'Calculate', type: 'select', defaultValue: 'speed',
       options: [
-        { label: 'Speed (Distance ÷ Time)', value: 'speed' },
-        { label: 'Distance (Speed × Time)', value: 'distance' },
-        { label: 'Time (Distance ÷ Speed)', value: 'time' },
+        { label: 'Speed (Distance Ã· Time)', value: 'speed' },
+        { label: 'Distance (Speed Ã— Time)', value: 'distance' },
+        { label: 'Time (Distance Ã· Speed)', value: 'time' },
       ],
     },
   ],
   'profit-loss-calculator': [
-    { name: 'value', label: 'Cost Price (₹)', type: 'number', defaultValue: '100' },
-    { name: 'total', label: 'Selling Price (₹)', type: 'number', defaultValue: '150' },
+    { name: 'value', label: 'Cost Price (â‚¹)', type: 'number', defaultValue: '100' },
+    { name: 'total', label: 'Selling Price (â‚¹)', type: 'number', defaultValue: '150' },
   ],
   'cgpa-to-percentage': [
     { name: 'value', label: 'CGPA / Percentage Value', type: 'number', defaultValue: '8.5' },
     {
       name: 'mode', label: 'Conversion Mode', type: 'select', defaultValue: 'cgpa_to_pct',
       options: [
-        { label: 'CGPA → Percentage', value: 'cgpa_to_pct' },
-        { label: 'Percentage → CGPA', value: 'pct_to_cgpa' },
+        { label: 'CGPA â†’ Percentage', value: 'cgpa_to_pct' },
+        { label: 'Percentage â†’ CGPA', value: 'pct_to_cgpa' },
       ],
     },
   ],
@@ -1405,27 +1194,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Date 1 (YYYY-MM-DD)', type: 'text', placeholder: '2000-01-15' },
     { name: 'text2', label: 'Date 2 (YYYY-MM-DD, optional)', type: 'text', placeholder: '2025-01-15' },
   ],
-  'time-zone-converter': [
-    { name: 'text', label: 'Time (HH:MM)', type: 'text', placeholder: '14:30' },
-    {
-      name: 'from_tz', label: 'From Timezone', type: 'select', defaultValue: 'IST',
-      options: [
-        { label: 'IST (India)', value: 'IST' }, { label: 'UTC', value: 'UTC' },
-        { label: 'EST (US Eastern)', value: 'EST' }, { label: 'PST (US Pacific)', value: 'PST' },
-        { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
-        { label: 'CET (Central Europe)', value: 'CET' }, { label: 'SGT (Singapore)', value: 'SGT' },
-      ],
-    },
-    {
-      name: 'to_tz', label: 'To Timezone', type: 'select', defaultValue: 'UTC',
-      options: [
-        { label: 'IST (India)', value: 'IST' }, { label: 'UTC', value: 'UTC' },
-        { label: 'EST (US Eastern)', value: 'EST' }, { label: 'PST (US Pacific)', value: 'PST' },
-        { label: 'GMT', value: 'GMT' }, { label: 'JST (Japan)', value: 'JST' },
-        { label: 'CET (Central Europe)', value: 'CET' }, { label: 'SGT (Singapore)', value: 'SGT' },
-      ],
-    },
-  ],
+
   'password-strength-checker': [
     { name: 'text', label: 'Password to Check', type: 'password', placeholder: 'Enter password...' },
   ],
@@ -1478,7 +1247,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Math Expression', type: 'textarea', placeholder: 'sqrt(144) + 2^3 + sin(pi/2)' },
   ],
   'unit-price-calculator': [
-    { name: 'value', label: 'Total Price (₹)', type: 'number', defaultValue: '250' },
+    { name: 'value', label: 'Total Price (â‚¹)', type: 'number', defaultValue: '250' },
     { name: 'total', label: 'Quantity', type: 'number', defaultValue: '5' },
     { name: 'unit', label: 'Unit Label', type: 'text', defaultValue: 'kg' },
   ],
@@ -1486,7 +1255,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Number', type: 'text', placeholder: '123456' },
   ],
 
-  // ─── Developer Tools ───
+  // â”€â”€â”€ Developer Tools â”€â”€â”€
   'lorem-ipsum-generator': [
     { name: 'count', label: 'Count', type: 'number', defaultValue: '5' },
     { name: 'unit', label: 'Unit', type: 'select', defaultValue: 'paragraphs', options: [
@@ -1542,8 +1311,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Timestamp or Date', type: 'text', placeholder: '1713168000 or 2024-04-15 or now' },
     { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'auto', options: [
       { label: 'Auto Detect', value: 'auto' },
-      { label: 'Timestamp → Date', value: 'to_date' },
-      { label: 'Date → Timestamp', value: 'to_timestamp' },
+      { label: 'Timestamp â†’ Date', value: 'to_date' },
+      { label: 'Date â†’ Timestamp', value: 'to_timestamp' },
     ]},
   ],
   'css-minifier': [
@@ -1595,12 +1364,12 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'char-code-converter': [
     { name: 'text', label: 'Characters or Code Points', type: 'textarea', placeholder: 'ABC or 65 66 67' },
     { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'to_codes', options: [
-      { label: 'Characters → Codes', value: 'to_codes' },
-      { label: 'Codes → Characters', value: 'from_codes' },
+      { label: 'Characters â†’ Codes', value: 'to_codes' },
+      { label: 'Codes â†’ Characters', value: 'from_codes' },
     ]},
   ],
 
-  // ─── Color Tools ───
+  // â”€â”€â”€ Color Tools â”€â”€â”€
   'color-picker': [
     { name: 'text', label: 'HEX Color', type: 'text', defaultValue: '#3b82f6' },
   ],
@@ -1632,12 +1401,12 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       { label: 'To Left', value: 'to left' },
       { label: 'To Bottom', value: 'to bottom' },
       { label: 'To Top', value: 'to top' },
-      { label: '45°', value: '45deg' },
-      { label: '135°', value: '135deg' },
+      { label: '45Â°', value: '45deg' },
+      { label: '135Â°', value: '135deg' },
     ]},
   ],
 
-  // ─── Security Tools ───
+  // â”€â”€â”€ Security Tools â”€â”€â”€
   'password-generator': [
     { name: 'length', label: 'Password Length', type: 'number', defaultValue: '16' },
     { name: 'count', label: 'Number of Passwords', type: 'number', defaultValue: '5' },
@@ -1646,9 +1415,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'digits', label: 'Include Numbers', type: 'select', defaultValue: 'true', options: booleanOptions },
     { name: 'symbols', label: 'Include Symbols', type: 'select', defaultValue: 'true', options: booleanOptions },
   ],
-  'password-strength-checker': [
-    { name: 'text', label: 'Password to Check', type: 'password', placeholder: 'Enter password...' },
-  ],
+
   'md5-generator': [
     { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
   ],
@@ -1659,7 +1426,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Password to Hash', type: 'password', placeholder: 'Enter password...' },
   ],
 
-  // ─── Unit Converters ───
+  // â”€â”€â”€ Unit Converters â”€â”€â”€
   'temperature-converter': [
     { name: 'value', label: 'Temperature Value', type: 'number', defaultValue: '100' },
     { name: 'from_unit', label: 'From Unit', type: 'select', defaultValue: 'celsius', options: [
@@ -1784,7 +1551,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     ]},
   ],
 
-  // ─── Social Media Tools ───
+  // â”€â”€â”€ Social Media Tools â”€â”€â”€
   'instagram-post-resizer': [
     { name: 'aspect', label: 'Aspect Ratio', type: 'select', defaultValue: 'square', options: [
       { label: 'Square (1:1) - 1080x1080', value: 'square' },
@@ -1846,7 +1613,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'metric', label: 'Metric / Result', type: 'text', placeholder: 'reduced manual work by 40%' },
   ],
 
-  // ─── Image Plus Tools ────────────────────────────────────────────────────────
+  // â”€â”€â”€ Image Plus Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'png-to-webp': [
     { name: 'quality', label: 'Quality (1-100)', type: 'number', defaultValue: '85' },
   ],
@@ -1911,7 +1678,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: 'Bottom Right', value: 'bottom-right' },
       ],
     },
-    { name: 'opacity', label: 'Opacity (0.0–1.0)', type: 'number', defaultValue: '0.9' },
+    { name: 'opacity', label: 'Opacity (0.0â€“1.0)', type: 'number', defaultValue: '0.9' },
   ],
   'compress-image-to-kb': [
     { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
@@ -1934,7 +1701,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
   'view-image-metadata': [],
 
-  // ─── Text / Utility tools (newly added to registry) ─────────────────────────
+  // â”€â”€â”€ Text / Utility tools (newly added to registry) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   'epoch-converter': [
     {
       name: 'mode',
@@ -1942,8 +1709,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       type: 'select',
       defaultValue: 'to_human',
       options: [
-        { label: 'Epoch → Human Date', value: 'to_human' },
-        { label: 'Human Date → Epoch', value: 'to_epoch' },
+        { label: 'Epoch â†’ Human Date', value: 'to_human' },
+        { label: 'Human Date â†’ Epoch', value: 'to_epoch' },
       ],
     },
     { name: 'value', label: 'Value', type: 'text', placeholder: '1700000000 or 2024-11-14T22:13:20' },
@@ -1968,7 +1735,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text', type: 'text', placeholder: 'Type letters...' },
   ],
   'number-to-roman': [
-    { name: 'number', label: 'Number (1–3999)', type: 'number', defaultValue: '2024' },
+    { name: 'number', label: 'Number (1â€“3999)', type: 'number', defaultValue: '2024' },
   ],
   'roman-to-number': [
     { name: 'roman', label: 'Roman Numeral', type: 'text', placeholder: 'MMXXIV' },

@@ -14,10 +14,68 @@ function parseFilename(contentDisposition: string | null, fallback: string): str
 async function readError(res: Response): Promise<Error> {
   const contentType = res.headers.get('content-type') || ''
   if (contentType.includes('application/json')) {
-    const payload = await res.json()
-    return new Error(payload.detail || payload.message || 'Request failed')
+    try {
+      const payload = await res.json()
+      return new Error(payload.detail || payload.message || `Request failed (${res.status})`)
+    } catch {
+      return new Error(`Request failed (${res.status})`)
+    }
   }
-  return new Error(await res.text())
+  try {
+    const text = await res.text()
+    return new Error(text || `Request failed (${res.status})`)
+  } catch {
+    return new Error(`Request failed (${res.status})`)
+  }
+}
+
+// ─── Fetch with timeout ───
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 15000,
+): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal })
+    return res
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.')
+    }
+    throw err
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+// ─── Retry with exponential backoff ───
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  { maxRetries = 2, timeoutMs = 15000 } = {},
+): Promise<Response> {
+  let lastError: Error | null = null
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url, options, timeoutMs)
+      if (res.ok || res.status < 500) return res // Don't retry 4xx
+      lastError = new Error(`Server error (${res.status})`)
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error('Network error')
+      if (err instanceof Error && err.name === 'AbortError') throw err
+    }
+
+    if (attempt < maxRetries) {
+      // Exponential backoff: 500ms, 1500ms
+      await new Promise((resolve) => setTimeout(resolve, 500 * Math.pow(2, attempt)))
+    }
+  }
+
+  throw lastError || new Error('Request failed after retries')
 }
 
 // ─── Per-tool detail cache (memory + sessionStorage) ───
@@ -50,17 +108,33 @@ function writeToolCache(slug: string, data: ToolDefinition) {
   }
 }
 
+// ─── Category list cache ───
+let categoriesCache: { data: ToolCategory[]; ts: number } | null = null
+const CATEGORIES_TTL = 15 * 60 * 1000 // 15 minutes
+
+// ─── Tools list cache ───
+const TOOLS_LIST_CACHE: Map<string, { data: ToolDefinition[]; ts: number }> = new Map()
+const TOOLS_LIST_TTL = 5 * 60 * 1000 // 5 minutes
+
 // ─── Runtime capabilities cache ───
 let runtimeCapCache: { data: RuntimeCapabilities; ts: number } | null = null
 const RUNTIME_CAP_TTL = 30 * 60 * 1000 // 30 minutes
 
 // ─── In-flight deduplication ───
 const IN_FLIGHT: Map<string, Promise<ToolDefinition>> = new Map()
+const IN_FLIGHT_LISTS: Map<string, Promise<ToolDefinition[]>> = new Map()
 
 export async function fetchCategories(): Promise<ToolCategory[]> {
-  const res = await fetch(`${API_BASE_URL}/api/categories`)
+  // Check cache first
+  if (categoriesCache && Date.now() - categoriesCache.ts < CATEGORIES_TTL) {
+    return categoriesCache.data
+  }
+
+  const res = await fetchWithRetry(`${API_BASE_URL}/api/categories`)
   if (!res.ok) throw await readError(res)
-  return res.json()
+  const data: ToolCategory[] = await res.json()
+  categoriesCache = { data, ts: Date.now() }
+  return data
 }
 
 export async function fetchTools(params?: {
@@ -71,10 +145,33 @@ export async function fetchTools(params?: {
   if (params?.category) query.set('category', params.category)
   if (params?.q) query.set('q', params.q)
 
+  const cacheKey = query.toString() || '__all__'
+
+  // Check cache first
+  const cached = TOOLS_LIST_CACHE.get(cacheKey)
+  if (cached && Date.now() - cached.ts < TOOLS_LIST_TTL) {
+    return cached.data
+  }
+
+  // Deduplicate in-flight requests
+  const existing = IN_FLIGHT_LISTS.get(cacheKey)
+  if (existing) return existing
+
   const suffix = query.toString() ? `?${query.toString()}` : ''
-  const res = await fetch(`${API_BASE_URL}/api/tools${suffix}`)
-  if (!res.ok) throw await readError(res)
-  return res.json()
+  const promise = (async () => {
+    const res = await fetchWithRetry(`${API_BASE_URL}/api/tools${suffix}`)
+    if (!res.ok) throw await readError(res)
+    const data: ToolDefinition[] = await res.json()
+    TOOLS_LIST_CACHE.set(cacheKey, { data, ts: Date.now() })
+    return data
+  })()
+
+  IN_FLIGHT_LISTS.set(cacheKey, promise)
+  try {
+    return await promise
+  } finally {
+    IN_FLIGHT_LISTS.delete(cacheKey)
+  }
 }
 
 export async function fetchTool(slug: string): Promise<ToolDefinition> {
@@ -87,7 +184,7 @@ export async function fetchTool(slug: string): Promise<ToolDefinition> {
   if (existing) return existing
 
   const promise = (async () => {
-    const res = await fetch(`${API_BASE_URL}/api/tools/${slug}`)
+    const res = await fetchWithRetry(`${API_BASE_URL}/api/tools/${slug}`)
     if (!res.ok) throw await readError(res)
     const data: ToolDefinition = await res.json()
     writeToolCache(slug, data)
@@ -106,7 +203,7 @@ export async function fetchRuntimeCapabilities(): Promise<RuntimeCapabilities> {
   if (runtimeCapCache && Date.now() - runtimeCapCache.ts < RUNTIME_CAP_TTL) {
     return runtimeCapCache.data
   }
-  const res = await fetch(`${API_BASE_URL}/api/runtime-capabilities`)
+  const res = await fetchWithRetry(`${API_BASE_URL}/api/runtime-capabilities`)
   if (!res.ok) throw await readError(res)
   const data: RuntimeCapabilities = await res.json()
   runtimeCapCache = { data, ts: Date.now() }
@@ -114,7 +211,7 @@ export async function fetchRuntimeCapabilities(): Promise<RuntimeCapabilities> {
 }
 
 export async function checkHealth(): Promise<boolean> {
-  const res = await fetch(`${API_BASE_URL}/health`)
+  const res = await fetchWithTimeout(`${API_BASE_URL}/health`, {}, 5000)
   if (!res.ok) throw await readError(res)
   return true
 }
@@ -130,10 +227,12 @@ export async function runTool(
   }
   formData.append('payload', JSON.stringify(payload))
 
-  const res = await fetch(`${API_BASE_URL}/api/tools/${slug}/execute`, {
-    method: 'POST',
-    body: formData,
-  })
+  // Long timeout for tool execution (2 minutes)
+  const res = await fetchWithTimeout(
+    `${API_BASE_URL}/api/tools/${slug}/execute`,
+    { method: 'POST', body: formData },
+    120000,
+  )
 
   if (!res.ok) {
     throw await readError(res)

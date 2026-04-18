@@ -22,7 +22,7 @@ import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../
 import SiteShell from '../../components/layout/SiteShell'
 import ToolIcon from '../../components/tools/ToolIcon'
 import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../../types/tools'
-import { applyDocumentBranding, getCategoryTheme, getToolAccept } from '../../lib/toolPresentation'
+import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
 import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
@@ -92,12 +92,35 @@ export default function ToolPage() {
   const [jsonResult, setJsonResult] = useState<ToolRunJsonResult | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [downloadName, setDownloadName] = useState<string | null>(null)
-  const [outputContentType, setOutputContentType] = useState<string | null>(null)
+  const [_outputContentType, setOutputContentType] = useState<string | null>(null)
   const [outputImagePreview, setOutputImagePreview] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null)
   const resultRef = useRef<HTMLElement | null>(null)
+
+  // ─── Scroll to top + reset state on slug change ───
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    // Reset all run-related state when switching tools
+    setRunError(null)
+    setRunMessage(null)
+    setJsonResult(null)
+    if (downloadUrl) URL.revokeObjectURL(downloadUrl)
+    setDownloadUrl(null)
+    setDownloadName(null)
+    setOutputContentType(null)
+    setOutputImagePreview(null)
+    setCopied(false)
+    setProgress(0)
+    setRunning(false)
+    // Reset files
+    fileItems.forEach((item) => {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl)
+    })
+    setFileItems([])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug])
 
   useEffect(() => {
     if (!slug) return
@@ -163,6 +186,23 @@ export default function ToolPage() {
           faqScript.textContent = JSON.stringify(getFaqJsonLd(seo.faq))
           document.head.appendChild(faqScript)
         }
+
+        // BreadcrumbList JSON-LD for rich breadcrumb snippets in Google
+        const existingBreadcrumb = document.getElementById('tool-breadcrumb-jsonld')
+        if (existingBreadcrumb) existingBreadcrumb.remove()
+        const breadcrumbScript = document.createElement('script')
+        breadcrumbScript.id = 'tool-breadcrumb-jsonld'
+        breadcrumbScript.type = 'application/ld+json'
+        breadcrumbScript.textContent = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: 'https://ishutools.com/' },
+            { '@type': 'ListItem', position: 2, name: getCategoryTheme(detail.category).label || detail.category, item: `https://ishutools.com/category/${detail.category}` },
+            { '@type': 'ListItem', position: 3, name: detail.title, item: toolUrl },
+          ],
+        })
+        document.head.appendChild(breadcrumbScript)
 
         const sameCategoryTools = await fetchTools({ category: detail.category })
         if (!mounted) return
@@ -235,17 +275,6 @@ export default function ToolPage() {
     setPayloadState(defaults)
   }, [fields])
 
-  const accept = useMemo(() => {
-    if (!tool) return {}
-    const acceptStr = getToolAccept(tool.slug)
-    if (!acceptStr) return {}
-    const result: Record<string, string[]> = {}
-    acceptStr.split(',').forEach((ext) => {
-      const trimmed = ext.trim()
-      result[trimmed] = []
-    })
-    return result
-  }, [tool])
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {

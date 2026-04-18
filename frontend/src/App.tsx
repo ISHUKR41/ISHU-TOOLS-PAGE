@@ -4,13 +4,24 @@ import { BrowserRouter } from 'react-router-dom'
 import { AppRouter } from './app/router'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ToastProvider } from './components/ui/Toast'
+import ScrollToTop from './components/ui/ScrollToTop'
+
+function AppLoader() {
+  return (
+    <div className='app-loader'>
+      <div className='app-loader-spinner' />
+      <span className='app-loader-text'>ISHU TOOLS</span>
+    </div>
+  )
+}
 
 function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
         <BrowserRouter>
-          <Suspense fallback={<div className='app-loader'>Loading ISHU TOOLS...</div>}>
+          <ScrollToTop />
+          <Suspense fallback={<AppLoader />}>
             <AppRouter />
           </Suspense>
         </BrowserRouter>

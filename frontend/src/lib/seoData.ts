@@ -2,7 +2,7 @@
  * ISHU TOOLS — Per-tool SEO Data (COMPREHENSIVE v2)
  * Every tool gets unique title, description, keywords, and FAQ for Google #1 ranking.
  * Optimized for: high-volume, long-tail, competitor comparison, Ishu-branded, niche keywords.
- * 422+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
+ * 510+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
  */
 
 export interface ToolSEO {

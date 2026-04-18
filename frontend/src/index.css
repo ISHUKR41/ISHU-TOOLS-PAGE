@@ -5202,3 +5202,368 @@ html {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   APP LOADER — BRANDED SPINNER FOR SUSPENSE FALLBACK
+   ══════════════════════════════════════════════════════════════════ */
+.app-loader {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  background: var(--bg, #030610);
+}
+
+.app-loader-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(59, 208, 255, 0.15);
+  border-top-color: #3bd0ff;
+  border-radius: 50%;
+  animation: appSpin 0.7s linear infinite;
+}
+
+@keyframes appSpin {
+  to { transform: rotate(360deg); }
+}
+
+.app-loader-text {
+  font-family: var(--font-display, 'Inter', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
+  animation: appLoaderTextPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes appLoaderTextPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENHANCED SHIMMER SKELETON SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+.skeleton-shimmer {
+  border-radius: 8px;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Skeleton Card Grid */
+.skeleton-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.1rem;
+}
+
+.skeleton-card {
+  border-radius: 20px;
+  padding: 1.5rem;
+  border: 1px solid rgba(145, 180, 255, 0.08);
+  background: rgba(9, 14, 26, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.skeleton-desc {
+  width: 100%;
+  height: 12px;
+  border-radius: 5px;
+}
+
+.skeleton-desc-short {
+  width: 60%;
+}
+
+/* Skeleton Tool Page */
+.skeleton-tool-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.skeleton-breadcrumb {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-breadcrumb-item {
+  width: 80px;
+  height: 14px;
+  border-radius: 5px;
+}
+
+.skeleton-breadcrumb-item-short {
+  width: 120px;
+}
+
+.skeleton-tool-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(145, 180, 255, 0.08);
+  background: rgba(9, 14, 26, 0.6);
+}
+
+.skeleton-hero-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+.skeleton-hero-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.skeleton-hero-title {
+  width: 60%;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.skeleton-hero-desc {
+  width: 90%;
+  height: 14px;
+  border-radius: 6px;
+}
+
+.skeleton-hero-desc-short {
+  width: 65%;
+}
+
+.skeleton-tool-content {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .skeleton-tool-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skeleton-tool-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-upload-area {
+  height: 160px;
+  border-radius: 18px;
+}
+
+.skeleton-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .skeleton-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skeleton-field {
+  height: 44px;
+  border-radius: 10px;
+}
+
+.skeleton-button {
+  width: 160px;
+  height: 46px;
+  border-radius: 12px;
+}
+
+.skeleton-tool-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.skeleton-sidebar-title {
+  width: 130px;
+  height: 18px;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
+}
+
+.skeleton-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.skeleton-sidebar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.skeleton-sidebar-text {
+  flex: 1;
+  height: 14px;
+  border-radius: 5px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ENHANCED ERROR BOUNDARY
+   ══════════════════════════════════════════════════════════════════ */
+.error-boundary-container {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: var(--bg, #030610);
+}
+
+.error-boundary-card {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  background: rgba(9, 14, 26, 0.88);
+  border: 1px solid rgba(255, 104, 137, 0.22);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 0 60px rgba(255, 104, 137, 0.06);
+}
+
+.error-boundary-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+}
+
+.error-boundary-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+  color: #fff;
+}
+
+.error-boundary-message {
+  color: rgba(255, 104, 137, 0.85);
+  font-size: 0.92rem;
+  margin: 0 0 0.5rem;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.error-boundary-hint {
+  color: var(--muted, rgba(255,255,255,0.55));
+  font-size: 0.88rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.error-boundary-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.error-boundary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.error-boundary-btn:hover { opacity: 0.88; }
+
+.error-boundary-btn-primary {
+  background: linear-gradient(120deg, #56a6ff, #3bd0ff);
+  color: #fff;
+}
+
+.error-boundary-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.error-boundary-btn-ghost {
+  background: transparent;
+  color: var(--muted, rgba(255,255,255,0.55));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0.4rem 0.6rem;
+}
+
+.error-boundary-details {
+  margin-top: 1.5rem;
+  text-align: left;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.error-boundary-details summary {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.5rem;
+}
+
+.error-boundary-details pre {
+  overflow: auto;
+  max-height: 200px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 0.72rem;
+  margin: 0.3rem 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PERFORMANCE — CONTENT-VISIBILITY FOR OFF-SCREEN SECTIONS
+   ══════════════════════════════════════════════════════════════════ */
+.tool-category-section,
+.how-it-works-section,
+.home-faq-section,
+.features-bento-section,
+.cta-banner,
+.trust-section,
+.home-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
