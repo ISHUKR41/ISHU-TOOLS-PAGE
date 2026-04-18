@@ -1,3108 +1,3615 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ishutools.com/</loc>
+    <loc>https://ishutools.in/</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools</loc>
+    <loc>https://ishutools.in/c/pdf-core</loc>
     <lastmod>2026-04-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/pdf-security</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/pdf-advanced</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/image-core</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/image-effects</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/document-convert</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/office-suite</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/text-ai</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/utility</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/page-ops</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/format-lab</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/data-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/image-layout</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/text-ops</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/archive-lab</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/pdf-insights</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/image-enhance</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/text-cleanup</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/batch-automation</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/ocr-vision</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/ebook-convert</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/vector-lab</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/math-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/student-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/video-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/network-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/finance-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/productivity</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/health-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/developer-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/color-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/unit-converter</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/hash-crypto</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/seo-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/code-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/security-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/conversion-tools</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/c/social-media</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/merge-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/split-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/compress-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/rotate-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/organize-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/crop-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/watermark-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/page-numbers-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/protect-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/unlock-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/redact-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/compare-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/extract-text-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/extract-images-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/pdf-to-jpg</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/pdf-to-png</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/jpg-to-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/image-to-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/repair-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/translate-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/summarize-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/compress-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/resize-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/crop-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/rotate-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/convert-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/watermark-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/grayscale-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/blur-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/pixelate-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/meme-generator</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/pdf-to-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/html-to-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/md-to-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/txt-to-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/summarize-text</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/translate-text</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/qr-code-generator</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/extract-metadata</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/remove-metadata-image</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/extract-pages</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/delete-pages</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/rearrange-pages</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/add-text-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/header-footer-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/resize-pages-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/remove-metadata-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://ishutools.in/t/whiteout-pdf</loc>
+    <lastmod>2026-04-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/archive-lab</loc>
+    <loc>https://ishutools.in/t/grayscale-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/batch-automation</loc>
+    <loc>https://ishutools.in/t/create-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/code-tools</loc>
+    <loc>https://ishutools.in/t/url-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/color-tools</loc>
+    <loc>https://ishutools.in/t/png-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/conversion-tools</loc>
+    <loc>https://ishutools.in/t/webp-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/data-tools</loc>
+    <loc>https://ishutools.in/t/gif-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/developer-tools</loc>
+    <loc>https://ishutools.in/t/bmp-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/document-convert</loc>
+    <loc>https://ishutools.in/t/jpg-to-png</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/ebook-convert</loc>
+    <loc>https://ishutools.in/t/png-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/format-lab</loc>
+    <loc>https://ishutools.in/t/image-to-webp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/hash-crypto</loc>
+    <loc>https://ishutools.in/t/pdf-to-txt</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/image-core</loc>
+    <loc>https://ishutools.in/t/pdf-to-markdown</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/image-effects</loc>
+    <loc>https://ishutools.in/t/pdf-to-json</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/image-enhance</loc>
+    <loc>https://ishutools.in/t/pdf-to-csv</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/image-layout</loc>
+    <loc>https://ishutools.in/t/json-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/math-tools</loc>
+    <loc>https://ishutools.in/t/xml-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/ocr-vision</loc>
+    <loc>https://ishutools.in/t/csv-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/office-suite</loc>
+    <loc>https://ishutools.in/t/flip-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/page-ops</loc>
+    <loc>https://ishutools.in/t/add-border-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/pdf-advanced</loc>
+    <loc>https://ishutools.in/t/thumbnail-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/pdf-core</loc>
+    <loc>https://ishutools.in/t/image-collage</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/pdf-insights</loc>
+    <loc>https://ishutools.in/t/word-count-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/pdf-security</loc>
+    <loc>https://ishutools.in/t/case-converter-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/security-tools</loc>
+    <loc>https://ishutools.in/t/extract-keywords-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/seo-tools</loc>
+    <loc>https://ishutools.in/t/slug-generator-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/social-media</loc>
+    <loc>https://ishutools.in/t/pdf-pages-to-zip</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/student-tools</loc>
+    <loc>https://ishutools.in/t/zip-images-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/text-ai</loc>
+    <loc>https://ishutools.in/t/pdf-page-count</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/text-cleanup</loc>
+    <loc>https://ishutools.in/t/reverse-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/text-ops</loc>
+    <loc>https://ishutools.in/t/flatten-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/unit-converter</loc>
+    <loc>https://ishutools.in/t/pdf-to-html</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/utility</loc>
+    <loc>https://ishutools.in/t/pdf-to-bmp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/category/vector-lab</loc>
+    <loc>https://ishutools.in/t/pdf-to-gif</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/merge-pdf</loc>
+    <loc>https://ishutools.in/t/sharpen-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/split-pdf</loc>
+    <loc>https://ishutools.in/t/brighten-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-pdf</loc>
+    <loc>https://ishutools.in/t/contrast-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rotate-pdf</loc>
+    <loc>https://ishutools.in/t/invert-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/organize-pdf</loc>
+    <loc>https://ishutools.in/t/posterize-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/crop-pdf</loc>
+    <loc>https://ishutools.in/t/image-histogram</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/watermark-pdf</loc>
+    <loc>https://ishutools.in/t/remove-extra-spaces-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/page-numbers-pdf</loc>
+    <loc>https://ishutools.in/t/sort-lines-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/protect-pdf</loc>
+    <loc>https://ishutools.in/t/deduplicate-lines-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unlock-pdf</loc>
+    <loc>https://ishutools.in/t/find-replace-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/redact-pdf</loc>
+    <loc>https://ishutools.in/t/split-text-file</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compare-pdf</loc>
+    <loc>https://ishutools.in/t/reading-time-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/extract-text-pdf</loc>
+    <loc>https://ishutools.in/t/images-to-zip</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/extract-images-pdf</loc>
+    <loc>https://ishutools.in/t/batch-convert-images</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-jpg</loc>
+    <loc>https://ishutools.in/t/merge-text-files</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-png</loc>
+    <loc>https://ishutools.in/t/json-prettify</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-pdf</loc>
+    <loc>https://ishutools.in/t/csv-to-json</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-to-pdf</loc>
+    <loc>https://ishutools.in/t/json-to-csv</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/repair-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-docx</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/translate-pdf</loc>
+    <loc>https://ishutools.in/t/docx-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/summarize-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-excel</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image</loc>
+    <loc>https://ishutools.in/t/excel-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image</loc>
+    <loc>https://ishutools.in/t/pdf-to-pptx</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/crop-image</loc>
+    <loc>https://ishutools.in/t/pptx-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rotate-image</loc>
+    <loc>https://ishutools.in/t/scan-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-image</loc>
+    <loc>https://ishutools.in/t/sign-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/watermark-image</loc>
+    <loc>https://ishutools.in/t/edit-metadata-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/grayscale-image</loc>
+    <loc>https://ishutools.in/t/pdf-to-pdfa</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/blur-image</loc>
+    <loc>https://ishutools.in/t/chat-with-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pixelate-image</loc>
+    <loc>https://ishutools.in/t/upscale-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/meme-generator</loc>
+    <loc>https://ishutools.in/t/create-workflow</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-image</loc>
+    <loc>https://ishutools.in/t/add-image-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-to-pdf</loc>
+    <loc>https://ishutools.in/t/ocr-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/md-to-pdf</loc>
+    <loc>https://ishutools.in/t/ocr-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/txt-to-pdf</loc>
+    <loc>https://ishutools.in/t/remove-background</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/summarize-text</loc>
+    <loc>https://ishutools.in/t/blur-face</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/translate-text</loc>
+    <loc>https://ishutools.in/t/pixelate-face</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/qr-code-generator</loc>
+    <loc>https://ishutools.in/t/blur-background</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/extract-metadata</loc>
+    <loc>https://ishutools.in/t/add-text-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-metadata-image</loc>
+    <loc>https://ishutools.in/t/add-logo-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/extract-pages</loc>
+    <loc>https://ishutools.in/t/join-images</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/delete-pages</loc>
+    <loc>https://ishutools.in/t/split-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rearrange-pages</loc>
+    <loc>https://ishutools.in/t/circle-crop-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-text-pdf</loc>
+    <loc>https://ishutools.in/t/square-crop-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/header-footer-pdf</loc>
+    <loc>https://ishutools.in/t/image-color-picker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-pages-pdf</loc>
+    <loc>https://ishutools.in/t/motion-blur-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-metadata-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-tiff</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/whiteout-pdf</loc>
+    <loc>https://ishutools.in/t/tiff-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/grayscale-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-svg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/create-pdf</loc>
+    <loc>https://ishutools.in/t/svg-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-rtf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/png-to-pdf</loc>
+    <loc>https://ishutools.in/t/rtf-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/webp-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-odt</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gif-to-pdf</loc>
+    <loc>https://ishutools.in/t/odt-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bmp-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-epub</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-png</loc>
+    <loc>https://ishutools.in/t/epub-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/png-to-jpg</loc>
+    <loc>https://ishutools.in/t/optimize-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-to-webp</loc>
+    <loc>https://ishutools.in/t/convert-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-txt</loc>
+    <loc>https://ishutools.in/t/convert-from-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-markdown</loc>
+    <loc>https://ishutools.in/t/pdf-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-json</loc>
+    <loc>https://ishutools.in/t/pdf-security</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-csv</loc>
+    <loc>https://ishutools.in/t/ai-summarizer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-viewer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/xml-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-intelligence</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/csv-to-pdf</loc>
+    <loc>https://ishutools.in/t/edit-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/flip-image</loc>
+    <loc>https://ishutools.in/t/annotate-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-border-image</loc>
+    <loc>https://ishutools.in/t/highlight-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/thumbnail-image</loc>
+    <loc>https://ishutools.in/t/pdf-filler</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-collage</loc>
+    <loc>https://ishutools.in/t/remove-pages</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/word-count-text</loc>
+    <loc>https://ishutools.in/t/add-page-numbers</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/case-converter-text</loc>
+    <loc>https://ishutools.in/t/header-and-footer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/extract-keywords-text</loc>
+    <loc>https://ishutools.in/t/add-watermark</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/slug-generator-text</loc>
+    <loc>https://ishutools.in/t/pdf-ocr</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-pages-to-zip</loc>
+    <loc>https://ishutools.in/t/image-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/zip-images-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpg-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-page-count</loc>
+    <loc>https://ishutools.in/t/png-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reverse-pdf</loc>
+    <loc>https://ishutools.in/t/check-image-dpi</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/flatten-pdf</loc>
+    <loc>https://ishutools.in/t/convert-dpi</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-html</loc>
+    <loc>https://ishutools.in/t/resize-image-in-cm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-bmp</loc>
+    <loc>https://ishutools.in/t/resize-image-in-mm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-gif</loc>
+    <loc>https://ishutools.in/t/resize-image-in-inch</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sharpen-image</loc>
+    <loc>https://ishutools.in/t/add-name-dob-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/brighten-image</loc>
+    <loc>https://ishutools.in/t/merge-photo-signature</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/contrast-image</loc>
+    <loc>https://ishutools.in/t/black-and-white-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/invert-image</loc>
+    <loc>https://ishutools.in/t/censor-photo</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/posterize-image</loc>
+    <loc>https://ishutools.in/t/picture-to-pixel-art</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-histogram</loc>
+    <loc>https://ishutools.in/t/generate-signature</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-extra-spaces-text</loc>
+    <loc>https://ishutools.in/t/word-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sort-lines-text</loc>
+    <loc>https://ishutools.in/t/pdf-to-word</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/deduplicate-lines-text</loc>
+    <loc>https://ishutools.in/t/powerpoint-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/find-replace-text</loc>
+    <loc>https://ishutools.in/t/pdf-to-powerpoint</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/split-text-file</loc>
+    <loc>https://ishutools.in/t/eml-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reading-time-text</loc>
+    <loc>https://ishutools.in/t/fb2-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/images-to-zip</loc>
+    <loc>https://ishutools.in/t/cbz-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/batch-convert-images</loc>
+    <loc>https://ishutools.in/t/ebook-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/merge-text-files</loc>
+    <loc>https://ishutools.in/t/heic-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-prettify</loc>
+    <loc>https://ishutools.in/t/heif-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/csv-to-json</loc>
+    <loc>https://ishutools.in/t/jfif-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-to-csv</loc>
+    <loc>https://ishutools.in/t/zip-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-docx</loc>
+    <loc>https://ishutools.in/t/cbr-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/docx-to-pdf</loc>
+    <loc>https://ishutools.in/t/djvu-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-excel</loc>
+    <loc>https://ishutools.in/t/ai-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/excel-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-mobi</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-pptx</loc>
+    <loc>https://ishutools.in/t/mobi-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pptx-to-pdf</loc>
+    <loc>https://ishutools.in/t/xps-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/scan-to-pdf</loc>
+    <loc>https://ishutools.in/t/wps-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sign-pdf</loc>
+    <loc>https://ishutools.in/t/dwg-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/edit-metadata-pdf</loc>
+    <loc>https://ishutools.in/t/pub-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-pdfa</loc>
+    <loc>https://ishutools.in/t/hwp-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/chat-with-pdf</loc>
+    <loc>https://ishutools.in/t/chm-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/upscale-image</loc>
+    <loc>https://ishutools.in/t/dxf-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/create-workflow</loc>
+    <loc>https://ishutools.in/t/pages-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-image-pdf</loc>
+    <loc>https://ishutools.in/t/html-to-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ocr-image</loc>
+    <loc>https://ishutools.in/t/reduce-image-size-in-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ocr-pdf</loc>
+    <loc>https://ishutools.in/t/compress-to-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-background</loc>
+    <loc>https://ishutools.in/t/passport-photo-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/blur-face</loc>
+    <loc>https://ishutools.in/t/passport-size-photo</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pixelate-face</loc>
+    <loc>https://ishutools.in/t/social-media-resize</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/blur-background</loc>
+    <loc>https://ishutools.in/t/resize-for-instagram</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-text-image</loc>
+    <loc>https://ishutools.in/t/resize-for-whatsapp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-logo-image</loc>
+    <loc>https://ishutools.in/t/resize-for-youtube</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/join-images</loc>
+    <loc>https://ishutools.in/t/instagram-grid</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/split-image</loc>
+    <loc>https://ishutools.in/t/convert-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/circle-crop-image</loc>
+    <loc>https://ishutools.in/t/convert-from-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/square-crop-image</loc>
+    <loc>https://ishutools.in/t/heic-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-color-picker</loc>
+    <loc>https://ishutools.in/t/webp-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/motion-blur-image</loc>
+    <loc>https://ishutools.in/t/photo-editor</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-tiff</loc>
+    <loc>https://ishutools.in/t/unblur-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/tiff-to-pdf</loc>
+    <loc>https://ishutools.in/t/increase-image-quality</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-svg</loc>
+    <loc>https://ishutools.in/t/beautify-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/svg-to-pdf</loc>
+    <loc>https://ishutools.in/t/retouch-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-rtf</loc>
+    <loc>https://ishutools.in/t/super-resolution</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rtf-to-pdf</loc>
+    <loc>https://ishutools.in/t/zoom-out-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-odt</loc>
+    <loc>https://ishutools.in/t/add-white-border-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/odt-to-pdf</loc>
+    <loc>https://ishutools.in/t/freehand-crop</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-epub</loc>
+    <loc>https://ishutools.in/t/crop-png</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/epub-to-pdf</loc>
+    <loc>https://ishutools.in/t/a4-size-resize</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/optimize-pdf</loc>
+    <loc>https://ishutools.in/t/check-dpi</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-to-pdf</loc>
+    <loc>https://ishutools.in/t/color-code-from-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-from-pdf</loc>
+    <loc>https://ishutools.in/t/view-metadata</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-converter</loc>
+    <loc>https://ishutools.in/t/remove-image-metadata</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-security</loc>
+    <loc>https://ishutools.in/t/edit-metadata</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ai-summarizer</loc>
+    <loc>https://ishutools.in/t/image-splitter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-viewer</loc>
+    <loc>https://ishutools.in/t/jpeg-to-png</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-intelligence</loc>
+    <loc>https://ishutools.in/t/png-to-jpeg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/edit-pdf</loc>
+    <loc>https://ishutools.in/t/compress-to-5kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/annotate-pdf</loc>
+    <loc>https://ishutools.in/t/compress-to-10kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/highlight-pdf</loc>
+    <loc>https://ishutools.in/t/compress-to-20kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-filler</loc>
+    <loc>https://ishutools.in/t/compress-to-50kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-pages</loc>
+    <loc>https://ishutools.in/t/compress-to-100kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-page-numbers</loc>
+    <loc>https://ishutools.in/t/compress-to-200kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/header-and-footer</loc>
+    <loc>https://ishutools.in/t/compress-to-500kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-watermark</loc>
+    <loc>https://ishutools.in/t/compress-to-1mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-ocr</loc>
+    <loc>https://ishutools.in/t/compress-to-15kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-to-text</loc>
+    <loc>https://ishutools.in/t/compress-to-25kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-text</loc>
+    <loc>https://ishutools.in/t/compress-to-30kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/png-to-text</loc>
+    <loc>https://ishutools.in/t/compress-to-40kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/check-image-dpi</loc>
+    <loc>https://ishutools.in/t/compress-to-150kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-dpi</loc>
+    <loc>https://ishutools.in/t/compress-to-300kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-in-cm</loc>
+    <loc>https://ishutools.in/t/compress-to-2mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-in-mm</loc>
+    <loc>https://ishutools.in/t/increase-image-size-in-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-in-inch</loc>
+    <loc>https://ishutools.in/t/reduce-image-size-in-mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-name-dob-image</loc>
+    <loc>https://ishutools.in/t/convert-image-from-mb-to-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/merge-photo-signature</loc>
+    <loc>https://ishutools.in/t/convert-image-size-kb-to-mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/black-and-white-image</loc>
+    <loc>https://ishutools.in/t/jpg-to-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/censor-photo</loc>
+    <loc>https://ishutools.in/t/jpeg-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/picture-to-pixel-art</loc>
+    <loc>https://ishutools.in/t/remove-image-object</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/generate-signature</loc>
+    <loc>https://ishutools.in/t/unblur-face</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/word-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-pixel</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-word</loc>
+    <loc>https://ishutools.in/t/resize-signature</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/powerpoint-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-3.5cmx4.5cm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-powerpoint</loc>
+    <loc>https://ishutools.in/t/resize-image-to-6cmx2cm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/eml-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-signature-to-50mmx20mm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/fb2-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-35mmx45mm</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/cbz-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-2x2</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ebook-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-3x4</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/heic-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-4x6</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/heif-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-600x600-pixel</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jfif-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-for-whatsapp-dp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/zip-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-for-youtube-banner</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/cbr-to-pdf</loc>
+    <loc>https://ishutools.in/t/resize-image-to-a4-size</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/djvu-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpg-to-pdf-under-50kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ai-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpg-to-pdf-under-100kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-mobi</loc>
+    <loc>https://ishutools.in/t/jpeg-to-pdf-under-200kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/mobi-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpg-to-pdf-under-300kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/xps-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpg-to-pdf-under-500kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/wps-to-pdf</loc>
+    <loc>https://ishutools.in/t/jpeg-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/dwg-to-pdf</loc>
+    <loc>https://ishutools.in/t/pdf-to-ppt</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pub-to-pdf</loc>
+    <loc>https://ishutools.in/t/ppt-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/hwp-to-pdf</loc>
+    <loc>https://ishutools.in/t/edit-pdf-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/chm-to-pdf</loc>
+    <loc>https://ishutools.in/t/add-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/dxf-to-pdf</loc>
+    <loc>https://ishutools.in/t/add-image-to-pdf</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pages-to-pdf</loc>
+    <loc>https://ishutools.in/t/bulk-image-resizer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-to-image</loc>
+    <loc>https://ishutools.in/t/ssc-photo-resizer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reduce-image-size-in-kb</loc>
+    <loc>https://ishutools.in/t/resize-for-pan-card</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-kb</loc>
+    <loc>https://ishutools.in/t/resize-image-for-upsc</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/passport-photo-maker</loc>
+    <loc>https://ishutools.in/t/psc-photo-resize</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/passport-size-photo</loc>
+    <loc>https://ishutools.in/t/photo-blemish-remover</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/social-media-resize</loc>
+    <loc>https://ishutools.in/t/compress-image-to-5kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-for-instagram</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-10kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-for-whatsapp</loc>
+    <loc>https://ishutools.in/t/compress-image-to-15kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-for-youtube</loc>
+    <loc>https://ishutools.in/t/compress-image-to-20kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/instagram-grid</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-between-20kb-to-50kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-to-jpg</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-25kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-from-jpg</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-30kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/heic-to-jpg</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-40kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/webp-to-jpg</loc>
+    <loc>https://ishutools.in/t/compress-image-to-50kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/photo-editor</loc>
+    <loc>https://ishutools.in/t/compress-image-to-100kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unblur-image</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-150kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/increase-image-quality</loc>
+    <loc>https://ishutools.in/t/compress-image-to-200kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/beautify-image</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-300kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/retouch-image</loc>
+    <loc>https://ishutools.in/t/compress-jpeg-to-500kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/super-resolution</loc>
+    <loc>https://ishutools.in/t/compress-image-to-1mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/zoom-out-image</loc>
+    <loc>https://ishutools.in/t/compress-image-to-2mb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-white-border-image</loc>
+    <loc>https://ishutools.in/t/json-formatter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/freehand-crop</loc>
+    <loc>https://ishutools.in/t/xml-formatter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/crop-png</loc>
+    <loc>https://ishutools.in/t/base64-encode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/a4-size-resize</loc>
+    <loc>https://ishutools.in/t/base64-decode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/check-dpi</loc>
+    <loc>https://ishutools.in/t/url-encode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/color-code-from-image</loc>
+    <loc>https://ishutools.in/t/url-decode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/view-metadata</loc>
+    <loc>https://ishutools.in/t/html-encode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-image-metadata</loc>
+    <loc>https://ishutools.in/t/html-decode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/edit-metadata</loc>
+    <loc>https://ishutools.in/t/jwt-decode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-splitter</loc>
+    <loc>https://ishutools.in/t/regex-tester</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpeg-to-png</loc>
+    <loc>https://ishutools.in/t/unix-timestamp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/png-to-jpeg</loc>
+    <loc>https://ishutools.in/t/json-to-yaml</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-5kb</loc>
+    <loc>https://ishutools.in/t/yaml-to-json</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-10kb</loc>
+    <loc>https://ishutools.in/t/hex-to-rgb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-20kb</loc>
+    <loc>https://ishutools.in/t/rgb-to-hex</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-50kb</loc>
+    <loc>https://ishutools.in/t/rgb-to-hsl</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-100kb</loc>
+    <loc>https://ishutools.in/t/color-palette-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-200kb</loc>
+    <loc>https://ishutools.in/t/gradient-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-500kb</loc>
+    <loc>https://ishutools.in/t/color-contrast-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-1mb</loc>
+    <loc>https://ishutools.in/t/length-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-15kb</loc>
+    <loc>https://ishutools.in/t/weight-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-25kb</loc>
+    <loc>https://ishutools.in/t/temperature-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-30kb</loc>
+    <loc>https://ishutools.in/t/data-size-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-40kb</loc>
+    <loc>https://ishutools.in/t/speed-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-150kb</loc>
+    <loc>https://ishutools.in/t/area-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-300kb</loc>
+    <loc>https://ishutools.in/t/md5-hash</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-to-2mb</loc>
+    <loc>https://ishutools.in/t/sha256-hash</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/increase-image-size-in-kb</loc>
+    <loc>https://ishutools.in/t/sha512-hash</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reduce-image-size-in-mb</loc>
+    <loc>https://ishutools.in/t/uuid-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-image-from-mb-to-kb</loc>
+    <loc>https://ishutools.in/t/password-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/convert-image-size-kb-to-mb</loc>
+    <loc>https://ishutools.in/t/lorem-ipsum-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-kb</loc>
+    <loc>https://ishutools.in/t/bcrypt-hash</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpeg-to-jpg</loc>
+    <loc>https://ishutools.in/t/meta-tag-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/remove-image-object</loc>
+    <loc>https://ishutools.in/t/keyword-density</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unblur-face</loc>
+    <loc>https://ishutools.in/t/readability-score</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-pixel</loc>
+    <loc>https://ishutools.in/t/character-counter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-signature</loc>
+    <loc>https://ishutools.in/t/open-graph-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-3.5cmx4.5cm</loc>
+    <loc>https://ishutools.in/t/minify-css</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-6cmx2cm</loc>
+    <loc>https://ishutools.in/t/minify-js</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-signature-to-50mmx20mm</loc>
+    <loc>https://ishutools.in/t/minify-html</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-35mmx45mm</loc>
+    <loc>https://ishutools.in/t/prettify-css</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-2x2</loc>
+    <loc>https://ishutools.in/t/sql-formatter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-3x4</loc>
+    <loc>https://ishutools.in/t/markdown-to-html</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-4x6</loc>
+    <loc>https://ishutools.in/t/html-to-markdown</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-600x600-pixel</loc>
+    <loc>https://ishutools.in/t/diff-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-for-whatsapp-dp</loc>
+    <loc>https://ishutools.in/t/percentage-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-for-youtube-banner</loc>
+    <loc>https://ishutools.in/t/average-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-to-a4-size</loc>
+    <loc>https://ishutools.in/t/bmi-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-pdf-under-50kb</loc>
+    <loc>https://ishutools.in/t/age-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-pdf-under-100kb</loc>
+    <loc>https://ishutools.in/t/discount-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpeg-to-pdf-under-200kb</loc>
+    <loc>https://ishutools.in/t/loan-emi-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-pdf-under-300kb</loc>
+    <loc>https://ishutools.in/t/tip-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-pdf-under-500kb</loc>
+    <loc>https://ishutools.in/t/gpa-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpeg-to-pdf</loc>
+    <loc>https://ishutools.in/t/number-base-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pdf-to-ppt</loc>
+    <loc>https://ishutools.in/t/text-reverse</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ppt-to-pdf</loc>
+    <loc>https://ishutools.in/t/text-to-binary</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/edit-pdf-text</loc>
+    <loc>https://ishutools.in/t/binary-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-text</loc>
+    <loc>https://ishutools.in/t/morse-code</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-image-to-pdf</loc>
+    <loc>https://ishutools.in/t/random-number-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bulk-image-resizer</loc>
+    <loc>https://ishutools.in/t/text-to-ascii</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ssc-photo-resizer</loc>
+    <loc>https://ishutools.in/t/ascii-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-for-pan-card</loc>
+    <loc>https://ishutools.in/t/word-frequency</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resize-image-for-upsc</loc>
+    <loc>https://ishutools.in/t/roman-numeral-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/psc-photo-resize</loc>
+    <loc>https://ishutools.in/t/countdown-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/photo-blemish-remover</loc>
+    <loc>https://ishutools.in/t/compound-interest-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-5kb</loc>
+    <loc>https://ishutools.in/t/simple-interest-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-10kb</loc>
+    <loc>https://ishutools.in/t/salary-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-15kb</loc>
+    <loc>https://ishutools.in/t/fuel-cost-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-20kb</loc>
+    <loc>https://ishutools.in/t/electricity-bill-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-between-20kb-to-50kb</loc>
+    <loc>https://ishutools.in/t/speed-distance-time</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-25kb</loc>
+    <loc>https://ishutools.in/t/profit-loss-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-30kb</loc>
+    <loc>https://ishutools.in/t/cgpa-to-percentage</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-40kb</loc>
+    <loc>https://ishutools.in/t/scientific-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-50kb</loc>
+    <loc>https://ishutools.in/t/unit-price-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-100kb</loc>
+    <loc>https://ishutools.in/t/number-to-words</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-150kb</loc>
+    <loc>https://ishutools.in/t/date-difference</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-200kb</loc>
+    <loc>https://ishutools.in/t/time-zone-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-300kb</loc>
+    <loc>https://ishutools.in/t/password-strength-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-jpeg-to-500kb</loc>
+    <loc>https://ishutools.in/t/text-to-hex</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-1mb</loc>
+    <loc>https://ishutools.in/t/hex-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-2mb</loc>
+    <loc>https://ishutools.in/t/text-to-unicode</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-formatter</loc>
+    <loc>https://ishutools.in/t/unicode-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/xml-formatter</loc>
+    <loc>https://ishutools.in/t/string-hash-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/base64-encode</loc>
+    <loc>https://ishutools.in/t/text-statistics</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/base64-decode</loc>
+    <loc>https://ishutools.in/t/case-converter-advanced</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-encode</loc>
+    <loc>https://ishutools.in/t/coin-flip</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-decode</loc>
+    <loc>https://ishutools.in/t/dice-roller</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-encode</loc>
+    <loc>https://ishutools.in/t/stopwatch-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-decode</loc>
+    <loc>https://ishutools.in/t/json-minifier</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jwt-decode</loc>
+    <loc>https://ishutools.in/t/url-encoder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/regex-tester</loc>
+    <loc>https://ishutools.in/t/url-decoder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unix-timestamp</loc>
+    <loc>https://ishutools.in/t/html-encoder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-to-yaml</loc>
+    <loc>https://ishutools.in/t/html-decoder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/yaml-to-json</loc>
+    <loc>https://ishutools.in/t/hash-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/hex-to-rgb</loc>
+    <loc>https://ishutools.in/t/jwt-decoder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rgb-to-hex</loc>
+    <loc>https://ishutools.in/t/unix-timestamp-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/rgb-to-hsl</loc>
+    <loc>https://ishutools.in/t/css-minifier</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/color-palette-generator</loc>
+    <loc>https://ishutools.in/t/js-minifier</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gradient-generator</loc>
+    <loc>https://ishutools.in/t/html-minifier</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/color-contrast-checker</loc>
+    <loc>https://ishutools.in/t/json-to-csv-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/length-converter</loc>
+    <loc>https://ishutools.in/t/csv-to-json-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/weight-converter</loc>
+    <loc>https://ishutools.in/t/cron-expression-parser</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/temperature-converter</loc>
+    <loc>https://ishutools.in/t/text-escape-unescape</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/data-size-converter</loc>
+    <loc>https://ishutools.in/t/ip-lookup</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/speed-converter</loc>
+    <loc>https://ishutools.in/t/char-code-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/area-converter</loc>
+    <loc>https://ishutools.in/t/color-picker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/md5-hash</loc>
+    <loc>https://ishutools.in/t/md5-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sha256-hash</loc>
+    <loc>https://ishutools.in/t/sha256-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sha512-hash</loc>
+    <loc>https://ishutools.in/t/bcrypt-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/uuid-generator</loc>
+    <loc>https://ishutools.in/t/data-storage-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/password-generator</loc>
+    <loc>https://ishutools.in/t/volume-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/lorem-ipsum-generator</loc>
+    <loc>https://ishutools.in/t/energy-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bcrypt-hash</loc>
+    <loc>https://ishutools.in/t/pressure-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/meta-tag-generator</loc>
+    <loc>https://ishutools.in/t/instagram-post-resizer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/keyword-density</loc>
+    <loc>https://ishutools.in/t/youtube-thumbnail-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/readability-score</loc>
+    <loc>https://ishutools.in/t/twitter-header-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/character-counter</loc>
+    <loc>https://ishutools.in/t/facebook-cover-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/open-graph-generator</loc>
+    <loc>https://ishutools.in/t/linkedin-banner-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/minify-css</loc>
+    <loc>https://ishutools.in/t/whatsapp-dp-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/minify-js</loc>
+    <loc>https://ishutools.in/t/citation-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/minify-html</loc>
+    <loc>https://ishutools.in/t/flashcard-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/prettify-css</loc>
+    <loc>https://ishutools.in/t/study-planner</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sql-formatter</loc>
+    <loc>https://ishutools.in/t/grade-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/markdown-to-html</loc>
+    <loc>https://ishutools.in/t/attendance-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-to-markdown</loc>
+    <loc>https://ishutools.in/t/reading-time-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/diff-checker</loc>
+    <loc>https://ishutools.in/t/plagiarism-risk-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/percentage-calculator</loc>
+    <loc>https://ishutools.in/t/resume-bullet-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/average-calculator</loc>
+    <loc>https://ishutools.in/t/png-to-webp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bmi-calculator</loc>
+    <loc>https://ishutools.in/t/jpg-to-webp</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/age-calculator</loc>
+    <loc>https://ishutools.in/t/gif-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/discount-calculator</loc>
+    <loc>https://ishutools.in/t/tiff-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/loan-emi-calculator</loc>
+    <loc>https://ishutools.in/t/bmp-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/tip-calculator</loc>
+    <loc>https://ishutools.in/t/svg-to-png</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gpa-calculator</loc>
+    <loc>https://ishutools.in/t/image-to-jpg</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/number-base-converter</loc>
+    <loc>https://ishutools.in/t/circle-crop</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-reverse</loc>
+    <loc>https://ishutools.in/t/add-text-to-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-binary</loc>
+    <loc>https://ishutools.in/t/compress-image-to-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/binary-to-text</loc>
+    <loc>https://ishutools.in/t/reduce-image-size-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/morse-code</loc>
+    <loc>https://ishutools.in/t/increase-image-size-kb</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/random-number-generator</loc>
+    <loc>https://ishutools.in/t/dpi-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-ascii</loc>
+    <loc>https://ishutools.in/t/change-dpi</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ascii-to-text</loc>
+    <loc>https://ishutools.in/t/photo-collage</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/word-frequency</loc>
+    <loc>https://ishutools.in/t/view-image-metadata</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/roman-numeral-converter</loc>
+    <loc>https://ishutools.in/t/epoch-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/countdown-calculator</loc>
+    <loc>https://ishutools.in/t/fancy-text-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compound-interest-calculator</loc>
+    <loc>https://ishutools.in/t/json-path-finder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/simple-interest-calculator</loc>
+    <loc>https://ishutools.in/t/line-counter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/salary-calculator</loc>
+    <loc>https://ishutools.in/t/morse-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/fuel-cost-calculator</loc>
+    <loc>https://ishutools.in/t/text-to-morse</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/electricity-bill-calculator</loc>
+    <loc>https://ishutools.in/t/nato-alphabet</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/speed-distance-time</loc>
+    <loc>https://ishutools.in/t/number-to-roman</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/profit-loss-calculator</loc>
+    <loc>https://ishutools.in/t/roman-to-number</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/cgpa-to-percentage</loc>
+    <loc>https://ishutools.in/t/octal-to-text</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/scientific-calculator</loc>
+    <loc>https://ishutools.in/t/text-to-octal</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unit-price-calculator</loc>
+    <loc>https://ishutools.in/t/pig-latin</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/number-to-words</loc>
+    <loc>https://ishutools.in/t/text-repeat</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/date-difference</loc>
+    <loc>https://ishutools.in/t/random-color-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/time-zone-converter</loc>
+    <loc>https://ishutools.in/t/string-hash</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/password-strength-checker</loc>
+    <loc>https://ishutools.in/t/text-to-ascii-art</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-hex</loc>
+    <loc>https://ishutools.in/t/whitespace-remover</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/hex-to-text</loc>
+    <loc>https://ishutools.in/t/pdf-header-footer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-unicode</loc>
+    <loc>https://ishutools.in/t/motion-blur</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unicode-to-text</loc>
+    <loc>https://ishutools.in/t/add-border-to-photo</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/string-hash-generator</loc>
+    <loc>https://ishutools.in/t/word-counter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-statistics</loc>
+    <loc>https://ishutools.in/t/study-timer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/case-converter-advanced</loc>
+    <loc>https://ishutools.in/t/invoice-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/coin-flip</loc>
+    <loc>https://ishutools.in/t/favicon-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/dice-roller</loc>
+    <loc>https://ishutools.in/t/barcode-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/stopwatch-calculator</loc>
+    <loc>https://ishutools.in/t/letter-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-minifier</loc>
+    <loc>https://ishutools.in/t/calorie-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-encoder</loc>
+    <loc>https://ishutools.in/t/bmr-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-decoder</loc>
+    <loc>https://ishutools.in/t/body-fat-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-encoder</loc>
+    <loc>https://ishutools.in/t/water-intake-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-decoder</loc>
+    <loc>https://ishutools.in/t/sleep-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/hash-generator</loc>
+    <loc>https://ishutools.in/t/heart-rate-zones</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jwt-decoder</loc>
+    <loc>https://ishutools.in/t/steps-to-km</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/unix-timestamp-converter</loc>
+    <loc>https://ishutools.in/t/calories-burned-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/css-minifier</loc>
+    <loc>https://ishutools.in/t/gst-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/js-minifier</loc>
+    <loc>https://ishutools.in/t/sip-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/html-minifier</loc>
+    <loc>https://ishutools.in/t/roi-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-to-csv-text</loc>
+    <loc>https://ishutools.in/t/budget-planner</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/csv-to-json-text</loc>
+    <loc>https://ishutools.in/t/savings-goal-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/cron-expression-parser</loc>
+    <loc>https://ishutools.in/t/income-tax-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-escape-unescape</loc>
+    <loc>https://ishutools.in/t/love-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ip-lookup</loc>
+    <loc>https://ishutools.in/t/time-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/char-code-converter</loc>
+    <loc>https://ishutools.in/t/date-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/color-picker</loc>
+    <loc>https://ishutools.in/t/age-in-seconds</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/md5-generator</loc>
+    <loc>https://ishutools.in/t/random-name-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/sha256-generator</loc>
+    <loc>https://ishutools.in/t/video-downloader</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bcrypt-generator</loc>
+    <loc>https://ishutools.in/t/youtube-video-downloader</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/data-storage-converter</loc>
+    <loc>https://ishutools.in/t/youtube-to-mp3</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/volume-converter</loc>
+    <loc>https://ishutools.in/t/instagram-downloader</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/energy-converter</loc>
+    <loc>https://ishutools.in/t/resume-builder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pressure-converter</loc>
+    <loc>https://ishutools.in/t/pomodoro-timer</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/instagram-post-resizer</loc>
+    <loc>https://ishutools.in/t/stopwatch</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/youtube-thumbnail-maker</loc>
+    <loc>https://ishutools.in/t/world-clock</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/twitter-header-maker</loc>
+    <loc>https://ishutools.in/t/typing-speed-test</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/facebook-cover-maker</loc>
+    <loc>https://ishutools.in/t/screen-ruler</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/linkedin-banner-maker</loc>
+    <loc>https://ishutools.in/t/note-pad</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/whatsapp-dp-maker</loc>
+    <loc>https://ishutools.in/t/to-do-list</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/citation-generator</loc>
+    <loc>https://ishutools.in/t/habit-tracker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/flashcard-generator</loc>
+    <loc>https://ishutools.in/t/flashcard-maker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/study-planner</loc>
+    <loc>https://ishutools.in/t/grammar-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/grade-calculator</loc>
+    <loc>https://ishutools.in/t/paraphrase-tool</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/attendance-calculator</loc>
+    <loc>https://ishutools.in/t/plagiarism-detector</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reading-time-calculator</loc>
+    <loc>https://ishutools.in/t/text-to-handwriting</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/plagiarism-risk-checker</loc>
+    <loc>https://ishutools.in/t/ascii-art-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/resume-bullet-generator</loc>
+    <loc>https://ishutools.in/t/bulk-image-compressor</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/png-to-webp</loc>
+    <loc>https://ishutools.in/t/image-to-base64</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/jpg-to-webp</loc>
+    <loc>https://ishutools.in/t/base64-to-image</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gif-to-jpg</loc>
+    <loc>https://ishutools.in/t/ip-address-lookup</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/tiff-to-jpg</loc>
+    <loc>https://ishutools.in/t/dns-lookup</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/bmp-to-jpg</loc>
+    <loc>https://ishutools.in/t/whois-lookup</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/svg-to-png</loc>
+    <loc>https://ishutools.in/t/ssl-certificate-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/image-to-jpg</loc>
+    <loc>https://ishutools.in/t/word-frequency-counter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/circle-crop</loc>
+    <loc>https://ishutools.in/t/fibonacci-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/add-text-to-image</loc>
+    <loc>https://ishutools.in/t/prime-number-checker</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/compress-image-to-kb</loc>
+    <loc>https://ishutools.in/t/matrix-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/reduce-image-size-kb</loc>
+    <loc>https://ishutools.in/t/equation-solver</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/increase-image-size-kb</loc>
+    <loc>https://ishutools.in/t/statistics-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/dpi-checker</loc>
+    <loc>https://ishutools.in/t/currency-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/change-dpi</loc>
+    <loc>https://ishutools.in/t/gst-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/photo-collage</loc>
+    <loc>https://ishutools.in/t/atm-pin-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/view-image-metadata</loc>
+    <loc>https://ishutools.in/t/credit-card-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/epoch-converter</loc>
+    <loc>https://ishutools.in/t/ifsc-code-finder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/fancy-text-generator</loc>
+    <loc>https://ishutools.in/t/emi-calculator-advanced</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/json-path-finder</loc>
+    <loc>https://ishutools.in/t/sip-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/line-counter</loc>
+    <loc>https://ishutools.in/t/income-tax-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/morse-to-text</loc>
+    <loc>https://ishutools.in/t/salary-hike-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-morse</loc>
+    <loc>https://ishutools.in/t/loan-prepayment-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/nato-alphabet</loc>
+    <loc>https://ishutools.in/t/fixed-deposit-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/number-to-roman</loc>
+    <loc>https://ishutools.in/t/recurring-deposit-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/roman-to-number</loc>
+    <loc>https://ishutools.in/t/loan-eligibility-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/octal-to-text</loc>
+    <loc>https://ishutools.in/t/expense-splitter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-octal</loc>
+    <loc>https://ishutools.in/t/upi-qr-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pig-latin</loc>
+    <loc>https://ishutools.in/t/wifi-qr-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-repeat</loc>
+    <loc>https://ishutools.in/t/grade-needed-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/random-color-generator</loc>
+    <loc>https://ishutools.in/t/exam-countdown-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/string-hash</loc>
+    <loc>https://ishutools.in/t/marks-percentage-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-to-ascii-art</loc>
+    <loc>https://ishutools.in/t/cgpa-percentage-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/whitespace-remover</loc>
+    <loc>https://ishutools.in/t/attendance-required-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/text-readability-score</loc>
+    <loc>https://ishutools.in/t/text-readability-score</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/cron-builder</loc>
+    <loc>https://ishutools.in/t/cron-builder</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/investment-calculator</loc>
+    <loc>https://ishutools.in/t/investment-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/net-worth-calculator</loc>
+    <loc>https://ishutools.in/t/net-worth-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/retirement-planner</loc>
+    <loc>https://ishutools.in/t/retirement-planner</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pace-calculator</loc>
+    <loc>https://ishutools.in/t/pace-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/menstrual-cycle-calculator</loc>
+    <loc>https://ishutools.in/t/menstrual-cycle-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pregnancy-week-calculator</loc>
+    <loc>https://ishutools.in/t/pregnancy-week-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/speed-calculator</loc>
+    <loc>https://ishutools.in/t/speed-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/aspect-ratio-calculator</loc>
+    <loc>https://ishutools.in/t/aspect-ratio-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gstin-validator</loc>
+    <loc>https://ishutools.in/t/gstin-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/pan-validator</loc>
+    <loc>https://ishutools.in/t/pan-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/phone-number-validator</loc>
+    <loc>https://ishutools.in/t/phone-number-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/email-validator</loc>
+    <loc>https://ishutools.in/t/email-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/css-gradient-generator</loc>
+    <loc>https://ishutools.in/t/css-gradient-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/box-shadow-generator</loc>
+    <loc>https://ishutools.in/t/box-shadow-generator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/ppf-calculator</loc>
+    <loc>https://ishutools.in/t/ppf-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/nps-calculator</loc>
+    <loc>https://ishutools.in/t/nps-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/macro-calculator</loc>
+    <loc>https://ishutools.in/t/macro-calculator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/braille-converter</loc>
+    <loc>https://ishutools.in/t/braille-converter</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/net-salary-calculator-india</loc>
+    <loc>https://ishutools.in/t/net-salary-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/hra-calculator-india</loc>
+    <loc>https://ishutools.in/t/hra-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/epf-calculator-india</loc>
+    <loc>https://ishutools.in/t/epf-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/gratuity-calculator-india</loc>
+    <loc>https://ishutools.in/t/gratuity-calculator-india</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/url-validator</loc>
+    <loc>https://ishutools.in/t/url-validator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/color-blindness-simulator</loc>
+    <loc>https://ishutools.in/t/color-blindness-simulator</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://ishutools.com/tools/grammar-score</loc>
+    <loc>https://ishutools.in/t/grammar-score</loc>
     <lastmod>2026-04-18</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.75</priority>
   </url>
 </urlset>

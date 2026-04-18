@@ -12,7 +12,7 @@ import ToolCategorySection from './components/ToolCategorySection'
 const BENTO_FEATURES = [
   {
     icon: Zap, accent: '#56a6ff', span: 'span-2 large',
-    stat: '550+', title: 'Free Professional Tools',
+    stat: '622+', title: 'Free Professional Tools',
     desc: 'PDF, Image, Developer, Math, Text, AI, Color, Security, Finance, Health, Network, Video — every tool you need, completely free.',
   },
   {

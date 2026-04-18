@@ -26,7 +26,7 @@ const categories = [
 ]
 
 const stats = [
-  { value: '550+', label: 'Free Tools' },
+  { value: '563+', label: 'Free Tools' },
   { value: '1M+', label: 'Happy Users' },
   { value: '10M+', label: 'Files Processed' },
   { value: '100%', label: 'Always Free' },
@@ -75,7 +75,7 @@ export default function Home() {
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
           }}>
-            550+ Tools • 100% Free • No Signup
+            563+ Tools • 100% Free • No Signup
           </span>
         </motion.div>
 
@@ -165,7 +165,7 @@ export default function Home() {
         <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 48 }}>
           <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-display)' }}>Browse by Category</h2>
           <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 520, margin: '0 auto' }}>
-            16 categories, 550+ tools — everything you need in one place
+            38 categories, 563+ tools — everything you need in one place
           </p>
         </motion.div>
 
@@ -239,7 +239,7 @@ export default function Home() {
             background: 'rgba(255,255,255,0.05)',
             color: 'var(--muted-strong)', fontWeight: 600, fontSize: 15,
           }}>
-            View All 550+ Tools <ArrowRight size={16} />
+            View All 563+ Tools <ArrowRight size={16} />
           </Link>
         </motion.div>
       </section>

@@ -33,14 +33,14 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
-- `frontend/src/lib/seoData.ts` — per-tool SEO data (286 handcrafted entries + smart auto-generator v2 fallback)
+- `frontend/src/lib/seoData.ts` — per-tool SEO data (567 handcrafted entries covering ALL 563 unique tools + smart auto-generator v3 fallback)
 - `frontend/src/lib/toolPresentation.ts` — category themes, tool input/output helpers, getToolUsageSteps()
 - `frontend/src/hooks/useCatalogData.ts` — caches and defensively deduplicates categories+tools from API
 - `scripts/generate_seo_pages.py` — generates static per-tool/per-category SEO HTML and sitemap after frontend builds for better crawler coverage on deployed static hosting
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
 - `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
-## SEO Features (Comprehensive v4)
+## SEO Features (Comprehensive v5)
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards, author/creator/publisher)
 - Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList 4-level, SpeakableSpecification)
 - Per-tool FAQ JSON-LD from seoData.ts — 10-12 FAQs per tool with voice/Hindi/creator-trust variants

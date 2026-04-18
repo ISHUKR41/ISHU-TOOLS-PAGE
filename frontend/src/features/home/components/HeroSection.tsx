@@ -131,7 +131,7 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 550
+  const toolLabel = toolCount > 0 ? toolCount : 563
 
   return (
     <motion.section
@@ -212,9 +212,9 @@ export default function HeroSection({
         >
           {[
             { label: 'Free Tools', value: toolLabel, suffix: '+', color: '#56a6ff' },
-            { label: 'Categories', value: categoryCount || 35, suffix: '', color: '#3ee58f' },
-            { label: 'PDF Workflows', value: pdfCount || 120, suffix: '+', color: '#f472b6' },
-            { label: 'Image Tools', value: imageCount || 80, suffix: '+', color: '#f59e0b' },
+            { label: 'Categories', value: categoryCount || 38, suffix: '', color: '#3ee58f' },
+            { label: 'PDF Workflows', value: pdfCount || 128, suffix: '+', color: '#f472b6' },
+            { label: 'Image Tools', value: imageCount || 195, suffix: '+', color: '#f59e0b' },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}

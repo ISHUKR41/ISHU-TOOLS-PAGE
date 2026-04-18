@@ -1,25 +1,41 @@
-# ISHU TOOLS - Robots.txt
-# Allow all crawlers full access to all tool pages
+# ISHU TOOLS - Indian Student Hub University Tools
+# Robots.txt — All crawlers welcome
 
 User-agent: *
 Allow: /
+Allow: /t/
+Allow: /c/
 
-# Block API endpoints from crawling
+# Block API and internal endpoints
 Disallow: /api/
 Disallow: /health
+Disallow: /_vite/
 
-# Sitemap location
+# Sitemap locations
+Sitemap: https://ishutools.in/sitemap.xml
 Sitemap: https://ishutools.com/sitemap.xml
 
-# Crawl-delay for politeness
-User-agent: AdsBot-Google
-Crawl-delay: 1
-
+# Crawl-delay per bot
 User-agent: Googlebot
 Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Crawl-delay: 0
+
+User-agent: AdsBot-Google
+Crawl-delay: 1
 
 User-agent: Bingbot
 Crawl-delay: 1
 
+User-agent: Applebot
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Crawl-delay: 1
+
 User-agent: Slurp
 Crawl-delay: 2
+
+User-agent: Twitterbot
+Crawl-delay: 0

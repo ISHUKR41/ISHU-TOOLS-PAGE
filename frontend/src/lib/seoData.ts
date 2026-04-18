@@ -5319,6 +5319,1892 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What is a good Flesch reading ease score?', answer: '90-100: Very Easy (5th grade). 70-80: Fairly Easy (7th grade). 60-70: Standard (8th-9th grade). 30-50: Difficult (college). Under 30: Very Difficult (professional). Aim for 60-70 for general web content.' },
     ],
   },
+  // ════════════════════════════════════════════════
+  //  PAGE OPS — PDF EDITING TOOLS
+  // ════════════════════════════════════════════════
+  'edit-pdf': {
+    title: 'Edit PDF Online Free — Add Text, Images & Annotations | ISHU TOOLS',
+    description: 'Edit PDF online free. Add text, watermarks, highlights, annotations, or images from one editing page. No signup, no watermark. Best free PDF editor for students and professionals in India.',
+    keywords: ['edit pdf online', 'pdf editor free', 'edit pdf free', 'pdf editor online', 'edit pdf without signup', 'add text to pdf', 'annotate pdf online', 'ishu tools edit pdf', 'pdf editor india', 'free pdf editor'],
+    h1: 'Edit PDF — Add Text, Images & Annotations Online Free',
+    faq: [
+      { question: 'Can I edit a PDF online for free?', answer: 'Yes! ISHU TOOLS PDF editor lets you add text, watermarks, highlights, and images to any PDF for free with no signup required.' },
+      { question: 'What can I add to a PDF on ISHU TOOLS?', answer: 'You can add text overlays, watermarks, image stamps, annotations, and highlights to any PDF page.' },
+      { question: 'Is ISHU TOOLS PDF editor better than iLovePDF?', answer: 'ISHU TOOLS offers a completely free PDF editor with no file limits, no watermarks, and no signup — perfect for students and professionals.' },
+    ],
+  },
+  'annotate-pdf': {
+    title: 'Annotate PDF Online Free — Add Comments & Notes | ISHU TOOLS',
+    description: 'Annotate PDF files online for free. Place free-text annotations on specific PDF pages. Perfect for students reviewing documents, teachers giving feedback. No signup, no watermark required.',
+    keywords: ['annotate pdf', 'pdf annotation tool', 'add comments to pdf', 'pdf annotator free', 'annotate pdf online', 'pdf note tool', 'ishu tools annotate pdf', 'pdf annotation india', 'free pdf annotator'],
+    h1: 'Annotate PDF — Add Notes & Comments Online Free',
+    faq: [
+      { question: 'How do I annotate a PDF online?', answer: 'Upload your PDF to ISHU TOOLS, enter your annotation text and page number, then download your annotated PDF for free.' },
+      { question: 'Can I add comments to a PDF for free?', answer: 'Yes. ISHU TOOLS lets you place free-text annotations on any PDF page at no cost and with no account needed.' },
+    ],
+  },
+  'highlight-pdf': {
+    title: 'Highlight PDF Online Free — Highlight Important Text | ISHU TOOLS',
+    description: 'Highlight PDF content online for free. Apply visible highlight blocks to important areas inside a PDF page. Perfect for study notes and document review. No signup required.',
+    keywords: ['highlight pdf', 'highlight pdf online free', 'pdf highlighter', 'add highlight to pdf', 'mark up pdf', 'highlight text in pdf', 'ishu tools highlight pdf', 'pdf highlight tool free'],
+    h1: 'Highlight PDF — Mark Important Content Online Free',
+    faq: [
+      { question: 'How do I highlight text in a PDF online?', answer: 'Upload your PDF to ISHU TOOLS, specify the page and area, and download your highlighted PDF document instantly for free.' },
+      { question: 'Can I highlight PDFs for free without software?', answer: 'Yes. ISHU TOOLS highlight PDF tool works in any browser on any device with no software or account required.' },
+    ],
+  },
+  'pdf-filler': {
+    title: 'PDF Filler Online Free — Fill PDF Forms | ISHU TOOLS',
+    description: 'Fill PDF forms online for free. Type text at precise coordinates on any PDF page. Fill applications, forms, and documents without Adobe Acrobat. No signup, no watermark required.',
+    keywords: ['fill pdf online', 'pdf filler free', 'fill pdf form online', 'pdf form filler', 'type on pdf free', 'fill pdf without acrobat', 'ishu tools pdf filler', 'pdf fill tool india'],
+    h1: 'PDF Filler — Fill PDF Forms Online Free',
+    faq: [
+      { question: 'How do I fill a PDF form online for free?', answer: 'Upload your PDF to ISHU TOOLS PDF Filler, specify the text and coordinates, then download the filled PDF instantly.' },
+      { question: 'Can I fill a PDF without Adobe Acrobat?', answer: 'Yes. ISHU TOOLS lets you fill any PDF form in your browser for free without installing any software.' },
+    ],
+  },
+  'remove-pages': {
+    title: 'Remove Pages from PDF Online Free | ISHU TOOLS',
+    description: 'Remove or delete specific pages from a PDF file online for free. Just enter the page numbers to delete and download the cleaned PDF. No signup, no watermark required.',
+    keywords: ['remove pages from pdf', 'delete pages from pdf', 'pdf page remover', 'remove pdf pages free', 'delete pages pdf online', 'ishu tools remove pages', 'pdf page delete tool', 'remove pages pdf india'],
+    h1: 'Remove Pages from PDF — Delete Specific Pages Free',
+    faq: [
+      { question: 'How do I remove pages from a PDF?', answer: 'Upload your PDF to ISHU TOOLS, enter the page numbers you want to delete, and download the updated PDF instantly.' },
+      { question: 'Can I delete multiple pages from a PDF at once?', answer: 'Yes. ISHU TOOLS lets you specify multiple page numbers to remove in one operation.' },
+    ],
+  },
+  'add-page-numbers': {
+    title: 'Add Page Numbers to PDF Online Free | ISHU TOOLS',
+    description: 'Add page numbers to any PDF online for free. Choose position, font size, and starting number. Great for reports, assignments, and official documents. No signup required.',
+    keywords: ['add page numbers to pdf', 'page numbers pdf online', 'pdf page number adder', 'number pdf pages free', 'pdf page numbering', 'ishu tools page numbers pdf', 'add page number pdf india'],
+    h1: 'Add Page Numbers to PDF Online Free',
+    faq: [
+      { question: 'How do I add page numbers to a PDF?', answer: 'Upload your PDF to ISHU TOOLS, choose the position (top/bottom/left/right) and font size, and download the numbered PDF.' },
+      { question: 'Can I start page numbering from a specific number?', answer: 'Yes. ISHU TOOLS allows you to set a custom starting page number for your document.' },
+    ],
+  },
+  'header-and-footer': {
+    title: 'Add Header and Footer to PDF Online Free | ISHU TOOLS',
+    description: 'Add custom header and footer text to every page of a PDF document online for free. Great for reports, thesis, and official documents. No signup or watermark required.',
+    keywords: ['add header footer pdf', 'pdf header footer online', 'add header to pdf', 'add footer to pdf', 'pdf header footer free', 'ishu tools header footer pdf', 'header footer pdf india'],
+    h1: 'Add Header and Footer to PDF Online Free',
+    faq: [
+      { question: 'How do I add a header to a PDF?', answer: 'Upload your PDF to ISHU TOOLS, enter your header and footer text, choose positioning, and download the updated PDF.' },
+      { question: 'Can I add both header and footer at once?', answer: 'Yes. ISHU TOOLS lets you add header, footer, or both simultaneously to your PDF.' },
+    ],
+  },
+  'add-watermark': {
+    title: 'Add Watermark to PDF Online Free — Text & Image | ISHU TOOLS',
+    description: 'Add text or image watermarks to PDF pages online for free. Choose transparency, size, position, and apply to all pages. No signup, no limits. Best free PDF watermark tool.',
+    keywords: ['add watermark to pdf', 'pdf watermark tool', 'watermark pdf online free', 'text watermark pdf', 'pdf watermark free', 'stamp pdf online', 'ishu tools watermark pdf', 'pdf watermark india'],
+    h1: 'Add Watermark to PDF Online Free',
+    faq: [
+      { question: 'How do I add a watermark to a PDF?', answer: 'Upload your PDF to ISHU TOOLS, enter your watermark text, select opacity and position, then download your watermarked PDF.' },
+      { question: 'Can I add an image watermark to a PDF?', answer: 'Yes. ISHU TOOLS supports both text and image watermarks that can be applied to all PDF pages at once.' },
+    ],
+  },
+  'add-image-pdf': {
+    title: 'Add Image to PDF Online Free — Insert Image into PDF | ISHU TOOLS',
+    description: 'Add image to PDF pages online for free. Overlay logos, stamps, or photos onto PDF pages at custom positions. No signup, no watermark. Best free image insert PDF tool.',
+    keywords: ['add image to pdf', 'insert image in pdf', 'image pdf overlay', 'add logo to pdf', 'stamp pdf with image', 'ishu tools add image pdf', 'add photo to pdf free', 'pdf image overlay india'],
+    h1: 'Add Image to PDF — Insert Logo or Photo Online Free',
+    faq: [
+      { question: 'How do I add an image to a PDF?', answer: 'Upload your PDF and image to ISHU TOOLS, choose the page and position for the image, then download the updated PDF.' },
+      { question: 'Can I add a company logo to my PDF?', answer: 'Yes. ISHU TOOLS lets you overlay any image including logos, signatures, and stamps onto PDF pages.' },
+    ],
+  },
+  'resize-pages-pdf': {
+    title: 'Resize PDF Pages Online Free — Scale PDF Dimensions | ISHU TOOLS',
+    description: 'Resize or scale all pages of a PDF document by a custom factor online for free. Adjust PDF page dimensions for printing or compatibility. No signup required.',
+    keywords: ['resize pdf pages', 'scale pdf pages', 'change pdf page size', 'pdf page resize tool', 'pdf resize online free', 'ishu tools resize pdf pages', 'pdf page scaling india'],
+    h1: 'Resize PDF Pages Online Free',
+    faq: [
+      { question: 'How do I resize PDF pages?', answer: 'Upload your PDF to ISHU TOOLS, choose the scale factor or target page size, then download the resized PDF.' },
+      { question: 'Can I change PDF pages from A4 to Letter size?', answer: 'Yes. ISHU TOOLS supports scaling PDF pages to different dimensions for compatibility and printing requirements.' },
+    ],
+  },
+  'pdf-header-footer': {
+    title: 'PDF Header & Footer Tool Online Free — Add to Every Page | ISHU TOOLS',
+    description: 'Add custom header and footer text with page numbers to every PDF page online for free. Perfect for official reports, thesis, and legal documents. No signup required.',
+    keywords: ['pdf header footer', 'add header footer pdf', 'pdf page header', 'pdf footer text', 'custom header pdf', 'ishu tools pdf header', 'header footer generator pdf free'],
+    h1: 'PDF Header & Footer — Add to Every Page Free',
+    faq: [
+      { question: 'How do I add headers and footers to a PDF?', answer: 'Upload your PDF to ISHU TOOLS PDF Header & Footer tool, enter your text, choose position, and download the updated PDF for free.' },
+    ],
+  },
+  'header-footer-pdf': {
+    title: 'PDF Header & Footer — Add Custom Text to PDF Free | ISHU TOOLS',
+    description: 'Add custom headers and footers with page numbers to every page of your PDF document online for free. Perfect for official documents and reports. No signup required.',
+    keywords: ['pdf header footer', 'add header footer to pdf', 'pdf page header', 'pdf page footer', 'custom header footer pdf', 'ishu tools pdf header footer', 'header footer generator pdf'],
+    h1: 'PDF Header & Footer — Add Custom Text Free',
+    faq: [
+      { question: 'How do I add a header and footer to my PDF?', answer: 'Upload your PDF, specify header and footer text and page numbers placement, then download the updated document from ISHU TOOLS.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  PDF ADVANCED TOOLS
+  // ════════════════════════════════════════════════
+  'edit-pdf-text': {
+    title: 'Edit PDF Text Online Free — Overlay Custom Text | ISHU TOOLS',
+    description: 'Edit and overlay custom text on PDF pages online for free. Add text at precise coordinates with font control. No Adobe Acrobat needed. No signup, no watermark.',
+    keywords: ['edit pdf text', 'add text to pdf', 'pdf text editor', 'overlay text pdf', 'edit text in pdf free', 'pdf text overlay', 'ishu tools edit pdf text', 'type on pdf free'],
+    h1: 'Edit PDF Text — Add Custom Text to PDF Free',
+    faq: [
+      { question: 'How do I add text to a PDF without Adobe?', answer: 'Upload your PDF to ISHU TOOLS, enter your text and choose the position and font, then download your updated PDF for free.' },
+    ],
+  },
+  'add-text': {
+    title: 'Add Text to PDF Online Free — PDF Text Tool | ISHU TOOLS',
+    description: 'Add custom text annotations directly to PDF documents online for free. Perfect for filling forms, adding signatures text, or notes. No signup or software required.',
+    keywords: ['add text to pdf', 'pdf text adder', 'text annotation pdf', 'type on pdf free', 'pdf text tool', 'add text pdf online', 'ishu tools add text pdf'],
+    h1: 'Add Text to PDF Online Free',
+    faq: [
+      { question: 'How do I add text to a PDF for free?', answer: 'Upload your PDF to ISHU TOOLS, specify the text and coordinates, then download the updated PDF with your text added.' },
+    ],
+  },
+  'add-image-to-pdf': {
+    title: 'Add Image to PDF Online Free — Insert Images into PDF | ISHU TOOLS',
+    description: 'Insert image layers on top of PDF pages online for free. Add logos, photos, and stamps to any PDF position. No software needed. Best free PDF image tool for India.',
+    keywords: ['add image to pdf online', 'insert image pdf free', 'pdf image tool', 'logo on pdf', 'image overlay pdf', 'ishu tools add image pdf'],
+    h1: 'Add Image to PDF — Insert Image Online Free',
+    faq: [
+      { question: 'Can I add a logo to my PDF?', answer: 'Yes! Upload your PDF and logo image to ISHU TOOLS, choose the position on the PDF, and download your branded PDF for free.' },
+    ],
+  },
+  'pdf-to-pdfa': {
+    title: 'PDF to PDF/A Converter Online Free — Archival PDF | ISHU TOOLS',
+    description: 'Convert PDF to PDF/A (archival PDF) online for free. Create ISO-standardized archival PDF for long-term storage and legal document requirements. No signup needed.',
+    keywords: ['pdf to pdfa', 'pdf to pdf/a', 'archival pdf converter', 'pdfa online free', 'convert pdf archival', 'pdf a standard', 'ishu tools pdf to pdfa', 'pdf archival india'],
+    h1: 'PDF to PDF/A — Convert to Archival Format Free',
+    faq: [
+      { question: 'What is PDF/A format?', answer: 'PDF/A is an ISO-standardized format of PDF for long-term archiving. It ensures the document looks the same in the future by embedding all fonts and color profiles.' },
+      { question: 'Who needs PDF/A documents?', answer: 'PDF/A is commonly required for legal filings, government submissions, and archival documents in India and internationally.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  PDF DATA & UTILITY TOOLS
+  // ════════════════════════════════════════════════
+  'pdf-to-json': {
+    title: 'PDF to JSON Online Free — Extract PDF Data | ISHU TOOLS',
+    description: 'Export PDF text and metadata into JSON format online for free. Perfect for developers parsing PDF data programmatically. No signup, instant results.',
+    keywords: ['pdf to json', 'pdf to json converter', 'extract pdf to json', 'pdf data to json', 'pdf parser json', 'ishu tools pdf to json', 'pdf json free', 'developer pdf tools'],
+    h1: 'PDF to JSON Converter Online Free',
+    faq: [
+      { question: 'How do I convert PDF to JSON?', answer: 'Upload your PDF to ISHU TOOLS and get text and metadata extracted as JSON instantly. Perfect for developers and data extraction.' },
+    ],
+  },
+  'json-to-pdf': {
+    title: 'JSON to PDF Online Free — Convert JSON to Document | ISHU TOOLS',
+    description: 'Convert JSON data or text into a formatted PDF document online for free. Great for reports, data exports, and documentation. No signup required.',
+    keywords: ['json to pdf', 'convert json to pdf', 'json pdf converter', 'json to document', 'ishu tools json to pdf', 'json pdf free', 'developer pdf tools'],
+    h1: 'JSON to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert JSON to PDF?', answer: 'Paste or upload your JSON file to ISHU TOOLS and download it as a formatted PDF document for free.' },
+    ],
+  },
+  'xml-to-pdf': {
+    title: 'XML to PDF Online Free — Convert XML to Document | ISHU TOOLS',
+    description: 'Convert XML data or files into PDF documents online for free. Useful for data reports, configuration exports, and documentation. No signup required.',
+    keywords: ['xml to pdf', 'convert xml to pdf', 'xml pdf converter', 'xml to document', 'ishu tools xml to pdf', 'xml pdf free'],
+    h1: 'XML to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert XML to PDF?', answer: 'Upload your XML file to ISHU TOOLS and download it as a formatted PDF document instantly for free.' },
+    ],
+  },
+  'csv-to-pdf': {
+    title: 'CSV to PDF Online Free — Convert CSV Spreadsheet to PDF | ISHU TOOLS',
+    description: 'Convert CSV files into a professionally formatted PDF table online for free. Perfect for sharing data reports and spreadsheets as PDFs. No signup required.',
+    keywords: ['csv to pdf', 'convert csv to pdf', 'csv pdf converter', 'spreadsheet to pdf', 'csv table pdf', 'ishu tools csv to pdf', 'csv pdf free', 'data to pdf'],
+    h1: 'CSV to PDF — Convert Spreadsheet to PDF Table Free',
+    faq: [
+      { question: 'How do I convert a CSV to PDF?', answer: 'Upload your CSV file to ISHU TOOLS and download a formatted PDF table with your data instantly for free.' },
+      { question: 'Will column headers be preserved?', answer: 'Yes. ISHU TOOLS generates a clean PDF table with your CSV column headers and all data rows included.' },
+    ],
+  },
+  'pdf-pages-to-zip': {
+    title: 'PDF Pages to ZIP — Export PDF Pages as Images | ISHU TOOLS',
+    description: 'Export all PDF pages as individual images and download them as a ZIP file online for free. Useful for extracting all page images from a PDF. No signup needed.',
+    keywords: ['pdf pages to zip', 'export pdf pages images', 'pdf to images zip', 'pdf pages download zip', 'ishu tools pdf to zip', 'pdf image extraction zip'],
+    h1: 'PDF Pages to ZIP — Export Images Free',
+    faq: [
+      { question: 'How do I get all PDF pages as images?', answer: 'Upload your PDF to ISHU TOOLS and download all pages as image files packed in a convenient ZIP archive.' },
+    ],
+  },
+  'zip-images-to-pdf': {
+    title: 'ZIP Images to PDF Online Free — Bulk Image to PDF | ISHU TOOLS',
+    description: 'Convert image files inside a ZIP archive into a single PDF document online for free. Batch convert images to PDF in one step. No signup required.',
+    keywords: ['zip images to pdf', 'zip to pdf', 'bulk image to pdf', 'convert zip images pdf', 'multiple images to pdf', 'ishu tools zip to pdf', 'batch image pdf'],
+    h1: 'ZIP Images to PDF — Bulk Convert Free',
+    faq: [
+      { question: 'How do I convert multiple images to PDF?', answer: 'Create a ZIP of your images and upload to ISHU TOOLS. All images are combined into a single PDF in order.' },
+    ],
+  },
+  'chat-with-pdf': {
+    title: 'Chat with PDF Online Free — Ask Questions About PDF | ISHU TOOLS',
+    description: 'Ask questions and get context-based answers from any PDF document online for free. Powered by AI text extraction. Perfect for students and researchers. No signup required.',
+    keywords: ['chat with pdf', 'ask pdf questions', 'pdf chatbot', 'ai pdf reader', 'pdf question answering', 'ishu tools chat pdf', 'pdf ai tool free', 'interact with pdf'],
+    h1: 'Chat with PDF — Ask Questions About Your Document Free',
+    faq: [
+      { question: 'How does Chat with PDF work?', answer: 'Upload your PDF to ISHU TOOLS and ask questions. The tool extracts text context and provides relevant answers from your document.' },
+      { question: 'Can I use this for studying and research?', answer: 'Yes! Chat with PDF is perfect for students and researchers who want to quickly find information in large PDF documents.' },
+    ],
+  },
+  'create-workflow': {
+    title: 'Create PDF Workflow Online Free — Custom Tool Automation | ISHU TOOLS',
+    description: 'Build reusable workflow JSON from your favorite ISHU TOOLS steps. Automate multi-step PDF and image processing sequences. Free and easy to use.',
+    keywords: ['pdf workflow tool', 'automation workflow', 'create pdf workflow', 'tool automation ishu', 'custom workflow builder', 'ishu tools workflow', 'pdf automation tool'],
+    h1: 'Create Workflow — Automate Tool Steps Free',
+    faq: [
+      { question: 'What is Create Workflow on ISHU TOOLS?', answer: 'Create Workflow lets you build a reusable multi-step workflow combining your favorite ISHU TOOLS in a sequence, saving time on repetitive tasks.' },
+    ],
+  },
+  'pdf-viewer': {
+    title: 'PDF Viewer Online Free — Inspect PDF Content | ISHU TOOLS',
+    description: 'View and inspect your PDF online for free. Check page count, view metadata, and preview text content from any PDF file. No signup, no download required.',
+    keywords: ['pdf viewer online', 'view pdf online free', 'pdf inspector', 'pdf preview free', 'pdf metadata viewer', 'ishu tools pdf viewer', 'online pdf reader free'],
+    h1: 'PDF Viewer — Inspect PDF Content Online Free',
+    faq: [
+      { question: 'How do I view a PDF online?', answer: 'Upload your PDF to ISHU TOOLS PDF Viewer to instantly see page count, metadata, and text preview without any software.' },
+    ],
+  },
+  'pdf-intelligence': {
+    title: 'PDF Intelligence — AI Summary & Content Analytics Free | ISHU TOOLS',
+    description: 'Get AI-powered summary, keywords, and content analytics from any PDF document for free. Perfect for quick document analysis and research. No signup required.',
+    keywords: ['pdf intelligence', 'pdf analysis tool', 'ai pdf summary', 'pdf content analyzer', 'pdf keyword extractor', 'ishu tools pdf intelligence', 'document analysis free'],
+    h1: 'PDF Intelligence — AI Document Analysis Free',
+    faq: [
+      { question: 'What does PDF Intelligence do?', answer: 'ISHU TOOLS PDF Intelligence analyzes your PDF and generates a summary, extracts keywords, and provides content analytics for quick document understanding.' },
+    ],
+  },
+  'convert-from-pdf': {
+    title: 'Convert from PDF Online Free — Export PDF to Any Format | ISHU TOOLS',
+    description: 'Convert PDF files to any format you choose — Word, Excel, JPG, PNG, and more — from one unified tool. Free, fast, no signup required.',
+    keywords: ['convert from pdf', 'pdf converter', 'export pdf to word', 'pdf to any format', 'convert pdf free', 'ishu tools convert pdf', 'pdf format converter', 'pdf export india'],
+    h1: 'Convert from PDF — Export to Any Format Free',
+    faq: [
+      { question: 'What formats can I convert PDF to?', answer: 'ISHU TOOLS can convert PDF to Word, Excel, PowerPoint, JPG, PNG, TXT, and more formats for free.' },
+    ],
+  },
+  'pdf-converter': {
+    title: 'PDF Converter Online Free — All PDF Conversions | ISHU TOOLS',
+    description: 'Smart PDF converter that handles both PDF generation and PDF export. Convert to and from PDF in any direction. Free, no signup, no limits. Best PDF converter for India.',
+    keywords: ['pdf converter', 'online pdf converter', 'pdf conversion tool', 'convert pdf online', 'all pdf conversions', 'ishu tools pdf converter', 'pdf format converter india', 'free pdf converter'],
+    h1: 'PDF Converter — All-in-One Conversion Free',
+    faq: [
+      { question: 'What can ISHU TOOLS PDF Converter do?', answer: 'It handles all PDF conversions: PDF to Word, PDF to JPG, Word to PDF, JPG to PDF, and more — all for free.' },
+      { question: 'Is ISHU TOOLS PDF Converter free?', answer: 'Yes, 100% free with no signup, no watermarks, and no file size limits.' },
+    ],
+  },
+  'pdf-to-powerpoint': {
+    title: 'PDF to PowerPoint Online Free — PDF to PPT Converter | ISHU TOOLS',
+    description: 'Convert PDF pages into editable PowerPoint PPT/PPTX slides online for free. Transform PDF presentations back to PowerPoint format. No signup, no watermark.',
+    keywords: ['pdf to powerpoint', 'pdf to ppt', 'pdf to pptx', 'pdf ppt converter', 'convert pdf to slides', 'ishu tools pdf to powerpoint', 'pdf to ppt free', 'pdf presentation converter india'],
+    h1: 'PDF to PowerPoint — Convert PDF to PPT Free',
+    faq: [
+      { question: 'How do I convert a PDF to PowerPoint?', answer: 'Upload your PDF to ISHU TOOLS and download it as a PPT or PPTX PowerPoint file for free — no signup needed.' },
+      { question: 'Will PDF to PPT conversion preserve the layout?', answer: 'ISHU TOOLS extracts PDF pages as slides. Layout preservation depends on the original PDF structure.' },
+    ],
+  },
+  'pdf-to-ppt': {
+    title: 'PDF to PPT Online Free — Convert PDF to Presentation | ISHU TOOLS',
+    description: 'Convert PDF documents into editable PPT presentation slides online for free. Perfect for converting reports and PDFs into presentations. No signup required.',
+    keywords: ['pdf to ppt', 'pdf to powerpoint free', 'pdf to slides', 'convert pdf ppt', 'pdf presentation converter', 'ishu tools pdf to ppt', 'pdf to ppt india'],
+    h1: 'PDF to PPT — PDF to Presentation Slides Free',
+    faq: [
+      { question: 'Can I convert a PDF to PowerPoint for free?', answer: 'Yes! ISHU TOOLS converts PDF to PPT for free with no signup or software required.' },
+    ],
+  },
+  'ppt-to-pdf': {
+    title: 'PPT to PDF Online Free — Convert PowerPoint to PDF | ISHU TOOLS',
+    description: 'Convert PPT and PPTX PowerPoint presentation files to PDF online for free. Make presentations universally shareable. No signup, no watermark.',
+    keywords: ['ppt to pdf', 'powerpoint to pdf', 'pptx to pdf free', 'convert ppt pdf', 'presentation to pdf', 'ishu tools ppt to pdf', 'ppt pdf converter india'],
+    h1: 'PPT to PDF — Convert PowerPoint to PDF Free',
+    faq: [
+      { question: 'How do I convert PowerPoint to PDF?', answer: 'Upload your PPT or PPTX file to ISHU TOOLS and download it as a PDF in seconds, for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE CORE — COMPRESS TO TARGET SIZE
+  // ════════════════════════════════════════════════
+  'compress-image-to-5kb': {
+    title: 'Compress Image to 5KB Online Free — For Strict Upload Forms | ISHU TOOLS',
+    description: 'Compress any image to 5KB or less online for free. Perfect for strict government portal photo requirements, exam forms, and official submissions in India. No signup needed.',
+    keywords: ['compress image to 5kb', 'image to 5kb', 'reduce image size 5kb', 'photo 5kb online', '5kb image compressor', 'ishu tools 5kb', 'government form 5kb photo', 'compress image 5kb india'],
+    h1: 'Compress Image to 5KB Online Free',
+    faq: [
+      { question: 'How do I compress an image to 5KB?', answer: 'Upload your image to ISHU TOOLS 5KB Compressor and it automatically reduces the file size to under 5KB while maintaining maximum quality.' },
+      { question: 'Which forms require 5KB photos?', answer: 'Some strict government forms and scholarship portals in India require profile photos to be under 5KB.' },
+    ],
+  },
+  'compress-jpeg-to-10kb': {
+    title: 'Compress JPEG to 10KB Online Free — For Exam Forms | ISHU TOOLS',
+    description: 'Compress JPEG images to approximately 10KB online for free. Perfect for SSC, UPSC, RRB, IBPS, and bank exam application forms. No signup, no watermark required.',
+    keywords: ['compress jpeg to 10kb', 'image 10kb compressor', 'jpeg to 10kb', 'photo 10kb online', '10kb image free', 'ishu tools 10kb', 'ssc form 10kb photo', 'exam form photo 10kb india'],
+    h1: 'Compress JPEG to 10KB Online Free',
+    faq: [
+      { question: 'How do I compress a JPEG to 10KB?', answer: 'Upload your JPEG to ISHU TOOLS and the compressor reduces it to approximately 10KB while keeping it readable.' },
+      { question: 'Which exams require a 10KB photo?', answer: 'Some SSC, banking, and government job application forms in India require photographs under 10KB.' },
+    ],
+  },
+  'compress-image-to-15kb': {
+    title: 'Compress Image to 15KB Online Free — For Government Forms | ISHU TOOLS',
+    description: 'Compress image to 15KB online for free. Required for many government exam and recruitment portals in India. Reduces JPG, PNG, WebP to under 15KB. No signup needed.',
+    keywords: ['compress image to 15kb', 'image 15kb compressor', 'photo 15kb online', '15kb image reducer', 'ishu tools 15kb', 'government form 15kb photo', 'compress photo 15kb india'],
+    h1: 'Compress Image to 15KB Online Free',
+    faq: [
+      { question: 'How do I reduce an image to 15KB?', answer: 'Upload your image to ISHU TOOLS 15KB Compressor and it compresses your photo to under 15KB automatically.' },
+    ],
+  },
+  'compress-image-to-20kb': {
+    title: 'Compress Image to 20KB Online Free — SSC UPSC Form Photo | ISHU TOOLS',
+    description: 'Compress image to 20KB or less online for free. Widely required for SSC, UPSC, RRB, IBPS, and state government exam forms. JPG, PNG, WebP supported. No signup.',
+    keywords: ['compress image to 20kb', '20kb image compressor', 'photo 20kb online', 'reduce photo 20kb', 'ishu tools 20kb compressor', 'ssc upsc form 20kb photo', 'exam photo 20kb india'],
+    h1: 'Compress Image to 20KB Free — For Exam Application Forms',
+    faq: [
+      { question: 'How do I compress an image to 20KB for SSC/UPSC?', answer: 'Upload your photo to ISHU TOOLS 20KB Compressor. It automatically reduces the file size to under 20KB for government exam forms.' },
+    ],
+  },
+  'compress-jpeg-between-20kb-to-50kb': {
+    title: 'Compress JPEG Between 20KB-50KB Online Free | ISHU TOOLS',
+    description: 'Compress JPEG images to a target range between 20KB and 50KB online for free. Perfect for bank, SSC, UPSC, and other forms requiring photos in specific size ranges.',
+    keywords: ['compress jpeg 20kb 50kb', 'image 20 to 50kb', 'jpeg size range compressor', 'photo 20kb 50kb', 'ishu tools jpeg compressor', 'exam form photo size india'],
+    h1: 'Compress JPEG Between 20KB-50KB Free',
+    faq: [
+      { question: 'How do I compress a photo between 20KB and 50KB?', answer: 'Upload your image to ISHU TOOLS, and the compressor will target the 20KB-50KB range automatically using adaptive quality.' },
+    ],
+  },
+  'compress-jpeg-to-25kb': {
+    title: 'Compress JPEG to 25KB Online Free — For Exam Forms | ISHU TOOLS',
+    description: 'Compress JPEG to around 25KB online for free. Useful for government exam and job application portals in India. No signup, no file size limit required.',
+    keywords: ['compress jpeg to 25kb', '25kb jpeg compressor', 'photo 25kb online', 'ishu tools 25kb', 'exam form 25kb photo india'],
+    h1: 'Compress JPEG to 25KB Online Free',
+    faq: [{ question: 'How do I compress JPEG to 25KB?', answer: 'Upload your JPEG to ISHU TOOLS and download it compressed to around 25KB for free — perfect for exam application forms.' }],
+  },
+  'compress-jpeg-to-30kb': {
+    title: 'Compress JPEG to 30KB Online Free — Photo Size Reducer | ISHU TOOLS',
+    description: 'Compress JPEG to approximately 30KB online for free. Required for many Indian government recruitment forms. Fast, accurate, no signup required.',
+    keywords: ['compress jpeg to 30kb', '30kb photo compressor', 'jpeg 30kb online', 'ishu tools 30kb', 'government form 30kb photo india'],
+    h1: 'Compress JPEG to 30KB Online Free',
+    faq: [{ question: 'How to compress a photo to 30KB?', answer: 'Upload your JPEG to ISHU TOOLS 30KB Compressor and download the compressed photo in seconds for free.' }],
+  },
+  'compress-jpeg-to-40kb': {
+    title: 'Compress JPEG to 40KB Online Free — For Online Applications | ISHU TOOLS',
+    description: 'Compress JPEG images to around 40KB online for free. Perfect for online job applications and government forms requiring specific photo sizes in India.',
+    keywords: ['compress jpeg to 40kb', '40kb jpeg compressor', 'photo 40kb online', 'ishu tools 40kb', 'application form 40kb photo india'],
+    h1: 'Compress JPEG to 40KB Online Free',
+    faq: [{ question: 'How do I compress JPEG to 40KB?', answer: 'Upload your photo to ISHU TOOLS, and the 40KB compressor reduces it to approximately 40KB automatically.' }],
+  },
+  'compress-image-to-50kb': {
+    title: 'Compress Image to 50KB Online Free — For Govt Forms | ISHU TOOLS',
+    description: 'Compress image to 50KB online for free. Required for SSC CGL, SSC CHSL, RRB, IBPS, SBI PO, and many government exam forms in India. JPG, PNG supported.',
+    keywords: ['compress image to 50kb', 'photo 50kb compressor', 'reduce image 50kb', 'ssc cgl 50kb photo', 'government form 50kb image', 'ishu tools 50kb compressor', 'rrb 50kb photo', 'ibps 50kb photo india'],
+    h1: 'Compress Image to 50KB — For Government Exam Forms Free',
+    faq: [
+      { question: 'How do I compress a photo to 50KB for SSC/RRB?', answer: 'Upload your photo to ISHU TOOLS 50KB Compressor. It reduces the image to under 50KB automatically — perfect for SSC, RRB, IBPS exam forms.' },
+      { question: 'Which exams need 50KB photos?', answer: 'SSC CGL, SSC CHSL, RRB NTPC, IBPS PO, SBI PO, and many state government recruitment portals require photos under 50KB.' },
+    ],
+  },
+  'compress-image-to-100kb': {
+    title: 'Compress Image to 100KB Online Free — For Government Portals | ISHU TOOLS',
+    description: 'Compress image to 100KB online for free. Perfect for UPSC, state PSC, bank PO, and government job application forms in India that require photos under 100KB.',
+    keywords: ['compress image to 100kb', 'photo 100kb compressor', 'reduce image 100kb', 'upsc 100kb photo', 'bank exam 100kb photo', 'ishu tools 100kb', 'government portal 100kb image india'],
+    h1: 'Compress Image to 100KB Free — For Government Portals',
+    faq: [
+      { question: 'How do I compress an image to under 100KB?', answer: 'Upload your photo to ISHU TOOLS 100KB Compressor and download the compressed image in seconds for free — perfect for UPSC and bank exam forms.' },
+    ],
+  },
+  'compress-jpeg-to-150kb': {
+    title: 'Compress JPEG to 150KB Online Free — Photo Size Reducer | ISHU TOOLS',
+    description: 'Compress JPEG images to approximately 150KB online for free. Useful for various government and private sector job application portals. No signup required.',
+    keywords: ['compress jpeg to 150kb', '150kb photo compressor', 'jpeg 150kb online', 'ishu tools 150kb', 'compress photo 150kb india'],
+    h1: 'Compress JPEG to 150KB Online Free',
+    faq: [{ question: 'How do I compress JPEG to 150KB?', answer: 'Upload your JPEG to ISHU TOOLS and download a compressed version at approximately 150KB for free.' }],
+  },
+  'compress-image-to-200kb': {
+    title: 'Compress Image to 200KB Online Free — Document Upload Ready | ISHU TOOLS',
+    description: 'Compress image to 200KB online for free. Perfect for application portals requiring document photos and ID images under 200KB. No signup needed.',
+    keywords: ['compress image to 200kb', '200kb image compressor', 'photo 200kb online', 'document upload 200kb', 'ishu tools 200kb compressor', 'compress image 200kb india'],
+    h1: 'Compress Image to 200KB Online Free',
+    faq: [{ question: 'How do I reduce image size to 200KB?', answer: 'Upload your image to ISHU TOOLS 200KB Compressor and download a compressed version under 200KB for free.' }],
+  },
+  'compress-jpeg-to-300kb': {
+    title: 'Compress JPEG to 300KB Online Free | ISHU TOOLS',
+    description: 'Compress JPEG images to approximately 300KB online for free. Reduce large photos to 300KB for email, document portals, and application forms in India.',
+    keywords: ['compress jpeg to 300kb', '300kb jpeg compressor', 'photo 300kb online', 'ishu tools 300kb', 'compress photo 300kb india'],
+    h1: 'Compress JPEG to 300KB Online Free',
+    faq: [{ question: 'How do I compress a photo to 300KB?', answer: 'Upload your JPEG to ISHU TOOLS and download a 300KB compressed version for free — no signup required.' }],
+  },
+  'compress-jpeg-to-500kb': {
+    title: 'Compress JPEG to 500KB Online Free — Large File Reducer | ISHU TOOLS',
+    description: 'Compress JPEG images to approximately 500KB online for free. Reduce large camera photos to 500KB for sharing and uploading. No signup required.',
+    keywords: ['compress jpeg to 500kb', '500kb jpeg compressor', 'photo 500kb online', 'large photo 500kb', 'ishu tools 500kb', 'compress photo 500kb india'],
+    h1: 'Compress JPEG to 500KB Online Free',
+    faq: [{ question: 'How do I compress a JPEG to 500KB?', answer: 'Upload your photo to ISHU TOOLS 500KB Compressor and download it at approximately 500KB for free.' }],
+  },
+  'compress-image-to-1mb': {
+    title: 'Compress Image to 1MB Online Free — Photo Size Reducer | ISHU TOOLS',
+    description: 'Compress image to around 1MB online for free. Useful for reducing very large photos for document portals, email, and social media. No signup required.',
+    keywords: ['compress image to 1mb', '1mb image compressor', 'photo 1mb reducer', 'reduce image 1mb', 'ishu tools 1mb compressor', 'compress photo 1mb india'],
+    h1: 'Compress Image to 1MB Online Free',
+    faq: [{ question: 'How do I compress an image to 1MB?', answer: 'Upload your image to ISHU TOOLS 1MB Compressor and download a version compressed to approximately 1MB for free.' }],
+  },
+  'compress-image-to-2mb': {
+    title: 'Compress Image to 2MB Online Free — For Document Upload | ISHU TOOLS',
+    description: 'Compress image to around 2MB online for free. Useful for document submission portals with 2MB size limits. No signup, no limits required.',
+    keywords: ['compress image to 2mb', '2mb image compressor', 'reduce photo to 2mb', 'document upload 2mb', 'ishu tools 2mb compressor', 'compress image 2mb india'],
+    h1: 'Compress Image to 2MB Online Free',
+    faq: [{ question: 'How do I reduce an image to 2MB?', answer: 'Upload your image to ISHU TOOLS 2MB Compressor and download a version compressed to approximately 2MB for free.' }],
+  },
+  'compress-to-15kb': {
+    title: 'Compress Image to 15KB Online Free | ISHU TOOLS',
+    description: 'Compress any image to under 15KB online for free. Perfect for strict upload forms requiring photos in KB range. No signup needed.',
+    keywords: ['compress to 15kb', 'image 15kb', 'photo 15kb', 'ishu tools 15kb compressor'],
+    h1: 'Compress Image to 15KB Free',
+    faq: [{ question: 'How do I compress to 15KB?', answer: 'Upload your image to ISHU TOOLS and it will compress it to under 15KB automatically.' }],
+  },
+  'compress-to-25kb': {
+    title: 'Compress Image to 25KB Online Free | ISHU TOOLS',
+    description: 'Compress any image to under 25KB online for free with adaptive quality tuning. For strict government and exam form uploads.',
+    keywords: ['compress to 25kb', 'image 25kb', 'photo 25kb', 'ishu tools 25kb compressor'],
+    h1: 'Compress Image to 25KB Free',
+    faq: [{ question: 'How do I compress to 25KB?', answer: 'Upload your image to ISHU TOOLS and it will compress to under 25KB automatically.' }],
+  },
+  'compress-to-40kb': {
+    title: 'Compress Image to 40KB Online Free | ISHU TOOLS',
+    description: 'Compress any image to under 40KB online for free while preserving readability. For exam and government application forms.',
+    keywords: ['compress to 40kb', 'image 40kb', 'photo 40kb', 'ishu tools 40kb compressor'],
+    h1: 'Compress Image to 40KB Free',
+    faq: [{ question: 'How do I compress to 40KB?', answer: 'Upload your image to ISHU TOOLS and it will compress to under 40KB automatically.' }],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE CORE — SIZE MANIPULATION
+  // ════════════════════════════════════════════════
+  'increase-image-size-in-kb': {
+    title: 'Increase Image Size in KB Online Free — Boost Photo Size | ISHU TOOLS',
+    description: 'Increase image file size to a target KB value by adjusting quality and dimensions online for free. Perfect when minimum file size is required for forms.',
+    keywords: ['increase image size in kb', 'boost image size kb', 'make image larger kb', 'increase photo size', 'ishu tools increase kb', 'image size booster india'],
+    h1: 'Increase Image Size in KB Online Free',
+    faq: [
+      { question: 'How do I increase image size in KB?', answer: 'Upload your image to ISHU TOOLS, enter the target KB size, and download a version with the increased file size.' },
+      { question: 'Why would I need to increase image size?', answer: 'Some forms require a minimum file size. ISHU TOOLS can increase your image size in KB to meet minimum requirements.' },
+    ],
+  },
+  'reduce-image-size-in-mb': {
+    title: 'Reduce Image Size in MB Online Free — MB Photo Compressor | ISHU TOOLS',
+    description: 'Reduce image size to a target value in MB online for free. Compress large camera RAW or high-resolution photos to a specific MB target. No signup required.',
+    keywords: ['reduce image size in mb', 'image mb compressor', 'compress photo in mb', 'photo mb reducer', 'ishu tools reduce mb', 'large photo compress mb india'],
+    h1: 'Reduce Image Size in MB Online Free',
+    faq: [
+      { question: 'How do I reduce image size in MB?', answer: 'Upload your image to ISHU TOOLS, specify the target size in MB, and download the compressed version for free.' },
+    ],
+  },
+  'convert-image-from-mb-to-kb': {
+    title: 'Convert Image from MB to KB Online Free | ISHU TOOLS',
+    description: 'Convert oversized images from MB to KB ranges online for free. Compress large photos to a few hundred KB for forms and portals. No signup required.',
+    keywords: ['convert image mb to kb', 'mb to kb converter image', 'photo mb to kb', 'compress mb image to kb', 'ishu tools mb to kb', 'image mb to kb india'],
+    h1: 'Convert Image from MB to KB Free',
+    faq: [{ question: 'How do I convert image from MB to KB?', answer: 'Upload your large image to ISHU TOOLS MB to KB converter and download a compressed KB-range version for free.' }],
+  },
+  'convert-image-size-kb-to-mb': {
+    title: 'Convert Image Size KB to MB Online Free | ISHU TOOLS',
+    description: 'Increase image file size from KB to MB ranges online for free. Useful when minimum file size in MB is required for document uploads.',
+    keywords: ['convert image kb to mb', 'kb to mb image converter', 'increase image kb to mb', 'photo kb to mb', 'ishu tools kb to mb', 'image size increase india'],
+    h1: 'Convert Image Size from KB to MB Free',
+    faq: [{ question: 'How do I increase image from KB to MB?', answer: 'Upload your image to ISHU TOOLS KB to MB converter, enter the target MB value, and download the increased-size image for free.' }],
+  },
+  'bulk-image-compressor': {
+    title: 'Bulk Image Compressor Online Free — Compress Multiple Images | ISHU TOOLS',
+    description: 'Compress multiple images at once online for free. Upload up to 20 images and compress them all in one go. Download as ZIP. No signup, no watermark.',
+    keywords: ['bulk image compressor', 'compress multiple images', 'batch image compressor', 'bulk photo compressor free', 'ishu tools bulk compress', 'compress many images india', 'multiple image compressor online'],
+    h1: 'Bulk Image Compressor — Compress Multiple Images Free',
+    faq: [
+      { question: 'Can I compress multiple images at once?', answer: 'Yes! ISHU TOOLS Bulk Compressor lets you upload up to 20 images and compresses them all at once, downloadable as a ZIP file.' },
+      { question: 'Is bulk compression free on ISHU TOOLS?', answer: 'Yes, completely free with no signup required. Compress as many batches of images as you need.' },
+    ],
+  },
+  'image-to-base64': {
+    title: 'Image to Base64 Converter Online Free | ISHU TOOLS',
+    description: 'Convert any image to Base64 encoded string online for free. Useful for embedding images in HTML, CSS, JSON, and APIs. Supports JPG, PNG, WebP, GIF. No signup.',
+    keywords: ['image to base64', 'image base64 converter', 'convert image base64', 'base64 encode image', 'embed image base64', 'ishu tools image base64', 'image to base64 free', 'html image embed base64'],
+    h1: 'Image to Base64 Converter Online Free',
+    faq: [
+      { question: 'How do I convert an image to Base64?', answer: 'Upload your image to ISHU TOOLS and get the Base64 encoded string instantly. Copy it for use in HTML, CSS, JSON, or API calls.' },
+      { question: 'Why would I need a Base64 image?', answer: 'Base64 images are used to embed images directly in HTML, CSS, or data URIs without needing a separate image file.' },
+    ],
+  },
+  'base64-to-image': {
+    title: 'Base64 to Image Converter Online Free — Decode Base64 | ISHU TOOLS',
+    description: 'Decode a Base64 string back to an image file online for free. Paste your Base64 encoded image data and download the recovered image. No signup required.',
+    keywords: ['base64 to image', 'decode base64 image', 'base64 image converter', 'convert base64 to image', 'base64 decode image', 'ishu tools base64 image', 'base64 decode free'],
+    h1: 'Base64 to Image Converter Online Free',
+    faq: [
+      { question: 'How do I convert Base64 to an image?', answer: 'Paste your Base64 encoded string into ISHU TOOLS Base64 to Image converter and download the decoded image file for free.' },
+    ],
+  },
+  'aspect-ratio-calculator': {
+    title: 'Aspect Ratio Calculator Online Free — Image Dimensions | ISHU TOOLS',
+    description: 'Calculate image aspect ratio, GCD simplification, megapixels, and scaled dimensions online for free. Essential tool for designers, developers, and photographers.',
+    keywords: ['aspect ratio calculator', 'image aspect ratio', 'calculate aspect ratio', 'image resolution calculator', 'image dimensions calculator', 'ishu tools aspect ratio', 'pixel aspect ratio free'],
+    h1: 'Aspect Ratio Calculator — Image Dimensions Free',
+    faq: [
+      { question: 'How do I calculate aspect ratio?', answer: 'Enter your image width and height in ISHU TOOLS Aspect Ratio Calculator to get the ratio, GCD, megapixels, and scaled dimensions.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE ENHANCE TOOLS
+  // ════════════════════════════════════════════════
+  'posterize-image': {
+    title: 'Posterize Image Online Free — Stylized Poster Effect | ISHU TOOLS',
+    description: 'Create a stylized poster effect by reducing the color depth of your image online for free. Perfect for artistic image transformations and design projects.',
+    keywords: ['posterize image', 'posterize photo online', 'poster effect image', 'reduce color depth image', 'image posterize free', 'ishu tools posterize', 'artistic image effect'],
+    h1: 'Posterize Image — Poster Effect Online Free',
+    faq: [
+      { question: 'How do I posterize an image?', answer: 'Upload your image to ISHU TOOLS Posterize tool, choose the color depth level, and download your posterized image for free.' },
+    ],
+  },
+  'image-histogram': {
+    title: 'Image Histogram Analyzer Online Free — RGB Statistics | ISHU TOOLS',
+    description: 'Extract RGB histogram summary and image statistics from any image online for free. Analyze color distribution, brightness, and contrast. Perfect for photographers.',
+    keywords: ['image histogram', 'image histogram analyzer', 'rgb histogram', 'image color analysis', 'image statistics free', 'ishu tools histogram', 'photo histogram online'],
+    h1: 'Image Histogram — RGB Statistics Analyzer Free',
+    faq: [
+      { question: 'What is an image histogram?', answer: 'A histogram shows the distribution of pixel values (RGB channels) in an image, helping photographers analyze exposure, contrast, and color balance.' },
+    ],
+  },
+  'motion-blur-image': {
+    title: 'Motion Blur Image Online Free — Cinematic Effect | ISHU TOOLS',
+    description: 'Apply cinematic motion blur effect to photos and graphics online for free. Choose direction and intensity for professional motion effects. No signup required.',
+    keywords: ['motion blur image', 'motion blur photo', 'cinematic blur effect', 'add motion blur photo', 'image motion blur free', 'ishu tools motion blur', 'blur effect photo'],
+    h1: 'Motion Blur Image — Cinematic Effect Online Free',
+    faq: [
+      { question: 'How do I add motion blur to an image?', answer: 'Upload your image to ISHU TOOLS Motion Blur, choose direction (horizontal/vertical) and intensity, then download the effect for free.' },
+    ],
+  },
+  'convert-dpi': {
+    title: 'Convert Image DPI Online Free — Change DPI to 200/300/600 | ISHU TOOLS',
+    description: 'Rewrite image DPI metadata for printing or document upload requirements online for free. Change DPI to 200, 300, 600 or custom values. No signup required.',
+    keywords: ['convert dpi', 'change image dpi', 'image dpi converter', 'dpi changer free', 'convert 300 dpi', 'image dpi 600', 'ishu tools dpi converter', 'photo dpi change india'],
+    h1: 'Convert Image DPI — Change to 300/600 DPI Free',
+    faq: [
+      { question: 'How do I change image DPI?', answer: 'Upload your image to ISHU TOOLS DPI Converter, specify the target DPI (e.g., 300 for print, 600 for high-res), and download.' },
+      { question: 'What DPI is required for passport photos in India?', answer: 'Passport and ID photos typically require 300 DPI minimum. ISHU TOOLS can convert your image to exactly 300 DPI for free.' },
+    ],
+  },
+  'check-dpi': {
+    title: 'Check Image DPI Online Free — DPI & Resolution Checker | ISHU TOOLS',
+    description: 'Check the DPI and resolution stored in any image file online for free. Find out if your photo meets print or form upload DPI requirements. No signup needed.',
+    keywords: ['check image dpi', 'image dpi checker', 'photo dpi check', 'image resolution checker', 'dpi finder free', 'ishu tools check dpi', 'check dpi online', 'photo resolution checker india'],
+    h1: 'Check Image DPI — DPI & Resolution Checker Free',
+    faq: [
+      { question: 'How do I check image DPI?', answer: 'Upload your image to ISHU TOOLS DPI Checker and instantly see the stored DPI and resolution metadata.' },
+      { question: 'What DPI do I need for printing in India?', answer: 'For good print quality, photos typically need 300 DPI. Use ISHU TOOLS to check and convert your image DPI for free.' },
+    ],
+  },
+  'color-code-from-image': {
+    title: 'Color Picker from Image Online Free — Extract Hex Colors | ISHU TOOLS',
+    description: 'Extract dominant color palette and hex codes from any image online for free. Get the exact colors used in photos, logos, and designs. Perfect for designers.',
+    keywords: ['color picker from image', 'extract color from image', 'image color palette', 'get hex code from image', 'image color extractor', 'ishu tools color picker', 'photo color extractor free'],
+    h1: 'Color Picker from Image — Extract Hex Colors Free',
+    faq: [
+      { question: 'How do I get the color code from an image?', answer: 'Upload your image to ISHU TOOLS Color Picker and get the dominant color palette with hex codes instantly for free.' },
+    ],
+  },
+  'unblur-image': {
+    title: 'Unblur Image Online Free — Sharpen Blurry Photos | ISHU TOOLS',
+    description: 'Sharpen and unblur images with AI-powered clarity enhancement online for free. Fix blurry photos, improve sharpness, and restore image clarity. No signup required.',
+    keywords: ['unblur image', 'sharpen blurry photo', 'unblur photo online', 'image sharpener free', 'fix blurry image', 'ishu tools unblur', 'ai image sharpener', 'unblur photo india'],
+    h1: 'Unblur Image — Sharpen Photos Online Free',
+    faq: [
+      { question: 'Can I unblur a photo online for free?', answer: 'Yes! ISHU TOOLS uses AI enhancement to sharpen and unblur photos, restoring clarity for free with no signup.' },
+    ],
+  },
+  'increase-image-quality': {
+    title: 'Increase Image Quality Online Free — AI Photo Enhancer | ISHU TOOLS',
+    description: 'Enhance image sharpness, contrast, and color to increase perceived quality online for free. AI-powered photo improvement for students, photographers, and social media.',
+    keywords: ['increase image quality', 'enhance image quality', 'improve photo quality', 'ai photo enhancer', 'image quality booster', 'ishu tools image quality', 'photo enhance free'],
+    h1: 'Increase Image Quality — AI Photo Enhancer Free',
+    faq: [
+      { question: 'How do I increase image quality for free?', answer: 'Upload your photo to ISHU TOOLS Image Quality Enhancer and get an improved version with better sharpness, contrast, and color for free.' },
+    ],
+  },
+  'beautify-image': {
+    title: 'Beautify Image Online Free — Auto Photo Enhancement | ISHU TOOLS',
+    description: 'Auto-enhance your photo with balanced color, contrast and sharpness improvements online for free. Make your photos look more professional and polished instantly.',
+    keywords: ['beautify image', 'auto enhance photo', 'photo beautifier', 'image enhancement free', 'improve photo online', 'ishu tools beautify', 'auto photo improve'],
+    h1: 'Beautify Image — Auto Enhancement Online Free',
+    faq: [
+      { question: 'How do I beautify a photo online?', answer: 'Upload your image to ISHU TOOLS Beautifier and it automatically applies balanced enhancements to color, contrast, and sharpness for free.' },
+    ],
+  },
+  'retouch-image': {
+    title: 'Retouch Image Online Free — Smooth Blemishes & Imperfections | ISHU TOOLS',
+    description: 'Smooth blemishes and imperfections with intelligent image retouching online for free. Improve portrait photos and headshots without photo editing skills.',
+    keywords: ['retouch image', 'photo retoucher free', 'smooth blemishes photo', 'image retouch online', 'portrait retouching free', 'ishu tools retouch', 'photo touch up free'],
+    h1: 'Retouch Image — Smooth Blemishes Online Free',
+    faq: [
+      { question: 'How do I retouch a photo online for free?', answer: 'Upload your portrait or photo to ISHU TOOLS Retouch tool and it intelligently smooths blemishes and imperfections for free.' },
+    ],
+  },
+  'super-resolution': {
+    title: 'Super Resolution Online Free — Upscale Image 2x 4x | ISHU TOOLS',
+    description: 'Upscale image resolution 2x or 4x with high-quality interpolation online for free. Enlarge small photos without losing quality. Perfect for low-resolution images.',
+    keywords: ['super resolution', 'upscale image', 'image upscaler free', 'increase image resolution', 'enlarge photo quality', 'ishu tools super resolution', 'ai image upscale free', '4x upscale image'],
+    h1: 'Super Resolution — Upscale Image 2x/4x Free',
+    faq: [
+      { question: 'How do I upscale an image to higher resolution?', answer: 'Upload your image to ISHU TOOLS Super Resolution, choose 2x or 4x upscaling, and download the enlarged high-quality version for free.' },
+    ],
+  },
+  'photo-blemish-remover': {
+    title: 'Photo Blemish Remover Online Free — Skin Retouching | ISHU TOOLS',
+    description: 'Remove facial blemishes and apply smoothing retouching to portrait photos online for free. Improve skin appearance in professional headshots and ID photos.',
+    keywords: ['blemish remover photo', 'remove blemishes photo free', 'skin retouching online', 'photo blemish remover', 'face blemish removal', 'ishu tools blemish remover', 'portrait photo retouching'],
+    h1: 'Photo Blemish Remover — Skin Retouching Free',
+    faq: [
+      { question: 'How do I remove blemishes from a photo?', answer: 'Upload your photo to ISHU TOOLS Blemish Remover and it applies intelligent smoothing to reduce facial blemishes for free.' },
+    ],
+  },
+  'unblur-face': {
+    title: 'Unblur Face Online Free — Sharpen Face in Photo | ISHU TOOLS',
+    description: 'Enhance and sharpen detected faces in an image online for free. Fix blurry faces in photos with AI-powered face sharpening. No signup required.',
+    keywords: ['unblur face', 'sharpen face photo', 'unblur face online', 'face sharpener free', 'fix blurry face', 'ishu tools unblur face', 'ai face sharpen'],
+    h1: 'Unblur Face — Sharpen Face in Photo Free',
+    faq: [
+      { question: 'How do I unblur a face in a photo?', answer: 'Upload your image to ISHU TOOLS Unblur Face tool. It detects and sharpens faces in the image using AI enhancement for free.' },
+    ],
+  },
+  'picture-to-pixel-art': {
+    title: 'Picture to Pixel Art Online Free — Retro Pixel Style | ISHU TOOLS',
+    description: 'Convert photos into retro pixel art style with reduced color palette online for free. Create 8-bit style graphics from any image. Perfect for gaming and design projects.',
+    keywords: ['picture to pixel art', 'photo to pixel art', 'image pixelate art', 'pixel art generator free', '8bit image converter', 'ishu tools pixel art', 'retro image effect'],
+    h1: 'Picture to Pixel Art — Retro Effect Online Free',
+    faq: [
+      { question: 'How do I convert a photo to pixel art?', answer: 'Upload your photo to ISHU TOOLS Pixel Art converter, choose the pixel block size, and download your retro 8-bit style artwork for free.' },
+    ],
+  },
+  'black-and-white-image': {
+    title: 'Black and White Image Converter Online Free | ISHU TOOLS',
+    description: 'Convert color photos to high-contrast black and white images online for free. Turn any photo to grayscale or true black and white for artistic and professional results.',
+    keywords: ['black and white image', 'black white photo converter', 'grayscale image online', 'convert photo black white', 'bw image converter free', 'ishu tools black white', 'monochrome photo'],
+    h1: 'Black and White Image Converter Online Free',
+    faq: [
+      { question: 'How do I convert a photo to black and white?', answer: 'Upload your image to ISHU TOOLS Black and White converter and download a high-contrast monochrome version for free.' },
+    ],
+  },
+  'censor-photo': {
+    title: 'Censor Photo Online Free — Pixelate or Blur Faces | ISHU TOOLS',
+    description: 'Censor faces and sensitive areas in photos online for free. Pixelate detected face regions or blur the full photo to protect privacy. No signup required.',
+    keywords: ['censor photo', 'censor face photo', 'pixelate face online', 'blur face in photo', 'privacy photo censor', 'ishu tools censor photo', 'face blur free', 'blur sensitive photo'],
+    h1: 'Censor Photo — Blur or Pixelate Faces Online Free',
+    faq: [
+      { question: 'How do I censor faces in a photo?', answer: 'Upload your photo to ISHU TOOLS Censor tool. It detects and pixelates face regions or you can blur the full photo to protect privacy.' },
+    ],
+  },
+  'motion-blur': {
+    title: 'Motion Blur Effect Online Free — Cinematic Image Effect | ISHU TOOLS',
+    description: 'Add cinematic motion blur effect to images online for free. Choose direction and intensity for professional motion graphics and creative photos.',
+    keywords: ['motion blur', 'motion blur effect', 'cinematic motion blur', 'add blur effect photo', 'motion graphic effect', 'ishu tools motion blur', 'photo motion effect free'],
+    h1: 'Motion Blur — Cinematic Image Effect Online Free',
+    faq: [
+      { question: 'How do I add a motion blur effect to an image?', answer: 'Upload your image to ISHU TOOLS Motion Blur, set direction and intensity, then download with the effect applied for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE LAYOUT TOOLS
+  // ════════════════════════════════════════════════
+  'add-name-dob-image': {
+    title: 'Add Name and DOB on Photo Online Free — ID Photo | ISHU TOOLS',
+    description: 'Overlay name and date of birth text onto photos online for free. Perfect for school ID cards, government document photos, and official submissions in India.',
+    keywords: ['add name dob photo', 'add text to id photo', 'name on photo online', 'overlay text photo', 'id photo name dob', 'ishu tools add name photo', 'india id photo text'],
+    h1: 'Add Name and DOB on Photo Online Free',
+    faq: [
+      { question: 'How do I add my name to a photo online?', answer: 'Upload your photo to ISHU TOOLS, enter your name and date of birth, choose text position, and download your labeled photo for free.' },
+    ],
+  },
+  'merge-photo-signature': {
+    title: 'Merge Photo and Signature Online Free — ID Form Ready | ISHU TOOLS',
+    description: 'Combine a photo and signature into one clean export online for free. Perfect for SSC, UPSC, bank exam forms, and admission applications in India.',
+    keywords: ['merge photo signature', 'photo signature combine', 'id photo signature merge', 'combine photo signature', 'ishu tools photo signature', 'exam form photo signature india', 'merge photo signature free'],
+    h1: 'Merge Photo and Signature Online Free',
+    faq: [
+      { question: 'How do I merge photo and signature for exam forms?', answer: 'Upload your photo and signature image to ISHU TOOLS Merge tool and download a combined image with both elements positioned correctly.' },
+      { question: 'Which exams require merged photo and signature?', answer: 'SSC, UPSC, RRB, and many university admission forms require a single image combining both photo and signature.' },
+    ],
+  },
+  'zoom-out-image': {
+    title: 'Zoom Out Image Online Free — Add Border Effect | ISHU TOOLS',
+    description: 'Add a border around your image to create a zoom-out perspective effect online for free. Perfect for social media posts and creative photography effects.',
+    keywords: ['zoom out image', 'add border zoom out', 'image zoom out effect', 'photo border effect', 'zoom out photo online', 'ishu tools zoom out image', 'image border frame free'],
+    h1: 'Zoom Out Image — Border Effect Online Free',
+    faq: [
+      { question: 'How do I zoom out an image online?', answer: 'Upload your image to ISHU TOOLS Zoom Out tool, choose border size and color, and download the zoom-out effect version for free.' },
+    ],
+  },
+  'add-white-border-image': {
+    title: 'Add White Border to Image Online Free — Clean Photo Frame | ISHU TOOLS',
+    description: 'Add a clean white border around any photo for a professional look online for free. Perfect for Instagram posts, printing, and document photos.',
+    keywords: ['add white border image', 'white border photo', 'image white frame', 'photo white border free', 'add border to photo', 'ishu tools white border', 'white frame image'],
+    h1: 'Add White Border to Image Online Free',
+    faq: [
+      { question: 'How do I add a white border to an image?', answer: 'Upload your photo to ISHU TOOLS, choose border size, and download your image with a clean white border for free.' },
+    ],
+  },
+  'add-border-to-photo': {
+    title: 'Add Border to Photo Online Free — Custom Frame | ISHU TOOLS',
+    description: 'Add a colored border frame around your image online for free. Choose width and color for a customized photo border effect. No signup required.',
+    keywords: ['add border to photo', 'photo border online', 'image frame free', 'add border image', 'custom border photo', 'ishu tools border photo', 'photo frame generator free'],
+    h1: 'Add Border to Photo — Custom Frame Online Free',
+    faq: [
+      { question: 'How do I add a border to a photo?', answer: 'Upload your image to ISHU TOOLS Add Border tool, choose color and width, and download your framed photo for free.' },
+    ],
+  },
+  'freehand-crop': {
+    title: 'Freehand Crop Image Online Free — Custom Crop Tool | ISHU TOOLS',
+    description: 'Crop any rectangular area from an image with custom x1,y1 to x2,y2 coordinates online for free. Precise cropping for image editing and document preparation.',
+    keywords: ['freehand crop', 'custom crop image', 'precise image crop', 'coordinate crop photo', 'rectangle crop free', 'ishu tools freehand crop', 'crop image coordinates'],
+    h1: 'Freehand Crop Image — Precise Custom Crop Free',
+    faq: [
+      { question: 'How do I do a precise freehand crop?', answer: 'Upload your image to ISHU TOOLS Freehand Crop, specify x1,y1 and x2,y2 coordinates for your crop region, and download.' },
+    ],
+  },
+  'crop-png': {
+    title: 'Crop PNG Online Free — PNG Image Cropper | ISHU TOOLS',
+    description: 'Crop PNG images with custom crop coordinates online for free. Trim PNG files precisely for web design, icons, and transparent image editing.',
+    keywords: ['crop png', 'png cropper', 'crop png online free', 'trim png image', 'png image crop', 'ishu tools crop png', 'png editing free'],
+    h1: 'Crop PNG — PNG Image Cropper Online Free',
+    faq: [
+      { question: 'How do I crop a PNG image online?', answer: 'Upload your PNG to ISHU TOOLS PNG Cropper, enter crop coordinates, and download the cropped PNG with transparency preserved.' },
+    ],
+  },
+  'a4-size-resize': {
+    title: 'Resize Image to A4 Size Online Free — Print Ready | ISHU TOOLS',
+    description: 'Resize any image to A4 size (21×29.7cm) at 300 DPI for printing online for free. Perfect for documents, certificates, and print-ready photos in India.',
+    keywords: ['resize image a4', 'image a4 size', 'a4 size image converter', 'photo a4 format', 'a4 print ready image', 'ishu tools a4 resize', 'image to a4 india'],
+    h1: 'Resize Image to A4 Size Online Free',
+    faq: [
+      { question: 'How do I resize an image to A4 size?', answer: 'Upload your image to ISHU TOOLS A4 Resize tool and download it resized to 21x29.7cm at 300 DPI for printing for free.' },
+    ],
+  },
+  'social-media-resize': {
+    title: 'Social Media Image Resizer Online Free — All Platforms | ISHU TOOLS',
+    description: 'Resize images to perfect dimensions for Instagram, YouTube, Facebook, Twitter, LinkedIn, and WhatsApp online for free. Get platform-specific sizes instantly.',
+    keywords: ['social media image resizer', 'resize image for social media', 'instagram image size', 'youtube image size', 'facebook image size', 'ishu tools social media resize', 'social media photo free'],
+    h1: 'Social Media Image Resizer — All Platforms Free',
+    faq: [
+      { question: 'How do I resize images for social media?', answer: 'Upload your image to ISHU TOOLS Social Media Resizer, select your platform (Instagram, YouTube, Facebook, etc.), and download the correctly sized image.' },
+    ],
+  },
+  'resize-for-instagram': {
+    title: 'Resize Image for Instagram Free — 1080x1080 Square Photo | ISHU TOOLS',
+    description: 'Resize your photo to Instagram-perfect 1080x1080px with smart crop online for free. Create square Instagram posts without cropping important parts of your photo.',
+    keywords: ['resize image for instagram', 'instagram photo size', 'instagram square crop', '1080x1080 image resizer', 'instagram post size', 'ishu tools instagram resize', 'instagram image free india'],
+    h1: 'Resize Image for Instagram — 1080x1080px Free',
+    faq: [
+      { question: 'What size is an Instagram post image?', answer: 'Instagram recommends 1080x1080px for square posts. ISHU TOOLS resizes your photo to this exact size with smart cropping.' },
+    ],
+  },
+  'resize-for-whatsapp': {
+    title: 'WhatsApp DP Maker Online Free — Resize Profile Photo | ISHU TOOLS',
+    description: 'Resize your image to WhatsApp display picture size (192x192px) online for free. Create the perfect WhatsApp profile photo instantly. No signup required.',
+    keywords: ['whatsapp dp maker', 'resize image whatsapp dp', 'whatsapp profile photo size', 'whatsapp dp maker free', 'whatsapp dp resize', 'ishu tools whatsapp dp', 'whatsapp photo size india'],
+    h1: 'WhatsApp DP Maker — Resize Profile Photo Free',
+    faq: [
+      { question: 'What is the WhatsApp profile picture size?', answer: 'WhatsApp displays profile pictures at 192x192px. ISHU TOOLS resizes your photo to this size for the perfect WhatsApp DP.' },
+    ],
+  },
+  'resize-for-youtube': {
+    title: 'YouTube Banner Resize Online Free — Channel Art Size | ISHU TOOLS',
+    description: 'Resize your image to YouTube channel art/banner dimensions (2560x1440px) online for free. Create a professional YouTube banner easily. No signup required.',
+    keywords: ['youtube banner resize', 'youtube channel art size', 'resize image youtube banner', 'youtube channel banner maker', '2560x1440 image', 'ishu tools youtube banner', 'youtube banner free india'],
+    h1: 'YouTube Banner Resize — Channel Art Free',
+    faq: [
+      { question: 'What is the YouTube banner size?', answer: 'YouTube recommends 2560x1440px for channel art banners. ISHU TOOLS resizes your image to this exact size for free.' },
+    ],
+  },
+  'instagram-grid': {
+    title: 'Instagram Grid Maker Online Free — Split Photo for Profile | ISHU TOOLS',
+    description: 'Split a single image into a 3×3 or custom grid for seamless Instagram layout posts online for free. Create a perfect Instagram profile grid arrangement.',
+    keywords: ['instagram grid maker', 'instagram photo grid', 'split image grid instagram', 'instagram 9 grid', 'instagram profile grid', 'ishu tools instagram grid', 'instagram layout maker free'],
+    h1: 'Instagram Grid Maker — Split Image for Profile Free',
+    faq: [
+      { question: 'How do I make an Instagram photo grid?', answer: 'Upload your image to ISHU TOOLS Instagram Grid Maker, choose 3×3 or custom grid, and download all tiles to post in sequence.' },
+    ],
+  },
+  'image-splitter': {
+    title: 'Image Splitter Online Free — Split Image into Grid Tiles | ISHU TOOLS',
+    description: 'Split any image into a custom row and column grid online for free. Download all tiles as a ZIP file. Perfect for Instagram grids, puzzles, and multi-panel designs.',
+    keywords: ['image splitter', 'split image grid', 'image tile splitter', 'divide image sections', 'image grid splitter free', 'ishu tools image splitter', 'photo splitter online'],
+    h1: 'Image Splitter — Split Into Grid Tiles Free',
+    faq: [
+      { question: 'How do I split an image into tiles?', answer: 'Upload your image to ISHU TOOLS Image Splitter, choose rows and columns, and download all grid tiles as a ZIP for free.' },
+    ],
+  },
+  'resize-image-pixel': {
+    title: 'Resize Image by Pixel Online Free — Exact Pixel Resize | ISHU TOOLS',
+    description: 'Resize image precisely to target width and height in pixels online for free. Set exact pixel dimensions for web, print, and form requirements. No signup needed.',
+    keywords: ['resize image by pixel', 'pixel image resizer', 'exact pixel resize', 'image pixel dimensions', 'resize photo pixels free', 'ishu tools pixel resize', 'image resolution resize'],
+    h1: 'Resize Image by Pixel — Exact Dimensions Free',
+    faq: [
+      { question: 'How do I resize an image to exact pixels?', answer: 'Upload your image to ISHU TOOLS Pixel Resizer, enter target width and height in pixels, and download the precisely resized image.' },
+    ],
+  },
+  'resize-signature': {
+    title: 'Resize Signature Online Free — For Exam Forms | ISHU TOOLS',
+    description: 'Resize signature image to exact dimensions for exam forms, applications, and official documents online for free. Required for SSC, UPSC, RRB, and bank portals in India.',
+    keywords: ['resize signature', 'signature resize online', 'exam form signature size', 'signature image resizer', 'resize signature free', 'ishu tools resize signature', 'signature size india exam'],
+    h1: 'Resize Signature — Exact Dimensions for Exam Forms Free',
+    faq: [
+      { question: 'How do I resize a signature for an exam form?', answer: 'Upload your signature image to ISHU TOOLS, enter the required dimensions, and download the perfectly sized signature for free.' },
+    ],
+  },
+  'resize-image-to-3.5cmx4.5cm': {
+    title: 'Resize Image to 3.5cm x 4.5cm Online Free — Passport Size | ISHU TOOLS',
+    description: 'Resize photo to 3.5cm x 4.5cm at printable DPI online for free. Standard passport/ID photo size for India, UK, and international applications.',
+    keywords: ['resize image 3.5cm 4.5cm', 'passport size photo 3.5x4.5', '3.5cm x 4.5cm photo', 'passport photo size india', 'id photo 3.5 4.5', 'ishu tools passport size', 'resize passport photo india'],
+    h1: 'Resize Image to 3.5cm × 4.5cm — Passport Size Free',
+    faq: [
+      { question: 'What is 3.5cm x 4.5cm photo size?', answer: '3.5cm x 4.5cm is the standard passport photo size used in India. ISHU TOOLS resizes your photo to this exact size at the correct DPI for free.' },
+    ],
+  },
+  'resize-image-to-6cmx2cm': {
+    title: 'Resize Image to 6cm x 2cm Online Free — Signature Size | ISHU TOOLS',
+    description: 'Resize image to 6cm x 2cm dimensions at target DPI online for free. Standard signature size for many Indian government exam forms.',
+    keywords: ['resize image 6cm 2cm', 'signature 6x2cm', '6cm x 2cm photo', 'signature size 6cm 2cm', 'ishu tools 6cm 2cm', 'exam form signature size india'],
+    h1: 'Resize Image to 6cm × 2cm Free — Signature Size',
+    faq: [
+      { question: 'What is 6cm x 2cm used for?', answer: '6cm x 2cm is the standard signature size for many Indian government recruitment forms. Resize your signature image to this exact size using ISHU TOOLS.' },
+    ],
+  },
+  'resize-signature-to-50mmx20mm': {
+    title: 'Resize Signature to 50mm x 20mm Online Free | ISHU TOOLS',
+    description: 'Resize signature image to 50mm x 20mm dimensions for exam and government forms online for free. Standard exam signature size in India.',
+    keywords: ['resize signature 50mm 20mm', 'signature 50x20mm', 'exam signature size', '50mm 20mm signature', 'ishu tools signature resize', 'exam form signature india'],
+    h1: 'Resize Signature to 50mm × 20mm Free',
+    faq: [
+      { question: 'What is the 50mm x 20mm signature size for?', answer: '50mm x 20mm is the standard signature size required by many Indian competitive exams including RRB, SSC, and IBPS. Resize for free using ISHU TOOLS.' },
+    ],
+  },
+  'resize-image-to-35mmx45mm': {
+    title: 'Resize Image to 35mm x 45mm Online Free — Passport Photo | ISHU TOOLS',
+    description: 'Resize image to 35mm x 45mm passport photo dimensions online for free. Standard UK, EU, and international passport photo size.',
+    keywords: ['resize image 35mm 45mm', 'passport photo 35x45mm', '35mm x 45mm photo', 'uk passport photo size', 'eu passport size', 'ishu tools 35mm 45mm', 'international passport photo'],
+    h1: 'Resize Image to 35mm × 45mm — Passport Size Free',
+    faq: [
+      { question: 'What is 35mm x 45mm photo size?', answer: '35mm x 45mm is the standard passport photo size for UK, EU, and many international applications. Resize your photo to this size for free on ISHU TOOLS.' },
+    ],
+  },
+  'resize-image-to-2x2': {
+    title: 'Resize Image to 2x2 Inch Online Free — US Passport Size | ISHU TOOLS',
+    description: 'Resize image to 2x2 inch dimensions for US passport, visa, and ID applications online for free. Standard American passport photo size.',
+    keywords: ['resize image 2x2 inch', '2x2 inch photo online', 'us passport photo size', '2 inch photo', 'ishu tools 2x2 photo', 'american passport photo free'],
+    h1: 'Resize Image to 2x2 Inch — US Passport Size Free',
+    faq: [
+      { question: 'What is the US passport photo size?', answer: 'The US passport photo size is 2x2 inches (51x51mm). ISHU TOOLS resizes your photo to this exact size for free.' },
+    ],
+  },
+  'resize-image-to-3x4': {
+    title: 'Resize Image to 3x4 Inch Online Free — Photo Resize Tool | ISHU TOOLS',
+    description: 'Resize image to 3x4 inch photo dimensions online for free. Common portrait and ID photo size for various applications and documents.',
+    keywords: ['resize image 3x4 inch', '3x4 photo size', 'portrait photo 3x4', 'ishu tools 3x4 photo', '3 inch 4 inch photo free'],
+    h1: 'Resize Image to 3x4 Inch Free',
+    faq: [
+      { question: 'What is 3x4 inch photo size used for?', answer: '3x4 inch is a common portrait photo format used for various ID applications and documents. Resize any image to this size for free on ISHU TOOLS.' },
+    ],
+  },
+  'resize-image-to-4x6': {
+    title: 'Resize Image to 4x6 Inch Online Free — Print Size | ISHU TOOLS',
+    description: 'Resize image to 4x6 inch print dimensions online for free. Standard print photo size for photo labs and home printing.',
+    keywords: ['resize image 4x6 inch', '4x6 photo print size', 'photo print size resize', 'ishu tools 4x6 photo', 'standard photo print size', '4x6 image free'],
+    h1: 'Resize Image to 4x6 Inch — Print Size Free',
+    faq: [
+      { question: 'What is 4x6 inch photo used for?', answer: '4x6 inch is the standard photo print size. Resize your image to 4x6 inches for free on ISHU TOOLS for printing at photo labs or home printers.' },
+    ],
+  },
+  'resize-image-to-600x600-pixel': {
+    title: 'Resize Image to 600x600 Pixels Online Free — Square Photo | ISHU TOOLS',
+    description: 'Resize image to exactly 600x600 pixels online for free. Common product photo and profile picture size for e-commerce and online platforms.',
+    keywords: ['resize image 600x600', '600x600 pixels photo', 'square 600px image', 'product photo 600x600', 'ishu tools 600x600 resize', '600 pixel photo free'],
+    h1: 'Resize Image to 600×600 Pixels Free',
+    faq: [
+      { question: 'When do I need a 600x600 pixel image?', answer: '600x600px is commonly required for product photos, profile pictures, and e-commerce platform uploads. Resize any image for free on ISHU TOOLS.' },
+    ],
+  },
+  'resize-image-for-whatsapp-dp': {
+    title: 'Resize Image for WhatsApp DP Online Free — Profile Photo | ISHU TOOLS',
+    description: 'Resize your image to WhatsApp display picture format online for free. Create the perfect circular-ready WhatsApp profile photo instantly.',
+    keywords: ['whatsapp dp maker', 'resize image whatsapp', 'whatsapp profile photo resize', 'whatsapp dp photo free', 'ishu tools whatsapp dp', 'whatsapp dp india'],
+    h1: 'Resize Image for WhatsApp DP Free',
+    faq: [
+      { question: 'How do I make a WhatsApp DP photo?', answer: 'Upload your image to ISHU TOOLS WhatsApp DP Resizer and download it resized to the perfect WhatsApp profile photo size for free.' },
+    ],
+  },
+  'resize-image-for-youtube-banner': {
+    title: 'Resize Image for YouTube Banner Online Free — Channel Art | ISHU TOOLS',
+    description: 'Resize image to YouTube banner/channel art size (2560x1440px) online for free. Create a professional-looking YouTube channel banner quickly.',
+    keywords: ['youtube banner maker', 'resize image youtube banner', 'youtube channel art resize', 'youtube banner size free', 'ishu tools youtube banner', 'youtube banner india'],
+    h1: 'Resize Image for YouTube Banner Free',
+    faq: [
+      { question: 'What size is a YouTube banner?', answer: 'YouTube recommends 2560x1440px for channel art. ISHU TOOLS resizes your image to the correct YouTube banner dimensions for free.' },
+    ],
+  },
+  'resize-image-to-a4-size': {
+    title: 'Resize Image to A4 Size Online Free — Print Ready Photo | ISHU TOOLS',
+    description: 'Resize any image to A4 dimensions (2480x3508 pixels at 300 DPI) for printing online for free. Perfect for certificates, documents, and print-ready photos.',
+    keywords: ['resize image a4 size', 'a4 image resizer', 'a4 photo size', 'print ready a4 image', 'ishu tools a4 size', 'a4 size photo free india'],
+    h1: 'Resize Image to A4 Size — Print Ready Free',
+    faq: [
+      { question: 'How do I resize an image to A4 size?', answer: 'Upload your image to ISHU TOOLS A4 Size tool and download it resized to 2480x3508 pixels at 300 DPI — ready for printing.' },
+    ],
+  },
+  'bulk-image-resizer': {
+    title: 'Bulk Image Resizer Online Free — Resize Multiple Images | ISHU TOOLS',
+    description: 'Resize multiple images to the same dimensions in one batch online for free. Upload images, set target size, and download all resized images as a ZIP.',
+    keywords: ['bulk image resizer', 'resize multiple images', 'batch image resizer free', 'bulk photo resize', 'resize many images', 'ishu tools bulk resize', 'batch resize images online'],
+    h1: 'Bulk Image Resizer — Resize Multiple Images Free',
+    faq: [
+      { question: 'Can I resize multiple images at once?', answer: 'Yes! ISHU TOOLS Bulk Image Resizer lets you upload multiple images and resize them all to the same dimensions in one go, downloadable as ZIP.' },
+    ],
+  },
+  'psc-photo-resize': {
+    title: 'PSC Photo Resize Online Free — State PSC Form Photo | ISHU TOOLS',
+    description: 'Resize photo to PSC (Public Service Commission) form dimensions and DPI online for free. Perfect for state PSC exam applications in India.',
+    keywords: ['psc photo resize', 'state psc exam photo', 'psc form photo size', 'public service commission photo', 'ishu tools psc photo', 'psc exam photo india', 'state psc photo size'],
+    h1: 'PSC Photo Resize — State PSC Form Photo Free',
+    faq: [
+      { question: 'What size photo is required for PSC exams?', answer: 'PSC exam photo requirements vary by state. ISHU TOOLS PSC Photo Resizer creates photos at the standard PSC dimensions and DPI for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  FORMAT LAB TOOLS
+  // ════════════════════════════════════════════════
+  'jpeg-to-png': {
+    title: 'JPEG to PNG Online Free — High Quality Conversion | ISHU TOOLS',
+    description: 'Convert JPEG/JPG images to PNG format with high fidelity online for free. Get transparent-background-ready PNG from any JPEG. No signup, no watermark.',
+    keywords: ['jpeg to png', 'jpg to png converter', 'convert jpeg png free', 'jpeg png online', 'ishu tools jpeg to png', 'jpg png conversion india', 'jpeg png free converter'],
+    h1: 'JPEG to PNG Converter Online Free',
+    faq: [
+      { question: 'How do I convert JPEG to PNG?', answer: 'Upload your JPEG to ISHU TOOLS and download a high-quality PNG version for free — no signup required.' },
+    ],
+  },
+  'png-to-jpeg': {
+    title: 'PNG to JPEG Online Free — Convert PNG Images | ISHU TOOLS',
+    description: 'Convert PNG images to JPEG format with quality control online for free. Reduce PNG file size by converting to JPEG. No signup, no watermark required.',
+    keywords: ['png to jpeg', 'png to jpg converter', 'convert png jpeg free', 'png jpeg online', 'ishu tools png to jpeg', 'png jpg conversion india'],
+    h1: 'PNG to JPEG Converter Online Free',
+    faq: [
+      { question: 'How do I convert PNG to JPEG?', answer: 'Upload your PNG to ISHU TOOLS and download a JPEG version with your preferred quality setting for free.' },
+    ],
+  },
+  'jpeg-to-jpg': {
+    title: 'JPEG to JPG Online Free — Normalize JPEG Files | ISHU TOOLS',
+    description: 'Normalize JPEG files into optimized JPG output online for free. Convert .jpeg extension to .jpg format with quality optimization.',
+    keywords: ['jpeg to jpg', 'normalize jpeg jpg', 'jpeg jpg converter', 'jpeg to jpg online', 'ishu tools jpeg jpg', 'jpg jpeg convert free'],
+    h1: 'JPEG to JPG Converter Online Free',
+    faq: [
+      { question: 'What is the difference between JPEG and JPG?', answer: 'JPEG and JPG are the same format — only the file extension differs. ISHU TOOLS normalizes your .jpeg file to an optimized .jpg for free.' },
+    ],
+  },
+  'jpeg-to-pdf': {
+    title: 'JPEG to PDF Online Free — Convert JPEG Images to PDF | ISHU TOOLS',
+    description: 'Convert one or more JPEG images into a PDF document online for free. Create a multi-page PDF from JPEG photos instantly. No signup, no watermark.',
+    keywords: ['jpeg to pdf', 'convert jpeg to pdf', 'jpeg pdf converter', 'jpeg to pdf online', 'multiple jpeg pdf', 'ishu tools jpeg to pdf', 'jpeg pdf free india'],
+    h1: 'JPEG to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert JPEG to PDF?', answer: 'Upload your JPEG files to ISHU TOOLS and download them as a PDF document instantly for free.' },
+    ],
+  },
+  'jpg-to-pdf-under-50kb': {
+    title: 'JPG to PDF Under 50KB Online Free — Compressed PDF | ISHU TOOLS',
+    description: 'Convert JPG to PDF while targeting a file size under 50KB online for free. Perfect for email attachments and portals with PDF size limits.',
+    keywords: ['jpg to pdf under 50kb', 'compressed jpg pdf 50kb', 'small pdf from jpg', 'jpg pdf 50kb', 'ishu tools jpg pdf 50kb', 'compact pdf from jpg free'],
+    h1: 'JPG to PDF Under 50KB Free',
+    faq: [
+      { question: 'How do I convert JPG to a PDF under 50KB?', answer: 'Upload your JPG to ISHU TOOLS JPG to PDF Under 50KB converter and get a compressed PDF under 50KB for free.' },
+    ],
+  },
+  'jpg-to-pdf-under-100kb': {
+    title: 'JPG to PDF Under 100KB Online Free — Small Compressed PDF | ISHU TOOLS',
+    description: 'Convert JPG to PDF with output file size under 100KB online for free. Great for applications and portals requiring compact PDF documents.',
+    keywords: ['jpg to pdf under 100kb', 'small jpg to pdf', '100kb pdf from jpg', 'jpg pdf compact', 'ishu tools jpg pdf 100kb', 'jpg to compressed pdf free'],
+    h1: 'JPG to PDF Under 100KB Free',
+    faq: [
+      { question: 'How do I create a JPG PDF under 100KB?', answer: 'Upload your JPG to ISHU TOOLS and download a compressed PDF under 100KB for free — perfect for form submissions.' },
+    ],
+  },
+  'jpeg-to-pdf-under-200kb': {
+    title: 'JPEG to PDF Under 200KB Online Free — Compressed PDF | ISHU TOOLS',
+    description: 'Convert JPEG to PDF with output under 200KB online for free. Perfect for email, applications, and portals with PDF file size limits.',
+    keywords: ['jpeg to pdf under 200kb', '200kb pdf from jpeg', 'compressed jpeg pdf', 'ishu tools jpeg pdf 200kb', 'compact pdf free'],
+    h1: 'JPEG to PDF Under 200KB Free',
+    faq: [
+      { question: 'How do I get a JPEG as PDF under 200KB?', answer: 'Upload your JPEG to ISHU TOOLS and download a compressed PDF under 200KB for free.' },
+    ],
+  },
+  'jpg-to-pdf-under-300kb': {
+    title: 'JPG to PDF Under 300KB Online Free | ISHU TOOLS',
+    description: 'Convert JPG to PDF targeting a file size under 300KB online for free. Great for applications needing compact PDF files.',
+    keywords: ['jpg to pdf 300kb', '300kb pdf jpg', 'compressed pdf 300kb', 'ishu tools jpg pdf 300kb', 'small pdf free'],
+    h1: 'JPG to PDF Under 300KB Free',
+    faq: [{ question: 'How do I make a JPG PDF under 300KB?', answer: 'Upload your JPG to ISHU TOOLS and get a compressed PDF under 300KB for free.' }],
+  },
+  'jpg-to-pdf-under-500kb': {
+    title: 'JPG to PDF Under 500KB Online Free | ISHU TOOLS',
+    description: 'Convert JPG to PDF targeting a file size under 500KB online for free. Upload your image and get a compressed PDF for applications and portals.',
+    keywords: ['jpg to pdf 500kb', '500kb pdf jpg', 'compressed pdf 500kb', 'ishu tools jpg pdf 500kb'],
+    h1: 'JPG to PDF Under 500KB Free',
+    faq: [{ question: 'How do I make a JPG PDF under 500KB?', answer: 'Upload your JPG to ISHU TOOLS and get a compact PDF under 500KB for free.' }],
+  },
+  'eml-to-pdf': {
+    title: 'EML to PDF Online Free — Convert Email to PDF | ISHU TOOLS',
+    description: 'Convert EML email message files into PDF documents online for free. Archive emails as PDF for record-keeping and sharing. No signup required.',
+    keywords: ['eml to pdf', 'email to pdf', 'convert eml pdf', 'email message pdf', 'ishu tools eml pdf', 'email archive pdf free'],
+    h1: 'EML to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert an EML email to PDF?', answer: 'Upload your EML file to ISHU TOOLS and download it as a readable PDF document for free.' },
+    ],
+  },
+  'heif-to-pdf': {
+    title: 'HEIF to PDF Online Free — Convert HEIF Images | ISHU TOOLS',
+    description: 'Convert HEIF images into PDF documents online for free. HEIF is the default format on iPhones. Convert iPhone photos to PDF easily.',
+    keywords: ['heif to pdf', 'heif image pdf', 'iphone photo to pdf', 'convert heif pdf', 'ishu tools heif pdf', 'heif to pdf free'],
+    h1: 'HEIF to PDF Converter Online Free',
+    faq: [
+      { question: 'What is HEIF format?', answer: 'HEIF is the default image format on modern iPhones. ISHU TOOLS converts HEIF images to PDF for free without any software.' },
+    ],
+  },
+  'jfif-to-pdf': {
+    title: 'JFIF to PDF Online Free — Convert JFIF Images | ISHU TOOLS',
+    description: 'Convert JFIF images into PDF documents online for free. JFIF is a variant of JPEG format. Convert easily without any software.',
+    keywords: ['jfif to pdf', 'convert jfif pdf', 'jfif image pdf', 'ishu tools jfif pdf', 'jfif to pdf free'],
+    h1: 'JFIF to PDF Converter Online Free',
+    faq: [
+      { question: 'What is JFIF format?', answer: 'JFIF (JPEG File Interchange Format) is a variant of JPEG. ISHU TOOLS converts JFIF images to PDF for free.' },
+    ],
+  },
+  'djvu-to-pdf': {
+    title: 'DjVu to PDF Online Free — Convert DjVu Documents | ISHU TOOLS',
+    description: 'Convert DjVu documents into PDF format online for free. DjVu is common for scanned books and academic documents. No signup required.',
+    keywords: ['djvu to pdf', 'djvu pdf converter', 'convert djvu pdf', 'djvu document to pdf', 'ishu tools djvu pdf', 'djvu pdf free'],
+    h1: 'DjVu to PDF Converter Online Free',
+    faq: [
+      { question: 'What is DjVu format?', answer: 'DjVu is a format commonly used for scanned books and academic documents. ISHU TOOLS converts DjVu to PDF for free.' },
+    ],
+  },
+  'ai-to-pdf': {
+    title: 'AI to PDF Online Free — Convert Adobe Illustrator Files | ISHU TOOLS',
+    description: 'Convert Adobe Illustrator AI files into PDF documents online for free. Share AI vector designs as universally readable PDF files without Adobe software.',
+    keywords: ['ai to pdf', 'adobe illustrator to pdf', 'ai file pdf converter', 'illustrator pdf free', 'ishu tools ai pdf', 'vector to pdf free'],
+    h1: 'AI to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert an Adobe Illustrator AI file to PDF?', answer: 'Upload your AI file to ISHU TOOLS and download it as a PDF for free without needing Adobe software.' },
+    ],
+  },
+  'xps-to-pdf': {
+    title: 'XPS to PDF Online Free — Convert XPS Documents | ISHU TOOLS',
+    description: 'Convert XPS documents into PDF format online for free. XPS is Microsoft\'s document format. Convert XPS to universally compatible PDF.',
+    keywords: ['xps to pdf', 'convert xps pdf', 'xps document pdf', 'microsoft xps pdf', 'ishu tools xps pdf', 'xps pdf converter free'],
+    h1: 'XPS to PDF Converter Online Free',
+    faq: [
+      { question: 'What is XPS format?', answer: 'XPS (XML Paper Specification) is a document format from Microsoft. ISHU TOOLS converts XPS to PDF for free.' },
+    ],
+  },
+  'hwp-to-pdf': {
+    title: 'HWP to PDF Online Free — Convert Hangul Documents | ISHU TOOLS',
+    description: 'Convert Hangul HWP word processor documents into PDF format online for free. Convert Korean HWP files to universally compatible PDF.',
+    keywords: ['hwp to pdf', 'hangul to pdf', 'hwp document pdf', 'korean hwp pdf', 'ishu tools hwp pdf', 'hwp pdf free'],
+    h1: 'HWP to PDF Converter Online Free',
+    faq: [
+      { question: 'What is HWP format?', answer: 'HWP is the native format of Hangul, a popular Korean word processor. ISHU TOOLS converts HWP to PDF for free.' },
+    ],
+  },
+  'chm-to-pdf': {
+    title: 'CHM to PDF Online Free — Convert Windows Help Files | ISHU TOOLS',
+    description: 'Convert Windows CHM compiled help files into PDF documents online for free. Archive and share CHM documentation as accessible PDF files.',
+    keywords: ['chm to pdf', 'windows help chm pdf', 'chm file converter', 'compiled html help pdf', 'ishu tools chm pdf', 'chm pdf free'],
+    h1: 'CHM to PDF Converter Online Free',
+    faq: [
+      { question: 'What is CHM format?', answer: 'CHM (Compiled HTML Help) is a Microsoft format for documentation and help files. ISHU TOOLS converts CHM to PDF for free.' },
+    ],
+  },
+  'pages-to-pdf': {
+    title: 'PAGES to PDF Online Free — Convert Apple Pages Files | ISHU TOOLS',
+    description: 'Convert Apple Pages documents into PDF format online for free. Share Mac and iOS Pages documents as universally compatible PDF without Apple software.',
+    keywords: ['pages to pdf', 'apple pages to pdf', 'pages file pdf', 'mac pages pdf', 'ios pages pdf', 'ishu tools pages pdf', 'apple document pdf free'],
+    h1: 'PAGES to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert Apple Pages to PDF?', answer: 'Upload your Apple Pages file to ISHU TOOLS and download it as a PDF for free — no Apple software required.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  EBOOK CONVERT TOOLS
+  // ════════════════════════════════════════════════
+  'fb2-to-pdf': {
+    title: 'FB2 to PDF Online Free — Convert FB2 eBook | ISHU TOOLS',
+    description: 'Convert FB2 eBook files into PDF documents online for free. FB2 is popular for Russian e-books. Convert to PDF for universal reading.',
+    keywords: ['fb2 to pdf', 'fb2 ebook pdf', 'convert fb2 pdf', 'russian ebook pdf', 'ishu tools fb2 pdf', 'fb2 pdf free'],
+    h1: 'FB2 to PDF Converter Online Free',
+    faq: [
+      { question: 'What is FB2 format?', answer: 'FB2 is a popular eBook format, especially for Russian literature. ISHU TOOLS converts FB2 to PDF for free.' },
+    ],
+  },
+  'cbz-to-pdf': {
+    title: 'CBZ to PDF Online Free — Convert Comic Book ZIP | ISHU TOOLS',
+    description: 'Convert CBZ comic book ZIP archives into PDF documents online for free. Read comic books in PDF format on any device.',
+    keywords: ['cbz to pdf', 'comic book cbz pdf', 'cbz pdf converter', 'comic archive to pdf', 'ishu tools cbz pdf', 'cbz pdf free'],
+    h1: 'CBZ to PDF Converter Online Free',
+    faq: [
+      { question: 'What is CBZ format?', answer: 'CBZ is a comic book format — a ZIP archive of images. ISHU TOOLS converts CBZ to PDF so you can read comics on any device.' },
+    ],
+  },
+  'ebook-to-pdf': {
+    title: 'eBook to PDF Online Free — Convert EPUB, FB2, CBZ | ISHU TOOLS',
+    description: 'Convert supported eBook formats (EPUB, FB2, CBZ) to PDF documents online for free. One universal eBook converter for students and readers.',
+    keywords: ['ebook to pdf', 'epub to pdf', 'ebook converter pdf', 'convert ebook pdf free', 'ishu tools ebook pdf', 'ebook pdf converter india'],
+    h1: 'eBook to PDF Converter Online Free',
+    faq: [
+      { question: 'What eBook formats does ISHU TOOLS support?', answer: 'ISHU TOOLS eBook to PDF converter supports EPUB, FB2, CBZ, and other common eBook formats for free.' },
+    ],
+  },
+  'pdf-to-mobi': {
+    title: 'PDF to MOBI Online Free — Convert PDF for Kindle | ISHU TOOLS',
+    description: 'Convert PDF documents into MOBI format for Kindle e-readers online for free. Read your PDFs on Kindle devices with better formatting.',
+    keywords: ['pdf to mobi', 'pdf kindle converter', 'pdf to mobi free', 'kindle ebook pdf', 'ishu tools pdf mobi', 'pdf kindle format'],
+    h1: 'PDF to MOBI Converter Online Free',
+    faq: [
+      { question: 'How do I convert PDF to MOBI for Kindle?', answer: 'Upload your PDF to ISHU TOOLS and download it as a MOBI file for free — compatible with Kindle e-readers.' },
+    ],
+  },
+  'mobi-to-pdf': {
+    title: 'MOBI to PDF Online Free — Convert Kindle eBook | ISHU TOOLS',
+    description: 'Convert MOBI e-books into PDF documents online for free. Share Kindle books as PDF for universal reading on any device.',
+    keywords: ['mobi to pdf', 'kindle to pdf', 'mobi pdf converter', 'convert mobi pdf free', 'ishu tools mobi pdf', 'kindle book to pdf'],
+    h1: 'MOBI to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert a MOBI file to PDF?', answer: 'Upload your MOBI file to ISHU TOOLS and download it as a universally compatible PDF for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  ARCHIVE & VECTOR TOOLS
+  // ════════════════════════════════════════════════
+  'zip-to-pdf': {
+    title: 'ZIP to PDF Online Free — Convert ZIP Images to PDF | ISHU TOOLS',
+    description: 'Convert ZIP archives of ordered images into a single PDF document online for free. Batch convert image collections to PDF instantly.',
+    keywords: ['zip to pdf', 'zip images pdf', 'archive to pdf', 'convert zip pdf free', 'ishu tools zip pdf', 'image zip to pdf'],
+    h1: 'ZIP to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert ZIP images to PDF?', answer: 'Upload your ZIP file containing images to ISHU TOOLS and download a single PDF with all images as pages for free.' },
+    ],
+  },
+  'cbr-to-pdf': {
+    title: 'CBR to PDF Online Free — Convert Comic Book Archive | ISHU TOOLS',
+    description: 'Convert CBR comic book archives (RAR-based) into single PDF documents online for free. Read comic books in PDF on any device.',
+    keywords: ['cbr to pdf', 'comic cbr pdf', 'cbr pdf converter', 'rar comic to pdf', 'ishu tools cbr pdf', 'comic archive pdf free'],
+    h1: 'CBR to PDF Converter Online Free',
+    faq: [
+      { question: 'What is CBR format?', answer: 'CBR is a comic book format using RAR compression. ISHU TOOLS converts CBR to PDF for free so you can read comics on any device.' },
+    ],
+  },
+  'dwg-to-pdf': {
+    title: 'DWG to PDF Online Free — Convert AutoCAD Drawings | ISHU TOOLS',
+    description: 'Convert AutoCAD DWG drawings into PDF documents online for free. Share CAD drawings as universally readable PDF without AutoCAD software.',
+    keywords: ['dwg to pdf', 'autocad to pdf', 'cad drawing pdf', 'dwg pdf converter', 'ishu tools dwg pdf', 'autocad pdf free', 'engineering drawing pdf'],
+    h1: 'DWG to PDF Converter — AutoCAD Drawings Free',
+    faq: [
+      { question: 'How do I convert DWG to PDF without AutoCAD?', answer: 'Upload your DWG file to ISHU TOOLS and download it as a PDF for free — no AutoCAD software required.' },
+    ],
+  },
+  'dxf-to-pdf': {
+    title: 'DXF to PDF Online Free — Convert AutoCAD DXF Files | ISHU TOOLS',
+    description: 'Convert AutoCAD DXF drawings into PDF documents online for free. Share technical drawings as universally readable PDF without CAD software.',
+    keywords: ['dxf to pdf', 'autocad dxf pdf', 'cad dxf pdf', 'dxf pdf converter', 'ishu tools dxf pdf', 'technical drawing pdf free'],
+    h1: 'DXF to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert a DXF file to PDF?', answer: 'Upload your DXF drawing to ISHU TOOLS and download it as a PDF for free — no CAD software needed.' },
+    ],
+  },
+  'pub-to-pdf': {
+    title: 'PUB to PDF Online Free — Convert Publisher Files | ISHU TOOLS',
+    description: 'Convert Microsoft Publisher PUB files into PDF format online for free. Share Publisher designs as universally compatible PDF documents.',
+    keywords: ['pub to pdf', 'publisher to pdf', 'microsoft pub pdf', 'convert pub pdf free', 'ishu tools pub pdf', 'publisher file to pdf'],
+    h1: 'PUB to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert a Publisher file to PDF?', answer: 'Upload your PUB file to ISHU TOOLS and download it as a PDF for free without Microsoft Publisher software.' },
+    ],
+  },
+  'wps-to-pdf': {
+    title: 'WPS to PDF Online Free — Convert WPS Office Documents | ISHU TOOLS',
+    description: 'Convert WPS Office documents into PDF format online for free. Share WPS files created on mobile apps and Kingsoft Office as PDF.',
+    keywords: ['wps to pdf', 'wps office pdf', 'convert wps pdf', 'kingsoft wps pdf', 'ishu tools wps pdf', 'wps document pdf free'],
+    h1: 'WPS to PDF Converter Online Free',
+    faq: [
+      { question: 'How do I convert a WPS file to PDF?', answer: 'Upload your WPS document to ISHU TOOLS and download it as a universally readable PDF for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  UTILITY TOOLS
+  // ════════════════════════════════════════════════
+  'remove-metadata-image': {
+    title: 'Remove Image Metadata Online Free — Strip EXIF Data | ISHU TOOLS',
+    description: 'Strip EXIF metadata from images online for free. Remove GPS location, camera info, and personal data from photos before sharing. Privacy protection for images.',
+    keywords: ['remove image metadata', 'strip exif data', 'exif remover free', 'remove photo metadata', 'strip gps photo', 'ishu tools remove exif', 'image privacy cleaner'],
+    h1: 'Remove Image Metadata — Strip EXIF Data Free',
+    faq: [
+      { question: 'Why should I remove metadata from photos?', answer: 'Images contain EXIF metadata including GPS location, camera model, and personal info. ISHU TOOLS strips all metadata for privacy protection.' },
+    ],
+  },
+  'view-metadata': {
+    title: 'View Image Metadata Online Free — EXIF Viewer | ISHU TOOLS',
+    description: 'View EXIF and technical metadata stored inside any image file online for free. See GPS coordinates, camera settings, date, and other metadata instantly.',
+    keywords: ['view image metadata', 'exif viewer free', 'image metadata viewer', 'photo exif viewer', 'see image data', 'ishu tools exif viewer', 'photo metadata online'],
+    h1: 'View Image Metadata — EXIF Viewer Free',
+    faq: [
+      { question: 'How do I view photo metadata?', answer: 'Upload your image to ISHU TOOLS EXIF Viewer and instantly see all stored metadata including GPS, camera settings, and timestamps for free.' },
+    ],
+  },
+  'edit-metadata': {
+    title: 'Edit Metadata Online Free — PDF & Image Metadata Editor | ISHU TOOLS',
+    description: 'Edit metadata for PDF or image files online for free. Modify title, author, description, keywords, and other metadata from one unified editor.',
+    keywords: ['edit metadata', 'pdf metadata editor', 'image metadata editor', 'edit exif data', 'change photo metadata', 'ishu tools edit metadata', 'metadata editor free'],
+    h1: 'Edit Metadata — PDF & Image Metadata Editor Free',
+    faq: [
+      { question: 'How do I edit image or PDF metadata?', answer: 'Upload your file to ISHU TOOLS Metadata Editor, modify the metadata fields you want, and download the updated file for free.' },
+    ],
+  },
+  'wifi-qr-generator': {
+    title: 'Wi-Fi QR Code Generator Online Free — Guest Network QR | ISHU TOOLS',
+    description: 'Create a Wi-Fi QR code from network name (SSID) and password online for free. Let guests connect instantly by scanning the QR. No signup required.',
+    keywords: ['wifi qr generator', 'wi-fi qr code', 'wifi password qr', 'network qr generator', 'guest wifi qr', 'ishu tools wifi qr', 'wifi qr code free india'],
+    h1: 'Wi-Fi QR Code Generator — Guest Connect Free',
+    faq: [
+      { question: 'How do I create a Wi-Fi QR code?', answer: 'Enter your network name (SSID) and password in ISHU TOOLS Wi-Fi QR Generator and download the QR code for guests to scan and connect instantly.' },
+      { question: 'Is this Wi-Fi QR generator free?', answer: 'Yes, completely free. Generate as many Wi-Fi QR codes as you need with no signup or account required.' },
+    ],
+  },
+  'phone-number-validator': {
+    title: 'Phone Number Validator Online Free — India, US, UK | ISHU TOOLS',
+    description: 'Validate phone numbers for India, US, UK, and more online for free. Detect country code, format, and carrier information. No signup required.',
+    keywords: ['phone number validator', 'mobile number validator', 'phone validator india', 'validate phone number', 'international phone validator', 'ishu tools phone validator', 'indian mobile number validator'],
+    h1: 'Phone Number Validator — India, US, UK Free',
+    faq: [
+      { question: 'How do I validate a phone number?', answer: 'Enter any phone number in ISHU TOOLS Phone Validator to check format, country code, and validity for free.' },
+    ],
+  },
+  'email-validator': {
+    title: 'Email Address Validator Online Free — Check Email Format | ISHU TOOLS',
+    description: 'Validate email addresses for correct format, domain, and common issues online for free. Check if an email is valid before sending or signing up.',
+    keywords: ['email validator', 'email address validator', 'check email valid', 'email format checker', 'validate email free', 'ishu tools email validator', 'email verification tool'],
+    h1: 'Email Address Validator — Check Email Format Free',
+    faq: [
+      { question: 'How do I validate an email address?', answer: 'Enter any email address in ISHU TOOLS Email Validator to check its format, domain, and common errors for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  DEVELOPER TOOLS
+  // ════════════════════════════════════════════════
+  'url-encoder': {
+    title: 'URL Encoder Online Free — Percent-Encode URLs | ISHU TOOLS',
+    description: 'Encode text into URL-safe format using percent-encoding online for free. Encode special characters for URLs, query strings, and API calls. No signup needed.',
+    keywords: ['url encoder', 'url encode online', 'percent encoding', 'encode url free', 'url safe encoding', 'ishu tools url encoder', 'url encode decode free'],
+    h1: 'URL Encoder — Percent-Encode URLs Online Free',
+    faq: [
+      { question: 'How do I URL encode a string?', answer: 'Paste your text into ISHU TOOLS URL Encoder and get the percent-encoded URL-safe version instantly for free.' },
+    ],
+  },
+  'url-decoder': {
+    title: 'URL Decoder Online Free — Decode URL Encoded Strings | ISHU TOOLS',
+    description: 'Decode URL-encoded strings back to readable text online for free. Convert percent-encoded URLs and query strings to human-readable format.',
+    keywords: ['url decoder', 'url decode online', 'decode url free', 'percent decode url', 'url decode tool', 'ishu tools url decoder', 'url decode string'],
+    h1: 'URL Decoder — Decode URL Strings Online Free',
+    faq: [
+      { question: 'How do I decode a URL?', answer: 'Paste your URL-encoded string into ISHU TOOLS URL Decoder and get the decoded readable text instantly for free.' },
+    ],
+  },
+  'html-encoder': {
+    title: 'HTML Encoder Online Free — Encode HTML Entities | ISHU TOOLS',
+    description: 'Encode special characters to HTML entities online for free. Convert <, >, &, ", and \' to safe HTML entities for web display.',
+    keywords: ['html encoder', 'html entity encoder', 'encode html free', 'html escape tool', 'special chars to html', 'ishu tools html encoder', 'html encoding online'],
+    h1: 'HTML Encoder — Encode HTML Entities Online Free',
+    faq: [
+      { question: 'How do I encode HTML entities?', answer: 'Paste your text into ISHU TOOLS HTML Encoder and get HTML-safe encoded entities instantly for free.' },
+    ],
+  },
+  'html-decoder': {
+    title: 'HTML Decoder Online Free — Decode HTML Entities | ISHU TOOLS',
+    description: 'Decode HTML entities back to readable characters online for free. Convert &amp;, &lt;, &gt; and other HTML entities to their original characters.',
+    keywords: ['html decoder', 'html entity decoder', 'decode html entities free', 'html unescape', 'html decode tool', 'ishu tools html decoder', 'html decoding online'],
+    h1: 'HTML Decoder — Decode HTML Entities Online Free',
+    faq: [
+      { question: 'How do I decode HTML entities?', answer: 'Paste your HTML with entities into ISHU TOOLS HTML Decoder and get the human-readable version instantly for free.' },
+    ],
+  },
+  'jwt-decoder': {
+    title: 'JWT Decoder Online Free — Decode JSON Web Tokens | ISHU TOOLS',
+    description: 'Decode and inspect JSON Web Token (JWT) header, payload, and signature online for free. Debug JWT tokens for authentication and API development.',
+    keywords: ['jwt decoder', 'json web token decoder', 'decode jwt free', 'jwt inspector', 'jwt token parser', 'ishu tools jwt decoder', 'jwt debug online', 'jwt tool developers'],
+    h1: 'JWT Decoder — Decode JSON Web Tokens Free',
+    faq: [
+      { question: 'How do I decode a JWT token?', answer: 'Paste your JWT token into ISHU TOOLS JWT Decoder and see the decoded header, payload, and signature for free.' },
+      { question: 'Is it safe to decode JWT online?', answer: 'ISHU TOOLS decodes JWT locally in your browser. Never decode tokens with sensitive production secrets on any online tool.' },
+    ],
+  },
+  'unix-timestamp-converter': {
+    title: 'Unix Timestamp Converter Online Free — Epoch to Date | ISHU TOOLS',
+    description: 'Convert between Unix timestamps and human-readable dates online for free. Convert epoch time to date and date to Unix timestamp instantly.',
+    keywords: ['unix timestamp converter', 'epoch to date', 'timestamp converter free', 'unix time converter', 'convert epoch timestamp', 'ishu tools timestamp', 'epoch timestamp online'],
+    h1: 'Unix Timestamp Converter — Epoch to Date Free',
+    faq: [
+      { question: 'How do I convert a Unix timestamp to date?', answer: 'Enter your Unix epoch timestamp in ISHU TOOLS and instantly see the equivalent human-readable date and time for free.' },
+    ],
+  },
+  'css-minifier': {
+    title: 'CSS Minifier Online Free — Compress CSS Code | ISHU TOOLS',
+    description: 'Minify CSS code by removing whitespace and comments online for free. Reduce CSS file size for faster website loading. Perfect for web developers.',
+    keywords: ['css minifier', 'css minify online', 'compress css free', 'css optimizer', 'minify css code', 'ishu tools css minifier', 'css file reduce size', 'css minification free'],
+    h1: 'CSS Minifier — Compress CSS Code Online Free',
+    faq: [
+      { question: 'How do I minify CSS online?', answer: 'Paste your CSS into ISHU TOOLS CSS Minifier and get the compressed minified version for free — ready for production deployment.' },
+    ],
+  },
+  'js-minifier': {
+    title: 'JavaScript Minifier Online Free — Compress JS Code | ISHU TOOLS',
+    description: 'Minify JavaScript code for smaller file size online for free. Remove whitespace, comments, and unnecessary characters from JS files for faster loading.',
+    keywords: ['javascript minifier', 'js minifier online', 'compress javascript free', 'js optimizer', 'minify js code', 'ishu tools js minifier', 'javascript file compress', 'js minification'],
+    h1: 'JavaScript Minifier — Compress JS Code Online Free',
+    faq: [
+      { question: 'How do I minify JavaScript online?', answer: 'Paste your JavaScript code into ISHU TOOLS JS Minifier and get the compressed version for free — perfect for web performance.' },
+    ],
+  },
+  'html-minifier': {
+    title: 'HTML Minifier Online Free — Compress HTML Code | ISHU TOOLS',
+    description: 'Minify HTML code by removing unnecessary whitespace, comments, and redundant attributes online for free. Optimize HTML for faster page loading.',
+    keywords: ['html minifier', 'html minify online', 'compress html free', 'html optimizer', 'minify html', 'ishu tools html minifier', 'html compression free'],
+    h1: 'HTML Minifier — Compress HTML Code Online Free',
+    faq: [
+      { question: 'How do I minify HTML online?', answer: 'Paste your HTML into ISHU TOOLS HTML Minifier and get the compressed output for free — ready for faster web deployment.' },
+    ],
+  },
+  'html-to-markdown': {
+    title: 'HTML to Markdown Online Free — Convert HTML to MD | ISHU TOOLS',
+    description: 'Convert HTML content to Markdown format online for free. Transform HTML pages, articles, and documents to clean Markdown for documentation and blogging.',
+    keywords: ['html to markdown', 'html md converter', 'convert html markdown free', 'html to md online', 'ishu tools html markdown', 'html to md free', 'html markdown conversion'],
+    h1: 'HTML to Markdown Converter Online Free',
+    faq: [
+      { question: 'How do I convert HTML to Markdown?', answer: 'Paste your HTML into ISHU TOOLS HTML to Markdown converter and get clean Markdown output for free.' },
+    ],
+  },
+  'json-to-csv-text': {
+    title: 'JSON to CSV Online Free — Convert JSON to Spreadsheet | ISHU TOOLS',
+    description: 'Convert JSON array data to CSV format online for free. Transform API responses and JSON data into CSV for spreadsheet analysis and Excel import.',
+    keywords: ['json to csv', 'json csv converter', 'convert json csv free', 'json to spreadsheet', 'api data to csv', 'ishu tools json csv', 'json csv online'],
+    h1: 'JSON to CSV Converter Online Free',
+    faq: [
+      { question: 'How do I convert JSON to CSV?', answer: 'Paste your JSON array into ISHU TOOLS JSON to CSV converter and download the CSV file for spreadsheet analysis for free.' },
+    ],
+  },
+  'csv-to-json-text': {
+    title: 'CSV to JSON Online Free — Convert CSV to JSON Array | ISHU TOOLS',
+    description: 'Convert CSV data to JSON array format online for free. Transform spreadsheet data to JSON for APIs, web apps, and data processing.',
+    keywords: ['csv to json', 'csv json converter', 'convert csv json free', 'spreadsheet to json', 'csv data to json', 'ishu tools csv json', 'csv json online'],
+    h1: 'CSV to JSON Converter Online Free',
+    faq: [
+      { question: 'How do I convert CSV to JSON?', answer: 'Paste your CSV data into ISHU TOOLS CSV to JSON converter and get a JSON array for free — perfect for web development.' },
+    ],
+  },
+  'text-escape-unescape': {
+    title: 'Text Escape/Unescape Online Free — Special Characters | ISHU TOOLS',
+    description: 'Escape or unescape special characters in text online for free. Handle backslashes, quotes, newlines, and Unicode escape sequences for code and JSON.',
+    keywords: ['text escape unescape', 'escape special characters', 'string escape online', 'unescape text free', 'ishu tools text escape', 'json string escape'],
+    h1: 'Text Escape/Unescape — Special Characters Free',
+    faq: [
+      { question: 'How do I escape special characters in text?', answer: 'Enter your text in ISHU TOOLS Escape/Unescape tool and choose escape or unescape to handle backslashes, quotes, and special characters.' },
+    ],
+  },
+  'ip-lookup': {
+    title: 'IP Address Lookup Online Free — Get Your IP Info | ISHU TOOLS',
+    description: 'Get your current public IP address and geolocation information online for free. Find country, city, ISP, and timezone from any IP address instantly.',
+    keywords: ['ip address lookup', 'ip lookup free', 'my ip address', 'ip geolocation', 'find ip address', 'ishu tools ip lookup', 'ip info online', 'ip checker india'],
+    h1: 'IP Address Lookup — Get Your IP Info Free',
+    faq: [
+      { question: 'How do I find my IP address?', answer: 'Open ISHU TOOLS IP Lookup and instantly see your public IP address along with country, city, ISP, and timezone information for free.' },
+    ],
+  },
+  'char-code-converter': {
+    title: 'Character Code Converter Online Free — ASCII & Unicode | ISHU TOOLS',
+    description: 'Convert between characters and their ASCII/Unicode code points online for free. Find character codes, Unicode values, and reverse conversion for developers.',
+    keywords: ['character code converter', 'ascii code converter', 'unicode character code', 'char to ascii', 'ascii to char', 'ishu tools char code', 'unicode code point free'],
+    h1: 'Character Code Converter — ASCII & Unicode Free',
+    faq: [
+      { question: 'How do I find the ASCII code of a character?', answer: 'Enter any character in ISHU TOOLS Character Code Converter to get its ASCII and Unicode code point instantly for free.' },
+    ],
+  },
+  'url-validator': {
+    title: 'URL Validator & Analyzer Online Free — Check URL Structure | ISHU TOOLS',
+    description: 'Validate any URL and analyze its structure online for free. Check scheme, domain, path, query parameters, and more. Perfect for developers and SEO.',
+    keywords: ['url validator', 'url checker online', 'url structure analyzer', 'validate url free', 'check url valid', 'ishu tools url validator', 'url analyzer free'],
+    h1: 'URL Validator & Analyzer Online Free',
+    faq: [
+      { question: 'How do I validate a URL?', answer: 'Enter any URL in ISHU TOOLS URL Validator to check if it is properly structured and see a full analysis of its components for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  SECURITY TOOLS
+  // ════════════════════════════════════════════════
+  'md5-generator': {
+    title: 'MD5 Hash Generator Online Free — Create MD5 Hash | ISHU TOOLS',
+    description: 'Generate MD5 hash from any text input online for free. Create checksum for data integrity verification and password hashing. Instant results, no signup.',
+    keywords: ['md5 hash generator', 'md5 generator free', 'create md5 hash', 'md5 checksum', 'md5 encoder online', 'ishu tools md5', 'md5 hash tool india'],
+    h1: 'MD5 Hash Generator Online Free',
+    faq: [
+      { question: 'How do I generate an MD5 hash?', answer: 'Paste your text into ISHU TOOLS MD5 Generator and get the MD5 hash instantly for free — useful for checksum verification.' },
+    ],
+  },
+  'sha256-generator': {
+    title: 'SHA-256 Hash Generator Online Free — Secure Hash | ISHU TOOLS',
+    description: 'Generate SHA-256 hash from any text input online for free. Cryptographically secure hash generation for passwords, data integrity, and security.',
+    keywords: ['sha256 hash generator', 'sha-256 generator free', 'sha256 online', 'secure hash sha256', 'sha 256 tool', 'ishu tools sha256', 'sha256 hash creator india'],
+    h1: 'SHA-256 Hash Generator Online Free',
+    faq: [
+      { question: 'How do I generate a SHA-256 hash?', answer: 'Enter your text in ISHU TOOLS SHA-256 Generator and get the cryptographically secure hash instantly for free.' },
+    ],
+  },
+  'bcrypt-generator': {
+    title: 'BCrypt Hash Generator Online Free — Password Hashing | ISHU TOOLS',
+    description: 'Generate BCrypt hash from a password online for free. BCrypt is the industry standard for secure password hashing. Perfect for developers.',
+    keywords: ['bcrypt generator', 'bcrypt hash online', 'password hash bcrypt', 'bcrypt password free', 'ishu tools bcrypt', 'secure password hash bcrypt', 'bcrypt developer tool'],
+    h1: 'BCrypt Hash Generator — Secure Password Hashing Free',
+    faq: [
+      { question: 'How do I generate a BCrypt hash?', answer: 'Enter your password in ISHU TOOLS BCrypt Generator and get a secure BCrypt hash for use in your applications for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  STUDENT & TEXT TOOLS
+  // ════════════════════════════════════════════════
+  'word-frequency': {
+    title: 'Word Frequency Analyzer Online Free — Text Statistics | ISHU TOOLS',
+    description: 'Analyze word frequency distribution in any text online for free. Find most common words, unique word count, and frequency percentage. Perfect for writers and students.',
+    keywords: ['word frequency analyzer', 'word frequency counter', 'text frequency analysis', 'most common words', 'word count analysis', 'ishu tools word frequency', 'text word frequency free'],
+    h1: 'Word Frequency Analyzer Online Free',
+    faq: [
+      { question: 'How do I analyze word frequency?', answer: 'Paste your text into ISHU TOOLS Word Frequency Analyzer to see the most common words, frequency, and percentage instantly for free.' },
+    ],
+  },
+  'countdown-calculator': {
+    title: 'Countdown Calculator Online Free — Time Until Date | ISHU TOOLS',
+    description: 'Calculate time remaining until any target date online for free. Get days, hours, minutes, and seconds countdown for events, exams, and deadlines.',
+    keywords: ['countdown calculator', 'days until date', 'time countdown online', 'event countdown free', 'deadline countdown', 'ishu tools countdown', 'date countdown calculator india'],
+    h1: 'Countdown Calculator — Time Until Date Free',
+    faq: [
+      { question: 'How do I count down to a date?', answer: 'Enter your target date in ISHU TOOLS Countdown Calculator and see exact days, hours, minutes, and seconds remaining for free.' },
+    ],
+  },
+  'text-to-hex': {
+    title: 'Text to Hex Converter Online Free — ASCII to Hex | ISHU TOOLS',
+    description: 'Convert text to hexadecimal representation online for free. Encode ASCII or Unicode text as hex values for programming and debugging.',
+    keywords: ['text to hex', 'text hex converter', 'ascii to hex', 'convert text hex free', 'string to hex', 'ishu tools text hex', 'hex encoding online'],
+    h1: 'Text to Hex Converter Online Free',
+    faq: [
+      { question: 'How do I convert text to hexadecimal?', answer: 'Enter your text in ISHU TOOLS Text to Hex converter and get the hexadecimal representation instantly for free.' },
+    ],
+  },
+  'hex-to-text': {
+    title: 'Hex to Text Converter Online Free — Decode Hex | ISHU TOOLS',
+    description: 'Convert hexadecimal values back to readable text online for free. Decode hex-encoded strings for programming, debugging, and security analysis.',
+    keywords: ['hex to text', 'hex decoder', 'hex to ascii', 'decode hex string free', 'hex text converter', 'ishu tools hex to text', 'hexadecimal to text online'],
+    h1: 'Hex to Text Converter Online Free',
+    faq: [
+      { question: 'How do I convert hex to text?', answer: 'Enter your hexadecimal values in ISHU TOOLS Hex to Text converter and get the readable text representation instantly for free.' },
+    ],
+  },
+  'text-to-unicode': {
+    title: 'Text to Unicode Converter Online Free — Unicode Escape | ISHU TOOLS',
+    description: 'Convert text to Unicode escape sequences online for free. Get Unicode code points and escape sequences for any text including special characters and emojis.',
+    keywords: ['text to unicode', 'unicode escape sequence', 'text unicode converter', 'string to unicode', 'ishu tools text unicode', 'unicode escape online free'],
+    h1: 'Text to Unicode Converter Online Free',
+    faq: [
+      { question: 'How do I convert text to Unicode?', answer: 'Enter your text in ISHU TOOLS Text to Unicode converter to get Unicode escape sequences and code points for free.' },
+    ],
+  },
+  'unicode-to-text': {
+    title: 'Unicode to Text Converter Online Free — Decode Unicode | ISHU TOOLS',
+    description: 'Convert Unicode escape sequences back to readable text online for free. Decode \\u0000 style Unicode escapes to human-readable characters.',
+    keywords: ['unicode to text', 'unicode decoder', 'decode unicode escape', 'unicode text converter free', 'ishu tools unicode to text', 'unescape unicode online'],
+    h1: 'Unicode to Text Converter Online Free',
+    faq: [
+      { question: 'How do I decode Unicode escape sequences?', answer: 'Paste your Unicode escape sequences in ISHU TOOLS Unicode to Text converter and see the decoded readable text for free.' },
+    ],
+  },
+  'string-hash-generator': {
+    title: 'Multi-Hash Generator Online Free — MD5, SHA-1, SHA-256, SHA-512 | ISHU TOOLS',
+    description: 'Generate MD5, SHA-1, SHA-256, and SHA-512 hashes simultaneously from any text online for free. Compare multiple hash types at once for security.',
+    keywords: ['multi hash generator', 'md5 sha256 generator', 'multiple hash types', 'sha1 sha256 sha512', 'all hash types free', 'ishu tools hash generator', 'hash comparison tool'],
+    h1: 'Multi-Hash Generator — MD5, SHA-1, SHA-256, SHA-512 Free',
+    faq: [
+      { question: 'How do I generate multiple hashes at once?', answer: 'Enter your text in ISHU TOOLS Multi-Hash Generator and instantly get MD5, SHA-1, SHA-256, and SHA-512 hashes all at once for free.' },
+    ],
+  },
+  'text-statistics': {
+    title: 'Text Statistics Analyzer Online Free — Complete Text Analysis | ISHU TOOLS',
+    description: 'Complete text analysis with word count, character count, sentence count, paragraph count, reading time, and more online for free. Perfect for writers and students.',
+    keywords: ['text statistics', 'text analyzer', 'word count statistics', 'text analysis tool', 'reading time calculator', 'ishu tools text statistics', 'text metrics free'],
+    h1: 'Text Statistics Analyzer Online Free',
+    faq: [
+      { question: 'What statistics can I get from my text?', answer: 'ISHU TOOLS Text Statistics shows word count, characters, sentences, paragraphs, reading time, speaking time, and unique word count for free.' },
+    ],
+  },
+  'case-converter-advanced': {
+    title: 'Advanced Case Converter Online Free — camelCase, PascalCase, snake_case | ISHU TOOLS',
+    description: 'Convert text to camelCase, PascalCase, snake_case, kebab-case, UPPER_CASE, and more online for free. Essential for programmers and developers.',
+    keywords: ['advanced case converter', 'camelcase converter', 'snake case converter', 'pascal case online', 'kebab case converter', 'ishu tools case converter', 'programming case convert free'],
+    h1: 'Advanced Case Converter — camelCase, PascalCase, snake_case Free',
+    faq: [
+      { question: 'How do I convert text to camelCase or snake_case?', answer: 'Enter your text in ISHU TOOLS Advanced Case Converter and choose any case format: camelCase, PascalCase, snake_case, kebab-case, and more for free.' },
+    ],
+  },
+  'stopwatch-calculator': {
+    title: 'Time Converter Online Free — Hours, Minutes, Seconds | ISHU TOOLS',
+    description: 'Convert between hours, minutes, and seconds formats online for free. Calculate total seconds, minutes, or hours from any time value. Perfect for students and professionals.',
+    keywords: ['time converter', 'hours minutes seconds converter', 'time calculation free', 'convert time units', 'seconds to hours', 'ishu tools time converter', 'time unit conversion'],
+    h1: 'Time Converter — Hours, Minutes, Seconds Free',
+    faq: [
+      { question: 'How do I convert hours to minutes and seconds?', answer: 'Enter your time value in ISHU TOOLS Time Converter and get conversions between hours, minutes, and seconds instantly for free.' },
+    ],
+  },
+  'word-counter': {
+    title: 'Word Counter Online Free — Count Words & Characters | ISHU TOOLS',
+    description: 'Count words, characters, sentences, and paragraphs in any text online for free. Also shows reading time and speaking time. Perfect for essays, articles, and assignments.',
+    keywords: ['word counter', 'character counter', 'word count online', 'count words free', 'words in text', 'ishu tools word counter', 'word counter india', 'essay word count'],
+    h1: 'Word Counter — Count Words & Characters Online Free',
+    faq: [
+      { question: 'How do I count words in text?', answer: 'Paste your text into ISHU TOOLS Word Counter to instantly get word count, character count, sentence count, and reading time for free.' },
+    ],
+  },
+  'study-timer': {
+    title: 'Study Timer Pomodoro Online Free — Study Schedule | ISHU TOOLS',
+    description: 'Generate a personalized Pomodoro study schedule online for free. Set work intervals, break times, and total study duration. Perfect for exam prep and productive study sessions.',
+    keywords: ['study timer', 'pomodoro timer', 'study schedule generator', 'pomodoro technique', 'study time planner', 'ishu tools study timer', 'student study timer india', 'exam study timer'],
+    h1: 'Study Timer Pomodoro — Study Schedule Generator Free',
+    faq: [
+      { question: 'What is the Pomodoro study technique?', answer: 'Pomodoro involves studying for 25 minutes then taking a 5-minute break. ISHU TOOLS generates a personalized Pomodoro study plan for free.' },
+      { question: 'Can I customize the study and break duration?', answer: 'Yes. ISHU TOOLS Study Timer lets you set custom work intervals, short break, and long break durations for your schedule.' },
+    ],
+  },
+  'invoice-generator': {
+    title: 'Invoice Generator Online Free — Professional PDF Invoices | ISHU TOOLS',
+    description: 'Create professional PDF invoices online for free. Add items, taxes, discounts, and download instantly. Perfect for freelancers, small businesses, and professionals in India.',
+    keywords: ['invoice generator', 'pdf invoice maker', 'create invoice free', 'professional invoice online', 'invoice maker india', 'ishu tools invoice', 'free invoice generator india', 'billing invoice free'],
+    h1: 'Invoice Generator — Professional PDF Invoices Free',
+    faq: [
+      { question: 'How do I create a free invoice online?', answer: 'Use ISHU TOOLS Invoice Generator to add your business info, client details, items, taxes, and discounts — then download a professional PDF invoice for free.' },
+      { question: 'Can I use this for freelance billing in India?', answer: 'Yes! ISHU TOOLS Invoice Generator is perfect for Indian freelancers and small businesses to create professional invoices with GST if needed.' },
+    ],
+  },
+  'letter-generator': {
+    title: 'Formal Letter Generator Online Free — Professional Letter PDF | ISHU TOOLS',
+    description: 'Generate professional formal letters as PDF online for free. Enter sender, recipient, subject, and content. Perfect for job applications, complaints, and official letters.',
+    keywords: ['formal letter generator', 'letter maker free', 'professional letter online', 'letter generator pdf', 'formal letter writer', 'ishu tools letter generator', 'letter template india', 'formal letter india'],
+    h1: 'Formal Letter Generator — Professional Letters Free',
+    faq: [
+      { question: 'How do I create a formal letter?', answer: 'Use ISHU TOOLS Letter Generator to enter sender, recipient, subject, and body content — download a professional formal letter as PDF for free.' },
+    ],
+  },
+  'time-calculator': {
+    title: 'Time Calculator Online Free — Add & Subtract Time | ISHU TOOLS',
+    description: 'Add or subtract time values (hours, minutes, seconds) online for free. Calculate time differences, durations, and totals for scheduling and planning.',
+    keywords: ['time calculator', 'add subtract time', 'time duration calculator', 'hours minutes calculator', 'time arithmetic online', 'ishu tools time calculator', 'time addition free'],
+    h1: 'Time Calculator — Add & Subtract Time Online Free',
+    faq: [
+      { question: 'How do I add or subtract time values?', answer: 'Enter your time values in ISHU TOOLS Time Calculator using formats like 1:30 or 1h 30m and choose add or subtract for instant results.' },
+    ],
+  },
+  'random-name-generator': {
+    title: 'Random Name Generator Online Free — Indian Names | ISHU TOOLS',
+    description: 'Generate random Indian names (male, female, or any) online for free. Perfect for creating test data, characters for stories, and game development.',
+    keywords: ['random name generator', 'indian name generator', 'random name free', 'fake name generator india', 'random male female name', 'ishu tools name generator', 'name randomizer india'],
+    h1: 'Random Name Generator — Indian Names Free',
+    faq: [
+      { question: 'How do I generate random Indian names?', answer: 'Use ISHU TOOLS Random Name Generator to get random Indian male, female, or unisex names for test data and creative projects for free.' },
+    ],
+  },
+  'flashcard-maker': {
+    title: 'Flashcard Maker Online Free — Study Cards for Exam Prep | ISHU TOOLS',
+    description: 'Create digital flashcards for studying online for free. Add question-answer pairs and review them for exam preparation. Perfect for JEE, NEET, UPSC, and university exams.',
+    keywords: ['flashcard maker', 'study flashcards online', 'digital flashcards free', 'exam prep flashcards', 'question answer cards', 'ishu tools flashcards', 'study cards india', 'jee neet flashcards'],
+    h1: 'Flashcard Maker — Study Cards for Exam Prep Free',
+    faq: [
+      { question: 'How do I create flashcards for studying?', answer: 'Use ISHU TOOLS Flashcard Maker to add question-answer pairs and review them in a digital study session for free.' },
+      { question: 'Can I use flashcards for JEE/NEET preparation?', answer: 'Yes! ISHU TOOLS digital flashcards are perfect for memorizing formulas, definitions, and concepts for competitive exams in India.' },
+    ],
+  },
+  'paraphrase-tool': {
+    title: 'Paraphrase Tool Online Free — Rewrite Text | ISHU TOOLS',
+    description: 'Rewrite text in different words while keeping the original meaning online for free. Perfect for academic writing, content creation, and improving writing quality.',
+    keywords: ['paraphrase tool', 'text paraphraser free', 'rewrite text online', 'rephrase text free', 'paraphrasing tool', 'ishu tools paraphrase', 'rewording tool india', 'paraphrase essay free'],
+    h1: 'Paraphrase Tool — Rewrite Text Online Free',
+    faq: [
+      { question: 'How do I paraphrase text online for free?', answer: 'Paste your text into ISHU TOOLS Paraphrase Tool and get a rewritten version with the same meaning but different wording for free.' },
+    ],
+  },
+  'plagiarism-detector': {
+    title: 'Plagiarism Detector Online Free — Check for Copied Content | ISHU TOOLS',
+    description: 'Check if your text contains duplicate or copied content online for free. Highlights potential plagiarism for academic papers, articles, and student assignments.',
+    keywords: ['plagiarism detector', 'plagiarism checker free', 'check plagiarism online', 'copied content detector', 'academic plagiarism checker', 'ishu tools plagiarism', 'plagiarism check india', 'student plagiarism tool'],
+    h1: 'Plagiarism Detector — Check for Copied Content Free',
+    faq: [
+      { question: 'How do I check for plagiarism online for free?', answer: 'Paste your text into ISHU TOOLS Plagiarism Detector and it highlights potentially copied or duplicate content for free.' },
+    ],
+  },
+  'text-to-handwriting': {
+    title: 'Text to Handwriting Converter Online Free — Realistic Handwriting | ISHU TOOLS',
+    description: 'Convert typed text to realistic handwriting style online for free. Choose handwriting style and download. Perfect for students and creative projects.',
+    keywords: ['text to handwriting', 'handwriting converter free', 'typed to handwriting online', 'realistic handwriting generator', 'convert text handwriting', 'ishu tools handwriting', 'student handwriting tool india'],
+    h1: 'Text to Handwriting Converter Online Free',
+    faq: [
+      { question: 'How do I convert text to handwriting?', answer: 'Enter your text in ISHU TOOLS Text to Handwriting converter, choose a style, and download the handwritten version for free.' },
+    ],
+  },
+  'ascii-art-generator': {
+    title: 'ASCII Art Generator Online Free — Text to ASCII Art | ISHU TOOLS',
+    description: 'Convert text to ASCII art online for free. Choose from multiple fonts and styles. Create cool text banners, logos, and decorative text for social media.',
+    keywords: ['ascii art generator', 'text to ascii art', 'ascii text art free', 'ascii font generator', 'text art online', 'ishu tools ascii art', 'ascii banner free'],
+    h1: 'ASCII Art Generator — Text to ASCII Art Online Free',
+    faq: [
+      { question: 'How do I create ASCII art from text?', answer: 'Enter your text in ISHU TOOLS ASCII Art Generator, choose a font style, and get your ASCII art banner for free.' },
+    ],
+  },
+  'grade-needed-calculator': {
+    title: 'Grade Needed Calculator Online Free — Target Score | ISHU TOOLS',
+    description: 'Calculate the score needed in a final exam or assignment to reach your target grade online for free. Essential tool for students tracking academic performance.',
+    keywords: ['grade needed calculator', 'target grade calculator', 'final exam grade needed', 'minimum marks calculator', 'grade goal calculator', 'ishu tools grade calculator', 'student grade planner india'],
+    h1: 'Grade Needed Calculator — Target Score Online Free',
+    faq: [
+      { question: 'How do I calculate the grade I need on my final exam?', answer: 'Enter your current grade, the final weight percentage, and your target grade in ISHU TOOLS Grade Needed Calculator to get the minimum score you need for free.' },
+    ],
+  },
+  'marks-percentage-calculator': {
+    title: 'Marks Percentage Calculator Online Free — Exam Results | ISHU TOOLS',
+    description: 'Calculate exam percentage, grade, and pass/fail status from obtained marks and total marks online for free. Essential for Indian students after board and university exams.',
+    keywords: ['marks percentage calculator', 'exam marks percentage', 'calculate percentage marks', 'score percentage calculator', 'board exam percentage', 'ishu tools marks calculator', 'marks to percentage india', 'exam result calculator'],
+    h1: 'Marks Percentage Calculator — Exam Results Online Free',
+    faq: [
+      { question: 'How do I calculate my exam percentage?', answer: 'Enter obtained marks and total marks in ISHU TOOLS Marks Percentage Calculator to get your percentage and grade instantly for free.' },
+      { question: 'Can I check pass/fail status?', answer: 'Yes. ISHU TOOLS Marks Percentage Calculator shows percentage, letter grade, and pass/fail status based on Indian academic standards.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  PRODUCTIVITY TOOLS
+  // ════════════════════════════════════════════════
+  'resume-builder': {
+    title: 'Resume Builder Online Free — Professional CV Maker | ISHU TOOLS',
+    description: 'Build a professional resume/CV online in minutes for free. Choose a template, fill your details, and download a PDF resume. Perfect for Indian job seekers and fresh graduates.',
+    keywords: ['resume builder', 'cv maker free', 'online resume builder', 'professional resume free', 'pdf resume maker', 'ishu tools resume', 'resume builder india', 'free cv builder india', 'fresher resume builder'],
+    h1: 'Resume Builder — Professional CV Maker Online Free',
+    faq: [
+      { question: 'How do I create a resume for free online?', answer: 'Use ISHU TOOLS Resume Builder to fill in your details and download a professional PDF resume for free — perfect for job applications in India.' },
+      { question: 'Can freshers use ISHU TOOLS Resume Builder?', answer: 'Yes! ISHU TOOLS Resume Builder is perfect for freshers and experienced professionals looking to create ATS-friendly resumes for free.' },
+    ],
+  },
+  'screen-ruler': {
+    title: 'Online Screen Ruler Free — Measure in Pixels, cm, mm, Inches | ISHU TOOLS',
+    description: 'Measure elements on your screen in pixels, cm, mm, or inches online for free. A browser-based virtual ruler for designers, developers, and students.',
+    keywords: ['online screen ruler', 'screen ruler free', 'pixel ruler browser', 'measure screen elements', 'virtual ruler online', 'ishu tools screen ruler', 'browser ruler pixels'],
+    h1: 'Online Screen Ruler — Measure in Pixels/cm Free',
+    faq: [
+      { question: 'How do I measure elements on my screen?', answer: 'Open ISHU TOOLS Online Screen Ruler in your browser and drag it over any element to measure it in pixels, cm, mm, or inches for free.' },
+    ],
+  },
+  'note-pad': {
+    title: 'Online Notepad Free — Save Notes in Browser | ISHU TOOLS',
+    description: 'Free online notepad with auto-save. Write notes, to-do lists, or any text and save directly in your browser without any signup or account.',
+    keywords: ['online notepad', 'browser notepad free', 'digital notepad', 'auto save notepad', 'online text editor', 'ishu tools notepad', 'quick notes online', 'notepad no signup'],
+    h1: 'Online Notepad — Auto-Save Notes in Browser Free',
+    faq: [
+      { question: 'How does the ISHU TOOLS online notepad work?', answer: 'ISHU TOOLS Notepad auto-saves your text in your browser\'s local storage. Your notes persist between sessions with no account needed.' },
+    ],
+  },
+  'to-do-list': {
+    title: 'To-Do List Online Free — Task Manager in Browser | ISHU TOOLS',
+    description: 'Simple and clean online to-do list free. Add, complete, and delete tasks. Auto-saved in browser. No signup, no account. Perfect for students and professionals.',
+    keywords: ['to do list online', 'task manager free', 'browser todo list', 'digital task list', 'simple todo app', 'ishu tools todo', 'online task tracker free', 'student task list'],
+    h1: 'To-Do List — Online Task Manager Free',
+    faq: [
+      { question: 'How does the ISHU TOOLS To-Do List work?', answer: 'Add tasks, mark them complete, and delete them. Everything is auto-saved in your browser with no account or signup required.' },
+    ],
+  },
+  'habit-tracker': {
+    title: 'Habit Tracker Online Free — Build Daily Habits & Streaks | ISHU TOOLS',
+    description: 'Track daily habits and build streaks online for free. Mark habits as done each day. Perfect for students building study habits and professionals developing routines.',
+    keywords: ['habit tracker', 'daily habit tracker free', 'habit streak tracker', 'online habit builder', 'study habit tracker', 'ishu tools habit tracker', 'habit tracker india', 'daily routine tracker'],
+    h1: 'Habit Tracker — Build Daily Habits & Streaks Free',
+    faq: [
+      { question: 'How do I track my daily habits online?', answer: 'Use ISHU TOOLS Habit Tracker to add your habits, mark them daily, and track streaks over time — all for free with no signup.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  MATH TOOLS
+  // ════════════════════════════════════════════════
+  'profit-loss-calculator': {
+    title: 'Profit and Loss Calculator Online Free — P&L Percentage | ISHU TOOLS',
+    description: 'Calculate profit or loss percentage from cost and selling price online for free. Essential for students, traders, and business owners in India.',
+    keywords: ['profit loss calculator', 'profit percentage calculator', 'loss calculator free', 'cost selling price calculator', 'p&l calculator india', 'ishu tools profit loss', 'business calculator free'],
+    h1: 'Profit & Loss Calculator Online Free',
+    faq: [
+      { question: 'How do I calculate profit or loss percentage?', answer: 'Enter cost price and selling price in ISHU TOOLS Profit & Loss Calculator to get profit/loss amount and percentage instantly for free.' },
+    ],
+  },
+  'unit-price-calculator': {
+    title: 'Unit Price Calculator Online Free — Compare Product Values | ISHU TOOLS',
+    description: 'Calculate price per unit to compare product values online for free. Find the best deal when comparing different package sizes and quantities.',
+    keywords: ['unit price calculator', 'price per unit', 'compare product prices', 'unit cost calculator', 'value comparison tool', 'ishu tools unit price', 'best deal calculator india'],
+    h1: 'Unit Price Calculator — Compare Deals Free',
+    faq: [
+      { question: 'How do I calculate unit price?', answer: 'Enter total price and quantity in ISHU TOOLS Unit Price Calculator to get the price per unit and compare different product options for free.' },
+    ],
+  },
+  'matrix-calculator': {
+    title: 'Matrix Calculator Online Free — Matrix Operations | ISHU TOOLS',
+    description: 'Perform matrix operations online for free: addition, subtraction, multiplication, transpose, determinant, and inverse. Essential for linear algebra and engineering.',
+    keywords: ['matrix calculator', 'matrix operations online', 'matrix multiplication free', 'linear algebra calculator', 'determinant calculator', 'matrix inverse free', 'ishu tools matrix', 'engineering math calculator'],
+    h1: 'Matrix Calculator — Matrix Operations Online Free',
+    faq: [
+      { question: 'What matrix operations can I do online?', answer: 'ISHU TOOLS Matrix Calculator supports addition, subtraction, multiplication, transpose, determinant, and inverse for free.' },
+    ],
+  },
+  'equation-solver': {
+    title: 'Equation Solver Online Free — Linear & Quadratic | ISHU TOOLS',
+    description: 'Solve linear and quadratic equations step by step online for free. Enter your equation and get the solution with full working shown. Perfect for students.',
+    keywords: ['equation solver', 'solve equations online', 'linear equation solver', 'quadratic equation solver', 'math equation free', 'ishu tools equation solver', 'algebra solver india', 'jee math solver'],
+    h1: 'Equation Solver — Solve Linear & Quadratic Free',
+    faq: [
+      { question: 'How do I solve a linear equation online?', answer: 'Enter your equation in ISHU TOOLS Equation Solver and get the step-by-step solution for free — perfect for homework and exam prep.' },
+    ],
+  },
+  'speed-calculator': {
+    title: 'Speed Distance Time Calculator Online Free | ISHU TOOLS',
+    description: 'Calculate speed, distance, or time from any two known values online for free. Supports km/h, mph, m/s. Essential for physics problems and competitive exams.',
+    keywords: ['speed calculator', 'distance time calculator', 'speed distance time', 'physics calculator free', 'velocity calculator', 'ishu tools speed calculator', 'speed distance india', 'ssc math speed problems'],
+    h1: 'Speed Distance Time Calculator Online Free',
+    faq: [
+      { question: 'How do I calculate speed from distance and time?', answer: 'Enter any two known values in ISHU TOOLS Speed Calculator to instantly calculate the third — speed, distance, or time — for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  FINANCE TOOLS
+  // ════════════════════════════════════════════════
+  'atm-pin-generator': {
+    title: 'ATM PIN Generator Online Free — Secure 4 & 6 Digit PIN | ISHU TOOLS',
+    description: 'Generate secure random 4-digit and 6-digit ATM PINs online for free. Avoids obvious patterns and weak PINs. Use for ATM cards, accounts, and mobile banking.',
+    keywords: ['atm pin generator', 'generate atm pin', 'secure pin generator', 'random pin 4 digit', 'random pin 6 digit', 'ishu tools atm pin', 'bank pin generator india'],
+    h1: 'ATM PIN Generator — Secure 4 & 6 Digit PINs Free',
+    faq: [
+      { question: 'How do I generate a secure ATM PIN?', answer: 'ISHU TOOLS ATM PIN Generator creates cryptographically random 4 or 6-digit PINs avoiding obvious patterns like 1234 or 0000 for free.' },
+    ],
+  },
+  'credit-card-validator': {
+    title: 'Credit Card Validator Online Free — Luhn Algorithm | ISHU TOOLS',
+    description: 'Validate credit and debit card numbers using the Luhn algorithm online for free. Identify card type (Visa, Mastercard, RuPay, Amex) and check validity.',
+    keywords: ['credit card validator', 'card number validator', 'luhn algorithm checker', 'debit card validator', 'rupay card validator', 'ishu tools card validator', 'card number check free india'],
+    h1: 'Credit Card Validator — Luhn Algorithm Check Free',
+    faq: [
+      { question: 'How do I validate a credit card number?', answer: 'Enter any credit or debit card number in ISHU TOOLS Card Validator to check it against the Luhn algorithm and identify the card type for free.' },
+    ],
+  },
+  'ifsc-code-finder': {
+    title: 'IFSC Code Finder Online Free — Find Bank IFSC Code India | ISHU TOOLS',
+    description: 'Find IFSC code of any bank branch in India online for free. Search by bank name, state, and city. Supports SBI, HDFC, ICICI, Axis, PNB, and all Indian banks.',
+    keywords: ['ifsc code finder', 'find ifsc code', 'bank ifsc code', 'ifsc code india', 'sbi ifsc code', 'hdfc ifsc code', 'bank branch ifsc', 'ishu tools ifsc', 'ifsc code search free india'],
+    h1: 'IFSC Code Finder — Find Bank Branch Code Free',
+    faq: [
+      { question: 'How do I find an IFSC code for my bank branch?', answer: 'Use ISHU TOOLS IFSC Code Finder to search by bank name, state, and city to find the IFSC code for any branch in India for free.' },
+      { question: 'What is IFSC code used for?', answer: 'IFSC (Indian Financial System Code) is an 11-character code used for NEFT, RTGS, and IMPS transfers to uniquely identify bank branches in India.' },
+    ],
+  },
+  'salary-hike-calculator': {
+    title: 'Salary Hike Calculator Online Free — New Salary After Increment | ISHU TOOLS',
+    description: 'Calculate new salary after hike percentage, yearly increase, and bonus impact online for free. Essential for salary negotiations and appraisal planning in India.',
+    keywords: ['salary hike calculator', 'salary increment calculator', 'new salary after hike', 'pay raise calculator', 'appraisal calculator india', 'ishu tools salary calculator', 'salary increase free india'],
+    h1: 'Salary Hike Calculator — New Salary After Increment Free',
+    faq: [
+      { question: 'How do I calculate my new salary after a hike?', answer: 'Enter your current salary and hike percentage in ISHU TOOLS Salary Hike Calculator to see your new salary, monthly increase, and yearly difference for free.' },
+    ],
+  },
+  'loan-prepayment-calculator': {
+    title: 'Loan Prepayment Calculator Online Free — Save Interest | ISHU TOOLS',
+    description: 'Calculate how much interest and time you save by making loan prepayments online for free. Works for home, car, and personal loans in India.',
+    keywords: ['loan prepayment calculator', 'prepayment savings calculator', 'home loan prepayment', 'car loan prepayment india', 'loan foreclosure calculator', 'ishu tools prepayment', 'interest saving calculator india'],
+    h1: 'Loan Prepayment Calculator — Calculate Interest Savings Free',
+    faq: [
+      { question: 'How much do I save by prepaying my loan?', answer: 'Enter your loan details and prepayment amount in ISHU TOOLS Prepayment Calculator to see total interest saved and reduced tenure for free.' },
+    ],
+  },
+  'recurring-deposit-calculator': {
+    title: 'RD Calculator India Online Free — Recurring Deposit Maturity | ISHU TOOLS',
+    description: 'Calculate RD maturity amount, total deposits, and interest earned from monthly recurring deposits online for free. Works for all Indian banks and post office RD.',
+    keywords: ['rd calculator india', 'recurring deposit calculator', 'rd maturity calculator', 'post office rd calculator', 'bank rd calculator free', 'ishu tools rd calculator', 'recurring deposit india'],
+    h1: 'RD Calculator India — Recurring Deposit Maturity Free',
+    faq: [
+      { question: 'How do I calculate RD maturity amount?', answer: 'Enter monthly deposit amount, interest rate, and tenure in ISHU TOOLS RD Calculator to get maturity amount and interest earned for free.' },
+    ],
+  },
+  'loan-eligibility-calculator': {
+    title: 'Loan Eligibility Calculator Online Free — Check Loan Amount India | ISHU TOOLS',
+    description: 'Estimate home, car, or personal loan eligibility from monthly income and existing EMIs online for free. Essential tool for loan applicants in India.',
+    keywords: ['loan eligibility calculator', 'home loan eligibility', 'personal loan eligibility india', 'car loan eligibility', 'check loan amount free', 'ishu tools loan eligibility', 'how much loan can i get india'],
+    h1: 'Loan Eligibility Calculator — Check Loan Amount Free',
+    faq: [
+      { question: 'How much loan can I get based on my salary?', answer: 'Enter your monthly income and existing EMIs in ISHU TOOLS Loan Eligibility Calculator to estimate your maximum loan amount for home, car, or personal loans.' },
+    ],
+  },
+  'expense-splitter': {
+    title: 'Expense Splitter Online Free — Split Bills with Friends | ISHU TOOLS',
+    description: 'Split bills and shared expenses between friends, roommates, trips, and groups online for free. Calculate who owes what and simplify group payments.',
+    keywords: ['expense splitter', 'bill splitter free', 'split bills friends', 'group expense calculator', 'trip expense splitter', 'ishu tools expense splitter', 'bill split india', 'roommate expense split'],
+    h1: 'Expense Splitter — Split Bills with Friends Free',
+    faq: [
+      { question: 'How do I split expenses with friends?', answer: 'Enter all expenses and participants in ISHU TOOLS Expense Splitter to see exactly who owes what for trips, dinners, and shared costs for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  HEALTH TOOLS
+  // ════════════════════════════════════════════════
+  'pace-calculator': {
+    title: 'Running Pace Calculator Online Free — Km/Mile Running Speed | ISHU TOOLS',
+    description: 'Calculate running pace per km or mile, speed in km/h and mph, and estimated race finish time online for free. Perfect for runners, athletes, and fitness enthusiasts in India.',
+    keywords: ['running pace calculator', 'pace calculator km', 'running speed calculator', 'race time calculator', 'marathon pace calculator', 'ishu tools pace calculator', 'running calculator india'],
+    h1: 'Running Pace Calculator — Speed & Time Free',
+    faq: [
+      { question: 'How do I calculate my running pace?', answer: 'Enter your distance and time in ISHU TOOLS Running Pace Calculator to get pace per km/mile, speed in km/h and mph, and estimated race finish time for free.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  TEXT OPS TOOLS
+  // ════════════════════════════════════════════════
+  'braille-converter': {
+    title: 'Braille Converter Online Free — Text to Braille | ISHU TOOLS',
+    description: 'Convert English text to Grade 1 Braille symbols online for free. Educational tool for learning Braille and accessibility awareness.',
+    keywords: ['braille converter', 'text to braille', 'braille online free', 'english to braille', 'learn braille', 'ishu tools braille', 'braille education tool', 'accessibility braille'],
+    h1: 'Braille Converter — Text to Braille Online Free',
+    faq: [
+      { question: 'How do I convert text to Braille?', answer: 'Enter your English text in ISHU TOOLS Braille Converter and see the Grade 1 Braille symbol representation instantly for free.' },
+    ],
+  },
+
   'pan-validator': {
     title: 'PAN Card Validator India — PAN Number Verification Online Free | ISHU TOOLS',
     description: 'Validate Indian PAN card number online instantly. Check PAN format, identify holder type (individual, company, HUF, trust), and verify PAN compliance. Free PAN checker.',
