@@ -3215,6 +3215,299 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How to split a large text file?', answer: 'Upload your text file on ISHU TOOLS Split Text File. Choose split method (by lines or size). Click Run to split it into smaller parts. Download each part separately.' },
     ],
   },
+
+  // ════════════════════════════════════════════════
+  //  IMAGE FORMAT CONVERSION TOOLS (NEW)
+  // ════════════════════════════════════════════════
+  'png-to-webp': {
+    title: 'PNG to WebP Converter — Free Online | ISHU TOOLS',
+    description: 'Convert PNG to WebP format free online. Reduce image size by 30% without losing quality. Faster websites with WebP. No signup needed.',
+    keywords: ['png to webp', 'convert png to webp', 'png webp converter', 'webp format', 'image to webp', 'ishu tools png webp', 'ishu png to webp', 'online png webp', 'free png to webp'],
+    h1: 'PNG to WebP — Convert Free Online',
+    faq: [
+      { question: 'Why convert PNG to WebP?', answer: 'WebP files are typically 25-35% smaller than PNG while maintaining the same quality, making your website load faster.' },
+      { question: 'Does WebP support transparency?', answer: 'Yes, WebP supports transparency like PNG, making it a great replacement for PNGs on the web.' },
+    ],
+  },
+  'jpg-to-webp': {
+    title: 'JPG to WebP Converter — Free Online | ISHU TOOLS',
+    description: 'Convert JPG/JPEG to WebP format free online. Smaller file sizes, faster loading. Free, no signup, no watermark.',
+    keywords: ['jpg to webp', 'jpeg to webp', 'convert jpg webp', 'jpg webp online', 'image webp converter', 'ishu jpg to webp', 'free jpg webp'],
+    h1: 'JPG to WebP — Free Online Converter',
+    faq: [
+      { question: 'How much smaller is WebP than JPG?', answer: 'WebP images are typically 25-34% smaller than JPEG images at equivalent visual quality.' },
+    ],
+  },
+  'gif-to-jpg': {
+    title: 'GIF to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert GIF images to JPG format online free. Extract first frame and save as JPEG. Fast, simple, no signup.',
+    keywords: ['gif to jpg', 'gif to jpeg', 'convert gif jpg', 'gif image convert', 'ishu gif to jpg', 'free gif jpg'],
+    h1: 'GIF to JPG — Free Online Converter',
+    faq: [],
+  },
+  'tiff-to-jpg': {
+    title: 'TIFF to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert TIFF/TIF images to JPG format free. Reduce large TIFF file sizes instantly. No software needed.',
+    keywords: ['tiff to jpg', 'tif to jpg', 'tiff to jpeg', 'convert tiff jpg', 'tiff image converter', 'ishu tiff to jpg'],
+    h1: 'TIFF to JPG — Free Online Converter',
+    faq: [],
+  },
+  'bmp-to-jpg': {
+    title: 'BMP to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert BMP bitmap images to JPG format free online. Drastically reduces file sizes. No signup required.',
+    keywords: ['bmp to jpg', 'bitmap to jpg', 'bmp to jpeg', 'convert bmp', 'bmp image converter', 'ishu bmp to jpg'],
+    h1: 'BMP to JPG — Free Online Converter',
+    faq: [],
+  },
+  'svg-to-png': {
+    title: 'SVG to PNG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert SVG vector graphics to high-resolution PNG free online. Set custom scale (1x, 2x, 4x). No software needed.',
+    keywords: ['svg to png', 'convert svg png', 'svg image converter', 'vector to png', 'svg to raster', 'ishu svg to png', 'free svg png'],
+    h1: 'SVG to PNG — High Resolution Converter Free',
+    faq: [
+      { question: 'Can I set the resolution of the PNG output?', answer: 'Yes, you can set the scale factor (e.g., 2x for double resolution) for higher quality PNG output.' },
+    ],
+  },
+  'image-to-jpg': {
+    title: 'Image to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert any image to JPG free online — PNG, GIF, BMP, WebP, TIFF, HEIC all supported. Fast, no signup.',
+    keywords: ['image to jpg', 'convert to jpg', 'image to jpeg', 'png to jpg', 'webp to jpg', 'convert image jpg', 'ishu image to jpg', 'free image jpg'],
+    h1: 'Image to JPG — Convert Any Format Free',
+    faq: [
+      { question: 'Which image formats are supported?', answer: 'PNG, GIF, BMP, WebP, TIFF, HEIC, SVG, and most other common image formats.' },
+    ],
+  },
+  'png-to-jpg': {
+    title: 'PNG to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert PNG images to JPG format free. Removes transparency with white background. No signup, no watermark.',
+    keywords: ['png to jpg', 'png to jpeg', 'convert png jpg', 'png jpg online', 'ishu png to jpg', 'free png jpg'],
+    h1: 'PNG to JPG — Free Online Converter',
+    faq: [],
+  },
+  'webp-to-jpg': {
+    title: 'WebP to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert WebP images to JPG format free online. Better compatibility across all platforms and devices.',
+    keywords: ['webp to jpg', 'webp to jpeg', 'convert webp jpg', 'webp image converter', 'ishu webp to jpg', 'free webp jpg'],
+    h1: 'WebP to JPG — Free Online Converter',
+    faq: [],
+  },
+  'heic-to-jpg': {
+    title: 'HEIC to JPG Converter — Free Online | ISHU TOOLS',
+    description: 'Convert iPhone HEIC photos to JPG format free online. Compatible with all devices. No software needed.',
+    keywords: ['heic to jpg', 'heif to jpg', 'iphone photo to jpg', 'heic jpeg converter', 'apple photo convert', 'ishu heic to jpg', 'free heic jpg'],
+    h1: 'HEIC to JPG — iPhone Photo Converter Free',
+    faq: [
+      { question: 'What is HEIC format?', answer: "HEIC (High Efficiency Image Container) is Apple's image format used by iPhones. It offers better compression than JPG but has limited compatibility." },
+    ],
+  },
+  'circle-crop': {
+    title: 'Circle Crop Image — Free Online | ISHU TOOLS',
+    description: 'Crop any image into a perfect circle shape free online. Perfect for profile pictures, avatars, and social media. Transparent background supported.',
+    keywords: ['circle crop', 'crop image circle', 'round image crop', 'circular crop', 'profile picture crop', 'avatar crop', 'ishu circle crop', 'circle image online'],
+    h1: 'Circle Crop Image — Round Crop Free Online',
+    faq: [
+      { question: 'Does the circle crop support transparent backgrounds?', answer: 'Yes, PNG output includes a transparent background. JPG output uses a white background.' },
+    ],
+  },
+  'add-text-to-image': {
+    title: 'Add Text to Image — Free Online | ISHU TOOLS',
+    description: 'Add custom text overlays to any image online free. Choose font size, color, position, and opacity. No Photoshop needed.',
+    keywords: ['add text to image', 'image text overlay', 'caption image', 'text on photo', 'add caption', 'photo text editor', 'ishu add text image', 'text overlay free'],
+    h1: 'Add Text to Image — Free Online Editor',
+    faq: [
+      { question: 'Can I control where text appears on the image?', answer: 'Yes, choose from 7 positions: center, top-left, top-center, top-right, bottom-left, bottom-center, or bottom-right.' },
+    ],
+  },
+  'compress-image-to-kb': {
+    title: 'Compress Image to KB — Target Size Free | ISHU TOOLS',
+    description: 'Compress images to a specific target size in KB free online. Perfect for government forms, exam portals, and job applications requiring exact file sizes.',
+    keywords: ['compress image to kb', 'reduce image to kb', 'image size reducer kb', 'compress photo to kb', 'image kb compressor', 'ishu compress kb', 'photo kb reducer'],
+    h1: 'Compress Image to KB — Target File Size Free',
+    faq: [
+      { question: 'What is the minimum target size I can compress to?', answer: 'You can compress to any target size in KB. Very small targets (under 10KB) may affect image quality.' },
+    ],
+  },
+  'reduce-image-size-kb': {
+    title: 'Reduce Image Size in KB — Free Online | ISHU TOOLS',
+    description: 'Reduce image file size to specific KB online free. Useful for SSC, government form, and university submission requirements.',
+    keywords: ['reduce image size kb', 'compress to kb', 'image kb reduction', 'reduce photo kb', 'ishu reduce kb', 'government form photo kb', 'ssc photo kb'],
+    h1: 'Reduce Image Size in KB — Free Online',
+    faq: [],
+  },
+  'increase-image-size-kb': {
+    title: 'Increase Image Size in KB — Free Online | ISHU TOOLS',
+    description: 'Increase image file size to meet minimum KB requirements online free. Upscales image to reach target size.',
+    keywords: ['increase image size kb', 'enlarge image kb', 'boost image file size', 'image kb increaser', 'ishu increase kb'],
+    h1: 'Increase Image Size in KB — Free Online',
+    faq: [],
+  },
+  'dpi-checker': {
+    title: 'Image DPI Checker — Check Image Resolution Free | ISHU TOOLS',
+    description: 'Check the DPI (dots per inch) resolution of any image online free. See width, height, print dimensions, and quality class.',
+    keywords: ['dpi checker', 'check image dpi', 'image resolution checker', 'dots per inch', 'print resolution checker', 'image dpi tool', 'ishu dpi checker'],
+    h1: 'Image DPI Checker — Check Resolution Free',
+    faq: [
+      { question: 'What DPI do I need for printing?', answer: '300 DPI is standard for high-quality print. 72-96 DPI is for screen/web use.' },
+    ],
+  },
+  'change-dpi': {
+    title: 'Change Image DPI — Set DPI Online Free | ISHU TOOLS',
+    description: 'Change the DPI of any image online free. Set to 72, 150, 300, or 600 DPI for screen or print-ready output.',
+    keywords: ['change dpi', 'set image dpi', 'dpi changer', '300 dpi image', 'print dpi', 'image dpi setter', 'ishu change dpi'],
+    h1: 'Change Image DPI — Set Custom DPI Free',
+    faq: [
+      { question: 'Does changing DPI affect image quality?', answer: 'Changing metadata DPI does not affect pixel data. For true resolution change, the image needs to be resampled.' },
+    ],
+  },
+  'photo-collage': {
+    title: 'Photo Collage Maker — Free Online | ISHU TOOLS',
+    description: 'Create beautiful photo collages online free. Upload 2-50+ images, set grid columns, thumbnail size, and background color.',
+    keywords: ['photo collage maker', 'image collage', 'collage maker online', 'photo grid maker', 'picture collage', 'ishu photo collage', 'free collage maker'],
+    h1: 'Photo Collage Maker — Grid Collage Free',
+    faq: [
+      { question: 'How many photos can I add to the collage?', answer: 'You can add up to 50 images at once. The grid is automatically arranged based on your chosen column count.' },
+    ],
+  },
+  'view-image-metadata': {
+    title: 'View Image Metadata — EXIF Viewer Free | ISHU TOOLS',
+    description: 'View EXIF metadata, DPI, dimensions, file size, and format info of any image free online. No signup needed.',
+    keywords: ['image metadata viewer', 'exif viewer', 'image info', 'photo metadata', 'exif data viewer', 'view exif', 'ishu metadata viewer'],
+    h1: 'View Image Metadata — EXIF Viewer Free',
+    faq: [
+      { question: 'What metadata can I view?', answer: 'You can see image dimensions, DPI, file size, format, color mode, and full EXIF data including camera settings if available.' },
+    ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  TEXT & UTILITY TOOLS (NEW)
+  // ════════════════════════════════════════════════
+  'epoch-converter': {
+    title: 'Epoch Time Converter — Unix Timestamp Online Free | ISHU TOOLS',
+    description: 'Convert Unix epoch timestamps to human dates and vice versa. Supports milliseconds. Free online, instant results.',
+    keywords: ['epoch converter', 'unix timestamp converter', 'epoch to date', 'timestamp to date', 'unix time converter', 'ishu epoch converter'],
+    h1: 'Epoch Time Converter — Unix Timestamp Free',
+    faq: [
+      { question: 'What is a Unix epoch timestamp?', answer: 'Unix time (epoch) is the number of seconds elapsed since January 1, 1970, UTC. It is used universally in programming.' },
+    ],
+  },
+  'fancy-text-generator': {
+    title: 'Fancy Text Generator — Stylish Unicode Text Free | ISHU TOOLS',
+    description: 'Generate fancy Unicode text styles — bold, italic, bubble, strikethrough, upside-down for Instagram, WhatsApp, and social media.',
+    keywords: ['fancy text generator', 'stylish text', 'unicode text', 'bold text generator', 'cool text', 'instagram font', 'ishu fancy text'],
+    h1: 'Fancy Text Generator — Stylish Text Free',
+    faq: [
+      { question: 'Can I use fancy text on Instagram and WhatsApp?', answer: 'Yes, the Unicode characters work on Instagram, WhatsApp, Twitter, Facebook, and most social media platforms.' },
+    ],
+  },
+  'json-path-finder': {
+    title: 'JSONPath Finder — Query JSON Online Free | ISHU TOOLS',
+    description: 'Query JSON data using JSONPath expressions online free. Extract nested values, arrays, and objects with ease.',
+    keywords: ['jsonpath', 'json path finder', 'json query', 'jsonpath online', 'json extractor', 'ishu jsonpath'],
+    h1: 'JSONPath Finder — Query JSON Free Online',
+    faq: [],
+  },
+  'line-counter': {
+    title: 'Line Counter — Count Lines & Words Online Free | ISHU TOOLS',
+    description: 'Count total lines, non-empty lines, blank lines, words, and characters in any text online free.',
+    keywords: ['line counter', 'count lines', 'line count tool', 'text line counter', 'word counter lines', 'ishu line counter'],
+    h1: 'Line Counter — Count Lines & Words Free',
+    faq: [],
+  },
+  'morse-to-text': {
+    title: 'Morse Code Decoder — Morse to Text Free | ISHU TOOLS',
+    description: 'Decode Morse code to readable text online free. Supports dots and dashes format. Instant results.',
+    keywords: ['morse code decoder', 'morse to text', 'decode morse', 'morse translator', 'ishu morse decoder'],
+    h1: 'Morse Code to Text — Decode Free Online',
+    faq: [
+      { question: 'How do I format Morse code for decoding?', answer: 'Separate letters with single spaces and words with 3 spaces. Example: ".... . .-.. .-.. ---" for HELLO.' },
+    ],
+  },
+  'text-to-morse': {
+    title: 'Text to Morse Code — Encode Text Free | ISHU TOOLS',
+    description: 'Encode any text to Morse code online free. Converts all letters and numbers to Morse code dots and dashes.',
+    keywords: ['text to morse', 'morse encoder', 'convert to morse', 'morse code generator', 'ishu text to morse'],
+    h1: 'Text to Morse Code — Encoder Free Online',
+    faq: [],
+  },
+  'nato-alphabet': {
+    title: 'NATO Phonetic Alphabet — Converter Free | ISHU TOOLS',
+    description: 'Convert text to NATO phonetic alphabet (Alpha, Bravo, Charlie) online free. Perfect for radio communication and clarity.',
+    keywords: ['nato alphabet', 'phonetic alphabet', 'nato phonetic converter', 'radio alphabet', 'military alphabet', 'ishu nato alphabet'],
+    h1: 'NATO Phonetic Alphabet — Converter Free',
+    faq: [],
+  },
+  'number-to-roman': {
+    title: 'Number to Roman Numerals — Converter Free | ISHU TOOLS',
+    description: 'Convert Arabic numbers to Roman numerals online free. Supports 1 to 3999. Instant results with no signup.',
+    keywords: ['number to roman', 'arabic to roman', 'roman numeral converter', 'convert to roman', 'ishu roman numerals'],
+    h1: 'Number to Roman Numerals — Free Converter',
+    faq: [],
+  },
+  'roman-to-number': {
+    title: 'Roman Numerals to Number — Converter Free | ISHU TOOLS',
+    description: 'Convert Roman numerals to Arabic numbers online free. Decode any Roman numeral instantly.',
+    keywords: ['roman to number', 'roman numeral decoder', 'convert roman numerals', 'roman arabic', 'ishu roman to number'],
+    h1: 'Roman Numerals to Number — Free Converter',
+    faq: [],
+  },
+  'octal-to-text': {
+    title: 'Octal to Text — Converter Free Online | ISHU TOOLS',
+    description: 'Convert octal values to readable text online free. Decode octal encoded strings instantly.',
+    keywords: ['octal to text', 'octal decoder', 'octal converter', 'base 8 to text', 'ishu octal to text'],
+    h1: 'Octal to Text — Free Online Decoder',
+    faq: [],
+  },
+  'text-to-octal': {
+    title: 'Text to Octal — Converter Free Online | ISHU TOOLS',
+    description: 'Convert any text to octal (base-8) values online free. Encode strings in octal format instantly.',
+    keywords: ['text to octal', 'octal encoder', 'octal converter', 'base 8 encode', 'ishu text to octal'],
+    h1: 'Text to Octal — Free Online Encoder',
+    faq: [],
+  },
+  'pig-latin': {
+    title: 'Pig Latin Translator — Free Online | ISHU TOOLS',
+    description: 'Translate English text to Pig Latin online free. Fun word scrambler for language games.',
+    keywords: ['pig latin', 'pig latin translator', 'pig latin converter', 'word game', 'fun text', 'ishu pig latin'],
+    h1: 'Pig Latin Translator — Free Online',
+    faq: [],
+  },
+  'text-repeat': {
+    title: 'Text Repeater — Repeat Text Online Free | ISHU TOOLS',
+    description: 'Repeat any text a custom number of times online free. Choose separator (newline, comma, space). Instant results.',
+    keywords: ['text repeater', 'repeat text', 'text multiplier', 'duplicate text', 'ishu text repeater'],
+    h1: 'Text Repeater — Repeat Text Free Online',
+    faq: [],
+  },
+  'random-color-generator': {
+    title: 'Random Color Generator — HEX RGB HSL Free | ISHU TOOLS',
+    description: 'Generate random colors with HEX, RGB, and HSL values online free. Great for design inspiration and prototyping.',
+    keywords: ['random color generator', 'random hex color', 'color palette generator', 'random rgb', 'ishu random color', 'color inspiration'],
+    h1: 'Random Color Generator — HEX RGB HSL Free',
+    faq: [],
+  },
+  'string-hash': {
+    title: 'String Hash Generator — MD5 SHA256 Free | ISHU TOOLS',
+    description: 'Generate MD5, SHA1, SHA256, SHA512, and CRC32 hashes from any text string online free.',
+    keywords: ['string hash', 'hash generator', 'md5 hash', 'sha256 hash', 'sha1 hash', 'checksum generator', 'ishu hash generator'],
+    h1: 'String Hash Generator — MD5 SHA256 Free',
+    faq: [],
+  },
+  'text-to-ascii-art': {
+    title: 'Text to ASCII Art — ASCII Banner Generator Free | ISHU TOOLS',
+    description: 'Convert text to ASCII art banners online free. Multiple font styles including standard, big, block, slant, and bubble.',
+    keywords: ['text to ascii art', 'ascii art generator', 'ascii banner', 'figlet online', 'text banner', 'ishu ascii art', 'ascii text generator'],
+    h1: 'Text to ASCII Art — Banner Generator Free',
+    faq: [
+      { question: 'What font styles are available?', answer: 'Standard, Big, Block, Bubble, Slant, Banner, and Digital font styles are available.' },
+    ],
+  },
+  'whitespace-remover': {
+    title: 'Whitespace Remover — Clean Text Online Free | ISHU TOOLS',
+    description: 'Remove extra whitespace, leading/trailing spaces, or collapse all spaces in text online free. Clean text instantly.',
+    keywords: ['whitespace remover', 'remove spaces', 'trim whitespace', 'extra space remover', 'clean text tool', 'ishu whitespace remover'],
+    h1: 'Whitespace Remover — Clean Text Free Online',
+    faq: [],
+  },
 }
 
 /**

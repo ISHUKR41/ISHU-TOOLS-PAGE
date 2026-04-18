@@ -1843,6 +1843,199 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'task', label: 'Work / Achievement', type: 'textarea', placeholder: 'Built a dashboard that tracked weekly study progress' },
     { name: 'metric', label: 'Metric / Result', type: 'text', placeholder: 'reduced manual work by 40%' },
   ],
+
+  // ─── Image Plus Tools ────────────────────────────────────────────────────────
+  'png-to-webp': [
+    { name: 'quality', label: 'Quality (1-100)', type: 'number', defaultValue: '85' },
+  ],
+  'jpg-to-webp': [
+    { name: 'quality', label: 'Quality (1-100)', type: 'number', defaultValue: '85' },
+  ],
+  'jpeg-to-webp': [
+    { name: 'quality', label: 'Quality (1-100)', type: 'number', defaultValue: '85' },
+  ],
+  'gif-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality', type: 'number', defaultValue: '90' },
+  ],
+  'tiff-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality', type: 'number', defaultValue: '90' },
+  ],
+  'bmp-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality', type: 'number', defaultValue: '90' },
+  ],
+  'svg-to-png': [
+    { name: 'scale', label: 'Scale Factor (1x = original, 2x = double)', type: 'number', defaultValue: '2.0' },
+  ],
+  'image-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality (1-100)', type: 'number', defaultValue: '92' },
+  ],
+  'png-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality (1-100)', type: 'number', defaultValue: '92' },
+  ],
+  'webp-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality (1-100)', type: 'number', defaultValue: '92' },
+  ],
+  'heic-to-jpg': [
+    { name: 'quality', label: 'JPEG Quality (1-100)', type: 'number', defaultValue: '90' },
+  ],
+  'circle-crop': [
+    {
+      name: 'format',
+      label: 'Output Format',
+      type: 'select',
+      defaultValue: 'png',
+      options: [
+        { label: 'PNG (transparent background)', value: 'png' },
+        { label: 'JPG (white background)', value: 'jpg' },
+      ],
+    },
+  ],
+  'add-text-to-image': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'ISHU TOOLS', defaultValue: 'ISHU TOOLS' },
+    { name: 'font_size', label: 'Font Size', type: 'number', defaultValue: '36' },
+    { name: 'color', label: 'Text Color (HEX)', type: 'text', defaultValue: '#ffffff' },
+    {
+      name: 'position',
+      label: 'Position',
+      type: 'select',
+      defaultValue: 'center',
+      options: [
+        { label: 'Center', value: 'center' },
+        { label: 'Top Left', value: 'top-left' },
+        { label: 'Top Center', value: 'top-center' },
+        { label: 'Top Right', value: 'top-right' },
+        { label: 'Bottom Left', value: 'bottom-left' },
+        { label: 'Bottom Center', value: 'bottom-center' },
+        { label: 'Bottom Right', value: 'bottom-right' },
+      ],
+    },
+    { name: 'opacity', label: 'Opacity (0.0–1.0)', type: 'number', defaultValue: '0.9' },
+  ],
+  'compress-image-to-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
+  ],
+  'reduce-image-size-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
+  ],
+  'increase-image-size-kb': [
+    { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '500' },
+  ],
+  'dpi-checker': [],
+  'change-dpi': [
+    { name: 'dpi', label: 'DPI Value', type: 'number', defaultValue: '300' },
+  ],
+  'photo-collage': [
+    { name: 'cols', label: 'Columns', type: 'number', defaultValue: '3' },
+    { name: 'thumb_size', label: 'Thumbnail Size (px)', type: 'number', defaultValue: '400' },
+    { name: 'gap', label: 'Gap Between Images (px)', type: 'number', defaultValue: '8' },
+    { name: 'bg_color', label: 'Background Color (HEX)', type: 'text', defaultValue: '#1a1a2e' },
+  ],
+  'view-image-metadata': [],
+
+  // ─── Text / Utility tools (newly added to registry) ─────────────────────────
+  'epoch-converter': [
+    {
+      name: 'mode',
+      label: 'Conversion Mode',
+      type: 'select',
+      defaultValue: 'to_human',
+      options: [
+        { label: 'Epoch → Human Date', value: 'to_human' },
+        { label: 'Human Date → Epoch', value: 'to_epoch' },
+      ],
+    },
+    { name: 'value', label: 'Value', type: 'text', placeholder: '1700000000 or 2024-11-14T22:13:20' },
+  ],
+  'fancy-text-generator': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'Type your name or message...' },
+  ],
+  'json-path-finder': [
+    { name: 'json', label: 'JSON', type: 'textarea', placeholder: '{"user": {"name": "Ishu", "age": 21}}' },
+    { name: 'path', label: 'JSONPath Expression', type: 'text', placeholder: '$.user.name', defaultValue: '$' },
+  ],
+  'line-counter': [
+    { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste your text here...' },
+  ],
+  'morse-to-text': [
+    { name: 'morse', label: 'Morse Code', type: 'textarea', placeholder: '.... . .-.. .-.. ---   .-- --- .-. .-.. -..' },
+  ],
+  'text-to-morse': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'HELLO WORLD' },
+  ],
+  'nato-alphabet': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'Type letters...' },
+  ],
+  'number-to-roman': [
+    { name: 'number', label: 'Number (1–3999)', type: 'number', defaultValue: '2024' },
+  ],
+  'roman-to-number': [
+    { name: 'roman', label: 'Roman Numeral', type: 'text', placeholder: 'MMXXIV' },
+  ],
+  'octal-to-text': [
+    { name: 'octal', label: 'Octal Values (space-separated)', type: 'textarea', placeholder: '110 145 154 154 157' },
+  ],
+  'text-to-octal': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'Hello' },
+  ],
+  'pig-latin': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'Hello world' },
+  ],
+  'text-repeat': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'Repeat this text' },
+    { name: 'count', label: 'Repeat Count', type: 'number', defaultValue: '3' },
+    {
+      name: 'separator',
+      label: 'Separator',
+      type: 'select',
+      defaultValue: '\n',
+      options: [
+        { label: 'New Line', value: '\n' },
+        { label: 'Comma', value: ', ' },
+        { label: 'Space', value: ' ' },
+        { label: 'None', value: '' },
+      ],
+    },
+  ],
+  'random-color-generator': [
+    { name: 'count', label: 'Number of Colors', type: 'number', defaultValue: '5' },
+  ],
+  'string-hash': [
+    { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Enter text to hash...' },
+  ],
+  'text-to-ascii-art': [
+    { name: 'text', label: 'Text', type: 'text', placeholder: 'ISHU', defaultValue: 'ISHU' },
+    {
+      name: 'style',
+      label: 'Font Style',
+      type: 'select',
+      defaultValue: 'standard',
+      options: [
+        { label: 'Standard', value: 'standard' },
+        { label: 'Big', value: 'big' },
+        { label: 'Block', value: 'block' },
+        { label: 'Bubble', value: 'bubble' },
+        { label: 'Slant', value: 'slant' },
+        { label: 'Banner', value: 'banner' },
+        { label: 'Digital', value: 'digital' },
+      ],
+    },
+  ],
+  'whitespace-remover': [
+    { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste text with extra spaces...' },
+    {
+      name: 'mode',
+      label: 'Remove Mode',
+      type: 'select',
+      defaultValue: 'all',
+      options: [
+        { label: 'All Whitespace (collapse to single space)', value: 'all' },
+        { label: 'Leading Spaces', value: 'leading' },
+        { label: 'Trailing Spaces', value: 'trailing' },
+        { label: 'Extra Spaces (keep single spaces)', value: 'extra' },
+        { label: 'All Line Whitespace (trim each line)', value: 'all_lines' },
+      ],
+    },
+  ],
 }
 
 export function getToolFields(slug: string): ToolField[] {

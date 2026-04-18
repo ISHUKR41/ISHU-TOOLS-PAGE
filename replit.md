@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 449 tools across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 485+ tools across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -14,8 +14,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
-  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py`
-  - 449 raw registry entries, 422 unique tool slugs, and 439 available backend handlers
+  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py`
+  - 485+ raw registry entries and **456 available backend handlers**
 
 ## Key Files
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)

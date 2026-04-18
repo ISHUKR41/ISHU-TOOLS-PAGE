@@ -6453,3 +6453,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load extra_tools_handlers: {e}")
 
 print(f"[handlers] GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge image-plus handlers (format conversions, circle-crop, DPI, collage, etc.)
+try:
+    from .image_plus_handlers import IMAGE_PLUS_HANDLERS
+    HANDLERS.update(IMAGE_PLUS_HANDLERS)
+    print(f"[handlers] Loaded {len(IMAGE_PLUS_HANDLERS)} image-plus handlers (format/dpi/collage/text-utils)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load image_plus_handlers: {e}")
+
+print(f"[handlers] ULTIMATE TOTAL registered handlers: {len(HANDLERS)}")
