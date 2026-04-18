@@ -1156,7 +1156,7 @@ def _handle_sip_calculator_india(files: list[Path], payload: dict[str, Any], job
 
     return ExecutionResult(
         kind="json",
-        message=f"✅ SIP maturity: ₹{maturity:,.2f} | Wealth gain: ₹{gains:,.2f}",
+        message=f"SIP maturity: ₹{maturity:,.2f} | Wealth gain: ₹{gains:,.2f}",
         data={
             "monthly_investment": round(monthly, 2),
             "annual_return_percent": annual_return,
@@ -1210,7 +1210,7 @@ def _handle_income_tax_calculator_india(files: list[Path], payload: dict[str, An
 
     return ExecutionResult(
         kind="json",
-        message=f"✅ Estimated tax ({regime} regime): ₹{total_tax:,.2f}/year",
+        message=f"Estimated tax ({regime} regime): ₹{total_tax:,.2f}/year",
         data={
             "regime": regime,
             "annual_income": round(income, 2),
@@ -1236,7 +1236,7 @@ def _handle_salary_hike_calculator(files: list[Path], payload: dict[str, Any], j
     increase = new_salary - current
     return ExecutionResult(
         kind="json",
-        message=f"✅ New salary: ₹{new_salary:,.2f} | Increase: ₹{increase:,.2f}",
+        message=f"New salary: ₹{new_salary:,.2f} | Increase: ₹{increase:,.2f}",
         data={"current_salary": round(current, 2), "hike_percent": hike_percent, "bonus": round(bonus, 2), "new_salary": round(new_salary, 2), "increase": round(increase, 2), "monthly_new_salary": round(new_salary / 12, 2)},
     )
 
@@ -1253,7 +1253,7 @@ def _handle_discount_calculator(files: list[Path], payload: dict[str, Any], job_
     final_price = after_discount + tax_amount
     return ExecutionResult(
         kind="json",
-        message=f"✅ Final price: ₹{final_price:,.2f} | You save: ₹{saved:,.2f}",
+        message=f"Final price: ₹{final_price:,.2f} | You save: ₹{saved:,.2f}",
         data={"original_price": round(price, 2), "discount_percent": discount, "saved": round(saved, 2), "price_after_discount": round(after_discount, 2), "tax_percent": tax, "tax_amount": round(tax_amount, 2), "final_price": round(final_price, 2)},
     )
 
@@ -1280,8 +1280,161 @@ def _handle_loan_prepayment_calculator(files: list[Path], payload: dict[str, Any
     months_saved = max(0, tenure_months - new_months)
     return ExecutionResult(
         kind="json",
-        message=f"✅ Interest saved: ₹{interest_saved:,.2f} | Tenure reduced by {months_saved} months",
+        message=f"Interest saved: ₹{interest_saved:,.2f} | Tenure reduced by {months_saved} months",
         data={"emi": round(emi, 2), "original_interest": round(total_interest_original, 2), "prepayment": round(prepayment, 2), "new_principal": round(new_principal, 2), "new_tenure_months": new_months, "months_saved": months_saved, "interest_saved": round(interest_saved, 2)},
+    )
+
+
+def _handle_fixed_deposit_calculator_india(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    principal = float(payload.get("principal", payload.get("amount", 100000)))
+    annual_rate = float(payload.get("rate", payload.get("interest_rate", 7.0)))
+    years = float(payload.get("years", payload.get("tenure", 5)))
+    frequency = int(float(payload.get("compound_per_year", payload.get("frequency", 4))))
+    if principal <= 0 or annual_rate < 0 or years <= 0 or frequency <= 0:
+        return ExecutionResult(kind="json", message="Please enter valid FD amount, rate, tenure, and compounding frequency.", data={"error": "Invalid input"})
+    maturity = principal * (1 + annual_rate / (100 * frequency)) ** (frequency * years)
+    interest = maturity - principal
+    return ExecutionResult(
+        kind="json",
+        message=f"FD maturity: ₹{maturity:,.2f} | Interest earned: ₹{interest:,.2f}",
+        data={"principal": round(principal, 2), "annual_rate_percent": annual_rate, "years": years, "compound_per_year": frequency, "interest_earned": round(interest, 2), "maturity_value": round(maturity, 2)},
+    )
+
+
+def _handle_recurring_deposit_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    monthly = float(payload.get("monthly_deposit", payload.get("amount", 5000)))
+    annual_rate = float(payload.get("rate", payload.get("interest_rate", 6.5)))
+    months = int(float(payload.get("months", payload.get("tenure_months", 24))))
+    if monthly <= 0 or annual_rate < 0 or months <= 0:
+        return ExecutionResult(kind="json", message="Please enter valid monthly deposit, rate, and months.", data={"error": "Invalid input"})
+    quarterly_rate = annual_rate / 400
+    maturity = 0.0
+    for month in range(months):
+        quarters = (months - month) / 3
+        maturity += monthly * ((1 + quarterly_rate) ** quarters)
+    invested = monthly * months
+    interest = maturity - invested
+    return ExecutionResult(
+        kind="json",
+        message=f"RD maturity: ₹{maturity:,.2f} | Interest earned: ₹{interest:,.2f}",
+        data={"monthly_deposit": round(monthly, 2), "annual_rate_percent": annual_rate, "months": months, "total_deposit": round(invested, 2), "interest_earned": round(interest, 2), "maturity_value": round(maturity, 2)},
+    )
+
+
+def _handle_loan_eligibility_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    monthly_income = float(payload.get("monthly_income", 50000))
+    existing_emi = float(payload.get("existing_emi", 0))
+    annual_rate = float(payload.get("rate", 9))
+    tenure_months = int(float(payload.get("tenure_months", 240)))
+    foir_percent = float(payload.get("foir_percent", 50))
+    if monthly_income <= 0 or existing_emi < 0 or annual_rate <= 0 or tenure_months <= 0 or foir_percent <= 0:
+        return ExecutionResult(kind="json", message="Please enter valid income, EMI, rate, tenure, and FOIR.", data={"error": "Invalid input"})
+    max_total_emi = monthly_income * foir_percent / 100
+    available_emi = max(0, max_total_emi - existing_emi)
+    r = annual_rate / 12 / 100
+    eligible_loan = available_emi * ((1 + r) ** tenure_months - 1) / (r * (1 + r) ** tenure_months) if available_emi > 0 else 0
+    return ExecutionResult(
+        kind="json",
+        message=f"Estimated loan eligibility: ₹{eligible_loan:,.2f} | Available EMI: ₹{available_emi:,.2f}",
+        data={"monthly_income": round(monthly_income, 2), "existing_emi": round(existing_emi, 2), "foir_percent": foir_percent, "available_emi": round(available_emi, 2), "tenure_months": tenure_months, "annual_rate_percent": annual_rate, "eligible_loan_amount": round(eligible_loan, 2)},
+    )
+
+
+def _handle_expense_splitter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    total = float(payload.get("total_amount", payload.get("amount", 1000)))
+    people = int(float(payload.get("people", 4)))
+    tip_percent = float(payload.get("tip_percent", 0))
+    tax_percent = float(payload.get("tax_percent", 0))
+    if total < 0 or people <= 0 or tip_percent < 0 or tax_percent < 0:
+        return ExecutionResult(kind="json", message="Please enter valid bill amount, people count, tip, and tax.", data={"error": "Invalid input"})
+    tip = total * tip_percent / 100
+    tax = total * tax_percent / 100
+    grand_total = total + tip + tax
+    per_person = grand_total / people
+    return ExecutionResult(
+        kind="json",
+        message=f"Each person pays: ₹{per_person:,.2f} | Total: ₹{grand_total:,.2f}",
+        data={"bill_amount": round(total, 2), "tip_amount": round(tip, 2), "tax_amount": round(tax, 2), "grand_total": round(grand_total, 2), "people": people, "per_person": round(per_person, 2)},
+    )
+
+
+def _handle_upi_qr_generator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    upi_id = payload.get("upi_id", "").strip()
+    name = payload.get("name", "ISHU TOOLS").strip()
+    amount = payload.get("amount", "").strip()
+    note = payload.get("note", "Payment").strip()
+    if not re.match(r"^[\w.-]+@[\w.-]+$", upi_id):
+        return ExecutionResult(kind="json", message="Please enter a valid UPI ID like name@bank.", data={"error": "Invalid UPI ID"})
+    params = [f"pa={upi_id}", f"pn={name}", f"tn={note}", "cu=INR"]
+    if amount:
+        try:
+            if float(amount) <= 0:
+                raise ValueError
+            params.insert(2, f"am={amount}")
+        except ValueError:
+            return ExecutionResult(kind="json", message="Amount must be a valid positive number.", data={"error": "Invalid amount"})
+    import urllib.parse
+    import qrcode
+    uri = "upi://pay?" + urllib.parse.urlencode(dict(item.split("=", 1) for item in params))
+    img = qrcode.make(uri)
+    out_path = job_dir / "upi-qr.png"
+    img.save(str(out_path))
+    return ExecutionResult(kind="file", message="UPI QR code generated successfully.", output_path=out_path, filename="upi-qr.png", content_type="image/png")
+
+
+def _handle_wifi_qr_generator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    ssid = payload.get("ssid", "").strip()
+    password = payload.get("password", "").strip()
+    security = payload.get("security", "WPA").upper()
+    hidden = str(payload.get("hidden", "false")).lower() == "true"
+    if not ssid:
+        return ExecutionResult(kind="json", message="Please enter Wi-Fi network name (SSID).", data={"error": "SSID required"})
+    if security not in ("WPA", "WEP", "NOPASS"):
+        security = "WPA"
+    escaped_ssid = ssid.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace(":", "\\:")
+    escaped_password = password.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace(":", "\\:")
+    wifi_payload = f"WIFI:T:{security};S:{escaped_ssid};P:{escaped_password};H:{str(hidden).lower()};;"
+    import qrcode
+    img = qrcode.make(wifi_payload)
+    out_path = job_dir / "wifi-qr.png"
+    img.save(str(out_path))
+    return ExecutionResult(kind="file", message="Wi-Fi QR code generated successfully.", output_path=out_path, filename="wifi-qr.png", content_type="image/png")
+
+
+def _handle_grade_needed_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    current_grade = float(payload.get("current_grade", 70))
+    target_grade = float(payload.get("target_grade", 85))
+    final_weight = float(payload.get("final_weight", 40))
+    if not (0 <= current_grade <= 100 and 0 <= target_grade <= 100 and 0 < final_weight <= 100):
+        return ExecutionResult(kind="json", message="Grades must be 0-100 and final exam weight must be 1-100.", data={"error": "Invalid input"})
+    required = (target_grade - current_grade * (1 - final_weight / 100)) / (final_weight / 100)
+    status = "possible" if required <= 100 else "difficult"
+    return ExecutionResult(
+        kind="json",
+        message=f"You need {required:.2f}% in final exam to reach {target_grade}%",
+        data={"current_grade_percent": current_grade, "target_grade_percent": target_grade, "final_weight_percent": final_weight, "required_final_exam_percent": round(required, 2), "status": status, "already_safe": required <= 0},
+    )
+
+
+def _handle_exam_countdown_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    exam_date_raw = payload.get("exam_date", payload.get("text", "")).strip()
+    daily_hours = float(payload.get("daily_study_hours", 3))
+    if not exam_date_raw:
+        return ExecutionResult(kind="json", message="Please enter exam date in YYYY-MM-DD format.", data={"error": "Exam date required"})
+    try:
+        exam_date = datetime.strptime(exam_date_raw, "%Y-%m-%d").date()
+    except ValueError:
+        return ExecutionResult(kind="json", message="Use exam date format YYYY-MM-DD, for example 2026-05-10.", data={"error": "Invalid date"})
+    today = date.today()
+    days_left = (exam_date - today).days
+    if days_left < 0:
+        return ExecutionResult(kind="json", message="Exam date is already past.", data={"error": "Past date"})
+    weeks_left = days_left / 7
+    study_hours = max(0, days_left * daily_hours)
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ {days_left} days left | Approx study time: {study_hours:.1f} hours",
+        data={"exam_date": exam_date_raw, "today": today.isoformat(), "days_left": days_left, "weeks_left": round(weeks_left, 2), "daily_study_hours": daily_hours, "total_study_hours_available": round(study_hours, 1)},
     )
 
 
@@ -1345,7 +1498,7 @@ def _handle_marks_percentage_calculator(files: list[Path], payload: dict[str, An
         return ExecutionResult(kind="json", message="Please enter valid obtained and total marks.", data={"error": "Invalid marks"})
     percentage = obtained / total * 100
     grade = "A+" if percentage >= 90 else "A" if percentage >= 80 else "B+" if percentage >= 70 else "B" if percentage >= 60 else "C" if percentage >= 50 else "D" if percentage >= 40 else "F"
-    return ExecutionResult(kind="json", message=f"✅ Percentage: {percentage:.2f}% | Grade: {grade}", data={"obtained_marks": obtained, "total_marks": total, "percentage": round(percentage, 2), "grade": grade, "passed": percentage >= 40})
+    return ExecutionResult(kind="json", message=f"Percentage: {percentage:.2f}% | Grade: {grade}", data={"obtained_marks": obtained, "total_marks": total, "percentage": round(percentage, 2), "grade": grade, "passed": percentage >= 40})
 
 
 def _handle_cgpa_percentage_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -1358,7 +1511,7 @@ def _handle_cgpa_percentage_converter(files: list[Path], payload: dict[str, Any]
         percentage = cgpa * 9.5
     else:
         percentage = cgpa / scale * 100
-    return ExecutionResult(kind="json", message=f"✅ {cgpa} CGPA ≈ {percentage:.2f}%", data={"cgpa": cgpa, "scale": scale, "formula": formula, "percentage": round(percentage, 2), "note": "Check your university rules because CGPA conversion formulas can differ."})
+    return ExecutionResult(kind="json", message=f"{cgpa} CGPA ≈ {percentage:.2f}%", data={"cgpa": cgpa, "scale": scale, "formula": formula, "percentage": round(percentage, 2), "note": "Check your university rules because CGPA conversion formulas can differ."})
 
 
 def _handle_attendance_required_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -1378,7 +1531,7 @@ def _handle_attendance_required_calculator(files: list[Path], payload: dict[str,
         can_bunk += 1
     return ExecutionResult(
         kind="json",
-        message=f"✅ Current attendance: {current:.2f}% | Attend next {needed} classes to reach {required}%",
+        message=f"Current attendance: {current:.2f}% | Attend next {needed} classes to reach {required}%",
         data={"attended_classes": attended, "total_classes": total, "required_percent": required, "current_percent": round(current, 2), "classes_to_attend": needed, "safe_bunks_available": can_bunk},
     )
 
@@ -1967,6 +2120,14 @@ VIDEO_EXTRA_HANDLERS: dict = {
     "salary-hike-calculator": _handle_salary_hike_calculator,
     "discount-calculator": _handle_discount_calculator,
     "loan-prepayment-calculator": _handle_loan_prepayment_calculator,
+    "fixed-deposit-calculator-india": _handle_fixed_deposit_calculator_india,
+    "recurring-deposit-calculator": _handle_recurring_deposit_calculator,
+    "loan-eligibility-calculator": _handle_loan_eligibility_calculator,
+    "expense-splitter": _handle_expense_splitter,
+    "upi-qr-generator": _handle_upi_qr_generator,
+    "wifi-qr-generator": _handle_wifi_qr_generator,
+    "grade-needed-calculator": _handle_grade_needed_calculator,
+    "exam-countdown-calculator": _handle_exam_countdown_calculator,
     "atm-pin-generator": _handle_atm_pin_generator,
     "credit-card-validator": _handle_credit_card_validator,
     "ifsc-code-finder": _handle_ifsc_finder,

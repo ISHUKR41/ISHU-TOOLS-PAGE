@@ -15,7 +15,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
   - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + `health_finance_handlers.py` + **`video_extra_handlers.py`**
-- **557 registered handlers** (most recent count)
+- **565 registered handlers** (most recent count)
   - Rate limiting: 60 req/min per IP on the execute endpoint
   - Workspace cleanup: auto-removed via BackgroundTasks after every request
 
@@ -135,6 +135,7 @@ FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-hea
 - Rate limiting added to execute endpoint (60 req/min per IP) — prevents abuse
 - Workspace auto-cleanup via BackgroundTasks — prevents disk buildup from tool executions
 - Added 8 server-backed tools: SIP Calculator India, Income Tax Calculator India, Salary Hike Calculator, Discount Calculator, Loan Prepayment Calculator, Marks Percentage Calculator, CGPA to Percentage Converter, and Attendance Required Calculator. Added matching frontend fields and handcrafted SEO for top India/student targets.
+- Added 8 more production-backed daily-use tools: Fixed Deposit Calculator India, Recurring Deposit Calculator, Loan Eligibility Calculator, Expense Splitter, UPI QR Code Generator, Wi-Fi QR Code Generator, Grade Needed Calculator, and Exam Countdown Calculator. Vercel build now uses Vite build plus static SEO page generation, avoiding TypeScript-only deploy failures while still producing crawlable tool pages.
 
 ## Social Links
 - LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/

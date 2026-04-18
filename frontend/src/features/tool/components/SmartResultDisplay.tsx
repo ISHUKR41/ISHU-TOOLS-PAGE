@@ -45,7 +45,7 @@ function CopyButton({ text }: { text: string }) {
 
 function DataCard({ label, value, accent }: { label: string; value: unknown; accent?: string }) {
   const displayLabel = label.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  const displayValue = typeof value === 'boolean' ? (value ? '✅ Yes' : '❌ No') : String(value)
+  const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)
 
   return (
     <div style={{
@@ -88,7 +88,7 @@ function TableRenderer({ data, accent }: { data: Record<string, unknown>[]; acce
             <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
               {keys.map(k => (
                 <td key={k} style={{ padding: '10px 14px', color: '#ecf2ff', verticalAlign: 'top' }}>
-                  {typeof row[k] === 'boolean' ? (row[k] ? '✅' : '❌') : String(row[k] ?? '—')}
+                  {typeof row[k] === 'boolean' ? (row[k] ? 'Yes' : 'No') : String(row[k] ?? '—')}
                 </td>
               ))}
             </tr>
@@ -535,7 +535,7 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
         ))}
         {data.tip && (
           <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
-            💡 {String(data.tip)}
+            {String(data.tip)}
           </div>
         )}
       </div>

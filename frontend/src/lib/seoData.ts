@@ -120,7 +120,7 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 
   // ── Build comprehensive keyword list ──
   const keywords = buildComprehensiveKeywords(slug, t, base, categoryLabel, {
-    isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isStudent, isConverter, isColor, isSEO, isKbTool, isPassport,
+    isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isStudent, isConverter, isColor, isSEO, isKbTool, isPassport, isHealth, isFinance,
   })
 
   // ── Generate tool-specific FAQs ──
@@ -221,8 +221,22 @@ function buildComprehensiveKeywords(
     `free unit converter`, `convert units online`,
     `unit converter india`, `converter for students`,
   )
+  if (flags.isStudent) kw.push(
+    `${base} for indian students`, `${base} college tool`, `${base} school tool`,
+    `${base} exam helper`, `${base} assignment helper`, `${base} university tool`,
+    `student productivity tools india`, `free study tools online`, `ishu tools for students`,
+  )
+  if (flags.isFinance) kw.push(
+    `${base} india calculator`, `${base} rupees`, `${base} indian finance`,
+    `${base} salary`, `${base} tax india`, `${base} investment india`,
+    `free finance calculator india`, `personal finance tools india`, `ishu finance tools`,
+  )
+  if (flags.isHealth) kw.push(
+    `${base} fitness india`, `${base} health calculator`, `${base} weight loss`,
+    `${base} wellness tool`, `free health calculator india`, `ishu health tools`,
+  )
 
-  return Array.from(new Set(kw)).slice(0, 90)
+  return Array.from(new Set(kw)).slice(0, 120)
 }
 
 function generateSmartFAQs(
@@ -317,7 +331,7 @@ function generateSmartFAQs(
 }
 
 function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
-  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 90)
+  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 120)
   const faq = [...custom.faq]
   for (const item of generated.faq) {
     if (!faq.some((existing) => existing.question === item.question)) faq.push(item)
@@ -455,6 +469,36 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How many classes do I need to attend for 75%?', answer: 'Enter attended classes, total classes held, and required percentage. ISHU TOOLS calculates exactly how many upcoming classes you must attend.' },
       { question: 'Can it calculate safe bunks?', answer: 'Yes. If your attendance is above the required percentage, it shows how many classes you can miss while staying above the limit.' },
+    ],
+  },
+  'upi-qr-generator': {
+    title: 'UPI QR Code Generator Online Free India | ISHU TOOLS',
+    description: 'Generate UPI payment QR code for GPay, PhonePe, Paytm, shops, freelancers, and personal payments. Free PNG download.',
+    keywords: ['upi qr generator', 'upi qr code generator', 'payment qr generator india', 'gpay qr generator', 'phonepe qr generator', 'paytm qr generator', 'ishu tools upi qr'],
+    h1: 'UPI QR Code Generator — Free Payment QR for India',
+    faq: [
+      { question: 'How do I generate a UPI QR code?', answer: 'Enter your UPI ID, payee name, optional amount, and note. ISHU TOOLS generates a scannable UPI payment QR code as a PNG file.' },
+      { question: 'Does this work with PhonePe, GPay and Paytm?', answer: 'Yes. The generated QR uses the standard UPI payment format supported by common Indian UPI apps.' },
+    ],
+  },
+  'fixed-deposit-calculator-india': {
+    title: 'FD Calculator India — Fixed Deposit Maturity Online Free | ISHU TOOLS',
+    description: 'Calculate fixed deposit maturity value and interest earned with monthly, quarterly, half-yearly, or yearly compounding.',
+    keywords: ['fd calculator', 'fd calculator india', 'fixed deposit calculator', 'bank fd calculator', 'fd maturity calculator', 'interest calculator india', 'ishu tools fd calculator'],
+    h1: 'Fixed Deposit Calculator India',
+    faq: [
+      { question: 'How is FD maturity calculated?', answer: 'ISHU TOOLS uses compound interest based on principal, annual interest rate, tenure, and compounding frequency.' },
+      { question: 'Can I use this for Indian bank FDs?', answer: 'Yes. It is suitable for quick estimates for Indian bank and post office fixed deposits.' },
+    ],
+  },
+  'exam-countdown-calculator': {
+    title: 'Exam Countdown Calculator — Days Left & Study Hours | ISHU TOOLS',
+    description: 'Calculate days, weeks, and available study hours left for JEE, NEET, UPSC, semester exams, school tests, and college exams.',
+    keywords: ['exam countdown', 'days until exam', 'study countdown calculator', 'jee exam countdown', 'neet exam countdown', 'upsc countdown', 'ishu tools exam countdown'],
+    h1: 'Exam Countdown Calculator',
+    faq: [
+      { question: 'How many days are left for my exam?', answer: 'Enter your exam date and ISHU TOOLS calculates days left, weeks left, and study hours available based on your daily study time.' },
+      { question: 'Can I use it for JEE, NEET, UPSC and semester exams?', answer: 'Yes. This countdown calculator works for any exam date including school, college, competitive, and government exams.' },
     ],
   },
   'cgpa-percentage-converter': {

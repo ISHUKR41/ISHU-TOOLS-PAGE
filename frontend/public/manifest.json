@@ -1,7 +1,7 @@
 {
   "name": "ISHU TOOLS - Indian Student Hub University Tools",
   "short_name": "ISHU TOOLS",
-  "description": "510+ free online tools for students and professionals. PDF, Image, Developer, Math, Text & AI tools. No signup, no watermark, no limits.",
+  "description": "550+ free online tools for Indian students and professionals. PDF, Image, Developer, Math, Text, AI, Finance, Health, Video and Productivity tools. No signup, no watermark, no limits.",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
@@ -41,6 +41,20 @@
       "short_name": "JSON",
       "description": "Format and validate JSON",
       "url": "/tools/json-formatter",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "SIP Calculator India",
+      "short_name": "SIP",
+      "description": "Calculate SIP mutual fund returns",
+      "url": "/tools/sip-calculator-india",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "UPI QR Generator",
+      "short_name": "UPI QR",
+      "description": "Generate Indian UPI payment QR",
+      "url": "/tools/upi-qr-generator",
       "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     }
   ],

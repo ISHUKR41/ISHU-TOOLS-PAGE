@@ -250,7 +250,7 @@ export default function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55, duration: 0.4 }}
         >
-          <span className='quick-label'>⚡ Popular right now</span>
+          <span className='quick-label'>Popular right now</span>
           <div className='quick-grid'>
             {QUICK_TOOLS.map((tool, i) => (
               <motion.div

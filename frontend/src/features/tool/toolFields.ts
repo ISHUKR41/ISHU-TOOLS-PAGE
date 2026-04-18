@@ -2364,6 +2364,69 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'tenure_months', label: 'Remaining Tenure (months)', type: 'number', defaultValue: '120', placeholder: 'e.g. 120' },
     { name: 'prepayment', label: 'Prepayment Amount (₹)', type: 'number', defaultValue: '100000', placeholder: 'Extra payment amount...' },
   ],
+  'fixed-deposit-calculator-india': [
+    { name: 'principal', label: 'Deposit Amount (₹)', type: 'number', defaultValue: '100000', placeholder: 'FD principal amount...' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '7', placeholder: 'e.g. 7' },
+    { name: 'years', label: 'Tenure (years)', type: 'number', defaultValue: '5', placeholder: 'e.g. 5' },
+    {
+      name: 'compound_per_year',
+      label: 'Compounding Frequency',
+      type: 'select',
+      defaultValue: '4',
+      options: [
+        { label: 'Yearly', value: '1' },
+        { label: 'Half-yearly', value: '2' },
+        { label: 'Quarterly', value: '4' },
+        { label: 'Monthly', value: '12' },
+      ],
+    },
+  ],
+  'recurring-deposit-calculator': [
+    { name: 'monthly_deposit', label: 'Monthly Deposit (₹)', type: 'number', defaultValue: '5000', placeholder: 'Monthly RD amount...' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '6.5', placeholder: 'e.g. 6.5' },
+    { name: 'months', label: 'Tenure (months)', type: 'number', defaultValue: '24', placeholder: 'e.g. 24' },
+  ],
+  'loan-eligibility-calculator': [
+    { name: 'monthly_income', label: 'Monthly Income (₹)', type: 'number', defaultValue: '50000', placeholder: 'Net monthly income...' },
+    { name: 'existing_emi', label: 'Existing EMI (₹)', type: 'number', defaultValue: '0', placeholder: 'Current total EMI...' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '9', placeholder: 'e.g. 9' },
+    { name: 'tenure_months', label: 'Loan Tenure (months)', type: 'number', defaultValue: '240', placeholder: 'e.g. 240' },
+    { name: 'foir_percent', label: 'FOIR / Max EMI %', type: 'number', defaultValue: '50', placeholder: 'Usually 40-60' },
+  ],
+  'expense-splitter': [
+    { name: 'total_amount', label: 'Bill Amount (₹)', type: 'number', defaultValue: '1000', placeholder: 'Total bill before tip/tax...' },
+    { name: 'people', label: 'Number of People', type: 'number', defaultValue: '4', placeholder: 'People sharing...' },
+    { name: 'tip_percent', label: 'Tip (%)', type: 'number', defaultValue: '0', placeholder: 'Optional tip...' },
+    { name: 'tax_percent', label: 'Tax (%)', type: 'number', defaultValue: '0', placeholder: 'Optional tax...' },
+  ],
+  'upi-qr-generator': [
+    { name: 'upi_id', label: 'UPI ID', type: 'text', placeholder: 'e.g. name@okaxis' },
+    { name: 'name', label: 'Payee Name', type: 'text', defaultValue: 'ISHU TOOLS', placeholder: 'Receiver name...' },
+    { name: 'amount', label: 'Amount (optional)', type: 'number', placeholder: 'Leave empty for open amount...' },
+    { name: 'note', label: 'Payment Note', type: 'text', defaultValue: 'Payment', placeholder: 'Purpose / note...' },
+  ],
+  'wifi-qr-generator': [
+    { name: 'ssid', label: 'Wi-Fi Name (SSID)', type: 'text', placeholder: 'Network name...' },
+    { name: 'password', label: 'Wi-Fi Password', type: 'password', placeholder: 'Network password...' },
+    {
+      name: 'security',
+      label: 'Security Type',
+      type: 'select',
+      defaultValue: 'WPA',
+      options: [
+        { label: 'WPA/WPA2', value: 'WPA' },
+        { label: 'WEP', value: 'WEP' },
+        { label: 'No Password', value: 'NOPASS' },
+      ],
+    },
+    {
+      name: 'hidden',
+      label: 'Hidden Network',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
+  ],
   'atm-pin-generator': [
     {
       name: 'length',
@@ -2408,6 +2471,15 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'attended_classes', label: 'Classes Attended', type: 'number', defaultValue: '45', placeholder: 'Attended classes...' },
     { name: 'total_classes', label: 'Total Classes Held', type: 'number', defaultValue: '60', placeholder: 'Total classes so far...' },
     { name: 'required_percent', label: 'Required Attendance (%)', type: 'number', defaultValue: '75', placeholder: 'e.g. 75' },
+  ],
+  'grade-needed-calculator': [
+    { name: 'current_grade', label: 'Current Grade (%)', type: 'number', defaultValue: '70', placeholder: 'Your current grade...' },
+    { name: 'target_grade', label: 'Target Grade (%)', type: 'number', defaultValue: '85', placeholder: 'Desired final grade...' },
+    { name: 'final_weight', label: 'Final Exam Weight (%)', type: 'number', defaultValue: '40', placeholder: 'Weight of final exam...' },
+  ],
+  'exam-countdown-calculator': [
+    { name: 'exam_date', label: 'Exam Date', type: 'text', placeholder: 'YYYY-MM-DD, e.g. 2026-05-10' },
+    { name: 'daily_study_hours', label: 'Daily Study Hours', type: 'number', defaultValue: '3', placeholder: 'Hours per day...' },
   ],
 
   // ─── Health Tools ─────────────────────────────────────────────────────

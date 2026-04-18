@@ -430,7 +430,7 @@ export default function ToolPage() {
       <SiteShell>
         <div className='page-wrap'>
           <div className='tool-error-state'>
-            <div className='tool-error-icon'>⚠️</div>
+            <div className='tool-error-icon'>!</div>
             <h2>{toolError ? 'Tool Error' : 'Tool Not Found'}</h2>
             <p className='status-text error'>{toolError || 'This tool does not exist or has been removed.'}</p>
             <Link to='/' className='inline-link'>

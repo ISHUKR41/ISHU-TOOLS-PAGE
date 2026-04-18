@@ -1,21 +1,30 @@
 :root {
-  --bg: #03060e;
-  --bg-soft: #07101f;
-  --panel: rgba(9, 14, 26, 0.82);
-  --panel-strong: rgba(10, 16, 30, 0.92);
-  --panel-border: rgba(145, 180, 255, 0.18);
-  --text: #ecf2ff;
-  --muted: #95a2c8;
-  --muted-strong: #c7d7ff;
-  --line: rgba(160, 189, 255, 0.14);
-  --accent: #3bd0ff;
-  --accent-2: #49f0b4;
-  --danger: #ff6889;
-  --ok: #3fe08e;
-  --shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.45);
-  --shadow-md: 0 18px 42px rgba(0, 0, 0, 0.34);
-  --font-body: 'Manrope', 'Segoe UI', sans-serif;
-  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --bg: #000000;
+  --bg-soft: #0a0a0c;
+  --panel: rgba(18, 18, 20, 0.6);
+  --panel-strong: rgba(24, 24, 28, 0.8);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text: #f0f0f2;
+  --muted: #a0a0a8;
+  --muted-strong: #c8c8cf;
+  --line: rgba(255, 255, 255, 0.06);
+  --accent: #007aff;
+  --accent-2: #34c759;
+  --danger: #ff3b30;
+  --ok: #34c759;
+  --shadow-lg: 0 30px 60px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * {
