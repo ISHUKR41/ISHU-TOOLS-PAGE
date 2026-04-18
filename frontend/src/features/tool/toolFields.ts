@@ -2329,6 +2329,41 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: 'e.g. 8.5' },
     { name: 'tenure', label: 'Loan Tenure (months)', type: 'number', defaultValue: '60', placeholder: 'e.g. 60 for 5 years' },
   ],
+  'sip-calculator-india': [
+    { name: 'monthly_investment', label: 'Monthly SIP (₹)', type: 'number', defaultValue: '5000', placeholder: 'Monthly investment amount...' },
+    { name: 'annual_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '12', placeholder: 'e.g. 12' },
+    { name: 'years', label: 'Investment Period (years)', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
+  ],
+  'income-tax-calculator-india': [
+    { name: 'income', label: 'Annual Income (₹)', type: 'number', defaultValue: '900000', placeholder: 'Enter gross annual income...' },
+    { name: 'deductions', label: 'Old Regime Deductions (₹)', type: 'number', defaultValue: '150000', placeholder: '80C, HRA, etc. for old regime...' },
+    {
+      name: 'regime',
+      label: 'Tax Regime',
+      type: 'select',
+      defaultValue: 'new',
+      options: [
+        { label: 'New Regime', value: 'new' },
+        { label: 'Old Regime', value: 'old' },
+      ],
+    },
+  ],
+  'salary-hike-calculator': [
+    { name: 'current_salary', label: 'Current Annual Salary (₹)', type: 'number', defaultValue: '300000', placeholder: 'Current CTC or salary...' },
+    { name: 'hike_percent', label: 'Hike (%)', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
+    { name: 'bonus', label: 'Bonus / Fixed Addition (₹)', type: 'number', defaultValue: '0', placeholder: 'Optional bonus amount...' },
+  ],
+  'discount-calculator': [
+    { name: 'price', label: 'Original Price (₹)', type: 'number', defaultValue: '1000', placeholder: 'Enter price...' },
+    { name: 'discount_percent', label: 'Discount (%)', type: 'number', defaultValue: '10', placeholder: 'Discount percent...' },
+    { name: 'tax_percent', label: 'Tax / GST (%)', type: 'number', defaultValue: '0', placeholder: 'Optional tax after discount...' },
+  ],
+  'loan-prepayment-calculator': [
+    { name: 'principal', label: 'Loan Outstanding (₹)', type: 'number', defaultValue: '1000000', placeholder: 'Current outstanding loan...' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '9', placeholder: 'e.g. 9' },
+    { name: 'tenure_months', label: 'Remaining Tenure (months)', type: 'number', defaultValue: '120', placeholder: 'e.g. 120' },
+    { name: 'prepayment', label: 'Prepayment Amount (₹)', type: 'number', defaultValue: '100000', placeholder: 'Extra payment amount...' },
+  ],
   'atm-pin-generator': [
     {
       name: 'length',
@@ -2350,6 +2385,29 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
   'number-to-words': [
     { name: 'text', label: 'Number', type: 'number', placeholder: 'Enter a number to convert to words... e.g. 12345' },
+  ],
+  'marks-percentage-calculator': [
+    { name: 'obtained_marks', label: 'Obtained Marks', type: 'number', defaultValue: '450', placeholder: 'Marks scored...' },
+    { name: 'total_marks', label: 'Total Marks', type: 'number', defaultValue: '500', placeholder: 'Maximum marks...' },
+  ],
+  'cgpa-percentage-converter': [
+    { name: 'cgpa', label: 'CGPA', type: 'number', defaultValue: '8', placeholder: 'Enter CGPA...' },
+    { name: 'scale', label: 'CGPA Scale', type: 'number', defaultValue: '10', placeholder: 'Usually 10 or 4...' },
+    {
+      name: 'formula',
+      label: 'Formula',
+      type: 'select',
+      defaultValue: 'cbse',
+      options: [
+        { label: 'CBSE / India common (CGPA × 9.5)', value: 'cbse' },
+        { label: 'Generic scale (CGPA ÷ scale × 100)', value: 'generic' },
+      ],
+    },
+  ],
+  'attendance-required-calculator': [
+    { name: 'attended_classes', label: 'Classes Attended', type: 'number', defaultValue: '45', placeholder: 'Attended classes...' },
+    { name: 'total_classes', label: 'Total Classes Held', type: 'number', defaultValue: '60', placeholder: 'Total classes so far...' },
+    { name: 'required_percent', label: 'Required Attendance (%)', type: 'number', defaultValue: '75', placeholder: 'e.g. 75' },
   ],
 
   // ─── Health Tools ─────────────────────────────────────────────────────

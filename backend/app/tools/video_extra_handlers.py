@@ -1131,6 +1131,160 @@ def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: 
     )
 
 
+def _handle_sip_calculator_india(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    monthly = float(payload.get("monthly_investment", payload.get("amount", 5000)))
+    annual_return = float(payload.get("annual_return", payload.get("rate", 12)))
+    years = float(payload.get("years", payload.get("tenure", 10)))
+
+    if monthly <= 0 or years <= 0 or annual_return < 0:
+        return ExecutionResult(kind="json", message="Please enter valid monthly investment, return, and years.", data={"error": "Invalid input"})
+
+    months = int(round(years * 12))
+    monthly_rate = annual_return / 12 / 100
+    invested = monthly * months
+    if monthly_rate == 0:
+        maturity = invested
+    else:
+        maturity = monthly * (((1 + monthly_rate) ** months - 1) / monthly_rate) * (1 + monthly_rate)
+    gains = maturity - invested
+
+    yearly_projection = []
+    for year in range(1, int(years) + 1):
+        n = year * 12
+        value = monthly * (((1 + monthly_rate) ** n - 1) / monthly_rate) * (1 + monthly_rate) if monthly_rate else monthly * n
+        yearly_projection.append({"year": year, "invested": round(monthly * n, 2), "value": round(value, 2), "gains": round(value - monthly * n, 2)})
+
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ SIP maturity: ₹{maturity:,.2f} | Wealth gain: ₹{gains:,.2f}",
+        data={
+            "monthly_investment": round(monthly, 2),
+            "annual_return_percent": annual_return,
+            "years": years,
+            "total_invested": round(invested, 2),
+            "estimated_returns": round(gains, 2),
+            "maturity_value": round(maturity, 2),
+            "yearly_projection": yearly_projection,
+            "note": "SIP returns are market-linked estimates, not guaranteed.",
+        },
+    )
+
+
+def _handle_income_tax_calculator_india(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    income = float(payload.get("income", payload.get("annual_income", 900000)))
+    deductions = float(payload.get("deductions", 0))
+    regime = payload.get("regime", "new").lower()
+
+    if income < 0 or deductions < 0:
+        return ExecutionResult(kind="json", message="Income and deductions cannot be negative.", data={"error": "Invalid input"})
+
+    def slab_tax(taxable: float, slabs: list[tuple[float, float]]) -> float:
+        tax = 0.0
+        previous = 0.0
+        for limit, rate in slabs:
+            if taxable > previous:
+                taxable_part = min(taxable, limit) - previous
+                tax += taxable_part * rate
+                previous = limit
+            else:
+                break
+        return tax
+
+    if regime == "old":
+        taxable = max(0, income - deductions - 50000)
+        slabs = [(250000, 0), (500000, 0.05), (1000000, 0.20), (float("inf"), 0.30)]
+        rebate_limit = 500000
+        standard_deduction = 50000
+    else:
+        taxable = max(0, income - 75000)
+        slabs = [(300000, 0), (700000, 0.05), (1000000, 0.10), (1200000, 0.15), (1500000, 0.20), (float("inf"), 0.30)]
+        rebate_limit = 700000
+        standard_deduction = 75000
+
+    base_tax = slab_tax(taxable, slabs)
+    if taxable <= rebate_limit:
+        base_tax = 0
+    cess = base_tax * 0.04
+    total_tax = base_tax + cess
+    monthly_tax = total_tax / 12
+
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ Estimated tax ({regime} regime): ₹{total_tax:,.2f}/year",
+        data={
+            "regime": regime,
+            "annual_income": round(income, 2),
+            "deductions_used": round(deductions if regime == "old" else 0, 2),
+            "standard_deduction": standard_deduction,
+            "taxable_income": round(taxable, 2),
+            "income_tax_before_cess": round(base_tax, 2),
+            "cess_4_percent": round(cess, 2),
+            "total_tax": round(total_tax, 2),
+            "monthly_tax": round(monthly_tax, 2),
+            "note": "Estimate for Indian individual taxpayers. Surcharge and special income rules are not included.",
+        },
+    )
+
+
+def _handle_salary_hike_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    current = float(payload.get("current_salary", payload.get("salary", 300000)))
+    hike_percent = float(payload.get("hike_percent", payload.get("percent", 10)))
+    bonus = float(payload.get("bonus", 0))
+    if current < 0:
+        return ExecutionResult(kind="json", message="Current salary cannot be negative.", data={"error": "Invalid salary"})
+    new_salary = current * (1 + hike_percent / 100) + bonus
+    increase = new_salary - current
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ New salary: ₹{new_salary:,.2f} | Increase: ₹{increase:,.2f}",
+        data={"current_salary": round(current, 2), "hike_percent": hike_percent, "bonus": round(bonus, 2), "new_salary": round(new_salary, 2), "increase": round(increase, 2), "monthly_new_salary": round(new_salary / 12, 2)},
+    )
+
+
+def _handle_discount_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    price = float(payload.get("price", payload.get("amount", 1000)))
+    discount = float(payload.get("discount_percent", payload.get("discount", 10)))
+    tax = float(payload.get("tax_percent", 0))
+    if price < 0 or discount < 0 or tax < 0:
+        return ExecutionResult(kind="json", message="Price, discount, and tax must be positive.", data={"error": "Invalid input"})
+    saved = price * discount / 100
+    after_discount = price - saved
+    tax_amount = after_discount * tax / 100
+    final_price = after_discount + tax_amount
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ Final price: ₹{final_price:,.2f} | You save: ₹{saved:,.2f}",
+        data={"original_price": round(price, 2), "discount_percent": discount, "saved": round(saved, 2), "price_after_discount": round(after_discount, 2), "tax_percent": tax, "tax_amount": round(tax_amount, 2), "final_price": round(final_price, 2)},
+    )
+
+
+def _handle_loan_prepayment_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    principal = float(payload.get("principal", payload.get("loan_amount", 1000000)))
+    annual_rate = float(payload.get("rate", 9))
+    tenure_months = int(float(payload.get("tenure_months", payload.get("tenure", 120))))
+    prepayment = float(payload.get("prepayment", 100000))
+    if principal <= 0 or annual_rate <= 0 or tenure_months <= 0 or prepayment < 0:
+        return ExecutionResult(kind="json", message="Please enter valid loan values.", data={"error": "Invalid input"})
+
+    r = annual_rate / 12 / 100
+    emi = principal * r * (1 + r) ** tenure_months / ((1 + r) ** tenure_months - 1)
+    total_interest_original = emi * tenure_months - principal
+    new_principal = max(0, principal - prepayment)
+    if new_principal == 0:
+        new_months = 0
+        new_interest = 0
+    else:
+        new_months = math.ceil(-math.log(1 - (new_principal * r / emi)) / math.log(1 + r)) if emi > new_principal * r else tenure_months
+        new_interest = emi * new_months - new_principal
+    interest_saved = max(0, total_interest_original - new_interest)
+    months_saved = max(0, tenure_months - new_months)
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ Interest saved: ₹{interest_saved:,.2f} | Tenure reduced by {months_saved} months",
+        data={"emi": round(emi, 2), "original_interest": round(total_interest_original, 2), "prepayment": round(prepayment, 2), "new_principal": round(new_principal, 2), "new_tenure_months": new_months, "months_saved": months_saved, "interest_saved": round(interest_saved, 2)},
+    )
+
+
 def _handle_number_to_words(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     text = payload.get("text", payload.get("number", "")).strip().replace(",", "")
     if not text:
@@ -1181,6 +1335,51 @@ def _handle_number_to_words(files: list[Path], payload: dict[str, Any], job_dir:
         kind="json",
         message=f"✅ {n:,} in words: {words}",
         data={"number": n, "in_words": words, "in_words_lower": words_indian, "for_cheque": f"Rupees {words} Only"},
+    )
+
+
+def _handle_marks_percentage_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    obtained = float(payload.get("obtained_marks", payload.get("obtained", 450)))
+    total = float(payload.get("total_marks", payload.get("total", 500)))
+    if obtained < 0 or total <= 0 or obtained > total:
+        return ExecutionResult(kind="json", message="Please enter valid obtained and total marks.", data={"error": "Invalid marks"})
+    percentage = obtained / total * 100
+    grade = "A+" if percentage >= 90 else "A" if percentage >= 80 else "B+" if percentage >= 70 else "B" if percentage >= 60 else "C" if percentage >= 50 else "D" if percentage >= 40 else "F"
+    return ExecutionResult(kind="json", message=f"✅ Percentage: {percentage:.2f}% | Grade: {grade}", data={"obtained_marks": obtained, "total_marks": total, "percentage": round(percentage, 2), "grade": grade, "passed": percentage >= 40})
+
+
+def _handle_cgpa_percentage_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    cgpa = float(payload.get("cgpa", payload.get("text", 8.0)))
+    scale = float(payload.get("scale", 10))
+    formula = payload.get("formula", "cbse").lower()
+    if cgpa < 0 or scale <= 0 or cgpa > scale:
+        return ExecutionResult(kind="json", message="Please enter valid CGPA and scale.", data={"error": "Invalid CGPA"})
+    if formula == "cbse":
+        percentage = cgpa * 9.5
+    else:
+        percentage = cgpa / scale * 100
+    return ExecutionResult(kind="json", message=f"✅ {cgpa} CGPA ≈ {percentage:.2f}%", data={"cgpa": cgpa, "scale": scale, "formula": formula, "percentage": round(percentage, 2), "note": "Check your university rules because CGPA conversion formulas can differ."})
+
+
+def _handle_attendance_required_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    attended = int(float(payload.get("attended_classes", payload.get("attended", 45))))
+    total = int(float(payload.get("total_classes", payload.get("total", 60))))
+    required = float(payload.get("required_percent", payload.get("required", 75)))
+    if attended < 0 or total <= 0 or attended > total or required <= 0 or required >= 100:
+        return ExecutionResult(kind="json", message="Please enter valid attendance values.", data={"error": "Invalid input"})
+    current = attended / total * 100
+    needed = 0
+    while (attended + needed) / (total + needed) * 100 < required:
+        needed += 1
+        if needed > 10000:
+            break
+    can_bunk = 0
+    while attended / (total + can_bunk + 1) * 100 >= required:
+        can_bunk += 1
+    return ExecutionResult(
+        kind="json",
+        message=f"✅ Current attendance: {current:.2f}% | Attend next {needed} classes to reach {required}%",
+        data={"attended_classes": attended, "total_classes": total, "required_percent": required, "current_percent": round(current, 2), "classes_to_attend": needed, "safe_bunks_available": can_bunk},
     )
 
 
@@ -1763,12 +1962,20 @@ VIDEO_EXTRA_HANDLERS: dict = {
     "gst-calculator-india": _handle_gst_calculator,
     "fuel-cost-calculator": _handle_fuel_calculator,
     "emi-calculator-advanced": _handle_emi_calculator,
+    "sip-calculator-india": _handle_sip_calculator_india,
+    "income-tax-calculator-india": _handle_income_tax_calculator_india,
+    "salary-hike-calculator": _handle_salary_hike_calculator,
+    "discount-calculator": _handle_discount_calculator,
+    "loan-prepayment-calculator": _handle_loan_prepayment_calculator,
     "atm-pin-generator": _handle_atm_pin_generator,
     "credit-card-validator": _handle_credit_card_validator,
     "ifsc-code-finder": _handle_ifsc_finder,
 
     # Everyday Tools
     "number-to-words": _handle_number_to_words,
+    "marks-percentage-calculator": _handle_marks_percentage_calculator,
+    "cgpa-percentage-converter": _handle_cgpa_percentage_converter,
+    "attendance-required-calculator": _handle_attendance_required_calculator,
     "calorie-calculator": _handle_calorie_calculator,
     "water-intake-calculator": _handle_water_intake,
     "sleep-calculator": _handle_sleep_calculator,

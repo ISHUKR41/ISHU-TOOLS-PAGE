@@ -427,6 +427,47 @@ function getCategoryLabel(category: string): string {
 // ─── Handcrafted SEO for ALL major tools ───
 const TOOL_SEO_MAP: Record<string, ToolSEO> = {
 
+  'sip-calculator-india': {
+    title: 'SIP Calculator India — Mutual Fund Returns Online Free | ISHU TOOLS',
+    description: 'Free SIP Calculator India for monthly mutual fund investment, maturity value, estimated returns, and yearly projection. No signup.',
+    keywords: ['sip calculator', 'sip calculator india', 'mutual fund sip calculator', 'monthly sip calculator', 'investment calculator india', 'ishu tools sip calculator'],
+    h1: 'SIP Calculator India — Estimate Mutual Fund Returns',
+    faq: [
+      { question: 'How does the SIP calculator work?', answer: 'Enter your monthly SIP amount, expected annual return, and investment period. ISHU TOOLS calculates total investment, estimated gains, maturity value, and yearly projection.' },
+      { question: 'Are SIP returns guaranteed?', answer: 'No. SIP returns are market-linked estimates and actual mutual fund returns can be higher or lower.' },
+    ],
+  },
+  'income-tax-calculator-india': {
+    title: 'Income Tax Calculator India — New & Old Regime Free | ISHU TOOLS',
+    description: 'Calculate Indian income tax under new and old regimes with standard deduction, rebate, 4% cess, taxable income, and monthly tax.',
+    keywords: ['income tax calculator india', 'new regime tax calculator', 'old regime tax calculator', 'salary tax calculator india', 'income tax 2024 25', 'ishu tools tax calculator'],
+    h1: 'Income Tax Calculator India — New vs Old Regime',
+    faq: [
+      { question: 'Does this support new and old tax regimes?', answer: 'Yes. You can choose new or old regime and get estimated taxable income, tax before cess, cess, yearly tax, and monthly tax.' },
+      { question: 'Is this a final tax filing calculation?', answer: 'No. It is a quick estimate for individual taxpayers and excludes surcharge and special income rules.' },
+    ],
+  },
+  'attendance-required-calculator': {
+    title: '75% Attendance Calculator — Classes Needed Online Free | ISHU TOOLS',
+    description: 'Calculate current attendance percentage, classes needed for 75%, and safe bunks available. Free college attendance calculator.',
+    keywords: ['attendance calculator', '75 attendance calculator', 'attendance required calculator', 'college attendance calculator', 'bunk calculator', 'ishu tools attendance'],
+    h1: 'Attendance Required Calculator — Reach 75% Attendance',
+    faq: [
+      { question: 'How many classes do I need to attend for 75%?', answer: 'Enter attended classes, total classes held, and required percentage. ISHU TOOLS calculates exactly how many upcoming classes you must attend.' },
+      { question: 'Can it calculate safe bunks?', answer: 'Yes. If your attendance is above the required percentage, it shows how many classes you can miss while staying above the limit.' },
+    ],
+  },
+  'cgpa-percentage-converter': {
+    title: 'CGPA to Percentage Converter Online Free | ISHU TOOLS',
+    description: 'Convert CGPA to percentage using CBSE 9.5 formula or generic scale formula for college and university results.',
+    keywords: ['cgpa to percentage', 'cgpa percentage converter', 'convert cgpa to percentage', 'cbse cgpa calculator', 'college cgpa converter', 'ishu tools cgpa'],
+    h1: 'CGPA to Percentage Converter',
+    faq: [
+      { question: 'Which formula does this CGPA converter use?', answer: 'You can select CBSE/common India formula (CGPA × 9.5) or a generic scale formula (CGPA ÷ scale × 100).' },
+      { question: 'Can university formulas differ?', answer: 'Yes. Always confirm with your university because some institutions use custom conversion rules.' },
+    ],
+  },
+
   // ════════════════════════════════════════════════
   //  PDF CORE TOOLS
   // ════════════════════════════════════════════════
