@@ -15,7 +15,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
   - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py`
-  - 485+ raw registry entries and **456 available backend handlers**
+  - 500+ raw registry entries and **458+ available backend handlers**
 
 ## Key Files
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
@@ -39,7 +39,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
 - Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList)
 - Per-tool FAQ JSON-LD from seoData.ts — 286 handcrafted entries covering all major tools
-- Smart auto-generator v2 (createGeneratedSEO) — produces specific competitor-aware SEO for all remaining tools based on tool type detection (isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO) with tool-specific FAQs and competitor comparison keywords
+- Smart auto-generator v2 (createGeneratedSEO) — produces specific competitor-aware and India-SEO-aware SEO for all tools based on type detection: isPdf, isImage, isConvert, isCompress, isKbTool, isPassport, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO — with India-specific keywords (SSC, UPSC, RRB, IBPS, SBI, Aadhaar, PAN, NTA) baked into KB and passport tool FAQs/descriptions
 - Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images); jwt.io (developer)
 - Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)

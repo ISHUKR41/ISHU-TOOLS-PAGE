@@ -31,9 +31,11 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 
   // ── Detect tool type for specific content ──
   const isPdf = slug.includes('pdf') || category.includes('pdf')
-  const isImage = category.includes('image') || slug.includes('image') || slug.includes('-jpg') || slug.includes('-png') || slug.includes('-webp') || slug.includes('-heic')
+  const isImage = category.includes('image') || category === 'image-core' || category === 'image-enhance' || category === 'image-effects' || category === 'image-layout' || category === 'format-lab' || slug.includes('image') || slug.includes('-jpg') || slug.includes('-png') || slug.includes('-webp') || slug.includes('-heic')
   const isConvert = slug.includes('-to-')
-  const isCompress = slug.includes('compress') || slug.includes('minify') || slug.includes('reduce')
+  const isCompress = slug.includes('compress') || slug.includes('minify') || slug.includes('reduce') || slug.includes('-to-kb') || slug.includes('-to-mb')
+  const isKbTool = slug.includes('-kb') || slug.includes('-to-5kb') || slug.includes('-to-10kb') || slug.includes('-to-20kb') || slug.includes('-to-50kb') || slug.includes('-to-100kb') || slug.includes('-to-200kb') || slug.includes('-to-500kb') || slug.includes('-to-1mb') || slug.includes('-to-2mb')
+  const isPassport = slug.includes('passport') || slug.includes('ssc') || slug.includes('upsc') || slug.includes('pan-card') || slug.includes('psc') || slug.includes('35mm') || slug.includes('3.5cm')
   const isCalculator = slug.includes('calculator') || slug.includes('-calc') || category === 'math-tools'
   const isDeveloper = category.includes('developer') || category === 'code-tools' || category === 'format-lab'
   const isOCR = slug.includes('ocr') || slug.includes('-to-text') || slug.includes('text-from')
@@ -46,7 +48,11 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 
   // ── Generate the best title for the tool type ──
   let title: string
-  if (isConvert && toolTitle.toLowerCase().includes(' to ')) {
+  if (isKbTool) {
+    title = `${toolTitle} Free Online | ${SITE}`
+  } else if (isPassport) {
+    title = `${toolTitle} — Free Online India | ${SITE}`
+  } else if (isConvert && toolTitle.toLowerCase().includes(' to ')) {
     const [from, to] = toolTitle.split(/ to /i)
     title = `${from.trim()} to ${to.trim()} Converter Online Free | ${SITE}`
   } else if (isCompress && isPdf) {
@@ -76,7 +82,11 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
   // ── Generate specific, keyword-rich description ──
   let description: string
   const noSignup = 'No signup, no watermark, no file size limit.'
-  if (isPdf) {
+  if (isKbTool) {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Required for SSC, UPSC, RRB, IBPS, university forms, and government portals in India. ${noSignup}`
+  } else if (isPassport) {
+    description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Required for SSC, UPSC, PAN card, Aadhaar, and Indian government exam applications. ${noSignup}`
+  } else if (isPdf) {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. ${noSignup} Best free alternative to iLovePDF, SmallPDF, and PDFCandy — works on all devices.`
   } else if (isImage) {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. ${noSignup} Best free alternative to iLoveIMG and pi7.org — fast, accurate, mobile-friendly.`
@@ -86,7 +96,7 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
     description = `Free ${t} online for developers. ${toolDescription.replace(/\.$/, '')}. Instant results, no registration. Best free ${base} tool for web developers and engineers.`
   } else if (isOCR) {
     description = `${toolTitle} online for free. Extract text from images and PDFs with high accuracy. ${noSignup} Best free OCR tool — works on all devices with no app required.`
-  } else if (isSecurity || isSecurity) {
+  } else if (isSecurity) {
     description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Secure, fast, and accurate. No signup required. Best free ${base} tool for developers and security professionals.`
   } else if (isSocial) {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Perfect dimensions for social media. ${noSignup} Works on mobile and desktop.`
@@ -100,11 +110,11 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 
   // ── Build comprehensive keyword list ──
   const keywords = buildComprehensiveKeywords(slug, t, base, categoryLabel, {
-    isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isStudent, isConverter, isColor, isSEO,
+    isPdf, isImage, isConvert, isCompress, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isStudent, isConverter, isColor, isSEO, isKbTool, isPassport,
   })
 
   // ── Generate tool-specific FAQs ──
-  const faq = generateSmartFAQs(slug, toolTitle, categoryLabel, { isPdf, isImage, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter })
+  const faq = generateSmartFAQs(slug, toolTitle, categoryLabel, { isPdf, isImage, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isKbTool, isPassport })
 
   return { title, description, keywords, h1: `${toolTitle} — Free Online Tool`, faq }
 }
@@ -126,42 +136,65 @@ function buildComprehensiveKeywords(
     'ishu tools', 'ishutools', 'free online tools', 'student tools',
     'indian student hub university tools', 'ishu kumar tools',
     `free ${categoryLabel.toLowerCase()} tool`,
+    // India-specific
+    `${base} for india`, `${base} hindi`, `${base} govt portal`,
+    `${base} indian student`, `free tools india`, `ishu tools india`,
   ]
 
+  if (flags.isKbTool) kw.push(
+    `${base} government form`, `${base} ssc`, `${base} upsc`, `${base} rrb`,
+    `${base} ibps`, `${base} bank exam`, `${base} neet`, `${base} jee`,
+    `${base} government job`, `${base} admit card`, `${base} application form`,
+    `compress photo for government portal`, `resize photo for exam`,
+    `photo size reducer india`, `image size ke liye compress karo`,
+  )
+  if (flags.isPassport) kw.push(
+    `${base} india`, `${base} passport`, `${base} id proof`,
+    `${base} government exam`, `${base} ssc cgl`, `${base} upsc ias`,
+    `${base} pan card photo`, `${base} aadhaar`, `passport photo online india`,
+    `sarkari exam photo size`, `government form photo size india`,
+  )
   if (flags.isPdf) kw.push(
     `${title} ilovepdf alternative`, `${title} smallpdf alternative`,
     `${title} pdfcandy alternative`, `${title} adobe alternative`,
     `${base} free pdf tool`, `${base} pdf online`,
     `best free pdf tool`, `pdf tool no signup`, `pdf tool no watermark`,
+    `pdf tool india`, `pdf tools for students india`,
   )
   if (flags.isImage) kw.push(
     `${title} iloveimg alternative`, `${title} pi7 alternative`,
     `${title} canva alternative`, `${base} free image tool`,
     `best free image tool`, `image tool no signup`,
     `${base} photo editor`, `${base} high quality`,
+    `image tools india`, `free photo tools india`,
   )
   if (flags.isCompress) kw.push(
     `reduce ${base}`, `${base} smaller file`, `${base} file size reduce`,
     `compress ${base} online`, `${base} without quality loss`,
+    `compress ${base} for whatsapp`, `compress ${base} for email`,
   )
   if (flags.isConvert) kw.push(
     `convert ${base}`, `${base} converter`, `${base} conversion online`,
     `best ${base} converter`, `fast ${base} conversion`,
+    `${base} converter india`, `free ${base} converter`,
   )
   if (flags.isCalculator) kw.push(
     `${base} accurate`, `${base} formula`, `${base} for exam`,
     `${base} for college`, `${base} for school`,
     `${base} homework helper`, `${base} exam preparation`,
     `student calculator`, `online calculator`, `free calculator india`,
+    `${base} iit jee`, `${base} neet`, `${base} upsc`,
   )
   if (flags.isDeveloper) kw.push(
     `${title} developer tool`, `${title} web developer`,
     `${title} api tool`, `${base} online tool`,
     `developer tools online`, `free developer utilities`,
+    `developer tools india`, `free coding tools`,
   )
   if (flags.isOCR) kw.push(
     `extract text online`, `image to text free`, `ocr online free`,
     `${base} high accuracy`, `${base} indian languages`,
+    `hindi ocr online`, `ocr tool india`,
   )
   if (flags.isSecurity) kw.push(
     `${base} secure`, `${base} encryption`, `${base} free`,
@@ -170,14 +203,16 @@ function buildComprehensiveKeywords(
   if (flags.isSocial) kw.push(
     `${base} instagram`, `${base} youtube`, `${base} facebook`,
     `social media image resizer`, `free social media tools`,
+    `${base} whatsapp`, `${base} instagram india`,
   )
   if (flags.isConverter) kw.push(
     `unit converter online`, `${base} units`,
     `${base} formula`, `${base} calculation`,
     `free unit converter`, `convert units online`,
+    `unit converter india`, `converter for students`,
   )
 
-  return Array.from(new Set(kw)).slice(0, 80)
+  return Array.from(new Set(kw)).slice(0, 90)
 }
 
 function generateSmartFAQs(
@@ -198,6 +233,26 @@ function generateSmartFAQs(
     } Everything is free — no signup, no watermark, no app needed.`,
   })
 
+  // KB/size tools - India specific FAQ
+  if (flags.isKbTool) {
+    faqs.push({
+      question: `Is ${toolTitle} suitable for government exam applications in India?`,
+      answer: `Yes! ${toolTitle} on ISHU TOOLS is specifically designed to help Indian students and job seekers meet the exact photo size requirements for SSC CGL/CHSL, UPSC, RRB NTPC, IBPS PO/Clerk, SBI PO/Clerk, NTA, and all state government exam portals.`,
+    })
+    faqs.push({
+      question: `What image formats does ${toolTitle} accept?`,
+      answer: `${toolTitle} on ISHU TOOLS accepts JPG, JPEG, PNG, WEBP, BMP, and most common image formats. The output is always delivered as a compressed JPEG for maximum size reduction.`,
+    })
+  }
+
+  // Passport/ID tools - India specific FAQ
+  if (flags.isPassport) {
+    faqs.push({
+      question: `Is this photo format accepted by Indian government portals?`,
+      answer: `Yes! The output from this tool meets the standard requirements for Indian government exam portals, SSC, UPSC, RRB, IBPS, bank exams, and passport applications. Always verify the specific portal's requirements before uploading.`,
+    })
+  }
+
   // Is it free / limits
   faqs.push({
     question: `Is ${toolTitle} completely free to use?`,
@@ -205,7 +260,7 @@ function generateSmartFAQs(
   })
 
   // Safety/privacy
-  if (flags.isPdf || flags.isImage) {
+  if (flags.isPdf || flags.isImage || flags.isKbTool) {
     faqs.push({
       question: `Is my file safe when using ${toolTitle}?`,
       answer: `Absolutely. ${toolTitle} on ISHU TOOLS processes your files securely on our server and automatically deletes them after processing. We never store, share, or access your files. Your data stays private.`,
@@ -219,7 +274,7 @@ function generateSmartFAQs(
       answer: `${toolTitle} on ISHU TOOLS offers the same quality as iLovePDF and SmallPDF — completely free, with no signup, no watermark, no file limits, and no ads. ISHU TOOLS is the best free alternative to iLovePDF, SmallPDF, and PDFCandy.`,
     })
   }
-  if (flags.isImage) {
+  if (flags.isImage && !flags.isKbTool) {
     faqs.push({
       question: `Is ${toolTitle} better than iLoveIMG or pi7.org?`,
       answer: `${toolTitle} on ISHU TOOLS is a top free alternative to iLoveIMG and pi7.org. It's completely free, requires no signup, produces no watermarks, and works on all devices including mobile.`,
@@ -248,7 +303,7 @@ function generateSmartFAQs(
     })
   }
 
-  return faqs.slice(0, 6)
+  return faqs.slice(0, 7)
 }
 
 function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
@@ -3214,6 +3269,130 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to split a large text file?', answer: 'Upload your text file on ISHU TOOLS Split Text File. Choose split method (by lines or size). Click Run to split it into smaller parts. Download each part separately.' },
     ],
+  },
+
+  // ════════════════════════════════════════════════
+  //  SPECIFIC KB COMPRESSION TOOLS (INDIA SEO)
+  // ════════════════════════════════════════════════
+  'compress-to-5kb': {
+    title: 'Compress Image to 5KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 5KB online free. Works for Aadhaar, PAN card, exam portals with strict 5KB limits. JPG, PNG, WEBP supported. No signup.',
+    keywords: ['compress image to 5kb', 'image to 5kb', 'photo to 5kb', 'reduce image 5kb', '5kb photo compressor', 'aadhaar photo 5kb', 'exam portal 5kb', 'ishu compress 5kb'],
+    h1: 'Compress Image to 5KB — Free Online',
+    faq: [
+      { question: 'Can I compress a photo to exactly 5KB?', answer: 'Yes! ISHU TOOLS compresses your image to 5KB or less while maintaining maximum possible quality. Upload your JPG, PNG, or WEBP image and download the 5KB result instantly.' },
+      { question: 'Which government portals need 5KB photos?', answer: 'Many Indian exam portals like NTA, SSC, Railway, and banking portals require photos under 5KB. ISHU TOOLS makes it easy to compress to the exact required size.' },
+    ],
+  },
+  'compress-to-10kb': {
+    title: 'Compress Image to 10KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 10KB online free. Required by SSC, RRB, IBPS, and many government exam portals. No signup, instant download.',
+    keywords: ['compress image to 10kb', 'jpeg to 10kb', 'image 10kb', 'photo 10kb', '10kb image compressor', 'ssc photo 10kb', 'government exam photo 10kb', 'ishu compress 10kb'],
+    h1: 'Compress Image to 10KB — Free Online',
+    faq: [
+      { question: 'How do I compress a photo to 10KB for an exam?', answer: 'Upload your photo on ISHU TOOLS Compress to 10KB tool, set target to 10 KB, and click Run. Download the compressed 10KB photo for your exam portal.' },
+      { question: 'Which exams require photos under 10KB?', answer: 'SSC CGL, CHSL, RRB NTPC, IBPS PO/Clerk, SBI PO/Clerk, and many state government exams in India require photos under 10KB.' },
+    ],
+  },
+  'compress-to-20kb': {
+    title: 'Compress Image to 20KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 20KB online free. Used for SSC, UPSC, RRB, bank exam portals. Supports JPG, PNG, WEBP. No signup required.',
+    keywords: ['compress image to 20kb', 'jpeg to 20kb', 'image to 20kb', 'photo 20kb', '20kb compressor', 'ssc photo 20kb', 'upsc photo 20kb', 'ishu 20kb'],
+    h1: 'Compress Image to 20KB — Free Online',
+    faq: [
+      { question: 'How to reduce image size to 20KB for government forms?', answer: 'Open ISHU TOOLS Compress to 20KB, upload your photo, and click Run. The tool will reduce it to 20KB or below and you can download it instantly.' },
+    ],
+  },
+  'compress-to-30kb': {
+    title: 'Compress Image to 30KB Free Online | ISHU TOOLS',
+    description: 'Compress images to 30KB online free. Used for IBPS, SBI PO, and banking exam photo size requirements. No signup, instant download.',
+    keywords: ['compress image to 30kb', 'jpeg to 30kb', 'image 30kb', 'photo 30kb', '30kb compressor', 'ibps photo 30kb', 'sbi po photo 30kb', 'ishu 30kb'],
+    h1: 'Compress Image to 30KB — Free Online',
+    faq: [],
+  },
+  'compress-to-50kb': {
+    title: 'Compress Image to 50KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 50KB online free. Widely required by government portals, university applications, and job application forms in India.',
+    keywords: ['compress image to 50kb', 'jpeg to 50kb', 'image to 50kb', 'photo 50kb', '50kb compressor', 'reduce photo 50kb', 'government form 50kb photo', 'ishu compress 50kb'],
+    h1: 'Compress Image to 50KB — Free Online',
+    faq: [
+      { question: 'Which applications require 50KB photos?', answer: 'University admission forms, scholarship applications, job portals, and many government schemes in India require photos in 20-50KB range.' },
+      { question: 'Will image quality be affected when compressing to 50KB?', answer: 'ISHU TOOLS optimizes quality while hitting the target size. For small targets like 50KB, some quality reduction is necessary but the result remains clear enough for official use.' },
+    ],
+  },
+  'compress-to-100kb': {
+    title: 'Compress Image to 100KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 100KB online free. No signup, no watermark. JPG, PNG, WEBP supported. Instant download. Best free alternative to pi7.org.',
+    keywords: ['compress image to 100kb', 'jpeg to 100kb', 'image 100kb', 'photo to 100kb', '100kb compressor', 'reduce image 100kb', 'ishu compress 100kb'],
+    h1: 'Compress Image to 100KB — Free Online',
+    faq: [
+      { question: 'How to compress an image to 100KB?', answer: 'Upload your image on ISHU TOOLS, set target to 100 KB, and click Run. Download your 100KB compressed image instantly for free.' },
+    ],
+  },
+  'compress-to-150kb': {
+    title: 'Compress Image to 150KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 150KB online free. Ideal for passport, visa, and university admission photo requirements. No signup required.',
+    keywords: ['compress image to 150kb', 'jpeg to 150kb', 'image 150kb', 'photo 150kb', '150kb compressor', 'ishu compress 150kb'],
+    h1: 'Compress Image to 150KB — Free Online',
+    faq: [],
+  },
+  'compress-to-200kb': {
+    title: 'Compress Image to 200KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 200KB online free. Common for scholarship, college, and official photo submissions. No signup, no watermark.',
+    keywords: ['compress image to 200kb', 'jpeg to 200kb', 'image 200kb', 'photo to 200kb', '200kb compressor', 'ishu compress 200kb'],
+    h1: 'Compress Image to 200KB — Free Online',
+    faq: [],
+  },
+  'compress-to-300kb': {
+    title: 'Compress Image to 300KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 300KB online free. Supports all image formats. Instant download. No signup, no watermark.',
+    keywords: ['compress image to 300kb', 'jpeg to 300kb', 'image 300kb', 'photo 300kb', '300kb compressor', 'ishu compress 300kb'],
+    h1: 'Compress Image to 300KB — Free Online',
+    faq: [],
+  },
+  'compress-to-500kb': {
+    title: 'Compress Image to 500KB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 500KB online free. Great for email attachments, WhatsApp, and document submissions. No signup required.',
+    keywords: ['compress image to 500kb', 'jpeg to 500kb', 'image 500kb', 'photo 500kb', '500kb compressor', 'ishu compress 500kb'],
+    h1: 'Compress Image to 500KB — Free Online',
+    faq: [],
+  },
+  'compress-to-1mb': {
+    title: 'Compress Image to 1MB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 1MB (1000KB) online free. Reduces large photos for email, WhatsApp, and social media. No signup, instant download.',
+    keywords: ['compress image to 1mb', 'jpeg to 1mb', 'image to 1mb', 'reduce image 1mb', '1mb compressor', 'ishu compress 1mb'],
+    h1: 'Compress Image to 1MB — Free Online',
+    faq: [],
+  },
+  'compress-to-2mb': {
+    title: 'Compress Image to 2MB Free Online | ISHU TOOLS',
+    description: 'Compress any image to 2MB online free. For high-resolution document uploads and applications requiring up to 2MB photos.',
+    keywords: ['compress image to 2mb', 'jpeg to 2mb', 'image to 2mb', 'reduce image 2mb', '2mb compressor', 'ishu compress 2mb'],
+    h1: 'Compress Image to 2MB — Free Online',
+    faq: [],
+  },
+  'jpg-to-kb': {
+    title: 'JPG to KB — Reduce JPG File Size Free | ISHU TOOLS',
+    description: 'Reduce JPG file size to any specific KB free online. Enter target KB and compress instantly. No signup, no watermark.',
+    keywords: ['jpg to kb', 'reduce jpg file size', 'compress jpg to kb', 'jpg kb reducer', 'jpeg kb compressor', 'ishu jpg to kb'],
+    h1: 'JPG to KB — Reduce JPG Size Free',
+    faq: [
+      { question: 'How do I reduce a JPG to a specific KB size?', answer: 'Open ISHU TOOLS JPG to KB tool, upload your JPG, enter the target KB size, and click Run. Download the compressed JPG at your target file size.' },
+    ],
+  },
+  'jpeg-to-kb': {
+    title: 'JPEG to KB — Compress JPEG to Target Size Free | ISHU TOOLS',
+    description: 'Compress JPEG to specific KB online free. Set exact target size for government forms, exams, and job portals. No signup required.',
+    keywords: ['jpeg to kb', 'compress jpeg to kb', 'jpeg file size reducer', 'jpeg kb compressor', 'ishu jpeg to kb'],
+    h1: 'JPEG to KB — Compress to Target Size Free',
+    faq: [],
+  },
+  'png-to-kb': {
+    title: 'PNG to KB — Reduce PNG File Size Free | ISHU TOOLS',
+    description: 'Reduce PNG file size to specific KB free online. Converts to JPEG for maximum compression. No signup, no watermark, instant download.',
+    keywords: ['png to kb', 'reduce png to kb', 'compress png to kb', 'png kb reducer', 'png file size', 'ishu png to kb'],
+    h1: 'PNG to KB — Reduce PNG Size Free',
+    faq: [],
   },
 
   // ════════════════════════════════════════════════

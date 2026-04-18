@@ -898,13 +898,15 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'target_mb', label: 'Target Size (MB)', type: 'number', defaultValue: '1.0' },
   ],
   'jpg-to-kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' }],
-  'compress-to-15kb': [],
-  'compress-to-25kb': [],
-  'compress-to-30kb': [],
-  'compress-to-40kb': [],
-  'compress-to-150kb': [],
-  'compress-to-300kb': [],
-  'compress-to-2mb': [],
+  'jpeg-to-kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' }],
+  'png-to-kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' }],
+  'compress-to-15kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '15' }],
+  'compress-to-25kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '25' }],
+  'compress-to-30kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '30' }],
+  'compress-to-40kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '40' }],
+  'compress-to-150kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '150' }],
+  'compress-to-300kb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '300' }],
+  'compress-to-2mb': [{ name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '2000' }],
   'jpg-to-pdf-under-50kb': [
     {
       name: 'strict',
@@ -2020,7 +2022,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
-  'whitespace-remover': [
+    'whitespace-remover': [
     { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste text with extra spaces...' },
     {
       name: 'mode',

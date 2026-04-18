@@ -803,10 +803,26 @@ IMAGE_PLUS_HANDLERS = {
     # Image editing
     "circle-crop": handle_circle_crop,
     "add-text-to-image": handle_add_text_to_image,
-    # Size tools
+    # Size tools — generic
     "compress-image-to-kb": handle_compress_image_to_kb,
     "reduce-image-size-kb": handle_reduce_image_size_kb,
     "increase-image-size-kb": handle_increase_image_size_kb,
+    # Size tools — specific target KB (all reuse handle_compress_image_to_kb)
+    "compress-to-5kb": handle_compress_image_to_kb,
+    "compress-to-10kb": handle_compress_image_to_kb,
+    "compress-to-20kb": handle_compress_image_to_kb,
+    "compress-to-30kb": handle_compress_image_to_kb,
+    "compress-to-50kb": handle_compress_image_to_kb,
+    "compress-to-100kb": handle_compress_image_to_kb,
+    "compress-to-150kb": handle_compress_image_to_kb,
+    "compress-to-200kb": handle_compress_image_to_kb,
+    "compress-to-300kb": handle_compress_image_to_kb,
+    "compress-to-500kb": handle_compress_image_to_kb,
+    "compress-to-1mb": handle_compress_image_to_kb,
+    "compress-to-2mb": handle_compress_image_to_kb,
+    "jpg-to-kb": handle_compress_image_to_kb,
+    "jpeg-to-kb": handle_compress_image_to_kb,
+    "png-to-kb": handle_compress_image_to_kb,
     # DPI tools
     "dpi-checker": handle_dpi_checker,
     "change-dpi": handle_change_dpi,
