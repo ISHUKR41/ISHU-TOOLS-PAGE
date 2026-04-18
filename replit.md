@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **550+ handlers** across **28 categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax**, **Network & Domain**, **Video Tools**, and **Productivity**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **604 handlers** across **28+ categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools**, **Productivity**, and **Validator Tools**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 604+ tools with critical CSS inline in index.html for instant responsiveness.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -14,8 +14,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
-  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + `health_finance_handlers.py` + **`video_extra_handlers.py`**
-- **565 registered handlers** (most recent count)
+  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + `health_finance_handlers.py` + `video_extra_handlers.py` + **`ultra_tools_handlers.py`** (39 handlers: validators, CSS generators, finance calculators, health tools)
+- **604 registered handlers** (most recent count)
   - Rate limiting: 60 req/min per IP on the execute endpoint
   - Workspace cleanup: auto-removed via BackgroundTasks after every request
 

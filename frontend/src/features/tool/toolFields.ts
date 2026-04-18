@@ -2551,6 +2551,288 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'bulk-image-compressor': [
     { name: 'quality', label: 'Compression Quality', type: 'number', defaultValue: '75', placeholder: '1-95 (75 = good balance)' },
   ],
+
+  // ── Ultra Tools v3 ──────────────────────────────────────────────────────
+  'text-readability-score': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here to get readability score, Flesch-Kincaid grade, word count, and more...' },
+  ],
+  'text-readability': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here to analyze readability...' },
+  ],
+  'cron-builder': [
+    { name: 'expression', label: 'Cron Expression', type: 'text', defaultValue: '0 9 * * 1-5', placeholder: 'Enter cron expression, e.g. 0 9 * * 1-5 (weekdays at 9 AM)...' },
+  ],
+  'investment-calculator': [
+    { name: 'principal', label: 'Initial Investment (₹)', type: 'number', defaultValue: '100000', placeholder: 'Initial investment amount...' },
+    { name: 'monthly_contribution', label: 'Monthly Contribution (₹)', type: 'number', defaultValue: '5000', placeholder: 'Monthly SIP / contribution...' },
+    { name: 'rate', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '12', placeholder: 'Expected return %...' },
+    { name: 'years', label: 'Investment Period (years)', type: 'number', defaultValue: '10', placeholder: 'Years...' },
+    {
+      name: 'mode',
+      label: 'Compounding Mode',
+      type: 'select',
+      defaultValue: 'compound',
+      options: [
+        { label: 'Compound (monthly)', value: 'compound' },
+        { label: 'Simple Interest', value: 'simple' },
+      ],
+    },
+  ],
+  'net-worth-calculator': [
+    { name: 'cash', label: 'Cash & Bank Balance (₹)', type: 'number', defaultValue: '200000', placeholder: 'Total cash and savings...' },
+    { name: 'investments', label: 'Investments & Stocks (₹)', type: 'number', defaultValue: '500000', placeholder: 'MF, stocks, FD, etc...' },
+    { name: 'real_estate', label: 'Real Estate Value (₹)', type: 'number', defaultValue: '3000000', placeholder: 'Property current value...' },
+    { name: 'vehicle', label: 'Vehicles (₹)', type: 'number', defaultValue: '500000', placeholder: 'Car, bike current value...' },
+    { name: 'other_assets', label: 'Other Assets (₹)', type: 'number', defaultValue: '0', placeholder: 'Gold, jewelry, etc...' },
+    { name: 'home_loan', label: 'Home Loan Outstanding (₹)', type: 'number', defaultValue: '2000000', placeholder: 'Remaining home loan...' },
+    { name: 'car_loan', label: 'Car Loan Outstanding (₹)', type: 'number', defaultValue: '300000', placeholder: 'Remaining car loan...' },
+    { name: 'personal_loan', label: 'Personal Loan (₹)', type: 'number', defaultValue: '0', placeholder: 'Personal loan balance...' },
+    { name: 'credit_card', label: 'Credit Card Debt (₹)', type: 'number', defaultValue: '0', placeholder: 'Credit card outstanding...' },
+    { name: 'other_liabilities', label: 'Other Liabilities (₹)', type: 'number', defaultValue: '0', placeholder: 'Any other debts...' },
+  ],
+  'retirement-planner': [
+    { name: 'current_age', label: 'Current Age', type: 'number', defaultValue: '30', placeholder: 'Your current age...' },
+    { name: 'retirement_age', label: 'Retirement Age', type: 'number', defaultValue: '60', placeholder: 'Target retirement age...' },
+    { name: 'monthly_expense', label: 'Current Monthly Expenses (₹)', type: 'number', defaultValue: '50000', placeholder: 'Monthly living expenses...' },
+    { name: 'current_savings', label: 'Current Savings (₹)', type: 'number', defaultValue: '500000', placeholder: 'Total savings/investments today...' },
+    { name: 'monthly_saving', label: 'Monthly Savings/Investment (₹)', type: 'number', defaultValue: '15000', placeholder: 'Monthly contribution...' },
+    { name: 'expected_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '10', placeholder: 'Expected return on investments...' },
+    { name: 'inflation', label: 'Inflation Rate (%)', type: 'number', defaultValue: '6', placeholder: 'Expected inflation rate...' },
+    { name: 'life_expectancy', label: 'Life Expectancy (years)', type: 'number', defaultValue: '80', placeholder: 'Expected life span...' },
+  ],
+  'pace-calculator': [
+    { name: 'distance', label: 'Distance', type: 'number', defaultValue: '5', placeholder: 'Enter distance...' },
+    {
+      name: 'unit',
+      label: 'Distance Unit',
+      type: 'select',
+      defaultValue: 'km',
+      options: [
+        { label: 'Kilometers (km)', value: 'km' },
+        { label: 'Miles', value: 'miles' },
+      ],
+    },
+    { name: 'time_minutes', label: 'Time (minutes)', type: 'number', defaultValue: '30', placeholder: 'Total time in minutes...' },
+  ],
+  'menstrual-cycle-calculator': [
+    { name: 'last_period_date', label: 'First Day of Last Period', type: 'text', defaultValue: '', placeholder: 'YYYY-MM-DD format, e.g. 2026-04-01' },
+    { name: 'cycle_length', label: 'Cycle Length (days)', type: 'number', defaultValue: '28', placeholder: 'Average cycle length in days (21-35)...' },
+    { name: 'period_duration', label: 'Period Duration (days)', type: 'number', defaultValue: '5', placeholder: 'How many days does period last...' },
+  ],
+  'pregnancy-week-calculator': [
+    { name: 'lmp_date', label: 'First Day of Last Menstrual Period (LMP)', type: 'text', defaultValue: '', placeholder: 'YYYY-MM-DD format, e.g. 2025-11-01' },
+  ],
+  'speed-calculator': [
+    {
+      name: 'solve_for',
+      label: 'Calculate',
+      type: 'select',
+      defaultValue: 'speed',
+      options: [
+        { label: 'Speed (from distance + time)', value: 'speed' },
+        { label: 'Distance (from speed + time)', value: 'distance' },
+        { label: 'Time (from speed + distance)', value: 'time' },
+      ],
+    },
+    { name: 'distance', label: 'Distance (km)', type: 'number', defaultValue: '100', placeholder: 'Distance in km (leave blank to calculate)...' },
+    { name: 'speed', label: 'Speed (km/h)', type: 'number', defaultValue: '60', placeholder: 'Speed in km/h (leave blank to calculate)...' },
+    { name: 'time', label: 'Time (hours)', type: 'number', defaultValue: '', placeholder: 'Time in hours (leave blank to calculate)...' },
+  ],
+  'aspect-ratio-calculator': [
+    { name: 'width', label: 'Width (pixels)', type: 'number', defaultValue: '1920', placeholder: 'Image width in pixels...' },
+    { name: 'height', label: 'Height (pixels)', type: 'number', defaultValue: '1080', placeholder: 'Image height in pixels...' },
+    { name: 'target_width', label: 'Target Width (optional)', type: 'number', defaultValue: '', placeholder: 'Enter target width to get scaled height...' },
+    { name: 'target_height', label: 'Target Height (optional)', type: 'number', defaultValue: '', placeholder: 'Or enter target height to get scaled width...' },
+  ],
+  'gstin-validator': [
+    { name: 'gstin', label: 'GSTIN Number', type: 'text', placeholder: 'Enter 15-digit GSTIN, e.g. 29ABCDE1234F1Z5...' },
+  ],
+  'pan-validator': [
+    { name: 'pan', label: 'PAN Number', type: 'text', placeholder: 'Enter 10-character PAN, e.g. ABCDE1234F...' },
+  ],
+  'phone-number-validator': [
+    { name: 'phone', label: 'Phone Number', type: 'text', placeholder: 'Enter phone number, e.g. +91 98765 43210...' },
+    {
+      name: 'country',
+      label: 'Country',
+      type: 'select',
+      defaultValue: 'IN',
+      options: [
+        { label: 'India (IN)', value: 'IN' },
+        { label: 'United States (US)', value: 'US' },
+        { label: 'United Kingdom (UK)', value: 'UK' },
+        { label: 'Australia (AU)', value: 'AU' },
+        { label: 'Canada (CA)', value: 'CA' },
+      ],
+    },
+  ],
+  'email-validator': [
+    { name: 'email', label: 'Email Address', type: 'text', placeholder: 'Enter email to validate, e.g. user@example.com...' },
+  ],
+  'css-gradient-generator': [
+    {
+      name: 'type',
+      label: 'Gradient Type',
+      type: 'select',
+      defaultValue: 'linear',
+      options: [
+        { label: 'Linear Gradient', value: 'linear' },
+        { label: 'Radial Gradient', value: 'radial' },
+        { label: 'Conic Gradient', value: 'conic' },
+      ],
+    },
+    { name: 'color1', label: 'Color 1 (HEX)', type: 'text', defaultValue: '#3bd0ff', placeholder: 'e.g. #3bd0ff or rgb(59,208,255)...' },
+    { name: 'color2', label: 'Color 2 (HEX)', type: 'text', defaultValue: '#a855f7', placeholder: 'e.g. #a855f7...' },
+    { name: 'color3', label: 'Color 3 (optional)', type: 'text', defaultValue: '', placeholder: 'e.g. #f43f5e (optional)...' },
+    { name: 'angle', label: 'Angle (degrees)', type: 'number', defaultValue: '135', placeholder: '0-360 degrees...' },
+  ],
+  'box-shadow-generator': [
+    { name: 'h_offset', label: 'Horizontal Offset (px)', type: 'number', defaultValue: '0', placeholder: 'Horizontal shadow offset...' },
+    { name: 'v_offset', label: 'Vertical Offset (px)', type: 'number', defaultValue: '10', placeholder: 'Vertical shadow offset...' },
+    { name: 'blur', label: 'Blur Radius (px)', type: 'number', defaultValue: '20', placeholder: 'Blur amount...' },
+    { name: 'spread', label: 'Spread Radius (px)', type: 'number', defaultValue: '0', placeholder: 'Shadow spread...' },
+    { name: 'color', label: 'Shadow Color', type: 'text', defaultValue: 'rgba(0,0,0,0.3)', placeholder: 'e.g. rgba(0,0,0,0.3) or #000000...' },
+    {
+      name: 'inset',
+      label: 'Inset Shadow',
+      type: 'select',
+      defaultValue: 'false',
+      options: [
+        { label: 'No (outer shadow)', value: 'false' },
+        { label: 'Yes (inner shadow)', value: 'true' },
+      ],
+    },
+  ],
+  'ppf-calculator': [
+    { name: 'yearly_investment', label: 'Yearly Investment (₹)', type: 'number', defaultValue: '150000', placeholder: 'Max ₹1,50,000/year...' },
+    { name: 'years', label: 'Investment Period (years)', type: 'number', defaultValue: '15', placeholder: 'Minimum 15 years...' },
+    { name: 'interest_rate', label: 'Interest Rate (%)', type: 'number', defaultValue: '7.1', placeholder: 'Current PPF rate is 7.1%...' },
+  ],
+  'nps-calculator': [
+    { name: 'monthly_contribution', label: 'Monthly Contribution (₹)', type: 'number', defaultValue: '5000', placeholder: 'Monthly NPS contribution...' },
+    { name: 'current_age', label: 'Current Age', type: 'number', defaultValue: '30', placeholder: 'Your current age...' },
+    { name: 'retirement_age', label: 'Retirement Age', type: 'number', defaultValue: '60', placeholder: 'NPS exits at 60...' },
+    { name: 'expected_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '10', placeholder: 'Expected annual return on NPS...' },
+    { name: 'annuity_percent', label: 'Annuity Percentage (%)', type: 'number', defaultValue: '40', placeholder: 'Min 40% must go to annuity...' },
+    { name: 'annuity_rate', label: 'Annuity Rate (%)', type: 'number', defaultValue: '6', placeholder: 'Annual annuity payout rate...' },
+  ],
+  'macro-calculator': [
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: 'Your current weight...' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '175', placeholder: 'Height in centimeters...' },
+    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: 'Your age...' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'male',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+    {
+      name: 'activity',
+      label: 'Activity Level',
+      type: 'select',
+      defaultValue: 'moderate',
+      options: [
+        { label: 'Sedentary (no exercise)', value: 'sedentary' },
+        { label: 'Light (1-3 days/week)', value: 'light' },
+        { label: 'Moderate (3-5 days/week)', value: 'moderate' },
+        { label: 'Active (6-7 days/week)', value: 'active' },
+        { label: 'Very Active (twice daily)', value: 'very active' },
+      ],
+    },
+    {
+      name: 'goal',
+      label: 'Goal',
+      type: 'select',
+      defaultValue: 'maintain',
+      options: [
+        { label: 'Maintain Weight', value: 'maintain' },
+        { label: 'Lose Weight (cutting)', value: 'lose' },
+        { label: 'Gain Muscle (bulking)', value: 'gain' },
+      ],
+    },
+  ],
+  'braille-converter': [
+    { name: 'text', label: 'Text to Convert', type: 'textarea', placeholder: 'Enter English text to convert to Braille symbols...' },
+  ],
+  'text-to-braille': [
+    { name: 'text', label: 'Text to Convert', type: 'textarea', placeholder: 'Enter English text to convert to Braille...' },
+  ],
+  'net-salary-calculator-india': [
+    { name: 'ctc', label: 'Annual CTC (₹)', type: 'number', defaultValue: '1000000', placeholder: 'Your annual CTC (e.g. 1000000 = 10 LPA)...' },
+    {
+      name: 'regime',
+      label: 'Tax Regime',
+      type: 'select',
+      defaultValue: 'new',
+      options: [
+        { label: 'New Tax Regime (FY 2024-25)', value: 'new' },
+        { label: 'Old Tax Regime', value: 'old' },
+      ],
+    },
+    { name: 'extra_deductions_80c', label: '80C Deductions (₹, Old Regime)', type: 'number', defaultValue: '150000', placeholder: 'PF, PPF, ELSS, LIC, etc...' },
+    { name: 'rent_paid', label: 'Monthly Rent Paid (₹)', type: 'number', defaultValue: '0', placeholder: 'For HRA exemption calculation...' },
+    {
+      name: 'city_type',
+      label: 'City Type (for HRA)',
+      type: 'select',
+      defaultValue: 'metro',
+      options: [
+        { label: 'Metro (Mumbai, Delhi, Kolkata, Chennai)', value: 'metro' },
+        { label: 'Non-Metro', value: 'non-metro' },
+      ],
+    },
+  ],
+  'hra-calculator-india': [
+    { name: 'basic_monthly', label: 'Basic + DA Monthly (₹)', type: 'number', defaultValue: '40000', placeholder: 'Monthly Basic + DA salary...' },
+    { name: 'hra_received', label: 'HRA Received Monthly (₹)', type: 'number', defaultValue: '20000', placeholder: 'Monthly HRA from employer...' },
+    { name: 'rent_paid', label: 'Rent Paid Monthly (₹)', type: 'number', defaultValue: '25000', placeholder: 'Actual monthly rent paid...' },
+    {
+      name: 'city_type',
+      label: 'City Type',
+      type: 'select',
+      defaultValue: 'metro',
+      options: [
+        { label: 'Metro City (50% of Basic)', value: 'metro' },
+        { label: 'Non-Metro City (40% of Basic)', value: 'non-metro' },
+      ],
+    },
+  ],
+  'epf-calculator-india': [
+    { name: 'basic_da', label: 'Basic + DA Monthly (₹)', type: 'number', defaultValue: '50000', placeholder: 'Monthly basic + DA salary...' },
+    { name: 'years', label: 'Years of Service', type: 'number', defaultValue: '10', placeholder: 'Total years in service...' },
+    { name: 'interest_rate', label: 'EPF Interest Rate (%)', type: 'number', defaultValue: '8.25', placeholder: 'Current EPF rate is 8.25%...' },
+    { name: 'existing_balance', label: 'Existing PF Balance (₹)', type: 'number', defaultValue: '0', placeholder: 'Current EPF balance if any...' },
+  ],
+  'gratuity-calculator-india': [
+    { name: 'last_basic_da', label: 'Last Drawn Basic + DA Monthly (₹)', type: 'number', defaultValue: '60000', placeholder: 'Monthly Basic + DA...' },
+    { name: 'years_of_service', label: 'Years of Service', type: 'number', defaultValue: '10', placeholder: 'Total years with employer...' },
+    {
+      name: 'is_covered',
+      label: 'Covered under Gratuity Act?',
+      type: 'select',
+      defaultValue: 'true',
+      options: [
+        { label: 'Yes (companies with 10+ employees)', value: 'true' },
+        { label: 'No (smaller organizations)', value: 'false' },
+      ],
+    },
+  ],
+  'url-validator': [
+    { name: 'url', label: 'URL to Validate', type: 'text', placeholder: 'Enter URL to validate, e.g. https://ishutools.com...' },
+  ],
+  'color-blindness-simulator': [
+    { name: 'color', label: 'Hex Color Code', type: 'text', defaultValue: '#3bd0ff', placeholder: 'Enter hex color, e.g. #FF5733 or #3bd0ff...' },
+  ],
+  'grammar-score': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text to check grammar quality and get a score...' },
+  ],
+  'grammar-checker-advanced': [
+    { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
+  ],
 }
 
 export function getToolFields(slug: string): ToolField[] {

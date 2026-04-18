@@ -843,6 +843,358 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
     )
   }
 
+  // CSS Gradient generator — live preview + code
+  if (data.css_code && data.preview_style && data.gradient_type !== undefined) {
+    const cssObj = data.css_code as Record<string, string>
+    const presets = (data.presets || []) as Array<{ name: string; css: string }>
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ width: '100%', height: 120, borderRadius: 16, border: '1px solid rgba(255,255,255,0.12)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)', backgroundImage: String(data.preview_style).replace('background:', '').trim() }} />
+        {Object.entries(cssObj).map(([label, css]) => (
+          <div key={label}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
+            <CodeResultRenderer text={css} label={label} />
+          </div>
+        ))}
+        {data.tailwind_hint && (
+          <div style={{ padding: '10px 14px', background: 'rgba(59,208,255,0.08)', border: '1px solid rgba(59,208,255,0.2)', borderRadius: 8, fontSize: 13, color: '#3bd0ff' }}>
+            🎨 {String(data.tailwind_hint)}
+          </div>
+        )}
+        {presets.length > 0 && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 8, textTransform: 'uppercase' }}>Presets</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {presets.map((p, i) => (
+                <div key={i} title={p.css} style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', backgroundImage: p.css.replace('background:', '').trim(), color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                  {p.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Box shadow generator — live preview + code
+  if (data.box_shadow_css !== undefined && data.inset !== undefined) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ width: '100%', height: 100, borderRadius: 16, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 120, height: 60, borderRadius: 12, background: 'rgba(255,255,255,0.12)', boxShadow: String(data.box_shadow_css) }} />
+        </div>
+        <CodeResultRenderer text={`box-shadow: ${String(data.box_shadow_css)};`} label="CSS Code" />
+        {data.tailwind_hint && (
+          <div style={{ padding: '10px 14px', background: 'rgba(59,208,255,0.08)', border: '1px solid rgba(59,208,255,0.2)', borderRadius: 8, fontSize: 13, color: '#3bd0ff' }}>
+            🎨 {String(data.tailwind_hint)}
+          </div>
+        )}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8 }}>
+          {['h_offset', 'v_offset', 'blur', 'spread', 'color', 'inset'].map(k => data[k] !== undefined && (
+            <DataCard key={k} label={k} value={data[k]} accent={accent} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Color blindness simulator
+  if ((data.original_hex !== undefined || data.original_color !== undefined) && data.simulations !== undefined) {
+    const originalColor = String(data.original_hex ?? data.original_color ?? '')
+    const sims = data.simulations as Record<string, { hex: string; rgb: string; description: string }>
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 60, height: 60, borderRadius: 12, background: originalColor, border: '2px solid rgba(255,255,255,0.15)', flexShrink: 0 }} />
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 16 }}>{originalColor.toUpperCase()}</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Original Color</div>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+          {Object.entries(sims).map(([name, sim]) => (
+            <div key={name} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: sim.hex, border: '1px solid rgba(255,255,255,0.1)', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: '#ecf2ff', textTransform: 'capitalize' }}>{name.replace(/_/g, ' ')}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 }}>{sim.hex} · {sim.rgb}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>{sim.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // GSTIN/PAN validator
+  if (data.is_valid !== undefined && (data.gstin !== undefined || data.pan !== undefined)) {
+    const isValid = Boolean(data.is_valid)
+    const displayKeys = data.gstin ? ['gstin', 'state', 'pan_number', 'entity_number', 'validation_message'] : ['pan', 'pan_type', 'pan_holder_type', 'validation_message']
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ textAlign: 'center', padding: '20px', borderRadius: 16, border: `2px solid ${isValid ? '#3ee58f40' : '#ff6b6b40'}`, background: isValid ? 'rgba(62,229,143,0.06)' : 'rgba(255,107,107,0.06)' }}>
+          <div style={{ fontSize: 40, lineHeight: 1 }}>{isValid ? '✅' : '❌'}</div>
+          <div style={{ fontWeight: 800, fontSize: 18, marginTop: 8, color: isValid ? '#3ee58f' : '#ff6b6b' }}>
+            {data.gstin || data.pan}
+          </div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>{String(data.validation_message || (isValid ? 'Valid' : 'Invalid'))}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          {displayKeys.filter(k => data[k] !== undefined && k !== 'validation_message').map(k => (
+            <DataCard key={k} label={k} value={data[k]} accent={accent} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Net worth calculator
+  if (data.total_assets !== undefined && data.total_liabilities !== undefined && data.net_worth !== undefined) {
+    const netWorth = Number(data.net_worth)
+    const isPositive = netWorth >= 0
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, border: `2px solid ${isPositive ? '#3ee58f40' : '#ff6b6b40'}`, background: isPositive ? 'rgba(62,229,143,0.05)' : 'rgba(255,107,107,0.05)' }}>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Net Worth</div>
+          <div style={{ fontWeight: 900, fontSize: 36, color: isPositive ? '#3ee58f' : '#ff6b6b', marginTop: 4 }}>{String(data.formatted_net_worth || `₹${netWorth.toLocaleString()}`)}</div>
+          {data.financial_health && <div style={{ marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{String(data.financial_health)}</div>}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(62,229,143,0.06)', border: '1px solid rgba(62,229,143,0.15)' }}>
+            <div style={{ fontSize: 12, color: '#3ee58f', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Total Assets</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#3ee58f' }}>{String(data.formatted_assets || `₹${Number(data.total_assets).toLocaleString()}`)}</div>
+          </div>
+          <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(255,107,107,0.06)', border: '1px solid rgba(255,107,107,0.15)' }}>
+            <div style={{ fontSize: 12, color: '#ff6b6b', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Total Liabilities</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#ff6b6b' }}>{String(data.formatted_liabilities || `₹${Number(data.total_liabilities).toLocaleString()}`)}</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Salary / Net salary calculator India
+  if (data.monthly_net_salary !== undefined && data.annual_net_salary !== undefined) {
+    const components = data.components as Record<string, number> | undefined
+    const deductions = data.deductions as Record<string, number> | undefined
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Monthly In-Hand Salary</div>
+          <div style={{ fontWeight: 900, fontSize: 36, color: accent, marginTop: 4 }}>₹{Number(data.monthly_net_salary).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>Annual: ₹{Number(data.annual_net_salary).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          <DataCard label="Tax Regime" value={data.tax_regime} accent={accent} />
+          <DataCard label="Effective Tax Rate" value={`${data.effective_tax_rate}%`} accent={accent} />
+          <DataCard label="Monthly CTC" value={`₹${Number(data.monthly_ctc).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          {data.taxable_income !== undefined && <DataCard label="Taxable Income" value={`₹${Number(data.taxable_income).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />}
+        </div>
+        {components && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase' }}>Salary Components</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+              {Object.entries(components).map(([k, v]) => <DataCard key={k} label={k} value={`₹${Number(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />)}
+            </div>
+          </div>
+        )}
+        {deductions && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase' }}>Deductions</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+              {Object.entries(deductions).map(([k, v]) => <DataCard key={k} label={k} value={`₹${Number(v).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent="#ff6b6b" />)}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // PPF/NPS/EPF maturity calculators
+  if (data.maturity_amount !== undefined && data.total_invested !== undefined) {
+    const breakdown = (data.yearly_breakdown || data.monthly_breakdown) as Record<string, unknown>[] | undefined
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Maturity Amount</div>
+          <div style={{ fontWeight: 900, fontSize: 36, color: accent, marginTop: 4 }}>₹{Number(data.maturity_amount).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          <DataCard label="Total Invested" value={`₹${Number(data.total_invested).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          {data.total_interest_earned !== undefined && <DataCard label="Interest Earned" value={`₹${Number(data.total_interest_earned).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent="#3ee58f" />}
+          {data.wealth_gained_percent !== undefined && <DataCard label="Wealth Gained" value={`${data.wealth_gained_percent}%`} accent="#3ee58f" />}
+          {data.tax_status !== undefined && <DataCard label="Tax Status" value={data.tax_status} accent={accent} />}
+        </div>
+        {data.tax_benefit !== undefined && (
+          <div style={{ padding: '10px 14px', background: 'rgba(62,229,143,0.08)', border: '1px solid rgba(62,229,143,0.2)', borderRadius: 8, fontSize: 13, color: '#3ee58f' }}>
+            💰 Tax Benefit: {String(data.tax_benefit)}
+          </div>
+        )}
+        {breakdown && breakdown.length > 0 && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase' }}>Year-by-Year Breakdown</div>
+            <TableRenderer data={breakdown.slice(0, 20)} accent={accent} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Macro calculator (handles both flat and nested macros structure)
+  if (data.target_calories !== undefined && data.macros !== undefined) {
+    const macroData = data.macros as Record<string, { grams: number; calories: number; percent: number }>
+    const protein = macroData.protein?.grams ?? (data as Record<string, number>).protein_g ?? 0
+    const carbs = macroData.carbohydrates?.grams ?? (data as Record<string, number>).carbs_g ?? 0
+    const fat = macroData.fats?.grams ?? (data as Record<string, number>).fat_g ?? 0
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Daily Target Calories</div>
+          <div style={{ fontWeight: 900, fontSize: 48, color: accent, marginTop: 4 }}>{Number(data.target_calories).toLocaleString()}</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>kcal/day</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(59,208,255,0.08)', border: '1px solid rgba(59,208,255,0.2)', textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#3bd0ff' }}>{protein}g</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>Protein</div>
+            {macroData.protein?.percent && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{macroData.protein.percent}% of calories</div>}
+          </div>
+          <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(249,168,37,0.08)', border: '1px solid rgba(249,168,37,0.2)', textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#f9a825' }}>{carbs}g</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>Carbs</div>
+            {macroData.carbohydrates?.percent && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{macroData.carbohydrates.percent}% of calories</div>}
+          </div>
+          <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.2)', textAlign: 'center' }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#a855f7' }}>{fat}g</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>Fat</div>
+            {macroData.fats?.percent && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{macroData.fats.percent}% of calories</div>}
+          </div>
+        </div>
+        {(data.bmr !== undefined || data.tdee !== undefined) && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+            {data.bmr !== undefined && <DataCard label="BMR (Basal)" value={`${data.bmr} kcal`} accent={accent} />}
+            {data.tdee !== undefined && <DataCard label="TDEE (Maintenance)" value={`${data.tdee} kcal`} accent={accent} />}
+            {data.goal !== undefined && <DataCard label="Goal" value={data.goal} accent={accent} />}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Investment calculator (handles final_amount or final_value; total_interest or total_return)
+  if ((data.final_amount !== undefined || data.final_value !== undefined) && data.total_invested !== undefined) {
+    const finalAmt = Number(data.final_amount ?? data.final_value)
+    const totalReturn = Number(data.total_interest ?? data.total_return ?? (finalAmt - Number(data.total_invested)))
+    const yearlyData = data.yearly_projection as Record<string, unknown>[] | undefined
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase' }}>Final Value</div>
+          <div style={{ fontWeight: 900, fontSize: 36, color: accent, marginTop: 4 }}>₹{finalAmt.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          <DataCard label="Total Invested" value={`₹${Number(data.total_invested).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          <DataCard label="Interest/Return" value={`₹${totalReturn.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent="#3ee58f" />
+          {data.cagr !== undefined && <DataCard label="CAGR" value={`${data.cagr}%`} accent={accent} />}
+          {data.interest_rate_pa !== undefined && <DataCard label="Annual Rate" value={`${data.interest_rate_pa}%`} accent={accent} />}
+        </div>
+        {yearlyData && yearlyData.length > 0 && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase' }}>Yearly Projection</div>
+            <TableRenderer data={yearlyData.slice(0, 20)} accent={accent} />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Retirement planner (corpus_required or corpus_needed fields)
+  if ((data.corpus_required !== undefined || data.corpus_needed !== undefined) && data.projected_corpus !== undefined) {
+    const corpusNeeded = Number(data.corpus_required ?? data.corpus_needed)
+    const isOnTrack = data.is_on_track === true || Number(data.projected_corpus) >= corpusNeeded
+    const shortfall = !isOnTrack ? corpusNeeded - Number(data.projected_corpus) : 0
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: isOnTrack ? 'rgba(62,229,143,0.06)' : 'rgba(255,107,107,0.06)', border: `2px solid ${isOnTrack ? '#3ee58f' : '#ff6b6b'}40` }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: isOnTrack ? '#3ee58f' : '#ff6b6b' }}>
+            {isOnTrack ? '🎉 You are on track for retirement!' : '⚠️ Retirement shortfall detected'}
+          </div>
+          {!isOnTrack && shortfall > 0 && (
+            <div style={{ fontSize: 13, color: '#ff6b6b', marginTop: 6 }}>Shortfall: ₹{shortfall.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          )}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
+          <DataCard label="Corpus Required" value={`₹${corpusNeeded.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          <DataCard label="Projected Corpus" value={`₹${Number(data.projected_corpus).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={isOnTrack ? '#3ee58f' : '#ff6b6b'} />
+          {data.additional_monthly_saving_needed !== undefined && !isOnTrack && (
+            <DataCard label="Extra Monthly Needed" value={`₹${Number(data.additional_monthly_saving_needed).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent="#f59e0b" />
+          )}
+          {data.years_to_retirement !== undefined && <DataCard label="Years to Retire" value={String(data.years_to_retirement)} accent={accent} />}
+          {data.future_monthly_expense_at_retirement !== undefined && (
+            <DataCard label="Future Monthly Expenses" value={`₹${Number(data.future_monthly_expense_at_retirement).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Gratuity calculator
+  if (data.gratuity_amount !== undefined && data.years_of_service !== undefined) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase' }}>Gratuity Amount</div>
+          <div style={{ fontWeight: 900, fontSize: 36, color: accent, marginTop: 4 }}>₹{Number(data.gratuity_amount).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>{String(data.tax_status || '')}</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          <DataCard label="Years of Service" value={String(data.years_of_service)} accent={accent} />
+          <DataCard label="Last Basic + DA" value={`₹${Number(data.last_basic_da).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
+          {data.covered !== undefined && <DataCard label="Gratuity Act Covered" value={data.covered ? 'Yes' : 'No'} accent={accent} />}
+          {data.formula_used && <DataCard label="Formula" value={data.formula_used} accent={accent} />}
+        </div>
+      </div>
+    )
+  }
+
+  // Cron builder
+  if (data.expression !== undefined && data.human_readable !== undefined) {
+    const nextRuns = data.next_runs as string[] | undefined
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ padding: '18px 24px', borderRadius: 16, background: `${accent}0d`, border: `2px solid ${accent}30` }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 6 }}>Human Readable Schedule</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: accent }}>{String(data.human_readable)}</div>
+        </div>
+        <CodeResultRenderer text={String(data.expression)} label="Cron Expression" />
+        {data.components !== undefined && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+            {Object.entries(data.components as Record<string, string>).map(([part, val]) => (
+              <div key={part} style={{ padding: '10px', background: 'rgba(255,255,255,0.04)', borderRadius: 10, textAlign: 'center', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 4 }}>{part}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: accent, fontFamily: 'monospace' }}>{val}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {nextRuns && nextRuns.length > 0 && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase' }}>Next Runs</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {nextRuns.map((run, i) => (
+                <div key={i} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, fontSize: 13, color: '#ecf2ff', border: '1px solid rgba(255,255,255,0.07)', fontFamily: 'monospace' }}>
+                  {i + 1}. {run}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   // Fallback: generic smart display
   const scalarKeys = Object.keys(data).filter(k => data[k] !== null && data[k] !== undefined && typeof data[k] !== 'object' && !Array.isArray(data[k]))
   const arrayKeys = Object.keys(data).filter(k => Array.isArray(data[k]) && !((data[k] as unknown[])[0] && typeof (data[k] as unknown[])[0] === 'object'))

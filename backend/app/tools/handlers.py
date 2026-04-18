@@ -6493,3 +6493,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load video_extra_handlers: {e}")
 
 print(f"[handlers] COMPLETE GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge ultra tools handlers (validators, CSS generators, health, finance v3)
+try:
+    from .ultra_tools_handlers import ULTRA_HANDLERS
+    HANDLERS.update(ULTRA_HANDLERS)
+    print(f"[handlers] Loaded {len(ULTRA_HANDLERS)} ultra tool handlers (validators/CSS/finance/health)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load ultra_tools_handlers: {e}")
+
+print(f"[handlers] ULTRA GRAND TOTAL registered handlers: {len(HANDLERS)}")

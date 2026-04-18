@@ -4990,6 +4990,196 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Calories Burned Calculator — Exercise Calories Free',
     faq: [],
   },
+
+  // ─── Ultra Tools v3 — Handcrafted Premium SEO ────────────────────────────
+  'ppf-calculator': {
+    title: 'PPF Calculator 2024-25 — Public Provident Fund Maturity Calculator India | ISHU TOOLS',
+    description: 'Calculate PPF maturity amount, total interest earned, and yearly breakdown for FY 2024-25 at 7.1% interest rate. Public Provident Fund calculator with year-by-year breakdown. Free, no signup.',
+    keywords: ['ppf calculator', 'ppf calculator 2024-25', 'public provident fund calculator', 'ppf maturity calculator', 'ppf interest calculator india', 'ppf returns 7.1%', 'post office ppf calculator', 'ppf calculator online free', 'ppf account maturity', 'ppf 15 year calculator'],
+    h1: 'PPF Calculator India 2024-25 — Free Public Provident Fund Calculator',
+    faq: [
+      { question: 'What is the current PPF interest rate?', answer: 'The current PPF interest rate for Q1 FY 2024-25 is 7.1% per annum, compounded annually. This rate is set by the Government of India.' },
+      { question: 'What is the PPF lock-in period?', answer: 'PPF has a 15-year lock-in period. After 15 years, you can extend in blocks of 5 years. Partial withdrawal is allowed from Year 7.' },
+      { question: 'What is the maximum yearly investment in PPF?', answer: 'The maximum investment in PPF is ₹1,50,000 per financial year. The minimum is ₹500 per year.' },
+    ],
+  },
+  'nps-calculator': {
+    title: 'NPS Calculator India — National Pension System Returns & Monthly Pension | ISHU TOOLS',
+    description: 'Calculate NPS corpus, lump sum withdrawal, and monthly pension amount. National Pension System (NPS) calculator for Tier 1 account — retirement planning made easy.',
+    keywords: ['nps calculator', 'nps calculator india', 'national pension system calculator', 'nps return calculator', 'nps monthly pension calculator', 'tier 1 nps calculator', 'nps corpus calculator', 'nps annuity calculator', 'nps retirement calculator', 'nps maturity calculator'],
+    h1: 'NPS Calculator India — National Pension System Monthly Pension Calculator',
+    faq: [
+      { question: 'What is NPS Tier 1?', answer: 'NPS Tier 1 is the primary pension account with tax benefits under 80C (up to ₹1.5L) and additional ₹50,000 under 80CCD(1B). Minimum monthly contribution is ₹500.' },
+      { question: 'How much of NPS corpus can be withdrawn at retirement?', answer: 'At retirement (age 60), you can withdraw 60% of the corpus as lump sum (tax-free) and must invest at least 40% in an annuity for monthly pension.' },
+    ],
+  },
+  'net-salary-calculator-india': {
+    title: 'In-Hand Salary Calculator India 2024-25 — CTC to Take-Home Pay | ISHU TOOLS',
+    description: 'Calculate monthly in-hand salary from CTC for FY 2024-25. Accounts for PF, income tax (new & old regime), professional tax, HRA exemption. Know your exact take-home pay instantly.',
+    keywords: ['in hand salary calculator india', 'net salary calculator india', 'ctc to take home salary', 'salary calculator india 2024-25', 'take home pay calculator', 'monthly salary after tax india', 'salary breakup calculator', 'new tax regime salary calculator', 'old tax regime salary calculator', '10 lpa in hand salary'],
+    h1: 'In-Hand Salary Calculator India 2024-25 — CTC to Take-Home Pay',
+    faq: [
+      { question: 'How to calculate in-hand salary from CTC?', answer: 'In-hand salary = CTC − PF contribution (12% of Basic) − Professional Tax (₹200/month) − Income Tax. Use our calculator to get exact monthly take-home based on your CTC and tax regime.' },
+      { question: 'Which tax regime is better — old or new?', answer: 'If you have major deductions (80C, HRA, home loan interest), the old regime may save more tax. With no deductions, the new regime (2024-25 rates) is often better. Use our calculator to compare both.' },
+    ],
+  },
+  'epf-calculator-india': {
+    title: 'EPF Calculator India 2024 — PF Maturity & Employee Provident Fund Calculator | ISHU TOOLS',
+    description: 'Calculate EPF (Employee Provident Fund) maturity amount, employer & employee contributions, and total corpus at retirement. EPF interest rate 2024: 8.25% p.a. Free PF calculator.',
+    keywords: ['epf calculator india', 'pf calculator india', 'provident fund calculator', 'epf maturity calculator', 'employee pf calculator', 'epfo calculator', 'pf balance calculator', 'pf corpus calculator', 'epf interest rate 2024', 'epf interest rate 8.25'],
+    h1: 'EPF Calculator India 2024 — Employee Provident Fund Maturity Calculator',
+    faq: [
+      { question: 'What is the current EPF interest rate?', answer: 'The EPF interest rate for FY 2023-24 is 8.25% per annum. This is declared by the EPFO each year.' },
+      { question: 'How much does the employer contribute to EPF?', answer: 'The employer contributes 12% of Basic + DA. Of this, 8.33% goes to EPS (Employees\' Pension Scheme) and 3.67% goes to EPF.' },
+    ],
+  },
+  'hra-calculator-india': {
+    title: 'HRA Calculator India 2024-25 — House Rent Allowance Tax Exemption | ISHU TOOLS',
+    description: 'Calculate HRA tax exemption under Section 10(13A) online. Enter basic salary, HRA received, and rent paid to find tax-exempt and taxable HRA. Valid for FY 2024-25.',
+    keywords: ['hra calculator india', 'hra exemption calculator', 'house rent allowance calculator', 'hra tax exemption india 2024', 'section 10 13a hra calculator', 'hra calculation formula india', 'metro hra calculator', 'non metro hra calculator', 'hra tax saving calculator'],
+    h1: 'HRA Calculator India 2024-25 — Section 10(13A) Exemption Calculator',
+    faq: [
+      { question: 'How is HRA exemption calculated?', answer: 'HRA exemption = Minimum of: (1) Actual HRA received, (2) 50% of Basic+DA (metro) or 40% (non-metro), (3) Rent paid minus 10% of Basic+DA. The lowest of the three is exempt.' },
+    ],
+  },
+  'gratuity-calculator-india': {
+    title: 'Gratuity Calculator India 2024 — Employee Gratuity Amount Formula | ISHU TOOLS',
+    description: 'Calculate gratuity amount under the Payment of Gratuity Act. Enter last drawn salary and years of service to get exact gratuity. Formula, tax exemption, and eligibility explained.',
+    keywords: ['gratuity calculator india', 'gratuity calculator online', 'gratuity amount calculator', 'gratuity formula india', 'gratuity calculation 2024', 'employee gratuity calculator', 'how to calculate gratuity', 'gratuity tax exemption india', 'payment of gratuity act calculator'],
+    h1: 'Gratuity Calculator India 2024 — Payment of Gratuity Act Formula',
+    faq: [
+      { question: 'What is the formula for gratuity?', answer: 'For employees covered under the Gratuity Act: Gratuity = (Last Basic + DA × 15 × Years of Service) / 26. For non-covered employees: (Last Basic + DA × 15 × Years) / 30.' },
+      { question: 'Is gratuity taxable?', answer: 'Gratuity is tax-free up to ₹20 lakh for government employees and private employees covered under the Act. Amount above ₹20 lakh is taxable.' },
+    ],
+  },
+  'gstin-validator': {
+    title: 'GSTIN Validator India — GST Number Verification Online Free | ISHU TOOLS',
+    description: 'Validate GSTIN (GST Identification Number) online instantly. Extract state code, entity type, PAN, and check format compliance. Free GSTIN checker — no signup required.',
+    keywords: ['gstin validator', 'gst number validator', 'gst verification online', 'gstin format check india', 'validate gstin online', 'gstin checker', 'gst number check india free', 'gstin state code checker', 'gstin format explained', 'gst number verification'],
+    h1: 'GSTIN Validator India — Free GST Number Verification Online',
+    faq: [
+      { question: 'What is GSTIN format?', answer: 'GSTIN is a 15-character alphanumeric code: 2 digits state code + 10-character PAN + 1 entity number + "Z" + 1 checksum digit. Example: 27ABCDE1234F1Z5.' },
+      { question: 'How to find state from GSTIN?', answer: 'The first 2 digits of GSTIN are the state code. E.g., 27 = Maharashtra, 07 = Delhi, 29 = Karnataka, 33 = Tamil Nadu, 09 = Uttar Pradesh.' },
+    ],
+  },
+  'investment-calculator': {
+    title: 'Investment Return Calculator India — Compound Interest & SIP Returns | ISHU TOOLS',
+    description: 'Calculate investment returns with compound interest and monthly SIP contributions. See year-by-year wealth growth. Compare lump sum vs SIP. Free investment calculator India.',
+    keywords: ['investment calculator india', 'compound interest calculator india', 'sip return calculator', 'investment return calculator', 'lump sum investment calculator', 'wealth calculator', 'mutual fund return calculator', 'investment growth calculator', 'monthly investment calculator', 'long term investment calculator'],
+    h1: 'Investment Return Calculator India — Compound Interest & SIP Growth',
+    faq: [
+      { question: 'What is the power of compounding?', answer: 'Compounding means earning returns on your returns. ₹1 lakh invested at 12% for 10 years grows to ₹3.1 lakh (compound) vs ₹2.2 lakh (simple interest). Start early for maximum benefit.' },
+    ],
+  },
+  'retirement-planner': {
+    title: 'Retirement Planner Calculator India — FIRE & Corpus Calculator | ISHU TOOLS',
+    description: 'Calculate retirement corpus needed, projected savings, and monthly investment required. Inflation-adjusted retirement planning calculator for India. FIRE calculator with shortfall analysis.',
+    keywords: ['retirement calculator india', 'retirement planner india', 'fire calculator india', 'retirement corpus calculator', 'how much to save for retirement india', 'retirement planning calculator', 'retirement fund calculator', 'early retirement calculator india', 'retire at 45 india calculator'],
+    h1: 'Retirement Planner Calculator India — FIRE & Corpus Planning',
+    faq: [
+      { question: 'How much corpus do I need for retirement in India?', answer: 'Rule of thumb: Your corpus should be 25-30x your annual expenses (adjusted for inflation). E.g., if you need ₹60,000/month = ₹7.2L/year, you need ₹1.8 crore to ₹2.16 crore corpus.' },
+    ],
+  },
+  'net-worth-calculator': {
+    title: 'Net Worth Calculator India — Personal Finance Net Worth Tracker | ISHU TOOLS',
+    description: 'Calculate your total net worth from assets and liabilities. Include cash, investments, real estate, vehicles vs loans, credit card debt. Get your financial health score. Free online.',
+    keywords: ['net worth calculator india', 'net worth calculator online', 'personal net worth calculator', 'assets liabilities calculator india', 'how to calculate net worth india', 'net worth tracker', 'financial health calculator', 'wealth calculator india'],
+    h1: 'Net Worth Calculator India — Assets Minus Liabilities = Your Net Worth',
+    faq: [
+      { question: 'How to calculate net worth?', answer: 'Net Worth = Total Assets − Total Liabilities. Assets include: cash, investments (MF, stocks, FD), property, vehicles. Liabilities include: home loan, car loan, personal loan, credit card debt.' },
+    ],
+  },
+  'css-gradient-generator': {
+    title: 'CSS Gradient Generator — Linear, Radial & Conic Gradient Code | ISHU TOOLS',
+    description: 'Generate CSS linear, radial, and conic gradients online. Get ready-to-use CSS code, Tailwind class hints, and preset gradients. Free CSS gradient builder — no signup.',
+    keywords: ['css gradient generator', 'css gradient generator online', 'linear gradient generator', 'radial gradient css generator', 'conic gradient tool', 'css background gradient', 'gradient code generator', 'web design gradient', 'css gradient builder', 'tailwind gradient generator'],
+    h1: 'CSS Gradient Generator — Linear, Radial & Conic Gradient Code Generator',
+    faq: [
+      { question: 'How to create a CSS gradient?', answer: 'Use `background: linear-gradient(angle, color1, color2)`. Example: `background: linear-gradient(135deg, #3bd0ff, #a855f7);` creates a diagonal gradient from blue to purple.' },
+    ],
+  },
+  'box-shadow-generator': {
+    title: 'CSS Box Shadow Generator — Shadow Code Builder Online Free | ISHU TOOLS',
+    description: 'Generate CSS box-shadow code online with live preview. Customize offset, blur, spread, color, and inset. Copy ready-to-use CSS and Tailwind shadow classes. Free box shadow builder.',
+    keywords: ['box shadow generator', 'css box shadow generator', 'box shadow css online', 'shadow generator web', 'css shadow builder', 'drop shadow generator css', 'box shadow code generator', 'inset shadow css', 'tailwind shadow generator', 'css box shadow examples'],
+    h1: 'CSS Box Shadow Generator — Live Shadow Preview & CSS Code',
+    faq: [
+      { question: 'What is CSS box-shadow?', answer: 'box-shadow: h-offset v-offset blur spread color inset. Example: `box-shadow: 0 10px 20px rgba(0,0,0,0.3)` adds a subtle shadow below an element.' },
+    ],
+  },
+  'macro-calculator': {
+    title: 'Macro Calculator — Daily Protein, Carbs & Fat Calculator for Cutting/Bulking | ISHU TOOLS',
+    description: 'Calculate daily macronutrient needs (protein, carbs, fat, calories) based on weight, height, activity level, and goal (lose/gain/maintain weight). Free macro calculator for fitness.',
+    keywords: ['macro calculator', 'macronutrient calculator', 'protein calculator daily', 'cutting macros calculator', 'bulking macros calculator', 'daily calorie and macro calculator', 'iifym calculator', 'fitness macro calculator india', 'keto macro calculator', 'macro calculator for weight loss'],
+    h1: 'Macro Calculator — Daily Protein, Carbs & Fat for Your Fitness Goal',
+    faq: [
+      { question: 'How many grams of protein do I need daily?', answer: 'For muscle building: 1.6-2.2g protein per kg of body weight. For weight loss: 1.2-1.6g/kg. For maintenance: 0.8-1.2g/kg. Use our macro calculator for personalized recommendations.' },
+    ],
+  },
+  'menstrual-cycle-calculator': {
+    title: 'Period Calculator & Menstrual Cycle Tracker — Next Period Date | ISHU TOOLS',
+    description: 'Calculate your next period date, ovulation window, fertile days, and current cycle phase. Free menstrual cycle calculator and period tracker online — no app needed.',
+    keywords: ['period calculator', 'menstrual cycle calculator', 'next period date calculator', 'ovulation calculator', 'fertile window calculator', 'period tracker online', 'menstrual cycle tracker', 'when is my next period', 'cycle phase calculator', 'ovulation date calculator'],
+    h1: 'Period Calculator — Menstrual Cycle Tracker & Next Period Date',
+    faq: [
+      { question: 'How to calculate next period date?', answer: 'Add your cycle length (typically 28 days) to the first day of your last period. If your cycle is 28 days and last period started April 1, your next period starts April 29.' },
+      { question: 'When is ovulation?', answer: 'Ovulation typically occurs 14 days before your next period. For a 28-day cycle, ovulation is around day 14. Your fertile window is days 10-16.' },
+    ],
+  },
+  'pregnancy-week-calculator': {
+    title: 'Pregnancy Week Calculator — Due Date & Trimester Calculator | ISHU TOOLS',
+    description: 'Calculate pregnancy week, trimester, and due date from Last Menstrual Period (LMP). Know exactly how many weeks pregnant you are and track pregnancy milestones. Free online.',
+    keywords: ['pregnancy week calculator', 'due date calculator', 'pregnancy calculator from lmp', 'how many weeks pregnant am i', 'trimester calculator', 'pregnancy due date calculator', 'pregnancy milestone calculator', 'gestational age calculator', 'pregnancy calculator india'],
+    h1: 'Pregnancy Week Calculator — Due Date & Trimester from LMP',
+    faq: [
+      { question: 'How is pregnancy week calculated?', answer: 'Pregnancy week is calculated from the first day of your Last Menstrual Period (LMP). A full-term pregnancy is 40 weeks (280 days) from LMP.' },
+      { question: 'What are the three trimesters?', answer: 'Trimester 1: Weeks 1-12. Trimester 2: Weeks 13-26. Trimester 3: Weeks 27-40. Most major organ development happens in the first trimester.' },
+    ],
+  },
+  'color-blindness-simulator': {
+    title: 'Color Blindness Simulator Online — Test Web Colors for Accessibility | ISHU TOOLS',
+    description: 'Simulate how colors appear to people with color blindness (protanopia, deuteranopia, tritanopia, achromatopsia). Test web accessibility and UI design for colorblind users.',
+    keywords: ['color blindness simulator', 'colorblind simulator', 'protanopia simulator', 'deuteranopia color tool', 'tritanopia color simulator', 'web accessibility color test', 'color blind friendly design', 'wcag color accessibility', 'color blindness test online', 'colorblind friendly palette'],
+    h1: 'Color Blindness Simulator — Test Colors for Colorblind Accessibility',
+    faq: [
+      { question: 'What is protanopia?', answer: 'Protanopia is red-green color blindness where red cones are absent. People with protanopia cannot distinguish red and green colors. It affects about 1% of males.' },
+      { question: 'How do I make my website color-blind friendly?', answer: 'Use high contrast, avoid red-green combinations, add patterns/shapes alongside color, and use our color blindness simulator to check how your colors appear to colorblind users.' },
+    ],
+  },
+  'grammar-score': {
+    title: 'Grammar Checker & Score Online Free — Grammar Quality Analyzer | ISHU TOOLS',
+    description: 'Check English grammar quality and get a score out of 100. Detects passive voice, sentence length issues, and common grammar problems. Free grammar score estimator — no signup.',
+    keywords: ['grammar checker online free', 'grammar score checker', 'english grammar checker', 'grammar quality analyzer', 'grammar score estimator', 'text grammar checker', 'grammar checker tool', 'online grammar tool', 'grammar scoring tool', 'check grammar score'],
+    h1: 'Grammar Score Checker — Analyze English Grammar Quality Free',
+    faq: [],
+  },
+  'cron-builder': {
+    title: 'Cron Expression Builder & Explainer Online — Cron Job Generator | ISHU TOOLS',
+    description: 'Build, validate, and understand cron expressions online. Converts cron syntax to human-readable schedule. Includes common presets and next-run time explanations. Free cron builder.',
+    keywords: ['cron expression builder', 'cron job builder online', 'cron syntax generator', 'cron expression explainer', 'cron schedule builder', 'cron expression validator', 'cron generator online free', 'linux cron builder', 'understand cron expression', 'cron job scheduler'],
+    h1: 'Cron Expression Builder — Build & Understand Cron Jobs Online',
+    faq: [
+      { question: 'What does * * * * * mean in cron?', answer: '* * * * * = Run every minute. The 5 fields are: Minute (0-59), Hour (0-23), Day of Month (1-31), Month (1-12), Day of Week (0-6, Sun=0).' },
+    ],
+  },
+  'text-readability-score': {
+    title: 'Text Readability Score — Flesch-Kincaid Grade Level Calculator Online | ISHU TOOLS',
+    description: 'Calculate text readability score using Flesch Reading Ease and Flesch-Kincaid Grade Level. Get reading grade, word count, sentences, and audience level. Free readability analyzer.',
+    keywords: ['readability score checker', 'flesch kincaid calculator', 'text readability analyzer', 'reading level calculator online', 'content readability checker', 'flesch reading ease score', 'readability grade level', 'text complexity checker', 'ishu tools readability', 'readability score free'],
+    h1: 'Text Readability Score — Flesch-Kincaid Grade Level Calculator',
+    faq: [
+      { question: 'What is a good Flesch reading ease score?', answer: '90-100: Very Easy (5th grade). 70-80: Fairly Easy (7th grade). 60-70: Standard (8th-9th grade). 30-50: Difficult (college). Under 30: Very Difficult (professional). Aim for 60-70 for general web content.' },
+    ],
+  },
+  'pan-validator': {
+    title: 'PAN Card Validator India — PAN Number Verification Online Free | ISHU TOOLS',
+    description: 'Validate Indian PAN card number online instantly. Check PAN format, identify holder type (individual, company, HUF, trust), and verify PAN compliance. Free PAN checker.',
+    keywords: ['pan card validator', 'pan number validator india', 'pan verification online free', 'pan card format checker', 'pan number check india', 'income tax pan validator', 'pan card holder type checker', 'individual pan validator', 'company pan number checker'],
+    h1: 'PAN Card Validator India — Free PAN Number Verification Online',
+    faq: [
+      { question: 'What is the PAN card format?', answer: 'PAN is a 10-character alphanumeric code: 3 letters (AAA) + P/C/H/F/A/T/B/L/J/G (entity type) + 1 letter (surname first) + 4 digits + 1 check letter. Example: ABCDE1234F.' },
+    ],
+  },
 }
 
 
