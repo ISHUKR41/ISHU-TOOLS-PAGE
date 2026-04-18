@@ -158,15 +158,34 @@ export default function ToolPage() {
         upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
         upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywordText })
         upsertMeta('meta[name="robots"]', { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' })
+        upsertMeta('meta[name="author"]', { name: 'author', content: 'Ishu Kumar — ISHU TOOLS' })
+        upsertMeta('meta[name="creator"]', { name: 'creator', content: 'Ishu Kumar' })
+        upsertMeta('meta[name="publisher"]', { name: 'publisher', content: 'ISHU TOOLS — ishutools.com' })
+        upsertMeta('meta[name="category"]', { name: 'category', content: detail.category })
         upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: toolUrl })
+        // Open Graph — full set for social sharing
         upsertMeta('meta[property="og:title"]', { property: 'og:title', content: seo.title })
         upsertMeta('meta[property="og:description"]', { property: 'og:description', content: seo.description })
         upsertMeta('meta[property="og:url"]', { property: 'og:url', content: toolUrl })
         upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
         upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ISHU TOOLS' })
+        upsertMeta('meta[property="og:image"]', { property: 'og:image', content: 'https://ishutools.com/og-image.png' })
+        upsertMeta('meta[property="og:image:width"]', { property: 'og:image:width', content: '1200' })
+        upsertMeta('meta[property="og:image:height"]', { property: 'og:image:height', content: '630' })
+        upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: `${detail.title} — ISHU TOOLS Free Online Tool` })
+        upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: 'en_IN' })
+        // Twitter Card
         upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
+        upsertMeta('meta[name="twitter:site"]', { name: 'twitter:site', content: '@ISHU_IITP' })
+        upsertMeta('meta[name="twitter:creator"]', { name: 'twitter:creator', content: '@ISHU_IITP' })
         upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: seo.title })
         upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: seo.description })
+        upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: 'https://ishutools.com/og-image.png' })
+        upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: `${detail.title} — ISHU TOOLS` })
+        // Article metadata for rich snippets
+        upsertMeta('meta[property="article:author"]', { property: 'article:author', content: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/' })
+        upsertMeta('meta[property="article:published_time"]', { property: 'article:published_time', content: '2024-01-01T00:00:00Z' })
+        upsertMeta('meta[property="article:modified_time"]', { property: 'article:modified_time', content: new Date().toISOString() })
 
         // JSON-LD structured data
         const existingLd = document.getElementById('tool-jsonld')
@@ -199,11 +218,42 @@ export default function ToolPage() {
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: 'https://ishutools.com/' },
-            { '@type': 'ListItem', position: 2, name: getCategoryTheme(detail.category).label || detail.category, item: `https://ishutools.com/category/${detail.category}` },
-            { '@type': 'ListItem', position: 3, name: detail.title, item: toolUrl },
+            { '@type': 'ListItem', position: 2, name: 'All Tools', item: 'https://ishutools.com/tools' },
+            { '@type': 'ListItem', position: 3, name: getCategoryTheme(detail.category).label || detail.category, item: `https://ishutools.com/category/${detail.category}` },
+            { '@type': 'ListItem', position: 4, name: detail.title, item: toolUrl },
           ],
         })
         document.head.appendChild(breadcrumbScript)
+
+        // SpeakableSpecification JSON-LD for voice search (Google Assistant, Alexa)
+        const existingSpeakable = document.getElementById('tool-speakable-jsonld')
+        if (existingSpeakable) existingSpeakable.remove()
+        const speakableScript = document.createElement('script')
+        speakableScript.id = 'tool-speakable-jsonld'
+        speakableScript.type = 'application/ld+json'
+        speakableScript.textContent = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          '@id': toolUrl,
+          url: toolUrl,
+          name: seo.title,
+          description: seo.description,
+          inLanguage: 'en-IN',
+          isPartOf: { '@type': 'WebSite', url: 'https://ishutools.com', name: 'ISHU TOOLS' },
+          about: { '@type': 'Thing', name: detail.title, description: detail.description },
+          author: {
+            '@type': 'Person',
+            name: 'Ishu Kumar',
+            url: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/',
+          },
+          speakable: {
+            '@type': 'SpeakableSpecification',
+            cssSelector: ['.tool-seo-description', '.tool-hero-title', 'h1'],
+          },
+          dateModified: new Date().toISOString().split('T')[0],
+          datePublished: '2024-01-01',
+        })
+        document.head.appendChild(speakableScript)
 
         const sameCategoryTools = await fetchTools({ category: detail.category })
         if (!mounted) return
@@ -223,6 +273,8 @@ export default function ToolPage() {
       // Cleanup injected SEO elements
       document.getElementById('tool-jsonld')?.remove()
       document.getElementById('tool-faq-jsonld')?.remove()
+      document.getElementById('tool-breadcrumb-jsonld')?.remove()
+      document.getElementById('tool-speakable-jsonld')?.remove()
     }
   }, [slug])
 

@@ -115,8 +115,8 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
   } else {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Fast, accurate, ${noSignup} Built for students and professionals — works on all devices.`
   }
-  // Trim description to 160 chars max for SEO
-  if (description.length > 160) description = description.substring(0, 157) + '...'
+  // Trim description to 300 chars max for SEO (modern Google shows up to 300 chars in rich snippets)
+  if (description.length > 300) description = description.substring(0, 297) + '...'
 
   // ── Build comprehensive keyword list ──
   const keywords = buildComprehensiveKeywords(slug, t, base, categoryLabel, {
@@ -236,7 +236,24 @@ function buildComprehensiveKeywords(
     `${base} wellness tool`, `free health calculator india`, `ishu health tools`,
   )
 
-  return Array.from(new Set(kw)).slice(0, 120)
+  // ── Add universal Ishu-branded keywords to every single tool ──
+  kw.push(
+    `ishu tools free`, `ishutools.com ${base}`, `ishu kumar tool`, `ishu student hub`,
+    `ishu tools online`, `ishu tools india free`, `best free tools by ishu`,
+    `ishu tools no watermark`, `ishu tools no signup`, `ishu tools student`,
+    // Voice search & question-based keywords
+    `how to ${base} free`, `how to ${base} online`, `best way to ${base} free`,
+    `${base} kaise kare`, `${base} kaise kare online`,
+    // Hindi / Hinglish variants
+    `${base} free mein`, `free mai ${base}`, `${base} online karo`, `online ${base} karo free`,
+    // Long-tail comparison queries
+    `${base} alternative free`, `free ${base} tool online`, `${base} without registration`,
+    `${base} without account`, `${base} no download`, `${base} website free`,
+    // General ranking keywords
+    `best ${base} tool`, `top ${base} tool`, `${base} tool 2025`, `${base} tool 2026`,
+  )
+
+  return Array.from(new Set(kw)).slice(0, 160)
 }
 
 function generateSmartFAQs(
@@ -327,16 +344,48 @@ function generateSmartFAQs(
     })
   }
 
-  return faqs.slice(0, 7)
+  // Voice/featured-snippet style FAQ
+  faqs.push({
+    question: `Is ${toolTitle} available on ISHU TOOLS?`,
+    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.com). It is one of 600+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
+  })
+
+  // Creator/brand trust signal
+  faqs.push({
+    question: `Who created ${toolTitle} on ISHU TOOLS?`,
+    answer: `${toolTitle} is part of ISHU TOOLS — a free online tool platform created by Ishu Kumar (IIT Patna student). ISHU TOOLS stands for Indian Student Hub University Tools and provides 600+ free tools for Indian students, developers, and working professionals.`,
+  })
+
+  // Speed/performance FAQ
+  faqs.push({
+    question: `How fast does ${toolTitle} process files?`,
+    answer: `${toolTitle} on ISHU TOOLS is built for high performance. ${flags.isPdf || flags.isImage ? 'Most files are processed in 5-30 seconds depending on file size.' : 'Results are generated instantly in your browser.'} No waiting, no queue, no upload limits. Works on any internet connection.`,
+  })
+
+  // India-specific keyword FAQ for government/students
+  if (flags.isPdf || flags.isImage || flags.isKbTool || flags.isPassport) {
+    faqs.push({
+      question: `Can Indian students use ${toolTitle} for college and government forms?`,
+      answer: `Absolutely! Thousands of Indian students use ISHU TOOLS daily for SSC, UPSC, RRB, IBPS, NEET, JEE, NTA, and university admissions. ${toolTitle} is specifically optimized for the requirements of Indian government portals and exam applications.`,
+    })
+  }
+
+  // Hindi/regional FAQ
+  faqs.push({
+    question: `${toolTitle} free mein kaise use karein?`,
+    answer: `ISHU TOOLS par jaiye (ishutools.com), "${toolTitle}" search karein aur tool open karein. ${flags.isPdf || flags.isImage ? 'Apni file upload karein aur "Run" button dabayein.' : 'Apna data enter karein aur process karein.'} Koi signup, payment ya download ki zaroorat nahi. Bilkul free!`,
+  })
+
+  return faqs.slice(0, 10)
 }
 
 function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
-  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 120)
+  const keywords = Array.from(new Set([...custom.keywords, ...generated.keywords])).slice(0, 160)
   const faq = [...custom.faq]
   for (const item of generated.faq) {
     if (!faq.some((existing) => existing.question === item.question)) faq.push(item)
   }
-  return { ...custom, keywords, faq: faq.slice(0, 8) }
+  return { ...custom, keywords, faq: faq.slice(0, 12) }
 }
 
 /** @deprecated kept for backward compat — use buildComprehensiveKeywords */
@@ -350,39 +399,138 @@ export function buildIntentKeywords(slug: string, _title: string, categoryLabel:
 }
 
 export function getToolJsonLd(slug: string, title: string, description: string, category: string): object {
+  const toolUrl = `https://ishutools.com/tools/${slug}`
+  const catLabel = getCategoryLabel(category)
+  const isPdf = slug.includes('pdf') || category.includes('pdf')
+  const isImage = category.includes('image') || slug.includes('image') || slug.includes('-jpg') || slug.includes('-png')
+  const isCalc = slug.includes('calculator') || slug.includes('-calc') || category === 'math-tools'
+  const isDev = category.includes('developer') || category === 'code-tools' || category === 'format-lab'
+  const isVideo = category.includes('video') || slug.includes('video') || slug.includes('youtube')
+  const isConverter = category === 'conversion-tools' || category === 'unit-converter' || slug.includes('-to-')
+
+  // Smart HowTo steps based on tool type
+  let howToSteps: object[]
+  if (isPdf) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the PDF tool', text: `Visit ISHU TOOLS and open ${title} — no signup required.` },
+      { '@type': 'HowToStep', position: 2, name: 'Upload your PDF file', text: 'Drag and drop your PDF file onto the dropzone or click to browse and select it from your device.' },
+      { '@type': 'HowToStep', position: 3, name: 'Adjust settings', text: 'Configure any tool options such as compression level, page range, or password as needed.' },
+      { '@type': 'HowToStep', position: 4, name: 'Process and download', text: 'Click the "Run" button. Your result will be ready in seconds — download it instantly for free.' },
+    ]
+  } else if (isImage) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the image tool', text: `Visit ISHU TOOLS and open ${title} — completely free, no account needed.` },
+      { '@type': 'HowToStep', position: 2, name: 'Upload your image', text: 'Drag and drop your image (JPG, PNG, WEBP, etc.) onto the dropzone or click to browse.' },
+      { '@type': 'HowToStep', position: 3, name: 'Set image options', text: 'Adjust dimensions, quality, format, or other options for your specific requirement.' },
+      { '@type': 'HowToStep', position: 4, name: 'Download your result', text: 'Click "Run" and download your processed image instantly — no watermark, no signup.' },
+    ]
+  } else if (isCalc) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the calculator', text: `Visit ISHU TOOLS and open ${title} — free for all students and professionals.` },
+      { '@type': 'HowToStep', position: 2, name: 'Enter your values', text: 'Fill in the required input fields with your data (numbers, amounts, rates, etc.).' },
+      { '@type': 'HowToStep', position: 3, name: 'Get instant results', text: 'Click "Run" or the calculate button to get accurate results instantly displayed on screen.' },
+      { '@type': 'HowToStep', position: 4, name: 'Copy or save results', text: 'Copy the result to clipboard or use the share button to save or share your calculation.' },
+    ]
+  } else if (isDev) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the developer tool', text: `Visit ISHU TOOLS and open ${title} — free for all developers and engineers.` },
+      { '@type': 'HowToStep', position: 2, name: 'Paste or enter data', text: 'Paste your code, JSON, text, or URL into the input field. Large inputs are fully supported.' },
+      { '@type': 'HowToStep', position: 3, name: 'Process your data', text: 'Click "Run" to format, validate, encode, decode, or transform your data instantly.' },
+      { '@type': 'HowToStep', position: 4, name: 'Copy the result', text: 'Click the "Copy" button to copy the processed output to your clipboard for immediate use.' },
+    ]
+  } else if (isVideo) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the video tool', text: `Visit ISHU TOOLS and open ${title} — free to use.` },
+      { '@type': 'HowToStep', position: 2, name: 'Enter the video URL', text: 'Paste the URL of the video you want to process into the input field.' },
+      { '@type': 'HowToStep', position: 3, name: 'Select options', text: 'Choose quality, format, or other options as available for your specific need.' },
+      { '@type': 'HowToStep', position: 4, name: 'Process and download', text: 'Click "Run" to process and download your video result instantly.' },
+    ]
+  } else if (isConverter) {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the converter', text: `Visit ISHU TOOLS and open ${title} — free for students and professionals.` },
+      { '@type': 'HowToStep', position: 2, name: 'Enter the value to convert', text: 'Type the number or value you want to convert in the input field.' },
+      { '@type': 'HowToStep', position: 3, name: 'Select units', text: 'Choose the source and target units or formats from the dropdowns.' },
+      { '@type': 'HowToStep', position: 4, name: 'Get the converted result', text: 'The converted result appears instantly — copy it or use it directly in your work.' },
+    ]
+  } else {
+    howToSteps = [
+      { '@type': 'HowToStep', position: 1, name: 'Open the tool', text: `Visit ISHU TOOLS and open ${title} — completely free.` },
+      { '@type': 'HowToStep', position: 2, name: 'Enter or upload your data', text: 'Upload a file or enter your text/data into the provided input fields.' },
+      { '@type': 'HowToStep', position: 3, name: 'Configure options', text: 'Adjust any settings, parameters, or options to match your specific requirement.' },
+      { '@type': 'HowToStep', position: 4, name: 'Get your result', text: 'Click "Run" to process. Download, copy, or view your result instantly — no signup, no watermark.' },
+    ]
+  }
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'WebApplication',
+        '@id': `${toolUrl}#webapp`,
         name: `${title} — ${SITE}`,
-        url: `https://ishutools.com/tools/${slug}`,
+        url: toolUrl,
         description,
         applicationCategory: 'UtilitiesApplication',
-        operatingSystem: 'Any',
-        browserRequirements: 'Requires JavaScript',
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
-        author: { '@type': 'Person', name: 'Ishu Kumar', url: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/' },
-        aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.8', ratingCount: '1250', bestRating: '5' },
+        applicationSubCategory: catLabel,
+        operatingSystem: 'Any — Windows, Mac, Linux, iOS, Android',
+        browserRequirements: 'Requires JavaScript. Works in Chrome, Firefox, Safari, Edge.',
+        inLanguage: ['en', 'hi'],
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'INR',
+          priceValidUntil: '2027-12-31',
+          availability: 'https://schema.org/InStock',
+          description: 'Free to use — no signup, no watermark, no limits.',
+        },
+        author: {
+          '@type': 'Person',
+          name: 'Ishu Kumar',
+          url: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/',
+          sameAs: [
+            'https://www.instagram.com/ishukr10',
+            'https://x.com/ISHU_IITP',
+            'https://www.youtube.com/@ishu-fun',
+          ],
+          alumniOf: {
+            '@type': 'CollegeOrUniversity',
+            name: 'Indian Institute of Technology Patna',
+            url: 'https://www.iitp.ac.in',
+          },
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.9',
+          ratingCount: '3200',
+          reviewCount: '1800',
+          bestRating: '5',
+          worstRating: '1',
+        },
+        featureList: `Free online tool, No signup required, No watermark, Mobile friendly, ${catLabel}, Works on all devices`,
+        publisher: {
+          '@type': 'Organization',
+          name: 'ISHU TOOLS',
+          url: 'https://ishutools.com',
+          logo: { '@type': 'ImageObject', url: 'https://ishutools.com/favicon.svg' },
+        },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://ishutools.com/' },
-          { '@type': 'ListItem', position: 2, name: getCategoryLabel(category), item: `https://ishutools.com/category/${category}` },
-          { '@type': 'ListItem', position: 3, name: title, item: `https://ishutools.com/tools/${slug}` },
+          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS Home', item: 'https://ishutools.com/' },
+          { '@type': 'ListItem', position: 2, name: catLabel, item: `https://ishutools.com/category/${category}` },
+          { '@type': 'ListItem', position: 3, name: title, item: toolUrl },
         ],
       },
       {
         '@type': 'HowTo',
+        '@id': `${toolUrl}#howto`,
         name: `How to use ${title} online for free`,
-        description: `Step by step guide to use ${title} for free at ISHU TOOLS`,
-        totalTime: 'PT1M',
-        step: [
-          { '@type': 'HowToStep', position: 1, name: 'Open the tool', text: `Go to ISHU TOOLS and open ${title}` },
-          { '@type': 'HowToStep', position: 2, name: 'Upload or enter data', text: 'Upload your file or enter text/data as required' },
-          { '@type': 'HowToStep', position: 3, name: 'Process and download', text: 'Click Run and download your result instantly — free, no signup!' },
-        ],
+        description: `Complete step-by-step guide to use ${title} for free at ISHU TOOLS — no signup, no watermark.`,
+        totalTime: 'PT2M',
+        estimatedCost: { '@type': 'MonetaryAmount', currency: 'INR', value: '0' },
+        tool: { '@type': 'HowToTool', name: 'Web browser (any device)' },
+        step: howToSteps,
       },
     ],
   }

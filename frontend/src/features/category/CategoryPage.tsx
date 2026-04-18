@@ -42,57 +42,129 @@ export default function CategoryPage() {
   useEffect(() => {
     if (!category) return
 
-    const title = `${category.label} Online Free — ${categoryTools.length}+ Tools | ISHU TOOLS`
-    const desc = `${category.description} Explore ${categoryTools.length}+ free ${category.label.toLowerCase()} on ISHU TOOLS for students, creators, developers, and daily users. No signup, no watermark, mobile friendly.`
+    const catLower = category.label.toLowerCase()
+    const title = `Free ${category.label} Online — ${categoryTools.length}+ Tools by Ishu Kumar | ISHU TOOLS`
+    const desc = `${category.description} Explore ${categoryTools.length}+ free ${catLower} on ISHU TOOLS by Ishu Kumar — for Indian students, creators, developers, and professionals. No signup, no watermark, 100% free. India's best free ${catLower}.`
     const categoryUrl = `https://ishutools.com/category/${categoryId}`
-    const toolNames = categoryTools.slice(0, 12).map((tool) => tool.title)
+    const toolNames = categoryTools.slice(0, 20).map((tool) => tool.title)
 
     applyDocumentBranding(title, desc, theme.accent)
 
     const keywords = [
-      category.label.toLowerCase(),
-      `free ${category.label.toLowerCase()}`,
-      `${category.label.toLowerCase()} online`,
-      `ishu tools ${category.label.toLowerCase()}`,
-      `${category.label.toLowerCase()} for students`,
-      `${category.label.toLowerCase()} no signup`,
-      `${category.label.toLowerCase()} mobile friendly`,
+      catLower,
+      `free ${catLower}`,
+      `${catLower} online`,
+      `${catLower} online free`,
+      `ishu tools ${catLower}`,
+      `ishu kumar ${catLower}`,
+      `ishutools ${catLower}`,
+      `best free ${catLower}`,
+      `${catLower} for students`,
+      `${catLower} for india`,
+      `${catLower} no signup`,
+      `${catLower} no watermark`,
+      `${catLower} mobile friendly`,
+      `free ${catLower} india`,
+      `${catLower} without registration`,
+      `best ${catLower} tool`,
+      `top ${catLower} 2025`,
       ...toolNames.map((name) => name.toLowerCase()),
-      'ishu tools', 'ishutools', 'indian student hub university tools', 'free online tools', 'no signup', 'no watermark',
+      ...toolNames.map((name) => `free ${name.toLowerCase()}`),
+      ...toolNames.map((name) => `${name.toLowerCase()} online free`),
+      'ishu tools', 'ishutools', 'ishu kumar', 'indian student hub university tools',
+      'free online tools', 'free tools india', 'no signup', 'no watermark',
+      'student tools online', 'ishu tools india',
     ].join(', ')
 
-    upsertMeta('meta[name="description"]', { name: 'description', content: desc })
+    upsertMeta('meta[name="description"]', { name: 'description', content: desc.substring(0, 300) })
     upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywords })
+    upsertMeta('meta[name="author"]', { name: 'author', content: 'Ishu Kumar — ISHU TOOLS' })
+    upsertMeta('meta[name="robots"]', { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' })
     upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: categoryUrl })
+    // Open Graph
     upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title })
-    upsertMeta('meta[property="og:description"]', { property: 'og:description', content: desc })
+    upsertMeta('meta[property="og:description"]', { property: 'og:description', content: desc.substring(0, 300) })
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: categoryUrl })
     upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
+    upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ISHU TOOLS' })
+    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: 'https://ishutools.com/og-image.png' })
+    upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: 'en_IN' })
+    // Twitter
+    upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
+    upsertMeta('meta[name="twitter:site"]', { name: 'twitter:site', content: '@ISHU_IITP' })
+    upsertMeta('meta[name="twitter:creator"]', { name: 'twitter:creator', content: '@ISHU_IITP' })
     upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
-    upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: desc })
+    upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: desc.substring(0, 300) })
+    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: 'https://ishutools.com/og-image.png' })
 
     const existingJsonLd = document.getElementById('category-jsonld')
     if (existingJsonLd) existingJsonLd.remove()
     const script = document.createElement('script')
     script.id = 'category-jsonld'
     script.type = 'application/ld+json'
-    script.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: title,
-      description: desc,
-      url: categoryUrl,
-      isPartOf: { '@type': 'WebSite', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
-      mainEntity: {
-        '@type': 'ItemList',
-        itemListElement: categoryTools.slice(0, 50).map((tool, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          name: tool.title,
-          url: `https://ishutools.com/tools/${tool.slug}`,
-        })),
+    script.textContent = JSON.stringify([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: title,
+        description: desc,
+        url: categoryUrl,
+        author: {
+          '@type': 'Person',
+          name: 'Ishu Kumar',
+          url: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/',
+          alumniOf: { '@type': 'CollegeOrUniversity', name: 'IIT Patna' },
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'ISHU TOOLS',
+          url: 'https://ishutools.com',
+          logo: { '@type': 'ImageObject', url: 'https://ishutools.com/logo.png' },
+        },
+        isPartOf: { '@type': 'WebSite', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
+        mainEntity: {
+          '@type': 'ItemList',
+          name: `${category.label} Tools — ISHU TOOLS`,
+          numberOfItems: categoryTools.length,
+          itemListElement: categoryTools.slice(0, 50).map((tool, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            name: tool.title,
+            url: `https://ishutools.com/tools/${tool.slug}`,
+          })),
+        },
       },
-    })
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: 'https://ishutools.com' },
+          { '@type': 'ListItem', position: 2, name: 'All Categories', item: 'https://ishutools.com/categories' },
+          { '@type': 'ListItem', position: 3, name: category.label, item: categoryUrl },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: `What free ${catLower} are available on ISHU TOOLS?`,
+            acceptedAnswer: { '@type': 'Answer', text: `ISHU TOOLS offers ${categoryTools.length}+ free ${catLower} including ${toolNames.slice(0, 5).join(', ')} and many more. All tools are completely free, no signup or watermark required.` },
+          },
+          {
+            '@type': 'Question',
+            name: `Are ISHU TOOLS ${catLower} really free?`,
+            acceptedAnswer: { '@type': 'Answer', text: `Yes, all ${category.label} on ISHU TOOLS are 100% free to use. Created by Ishu Kumar for Indian students and professionals. No account needed, no hidden fees, no watermarks.` },
+          },
+          {
+            '@type': 'Question',
+            name: `Who made ISHU TOOLS ${catLower}?`,
+            acceptedAnswer: { '@type': 'Answer', text: `ISHU TOOLS ${catLower} were created by Ishu Kumar, an IIT Patna graduate. ISHU stands for Indian Student Hub University Tools, a platform dedicated to helping Indian students and professionals.` },
+          },
+        ],
+      },
+    ])
     document.head.appendChild(script)
 
     return () => {

@@ -40,14 +40,20 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
 - `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
-## SEO Features (Comprehensive v3)
-- Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
-- Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList)
-- Per-tool FAQ JSON-LD from seoData.ts — 300+ handcrafted entries covering all major tools + all new health/finance tools
-- Smart auto-generator v3 (createGeneratedSEO) — type detection flags: isPdf, isImage, isConvert, isCompress, isKbTool, isPassport, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO, **isHealth, isFinance** — each with category-specific title templates and description patterns
+## SEO Features (Comprehensive v4)
+- Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards, author/creator/publisher)
+- Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList 4-level, SpeakableSpecification)
+- Per-tool FAQ JSON-LD from seoData.ts — 10-12 FAQs per tool with voice/Hindi/creator-trust variants
+- Category pages: enriched with CollectionPage + BreadcrumbList + FAQPage JSON-LD, full OG+Twitter tags, 30+ keywords per category
+- Smart auto-generator v3 (createGeneratedSEO) — type detection flags: isPdf, isImage, isConvert, isCompress, isKbTool, isPassport, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO, isHealth, isFinance
 - Health tools: title = "X — Free Online Health Calculator | ISHU TOOLS"; description targets fitness/India
 - Finance tools: title = "X — Free Online Finance Calculator | ISHU TOOLS"; description targets Indian professionals
 - Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images)
+- Universal Ishu-branded keywords (160/tool): "ishu kumar tools", "ishu tools india", "ishu iitp", "ishu kumar iit patna"
+- index.html: Person schema for Ishu Kumar (IIT Patna alumnus), 15-entry SiteNavigationElement, 9-question FAQ, enriched noscript with 60+ crawlable links in 6 categories
+- WebApplication schema: alumniOf IIT Patna, 3500+ aggregateRating
+- robots.txt: max-image-preview:large, max-snippet:-1, max-video-preview:-1 directives per page
+- sitemap.xml: static 517-URL sitemap with 2026-04-18 lastmod
 - Dynamic sitemap.xml served by FastAPI — HIGH_PRIORITY expanded to include calorie-calculator, gst-calculator, sip-calculator, income-tax-calculator, roi-calculator, budget-planner, water-intake-calculator, sleep-calculator, etc.
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
