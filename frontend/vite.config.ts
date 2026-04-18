@@ -21,11 +21,17 @@ export default defineConfig({
   build: {
     target: 'es2020',
     cssMinify: true,
-    reportCompressedSize: true,
+    minify: 'esbuild',
+    reportCompressedSize: false,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/') || id.includes('node_modules/react-router')) {
+          if (
+            id.includes('node_modules/react-dom') ||
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-router')
+          ) {
             return 'vendor-react'
           }
           if (id.includes('node_modules/framer-motion')) {
@@ -34,9 +40,26 @@ export default defineConfig({
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons'
           }
+          if (id.includes('node_modules/')) {
+            return 'vendor-misc'
+          }
         },
+        compact: true,
+      },
+      treeshake: {
+        moduleSideEffects: false,
+        preset: 'recommended',
       },
     },
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'framer-motion',
+      'lucide-react',
+    ],
+    exclude: [],
+  },
 })
-

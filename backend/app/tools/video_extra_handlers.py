@@ -2078,6 +2078,7 @@ VIDEO_EXTRA_HANDLERS: dict = {
     # Video Downloaders
     "video-downloader": _handle_video_downloader,
     "youtube-video-downloader": _handle_youtube_downloader,
+    "youtube-downloader": _handle_youtube_downloader,
     "youtube-to-mp3": _handle_youtube_to_mp3,
     "instagram-downloader": _handle_instagram_downloader,
 

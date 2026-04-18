@@ -4882,6 +4882,26 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Instagram Downloader — Download Videos & Reels Free',
     faq: [],
   },
+  'youtube-downloader': {
+    title: 'YouTube Video Downloader Free — Download YouTube Videos Online | ISHU TOOLS',
+    description: 'Download YouTube videos free online in HD 1080p, 720p, 480p, 360p. No software installation, no signup, no watermark. Fast YouTube video downloader by ISHU TOOLS.',
+    keywords: ['youtube downloader', 'youtube video downloader', 'download youtube video free', 'yt downloader', 'youtube to mp4 free', 'download youtube video online', 'ishu tools youtube downloader', 'youtube hd downloader', 'youtube video save online', 'free youtube downloader no watermark', 'youtube downloader india', 'youtube video kaise download kare'],
+    h1: 'YouTube Downloader — Download YouTube Videos Free in HD',
+    faq: [
+      { question: 'YouTube video kaise download kare free mein?', answer: 'YouTube ki video ka URL copy karo, ISHU TOOLS YouTube Downloader mein paste karo, quality select karo aur Download click karo. 100% free, koi software nahi chahiye.' },
+      { question: 'Is it safe to download YouTube videos?', answer: 'ISHU TOOLS YouTube Downloader is safe and secure. We do not store your videos. Downloads are processed in real-time and deleted immediately after.' },
+    ],
+  },
+  'photo-collage-maker': {
+    title: 'Photo Collage Maker Online Free — Make Picture Collages | ISHU TOOLS',
+    description: 'Create beautiful photo collages online for free. Combine multiple photos into grid layouts. Photo collage maker for Instagram, Facebook, memories & presentations — no signup.',
+    keywords: ['photo collage maker', 'collage maker free', 'image collage online', 'photo collage online free', 'create photo collage', 'picture collage maker', 'ishu tools collage', 'photo grid maker', 'combine photos into collage', 'photo collage for instagram', 'collage banane wala app', 'free photo collage maker no watermark'],
+    h1: 'Photo Collage Maker — Create Free Photo Collages Online',
+    faq: [
+      { question: 'How to make a photo collage online for free?', answer: 'Upload your photos to ISHU TOOLS Photo Collage Maker, choose a grid layout (2x2, 3x3, strips), set the gap and background color, then click Run to generate your collage. Download as PNG instantly — no signup.' },
+      { question: 'Photo collage kaise banaye free mein?', answer: 'ISHU TOOLS Photo Collage Maker mein apni photos upload karo, layout choose karo aur collage instantly download karo. Bilkul free, koi watermark nahi.' },
+    ],
+  },
 
   // ════════════════════════════════════════════════
   //  QR CODE & BARCODE

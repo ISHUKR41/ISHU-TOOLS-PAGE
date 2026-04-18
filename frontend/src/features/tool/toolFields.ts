@@ -2172,6 +2172,37 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'instagram-downloader': [
     { name: 'url', label: 'Instagram URL', type: 'text', placeholder: 'Paste Instagram reel, post, or story URL here...' },
   ],
+  'youtube-downloader': [
+    { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL... e.g. https://youtube.com/watch?v=...' },
+    {
+      name: 'quality',
+      label: 'Video Quality',
+      type: 'select',
+      defaultValue: 'best',
+      options: [
+        { label: 'Best Available', value: 'best' },
+        { label: '1080p Full HD', value: '1080' },
+        { label: '720p HD', value: '720' },
+        { label: '480p', value: '480' },
+        { label: '360p', value: '360' },
+      ],
+    },
+  ],
+  'photo-collage-maker': [
+    {
+      name: 'columns',
+      label: 'Columns',
+      type: 'select',
+      defaultValue: '2',
+      options: [
+        { label: '1 Column', value: '1' },
+        { label: '2 Columns (Grid)', value: '2' },
+        { label: '3 Columns', value: '3' },
+        { label: '4 Columns', value: '4' },
+      ],
+    },
+    { name: 'cell_size', label: 'Cell Size (px)', type: 'number', defaultValue: '420', min: 100, max: 1200 },
+  ],
 
   // ─── Network Tools ───────────────────────────────────────────────────
   'ip-address-lookup': [

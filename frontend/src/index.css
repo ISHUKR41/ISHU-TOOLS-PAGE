@@ -6051,3 +6051,131 @@ button[type="submit"]:hover {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   PERFORMANCE & PAINT OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+/* content-visibility: auto for off-screen tool cards (massive scroll perf gain) */
+.tool-grid-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
+}
+
+.category-section-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+/* GPU compositing layers for animated elements */
+.hero-section-animated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Tool card GPU paint */
+.tool-card-gpu {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ── Font display swap for LCP improvement ────────────────── */
+@font-face {
+  font-display: swap;
+}
+
+/* ── Scroll anchor fix for tools page ───────────────────────── */
+html {
+  scroll-behavior: smooth;
+  overflow-anchor: auto;
+}
+
+/* ── Touch action fast-tap ───────────────────────────────────── */
+a, button, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* ── Image loading blur-up ───────────────────────────────────── */
+img.lazy-img {
+  filter: blur(4px);
+  transition: filter 0.3s ease;
+}
+img.lazy-img.loaded {
+  filter: blur(0);
+}
+
+/* ── Scroll-driven container query for nav ──────────────────── */
+.sticky-nav-scrolled {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08), 0 4px 32px rgba(0,0,0,0.15);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Tool search highlight ───────────────────────────────────── */
+.search-highlight {
+  background: linear-gradient(90deg, #6d28d9, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* ── Smooth page transitions ─────────────────────────────────── */
+.route-transition-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.route-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.route-transition-exit {
+  opacity: 1;
+}
+.route-transition-exit-active {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* ── Tool category badge colors ──────────────────────────────── */
+.cat-badge-pdf { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+.cat-badge-image { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+.cat-badge-developer { background: rgba(99,102,241,0.12); color: #6366f1; border: 1px solid rgba(99,102,241,0.2); }
+.cat-badge-student { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+.cat-badge-video { background: rgba(236,72,153,0.12); color: #ec4899; border: 1px solid rgba(236,72,153,0.2); }
+.cat-badge-text { background: rgba(6,182,212,0.12); color: #06b6d4; border: 1px solid rgba(6,182,212,0.2); }
+.cat-badge-math { background: rgba(139,92,246,0.12); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.2); }
+
+/* ── Zero-CLS placeholder for tool icons ────────────────────── */
+.tool-icon-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  contain: strict;
+}
+
+/* ── Loading state skeleton with proper sizing ───────────────── */
+.tool-skeleton-card {
+  height: 120px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.5s ease infinite;
+  contain: strict;
+}
+
+/* ── First paint optimization — critical above-fold ─────────── */
+.above-fold-critical {
+  contain: layout style;
+}
+
+/* ── Print media — strip animations ─────────────────────────── */
+@media print {
+  * { animation: none !important; transition: none !important; }
+  .mesh-bg-orb, .ticker-track, .hero-section-animated { display: none !important; }
+}

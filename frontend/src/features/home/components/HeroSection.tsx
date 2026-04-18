@@ -71,6 +71,20 @@ const TICKER_ITEMS = [
   'Diff Checker',
   'IP Lookup',
   'Hash Generator',
+  'Instagram Downloader',
+  'Photo Collage Maker',
+  'SIP Calculator',
+  'Meme Generator',
+  'PDF Annotator',
+  'Image Compressor',
+  'CSS Minifier',
+  'SQL Formatter',
+  'EMI Calculator',
+  'GST Calculator',
+  'Unit Converter',
+  'Plagiarism Checker',
+  'Resume Builder',
+  'Signature Generator',
 ]
 
 const QUICK_TOOLS = [
@@ -153,7 +167,7 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 563
+  const toolLabel = toolCount > 0 ? toolCount : 565
 
   return (
     <motion.section

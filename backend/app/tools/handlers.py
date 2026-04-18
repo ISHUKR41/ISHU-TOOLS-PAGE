@@ -6230,6 +6230,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "add-border-image": handle_add_border_image,
     "thumbnail-image": handle_thumbnail_image,
     "image-collage": handle_image_collage,
+    "photo-collage-maker": handle_image_collage,
     "word-count-text": handle_word_count_text,
     "case-converter-text": handle_case_converter_text,
     "extract-keywords-text": handle_extract_keywords_text,

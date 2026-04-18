@@ -5322,5 +5322,40 @@ for _cat in CATEGORIES:
 CATEGORIES.clear()
 CATEGORIES.extend(_seen_cats.values())
 
+# Add high-value alias tools (youtube-downloader, photo-collage-maker)
+TOOLS.extend([
+    ToolDefinition(
+        slug="youtube-downloader",
+        title="YouTube Video Downloader",
+        description="Download YouTube videos in MP4, WebM, or MP3 format. Paste the YouTube URL and choose quality — free, fast, no signup.",
+        category="video-tools",
+        tags=["youtube downloader", "download youtube video", "youtube to mp4", "youtube video download free", "youtube downloader online", "save youtube video", "youtube mp4 downloader", "yt downloader free"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="photo-collage-maker",
+        title="Photo Collage Maker",
+        description="Create beautiful photo collages by combining multiple images into a grid layout. Perfect for social media, memories, and presentations.",
+        category="image-layout",
+        tags=["photo collage maker", "image collage online", "collage maker free", "photo grid maker", "combine photos online", "collage generator", "photo montage free"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="instagram-downloader",
+        title="Instagram Video Downloader",
+        description="Download Instagram videos, reels, and posts. Paste the Instagram URL to save content — free, no login required.",
+        category="video-tools",
+        tags=["instagram downloader", "download instagram video", "instagram reel downloader", "save instagram video", "instagram video download free", "instagram downloader online"],
+        input_kind="text",
+    ),
+])
+
+# Deduplicate tools — keep last definition (most recently added = most complete)
+_seen_tools: dict = {}
+for _tool in TOOLS:
+    _seen_tools[_tool.slug] = _tool
+TOOLS.clear()
+TOOLS.extend(_seen_tools.values())
+
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
 

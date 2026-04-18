@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **604 handlers** across **28+ categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools**, **Productivity**, and **Validator Tools**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 604+ tools with critical CSS inline in index.html for instant responsiveness.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **606 handlers** across **38 categories** and **565 unique tools** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools**, **Productivity**, and **Validator Tools**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 604+ tools with critical CSS inline in index.html for instant responsiveness.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
