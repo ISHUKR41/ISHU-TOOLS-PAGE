@@ -120,7 +120,7 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 }
 
 function buildComprehensiveKeywords(
-  slug: string, title: string, base: string, categoryLabel: string,
+  _slug: string, title: string, base: string, categoryLabel: string,
   flags: Record<string, boolean>
 ): string[] {
   const kw: string[] = [
@@ -216,7 +216,7 @@ function buildComprehensiveKeywords(
 }
 
 function generateSmartFAQs(
-  slug: string, toolTitle: string, categoryLabel: string,
+  _slug: string, toolTitle: string, _categoryLabel: string,
   flags: Record<string, boolean>
 ): { question: string; answer: string }[] {
   const faqs: { question: string; answer: string }[] = []
@@ -316,7 +316,7 @@ function mergeToolSEO(custom: ToolSEO, generated: ToolSEO): ToolSEO {
 }
 
 /** @deprecated kept for backward compat — use buildComprehensiveKeywords */
-function buildIntentKeywords(slug: string, title: string, categoryLabel: string): string[] {
+export function buildIntentKeywords(slug: string, _title: string, categoryLabel: string): string[] {
   const base = slug.replace(/-/g, ' ')
   return [
     `${base} for students`, `${base} mobile friendly`, `${base} without login`,
@@ -894,112 +894,6 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   },
 
   // ════════════════════════════════════════════════
-  //  DEVELOPER TOOLS
-  // ════════════════════════════════════════════════
-  'json-formatter': {
-    title: 'JSON Formatter — Format & Beautify JSON Online Free | ISHU TOOLS',
-    description: 'Format, beautify, and validate JSON data online for free. Pretty-print JSON with proper indentation. Best JSON formatter for developers. No signup.',
-    keywords: [
-      'json formatter', 'json beautifier', 'format json', 'json pretty print',
-      'json validator', 'json viewer', 'beautify json', 'ishu tools json formatter',
-      'json formatting tool', 'ishu json formatter', 'json linter',
-      'pretty print json online', 'format json online free',
-    ],
-    h1: 'JSON Formatter — Beautify & Validate JSON',
-    faq: [
-      { question: 'How to format JSON online?', answer: 'Paste your JSON data into ISHU TOOLS JSON Formatter and click "Run". Your JSON will be beautifully formatted with proper indentation.' },
-    ],
-  },
-  'base64-encode': {
-    title: 'Base64 Encoder — Encode Text to Base64 Online Free | ISHU TOOLS',
-    description: 'Encode text to Base64 online for free. Fast Base64 encoding tool for developers. No signup required.',
-    keywords: [
-      'base64 encode', 'base64 encoder', 'text to base64', 'encode base64',
-      'base64 converter', 'ishu tools base64', 'base64 encoding online',
-      'ishu base64 encoder', 'base64 encode free',
-    ],
-    h1: 'Base64 Encoder — Encode Text Free',
-    faq: [],
-  },
-  'base64-decode': {
-    title: 'Base64 Decoder — Decode Base64 to Text Online Free | ISHU TOOLS',
-    description: 'Decode Base64 encoded text online for free. Fast Base64 decoding tool for developers. No signup.',
-    keywords: [
-      'base64 decode', 'base64 decoder', 'decode base64', 'base64 to text',
-      'ishu tools base64 decoder', 'base64 decoding online', 'ishu base64 decode',
-    ],
-    h1: 'Base64 Decoder — Decode to Text Free',
-    faq: [],
-  },
-  'uuid-generator': {
-    title: 'UUID Generator — Generate UUIDs Online Free | ISHU TOOLS',
-    description: 'Generate random UUIDs (v4) online for free. Create unique identifiers for databases, APIs, and development. No signup.',
-    keywords: [
-      'uuid generator', 'generate uuid', 'uuid online', 'random uuid',
-      'uuid v4', 'unique id generator', 'ishu tools uuid', 'guid generator',
-      'ishu uuid generator', 'uuid maker',
-    ],
-    h1: 'UUID Generator — Create Unique IDs Free',
-    faq: [],
-  },
-  'regex-tester': {
-    title: 'Regex Tester — Test Regular Expressions Online Free | ISHU TOOLS',
-    description: 'Test and debug regular expressions online for free. Match patterns, find groups, test flags. Best regex testing tool for developers. No signup.',
-    keywords: [
-      'regex tester', 'regex test', 'regular expression tester', 'regex online',
-      'test regex', 'regex debugger', 'ishu tools regex', 'regex matcher',
-      'ishu regex tester', 'regex validator',
-    ],
-    h1: 'Regex Tester — Test Patterns Free',
-    faq: [],
-  },
-  'diff-checker': {
-    title: 'Diff Checker — Compare Text Differences Online Free | ISHU TOOLS',
-    description: 'Compare two text blocks and find differences online for free. Highlight changes, additions, and deletions. Best diff tool for developers. No signup.',
-    keywords: [
-      'diff checker', 'text diff', 'compare text', 'find differences',
-      'diff tool', 'text comparison', 'ishu tools diff checker', 'code diff',
-      'ishu diff checker', 'online diff tool',
-    ],
-    h1: 'Diff Checker — Compare Text Free',
-    faq: [],
-  },
-  'hash-generator': {
-    title: 'Hash Generator — MD5, SHA256, SHA512 Hash Online Free | ISHU TOOLS',
-    description: 'Generate MD5, SHA256, SHA512 hashes from text online for free. Secure hash generation for developers. No signup required.',
-    keywords: [
-      'hash generator', 'md5 hash', 'sha256 hash', 'sha512', 'generate hash',
-      'hash online', 'ishu tools hash generator', 'text to hash',
-      'ishu hash generator', 'crypto hash',
-    ],
-    h1: 'Hash Generator — MD5, SHA256, SHA512 Free',
-    faq: [],
-  },
-  'password-generator': {
-    title: 'Password Generator — Generate Strong Passwords Free | ISHU TOOLS',
-    description: 'Generate strong, secure random passwords online for free. Customize length, characters, symbols. Best password generator. No signup.',
-    keywords: [
-      'password generator', 'random password', 'strong password generator',
-      'secure password', 'generate password', 'password maker',
-      'ishu tools password generator', 'ishu password generator',
-      'random password generator online', 'create strong password',
-    ],
-    h1: 'Password Generator — Secure Passwords Free',
-    faq: [],
-  },
-  'lorem-ipsum-generator': {
-    title: 'Lorem Ipsum Generator — Generate Placeholder Text Free | ISHU TOOLS',
-    description: 'Generate Lorem Ipsum placeholder text online for free. Create paragraphs, sentences, or words. Perfect for designers and developers. No signup.',
-    keywords: [
-      'lorem ipsum generator', 'lorem ipsum', 'placeholder text', 'dummy text',
-      'generate lorem ipsum', 'text generator', 'ishu tools lorem ipsum',
-      'ishu lorem ipsum', 'lipsum generator',
-    ],
-    h1: 'Lorem Ipsum Generator — Placeholder Text Free',
-    faq: [],
-  },
-
-  // ════════════════════════════════════════════════
   //  MATH & CALCULATORS
   // ════════════════════════════════════════════════
   'percentage-calculator': {
@@ -1124,28 +1018,6 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Summarize Text — AI Summarizer Free',
     faq: [],
   },
-  'word-count-text': {
-    title: 'Word Counter — Count Words, Characters Online Free | ISHU TOOLS',
-    description: 'Count words, characters, sentences, and paragraphs in your text online for free. Best word counter for writers and students.',
-    keywords: [
-      'word counter', 'character counter', 'count words', 'word count tool',
-      'letter counter', 'text counter', 'ishu tools word counter',
-      'ishu word counter', 'online word counter', 'count characters',
-    ],
-    h1: 'Word Counter — Count Words & Characters Free',
-    faq: [],
-  },
-  'case-converter-text': {
-    title: 'Case Converter — Convert Text Case Online Free | ISHU TOOLS',
-    description: 'Convert text to UPPERCASE, lowercase, Title Case, or Sentence case online for free. Quick text case transformation. No signup.',
-    keywords: [
-      'case converter', 'text case converter', 'uppercase converter',
-      'lowercase converter', 'title case', 'capitalize text', 'ishu tools case converter',
-      'ishu case converter', 'change text case online',
-    ],
-    h1: 'Case Converter — Convert Text Case Free',
-    faq: [],
-  },
 
   // ════════════════════════════════════════════════
   //  COLOR TOOLS
@@ -1222,21 +1094,6 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   // ════════════════════════════════════════════════
   //  QR CODE & UTILITY
   // ════════════════════════════════════════════════
-  'qr-code-generator': {
-    title: 'QR Code Generator — Create QR Codes Online Free | ISHU TOOLS',
-    description: 'Generate QR codes from text, URLs, or any data online for free. Download high-quality QR code images instantly. Perfect for marketing, business cards, and sharing.',
-    keywords: [
-      'qr code generator', 'create qr code', 'qr code maker', 'free qr code',
-      'generate qr code', 'qr code online', 'qr code creator',
-      'ishu tools qr code', 'ishu qr code generator', 'qr code for url',
-      'qr code for text', 'custom qr code', 'barcode generator',
-    ],
-    h1: 'QR Code Generator — Create QR Codes Free',
-    faq: [
-      { question: 'How to create a QR code for free?', answer: 'Enter your text or URL in ISHU TOOLS QR Code Generator and click "Run". Your QR code image will be generated instantly for download.' },
-    ],
-  },
-
   // ════════════════════════════════════════════════
   //  OCR & VISION
   // ════════════════════════════════════════════════
@@ -1638,20 +1495,6 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     ],
     h1: 'Circle Crop Image — Round Photo Crop Free',
     faq: [],
-  },
-  'remove-background': {
-    title: 'Remove Background — AI Background Remover Free | ISHU TOOLS',
-    description: 'Remove image background automatically with AI online for free. Get transparent PNG output instantly. Best AI background remover. No signup.',
-    keywords: [
-      'remove background', 'background remover', 'remove image background',
-      'ai background remover', 'transparent background', 'cut out background',
-      'ishu tools remove background', 'ishu remove background', 'bg remover online free',
-      'remove bg free', 'photo background eraser', 'remove background from photo',
-    ],
-    h1: 'Remove Background — AI Background Remover Free',
-    faq: [
-      { question: 'How to remove image background for free?', answer: 'Upload your image to ISHU TOOLS Remove Background tool. AI automatically removes the background and gives you a transparent PNG — completely free, no signup, no watermark.' },
-    ],
   },
   'jpg-to-png': {
     title: 'JPG to PNG — Convert JPG to PNG Online Free | ISHU TOOLS',
@@ -3455,20 +3298,6 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'Which image formats are supported?', answer: 'PNG, GIF, BMP, WebP, TIFF, HEIC, SVG, and most other common image formats.' },
     ],
-  },
-  'png-to-jpg': {
-    title: 'PNG to JPG Converter — Free Online | ISHU TOOLS',
-    description: 'Convert PNG images to JPG format free. Removes transparency with white background. No signup, no watermark.',
-    keywords: ['png to jpg', 'png to jpeg', 'convert png jpg', 'png jpg online', 'ishu png to jpg', 'free png jpg'],
-    h1: 'PNG to JPG — Free Online Converter',
-    faq: [],
-  },
-  'webp-to-jpg': {
-    title: 'WebP to JPG Converter — Free Online | ISHU TOOLS',
-    description: 'Convert WebP images to JPG format free online. Better compatibility across all platforms and devices.',
-    keywords: ['webp to jpg', 'webp to jpeg', 'convert webp jpg', 'webp image converter', 'ishu webp to jpg', 'free webp jpg'],
-    h1: 'WebP to JPG — Free Online Converter',
-    faq: [],
   },
   'heic-to-jpg': {
     title: 'HEIC to JPG Converter — Free Online | ISHU TOOLS',
