@@ -1,11 +1,13 @@
+from collections import defaultdict
 from datetime import date
+import time
 from pathlib import Path
 import importlib.util
 import platform
 import shutil
 from typing import Annotated
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
@@ -19,6 +21,26 @@ app = FastAPI(
     version="1.0.0",
     description="Backend API for ISHU TOOLS document and image operations.",
 )
+
+# ── Simple in-memory rate limiter ──────────────────────────────────────────
+# Allows up to 60 requests per minute per IP on the execute endpoint
+_RATE_LIMIT_REQUESTS = 60
+_RATE_LIMIT_WINDOW   = 60   # seconds
+_rate_buckets: dict[str, list[float]] = defaultdict(list)
+
+def _check_rate_limit(ip: str) -> None:
+    now = time.time()
+    window_start = now - _RATE_LIMIT_WINDOW
+    bucket = _rate_buckets[ip]
+    # Remove old timestamps outside the window
+    _rate_buckets[ip] = [t for t in bucket if t > window_start]
+    if len(_rate_buckets[ip]) >= _RATE_LIMIT_REQUESTS:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please wait a moment before trying again.",
+            headers={"Retry-After": "60"},
+        )
+    _rate_buckets[ip].append(now)
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
@@ -63,7 +85,14 @@ def sitemap_xml() -> Response:
         "merge-pdf", "compress-pdf", "pdf-to-word", "word-to-pdf", "jpg-to-pdf",
         "pdf-to-jpg", "compress-image", "resize-image", "remove-background",
         "ocr-pdf", "json-formatter", "bmi-calculator", "password-generator",
-        "qr-code-generator", "remove-background", "pdf-to-excel",
+        "qr-code-generator", "pdf-to-excel",
+        # Health & Finance — high-value SEO targets
+        "calorie-calculator", "gst-calculator", "sip-calculator",
+        "income-tax-calculator", "roi-calculator", "budget-planner",
+        "water-intake-calculator", "sleep-calculator", "bmr-calculator",
+        "heart-rate-zones", "steps-to-km", "calories-burned-calculator",
+        "number-to-words", "roman-numeral-converter", "date-calculator",
+        "age-in-seconds", "random-name-generator", "random-number-generator",
     }
     seen_slugs: set[str] = set()
     for tool in TOOLS:
@@ -174,12 +203,27 @@ def tool_details(slug: str) -> Response:
     return JSONResponse(content=tool.model_dump(), headers={"Cache-Control": _CACHE_CONTROL_TOOL})
 
 
+def _cleanup_workspace(job_dir: Path) -> None:
+    """Remove the job workspace directory after the response has been sent."""
+    try:
+        if job_dir.exists():
+            shutil.rmtree(job_dir, ignore_errors=True)
+    except Exception:
+        pass
+
+
 @app.post("/api/tools/{slug}/execute")
 def run_tool(
+    request: Request,
+    background_tasks: BackgroundTasks,
     slug: str,
     files: Annotated[list[UploadFile], File()] = [],
     payload: Annotated[str | None, Form()] = None,
 ):
+    # Rate limiting — 60 requests per minute per IP
+    client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or \
+                (request.client.host if request.client else "unknown")
+    _check_rate_limit(client_ip)
     tool = get_tool(slug)
     handler = HANDLERS.get(slug)
     if not handler:
@@ -220,19 +264,24 @@ def run_tool(
                 )
 
     job_id, input_dir, output_dir = create_job_workspace()
+    job_root = input_dir.parent   # parent dir of input/ and output/
     saved_files = save_uploads(files, input_dir) if files else []
 
     try:
         result = handler(saved_files, payload_data, output_dir)
     except HTTPException:
+        background_tasks.add_task(_cleanup_workspace, job_root)
         raise
     except Exception as exc:
+        background_tasks.add_task(_cleanup_workspace, job_root)
         raise HTTPException(
             status_code=500,
             detail=f"Processing failed: {str(exc)[:200]}. Please try again with a valid file.",
         ) from exc
 
     if result.kind == "json":
+        # JSON results don't need the workspace — clean it up immediately
+        background_tasks.add_task(_cleanup_workspace, job_root)
         return JSONResponse(
             content={
                 "status": "success",
@@ -244,6 +293,8 @@ def run_tool(
 
     if result.kind == "file" and result.output_path and Path(result.output_path).exists():
         safe_message = (result.message or "").encode("latin-1", errors="replace").decode("latin-1")
+        # File will be streamed first, then workspace cleaned
+        background_tasks.add_task(_cleanup_workspace, job_root)
         return FileResponse(
             path=result.output_path,
             filename=result.filename,
@@ -254,4 +305,5 @@ def run_tool(
             },
         )
 
+    background_tasks.add_task(_cleanup_workspace, job_root)
     raise HTTPException(status_code=500, detail="Tool execution did not produce a valid output. Please try again.")

@@ -1789,7 +1789,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
-    'whitespace-remover': [
+  'whitespace-remover': [
     { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste text with extra spaces...' },
     {
       name: 'mode',
@@ -1802,6 +1802,333 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: 'Trailing Spaces', value: 'trailing' },
         { label: 'Extra Spaces (keep single spaces)', value: 'extra' },
         { label: 'All Line Whitespace (trim each line)', value: 'all_lines' },
+      ],
+    },
+  ],
+
+  // ── HEALTH & FITNESS TOOLS ───────────────────────────────────────────
+  'calorie-calculator': [
+    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'male',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+    {
+      name: 'activity_level',
+      label: 'Activity Level',
+      type: 'select',
+      defaultValue: 'moderate',
+      options: [
+        { label: 'Sedentary (desk job, no exercise)', value: 'sedentary' },
+        { label: 'Light (1–3 days/week exercise)', value: 'light' },
+        { label: 'Moderate (3–5 days/week exercise)', value: 'moderate' },
+        { label: 'Active (6–7 days/week exercise)', value: 'active' },
+        { label: 'Very Active (athlete / physical job)', value: 'very_active' },
+      ],
+    },
+  ],
+  'bmr-calculator': [
+    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'male',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+  ],
+  'body-fat-calculator': [
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'male',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+    { name: 'waist', label: 'Waist (cm)', type: 'number', defaultValue: '80', placeholder: '80' },
+    { name: 'neck', label: 'Neck (cm)', type: 'number', defaultValue: '37', placeholder: '37' },
+    { name: 'hip', label: 'Hip (cm) — females only', type: 'number', defaultValue: '95', placeholder: '95' },
+    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
+  ],
+  'water-intake-calculator': [
+    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
+    {
+      name: 'activity_level',
+      label: 'Activity Level',
+      type: 'select',
+      defaultValue: 'moderate',
+      options: [
+        { label: 'Sedentary (little or no exercise)', value: 'sedentary' },
+        { label: 'Light (light exercise 1–3 days/week)', value: 'light' },
+        { label: 'Moderate (exercise 3–5 days/week)', value: 'moderate' },
+        { label: 'Active (hard exercise 6–7 days/week)', value: 'active' },
+        { label: 'Very Active (athlete / physical job)', value: 'very_active' },
+      ],
+    },
+    {
+      name: 'climate',
+      label: 'Climate',
+      type: 'select',
+      defaultValue: 'temperate',
+      options: [
+        { label: 'Cool / Air-conditioned', value: 'cool' },
+        { label: 'Temperate (most of India)', value: 'temperate' },
+        { label: 'Hot & Humid (coastal/summer)', value: 'hot_humid' },
+        { label: 'Very Hot (desert / peak summer)', value: 'very_hot' },
+      ],
+    },
+  ],
+  'sleep-calculator': [
+    {
+      name: 'bedtime',
+      label: 'Bedtime (HH:MM, 24-hr)',
+      type: 'text',
+      defaultValue: '22:30',
+      placeholder: '22:30',
+    },
+    {
+      name: 'mode',
+      label: 'Calculate',
+      type: 'select',
+      defaultValue: 'wake_up',
+      options: [
+        { label: 'Best wake-up times from bedtime', value: 'wake_up' },
+        { label: 'Best bedtimes to wake at a set time', value: 'bedtime' },
+      ],
+    },
+  ],
+  'heart-rate-zones': [
+    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
+    { name: 'resting_hr', label: 'Resting Heart Rate (bpm)', type: 'number', defaultValue: '70', placeholder: '70' },
+  ],
+  'steps-to-km': [
+    { name: 'steps', label: 'Number of Steps', type: 'number', defaultValue: '10000', placeholder: '10000' },
+    { name: 'height', label: 'Your Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
+    { name: 'weight', label: 'Your Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
+  ],
+  'calories-burned-calculator': [
+    {
+      name: 'activity',
+      label: 'Activity',
+      type: 'select',
+      defaultValue: 'walking',
+      options: [
+        { label: 'Walking (moderate pace)', value: 'walking' },
+        { label: 'Running (8 km/h)', value: 'running' },
+        { label: 'Cycling (moderate)', value: 'cycling' },
+        { label: 'Swimming (freestyle)', value: 'swimming' },
+        { label: 'Yoga', value: 'yoga' },
+        { label: 'Weight Training / Gym', value: 'weight_training' },
+        { label: 'Jump Rope / Skipping', value: 'jump_rope' },
+        { label: 'Dancing', value: 'dancing' },
+        { label: 'Hiking', value: 'hiking' },
+        { label: 'Badminton / Tennis', value: 'badminton' },
+        { label: 'Cricket (batting/fielding)', value: 'cricket' },
+        { label: 'Football / Soccer', value: 'football' },
+      ],
+    },
+    { name: 'weight', label: 'Your Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
+    { name: 'duration', label: 'Duration (minutes)', type: 'number', defaultValue: '30', placeholder: '30' },
+  ],
+
+  // ── FINANCE & TAX TOOLS ───────────────────────────────────────────────
+  'gst-calculator': [
+    { name: 'value', label: 'Amount (₹)', type: 'number', defaultValue: '1000', placeholder: '1000' },
+    {
+      name: 'rate',
+      label: 'GST Rate (%)',
+      type: 'select',
+      defaultValue: '18',
+      options: [
+        { label: '5% GST (basic necessities)', value: '5' },
+        { label: '12% GST (standard goods)', value: '12' },
+        { label: '18% GST (most goods/services)', value: '18' },
+        { label: '28% GST (luxury goods)', value: '28' },
+      ],
+    },
+    {
+      name: 'type',
+      label: 'Calculate',
+      type: 'select',
+      defaultValue: 'add',
+      options: [
+        { label: 'Add GST (exclusive price → GST-inclusive)', value: 'add' },
+        { label: 'Remove GST (inclusive price → original)', value: 'remove' },
+      ],
+    },
+  ],
+  'sip-calculator': [
+    { name: 'monthly_sip', label: 'Monthly SIP (₹)', type: 'number', defaultValue: '5000', placeholder: '5000' },
+    { name: 'expected_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '12', placeholder: '12' },
+    { name: 'tenure', label: 'Investment Period (years)', type: 'number', defaultValue: '10', placeholder: '10' },
+  ],
+  'roi-calculator': [
+    { name: 'initial_investment', label: 'Initial Investment (₹)', type: 'number', defaultValue: '100000', placeholder: '100000' },
+    { name: 'final_value', label: 'Final Value (₹)', type: 'number', defaultValue: '150000', placeholder: '150000' },
+    { name: 'years', label: 'Investment Period (years)', type: 'number', defaultValue: '3', placeholder: '3' },
+  ],
+  'budget-planner': [
+    { name: 'income', label: 'Monthly Income (₹)', type: 'number', defaultValue: '50000', placeholder: '50000' },
+    { name: 'needs_pct', label: 'Needs % (default 50)', type: 'number', defaultValue: '50', placeholder: '50' },
+    { name: 'wants_pct', label: 'Wants % (default 30)', type: 'number', defaultValue: '30', placeholder: '30' },
+    { name: 'savings_pct', label: 'Savings % (default 20)', type: 'number', defaultValue: '20', placeholder: '20' },
+  ],
+  'savings-goal': [
+    { name: 'goal_amount', label: 'Goal Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
+    { name: 'current_savings', label: 'Current Savings (₹)', type: 'number', defaultValue: '50000', placeholder: '50000' },
+    { name: 'monthly_saving', label: 'Monthly Saving (₹)', type: 'number', defaultValue: '10000', placeholder: '10000' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '7', placeholder: '7' },
+  ],
+  'savings-goal-calculator': [
+    { name: 'goal_amount', label: 'Goal Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
+    { name: 'current_savings', label: 'Current Savings (₹)', type: 'number', defaultValue: '50000', placeholder: '50000' },
+    { name: 'monthly_saving', label: 'Monthly Saving (₹)', type: 'number', defaultValue: '10000', placeholder: '10000' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '7', placeholder: '7' },
+  ],
+  'income-tax-calculator': [
+    { name: 'income', label: 'Annual Income (₹)', type: 'number', defaultValue: '1000000', placeholder: '1000000' },
+    {
+      name: 'regime',
+      label: 'Tax Regime',
+      type: 'select',
+      defaultValue: 'new',
+      options: [
+        { label: 'New Regime (FY 2024-25) — ₹0 tax up to ₹7L', value: 'new' },
+        { label: 'Old Regime (with deductions)', value: 'old' },
+        { label: 'Both (compare new vs old)', value: 'both' },
+      ],
+    },
+    { name: 'deductions_80c', label: 'Deductions 80C (₹) — old regime only', type: 'number', defaultValue: '150000', placeholder: '150000' },
+    { name: 'hra', label: 'HRA Exemption (₹) — old regime only', type: 'number', defaultValue: '0', placeholder: '0' },
+  ],
+  'emi-calculator': [
+    { name: 'loan_amount', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
+    { name: 'interest_rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: '8.5' },
+    { name: 'tenure', label: 'Loan Tenure (years)', type: 'number', defaultValue: '5', placeholder: '5' },
+  ],
+  'loan-emi-calculator': [
+    { name: 'loan_amount', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
+    { name: 'interest_rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: '8.5' },
+    { name: 'tenure', label: 'Loan Tenure (years)', type: 'number', defaultValue: '5', placeholder: '5' },
+  ],
+
+  // ── EVERYDAY UTILITY TOOLS ────────────────────────────────────────────
+  'number-to-words': [
+    { name: 'number', label: 'Number', type: 'number', defaultValue: '1000000', placeholder: '1000000' },
+    {
+      name: 'system',
+      label: 'Number System',
+      type: 'select',
+      defaultValue: 'indian',
+      options: [
+        { label: 'Indian (Lakh, Crore)', value: 'indian' },
+        { label: 'International (Million, Billion)', value: 'international' },
+      ],
+    },
+  ],
+  'roman-numeral-converter': [
+    { name: 'value', label: 'Number or Roman Numeral', type: 'text', defaultValue: '2024', placeholder: '2024 or MMXXIV' },
+    {
+      name: 'direction',
+      label: 'Convert',
+      type: 'select',
+      defaultValue: 'to_roman',
+      options: [
+        { label: 'Arabic → Roman (e.g. 2024 → MMXXIV)', value: 'to_roman' },
+        { label: 'Roman → Arabic (e.g. MMXXIV → 2024)', value: 'to_arabic' },
+      ],
+    },
+  ],
+  'love-calculator': [
+    { name: 'name1', label: 'Your Name', type: 'text', defaultValue: '', placeholder: 'e.g. Rahul' },
+    { name: 'name2', label: 'Partner\'s Name', type: 'text', defaultValue: '', placeholder: 'e.g. Priya' },
+  ],
+  'time-until-event': [
+    {
+      name: 'event_date',
+      label: 'Event Date & Time (YYYY-MM-DD HH:MM)',
+      type: 'text',
+      placeholder: '2025-01-01 00:00',
+    },
+    { name: 'event_name', label: 'Event Name (optional)', type: 'text', placeholder: 'New Year 2025', defaultValue: '' },
+  ],
+  'date-calculator': [
+    { name: 'date1', label: 'Start Date (YYYY-MM-DD)', type: 'text', placeholder: '2024-01-01' },
+    { name: 'date2', label: 'End Date (YYYY-MM-DD)', type: 'text', placeholder: '2025-01-01' },
+    {
+      name: 'operation',
+      label: 'Operation',
+      type: 'select',
+      defaultValue: 'difference',
+      options: [
+        { label: 'Difference between two dates', value: 'difference' },
+        { label: 'Add days to start date', value: 'add' },
+        { label: 'Subtract days from start date', value: 'subtract' },
+      ],
+    },
+    { name: 'days_offset', label: 'Days to Add/Subtract (for add/subtract)', type: 'number', defaultValue: '30', placeholder: '30' },
+  ],
+  'age-in-seconds': [
+    {
+      name: 'birthdate',
+      label: 'Date of Birth (YYYY-MM-DD)',
+      type: 'text',
+      placeholder: '1998-08-15',
+    },
+  ],
+  'random-name-generator': [
+    { name: 'count', label: 'Number of Names', type: 'number', defaultValue: '5', placeholder: '5' },
+    {
+      name: 'gender',
+      label: 'Gender',
+      type: 'select',
+      defaultValue: 'any',
+      options: [
+        { label: 'Any', value: 'any' },
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+      ],
+    },
+    {
+      name: 'style',
+      label: 'Name Style',
+      type: 'select',
+      defaultValue: 'indian',
+      options: [
+        { label: 'Indian', value: 'indian' },
+        { label: 'Western / English', value: 'western' },
+        { label: 'Full Name (First + Last)', value: 'full' },
+      ],
+    },
+  ],
+  'random-number-generator': [
+    { name: 'min', label: 'Minimum', type: 'number', defaultValue: '1', placeholder: '1' },
+    { name: 'max', label: 'Maximum', type: 'number', defaultValue: '100', placeholder: '100' },
+    { name: 'count', label: 'Count (how many numbers)', type: 'number', defaultValue: '5', placeholder: '5' },
+    {
+      name: 'unique',
+      label: 'Unique Numbers',
+      type: 'select',
+      defaultValue: 'true',
+      options: [
+        { label: 'Yes — no duplicates', value: 'true' },
+        { label: 'No — duplicates allowed', value: 'false' },
       ],
     },
   ],

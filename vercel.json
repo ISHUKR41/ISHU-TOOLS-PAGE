@@ -1,13 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm --prefix frontend run build && python -m scripts.generate_seo_pages",
-  "installCommand": "npm install --prefix frontend",
+  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build",
+  "installCommand": "npm --prefix frontend install",
   "outputDirectory": "frontend/dist",
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

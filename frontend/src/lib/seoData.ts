@@ -45,6 +45,8 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
   const isConverter = category === 'conversion-tools' || category === 'unit-converter'
   const isColor = category === 'color-tools'
   const isSEO = category === 'seo-tools'
+  const isHealth = category === 'health-tools'
+  const isFinance = category === 'finance-tools'
 
   // ── Generate the best title for the tool type ──
   let title: string
@@ -75,6 +77,10 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
     title = `${toolTitle} Online Free — Fast PDF Tool | ${SITE}`
   } else if (isImage) {
     title = `${toolTitle} Online Free — Fast Image Tool | ${SITE}`
+  } else if (isHealth) {
+    title = `${toolTitle} — Free Online Health Calculator | ${SITE}`
+  } else if (isFinance) {
+    title = `${toolTitle} — Free Online Finance Calculator | ${SITE}`
   } else {
     title = `${toolTitle} Online Free — ${categoryLabel} | ${SITE}`
   }
@@ -102,6 +108,10 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Perfect dimensions for social media. ${noSignup} Works on mobile and desktop.`
   } else if (isConverter) {
     description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Fast, accurate unit conversion with no signup. Best free ${base} tool for students and professionals.`
+  } else if (isHealth) {
+    description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Accurate results instantly — no signup, no app. Best free health calculator for fitness enthusiasts and students in India.`
+  } else if (isFinance) {
+    description = `Free ${t} online. ${toolDescription.replace(/\.$/, '')}. Instant accurate results — no signup, no app. Best free Indian finance calculator for students and working professionals.`
   } else {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Fast, accurate, ${noSignup} Built for students and professionals — works on all devices.`
   }
@@ -3516,6 +3526,168 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Whitespace Remover — Clean Text Free Online',
     faq: [],
   },
+
+  // ── HEALTH & FITNESS ──────────────────────────────────────────────────
+  'calorie-calculator': {
+    title: 'Calorie Calculator (TDEE) — Free Online | ISHU TOOLS',
+    description: 'Free calorie calculator. Find your daily calorie needs using TDEE, BMR (Mifflin-St Jeor). Enter age, weight, height, gender & activity. Weight loss/gain targets. No signup.',
+    keywords: ['calorie calculator', 'tdee calculator', 'daily calorie needs', 'bmr calculator', 'calorie calculator india', 'daily calorie intake calculator', 'calories to lose weight', 'free calorie calculator online', 'ishu calorie calculator'],
+    h1: 'Calorie Calculator (TDEE) — Find Your Daily Calorie Needs Free',
+    faq: [
+      { question: 'What is a calorie calculator?', answer: 'A calorie calculator estimates your Total Daily Energy Expenditure (TDEE) — the number of calories you burn per day based on your age, weight, height, gender, and activity level.' },
+      { question: 'How do I use this calorie calculator?', answer: 'Enter your age, weight (kg), height (cm), gender, and activity level. Click Run to get your BMR and TDEE instantly — no signup required.' },
+      { question: 'How many calories do I need to lose weight?', answer: 'To lose weight, eat 500 calories less than your TDEE per day. This creates a 500 kcal/day deficit, leading to ~0.5 kg weight loss per week.' },
+    ],
+  },
+  'bmr-calculator': {
+    title: 'BMR Calculator — Free Basal Metabolic Rate Online | ISHU TOOLS',
+    description: 'Free BMR calculator. Calculate your Basal Metabolic Rate using Mifflin-St Jeor and Harris-Benedict equations. Find minimum daily calories needed. No signup, instant results.',
+    keywords: ['bmr calculator', 'basal metabolic rate', 'bmr formula', 'bmr calculator india', 'bmr online free', 'mifflin st jeor', 'harris benedict bmr', 'ishu bmr calculator', 'metabolism calculator'],
+    h1: 'BMR Calculator — Calculate Basal Metabolic Rate Free Online',
+    faq: [
+      { question: 'What is BMR?', answer: 'BMR (Basal Metabolic Rate) is the number of calories your body burns at complete rest to maintain basic life functions like breathing and circulation.' },
+      { question: 'What formula does this BMR calculator use?', answer: 'This calculator uses the Mifflin-St Jeor equation (most accurate for most people) and also shows the Harris-Benedict result for comparison.' },
+    ],
+  },
+  'water-intake-calculator': {
+    title: 'Water Intake Calculator — Daily Hydration Free Online | ISHU TOOLS',
+    description: 'Free water intake calculator. Calculate your recommended daily water intake in litres and cups based on weight, activity level, and climate. No signup, instant results.',
+    keywords: ['water intake calculator', 'daily water intake', 'how much water to drink', 'hydration calculator', 'water intake per day', 'water calculator india', 'daily water requirement', 'ishu water intake calculator'],
+    h1: 'Water Intake Calculator — Daily Hydration Recommendation Free',
+    faq: [
+      { question: 'How much water should I drink per day?', answer: 'The general recommendation is 33 ml per kg of body weight per day. For a 70 kg person, that is about 2.3 litres or 10 cups daily, adjusted for activity and climate.' },
+    ],
+  },
+  'sleep-calculator': {
+    title: 'Sleep Calculator — Best Wake Up Times Free Online | ISHU TOOLS',
+    description: 'Free sleep calculator. Find the best wake-up times based on 90-minute sleep cycles. Enter bedtime to get optimal alarm times for feeling refreshed. No signup required.',
+    keywords: ['sleep calculator', 'sleep cycle calculator', 'best wake up time', 'when to wake up', 'alarm time calculator', 'sleep cycle 90 minutes', 'rem sleep calculator', 'ishu sleep calculator', 'sleep time calculator'],
+    h1: 'Sleep Calculator — Find the Best Wake-Up Time Based on Sleep Cycles',
+    faq: [
+      { question: 'How does the sleep calculator work?', answer: 'Each sleep cycle lasts 90 minutes. You feel most refreshed when you wake up at the END of a cycle. Enter your bedtime and the calculator shows the best wake times after 4, 5, or 6 cycles.' },
+      { question: 'How many sleep cycles do I need?', answer: 'Adults need 5–6 complete sleep cycles (7.5–9 hours) for optimal rest. 4 cycles (6 hours) is the absolute minimum. Less than 4 cycles causes sleep deprivation.' },
+    ],
+  },
+  'heart-rate-zones': {
+    title: 'Heart Rate Zones Calculator — Training Zones Free | ISHU TOOLS',
+    description: 'Free heart rate zones calculator. Calculate 5 training zones using Karvonen method from age and resting heart rate. Optimize cardio training and fat burn. No signup.',
+    keywords: ['heart rate zones calculator', 'target heart rate zones', 'karvonen method', 'cardio training zones', 'fat burn zone', 'max heart rate calculator', 'heart rate training', 'ishu heart rate calculator'],
+    h1: 'Heart Rate Zones Calculator — Find Your 5 Training Zones Free',
+    faq: [
+      { question: 'What are heart rate training zones?', answer: 'Heart rate zones are ranges of heart beats per minute that correspond to exercise intensity. Zone 1 (50–60%) is warm-up, Zone 2 (60–70%) burns fat, Zone 3–4 improves fitness, Zone 5 (90%+) is max effort.' },
+    ],
+  },
+  'steps-to-km': {
+    title: 'Steps to KM Converter — Steps to Distance Free | ISHU TOOLS',
+    description: 'Free steps to km converter. Convert walking steps to km and miles. Calculates calories burned and estimated time. Works for 10,000 steps goal. No signup required.',
+    keywords: ['steps to km', 'steps to kilometers', 'steps to miles', '10000 steps to km', 'steps calculator', 'steps converter', 'how many km is 10000 steps', 'steps to distance', 'ishu steps calculator'],
+    h1: 'Steps to KM Converter — Convert Steps to Distance & Calories Free',
+    faq: [
+      { question: 'How many km is 10,000 steps?', answer: 'For an average person with height 170 cm, 10,000 steps is approximately 7–8 km. The exact distance depends on your stride length, which is calculated from your height.' },
+    ],
+  },
+  'calories-burned-calculator': {
+    title: 'Calories Burned Calculator — Exercise Calories Free | ISHU TOOLS',
+    description: 'Free calories burned calculator. Calculate calories burned walking, running, cycling, swimming, yoga, gym. Enter activity, weight, and duration. No signup, instant results.',
+    keywords: ['calories burned calculator', 'calories burned walking', 'calories burned running', 'exercise calories calculator', 'workout calories calculator', 'calories burned by activity', 'ishu calorie burn calculator'],
+    h1: 'Calories Burned Calculator — Find Calories Burned by Any Activity Free',
+    faq: [
+      { question: 'How are calories burned calculated?', answer: 'Calories burned = MET (metabolic equivalent) × body weight (kg) × duration (hours). Walking has MET ~3.5, Running ~9.8, Cycling ~7.5, Swimming ~8.0.' },
+    ],
+  },
+
+  // ── FINANCE & TAX ──────────────────────────────────────────────────────
+  'gst-calculator': {
+    title: 'GST Calculator India — Add/Remove GST Free Online | ISHU TOOLS',
+    description: 'Free Indian GST calculator. Add or remove GST for 5%, 12%, 18%, 28% rates. Shows CGST, SGST, IGST breakdown instantly. No signup, no app required. Best free GST tool 2024.',
+    keywords: ['gst calculator', 'gst calculator india', 'gst tax calculator', 'add gst calculator', 'remove gst calculator', 'cgst sgst calculator', 'igst calculator', '18 percent gst calculator', 'gst inclusive exclusive', 'ishu gst calculator', 'gst amount calculator india 2024'],
+    h1: 'GST Calculator India — Add or Remove GST Online Free',
+    faq: [
+      { question: 'How to calculate GST in India?', answer: 'To add GST: Final Price = Original Price × (1 + GST rate/100). To remove GST: Original Price = GST-inclusive price ÷ (1 + GST rate/100). This calculator does both automatically.' },
+      { question: 'What are the GST rates in India?', answer: 'India has 5 GST rates: 0% (essential goods), 5% (basic necessities), 12% (standard goods), 18% (most services and goods), 28% (luxury goods and sin goods). This calculator supports all rates.' },
+      { question: 'What is CGST, SGST, and IGST?', answer: 'CGST (Central GST) and SGST (State GST) are each half of the total GST for intra-state transactions. IGST (Integrated GST) equals the full GST rate for inter-state transactions.' },
+    ],
+  },
+  'sip-calculator': {
+    title: 'SIP Calculator — Mutual Fund SIP Returns Free | ISHU TOOLS',
+    description: 'Free SIP calculator. Calculate SIP (Systematic Investment Plan) returns, maturity value, and wealth gained. Enter monthly SIP, rate of return, and tenure. No signup.',
+    keywords: ['sip calculator', 'mutual fund sip calculator', 'sip returns calculator', 'sip maturity value', 'sip investment calculator', 'monthly sip calculator india', 'sip calculator 2024', 'ishu sip calculator', 'sip wealth calculator'],
+    h1: 'SIP Calculator — Calculate Mutual Fund SIP Returns Free Online',
+    faq: [
+      { question: 'How does a SIP calculator work?', answer: 'SIP maturity value is calculated as: FV = P × ((1+r)^n - 1) / r × (1+r), where P is monthly investment, r is monthly rate (annual rate / 12), and n is total months.' },
+      { question: 'What is SIP?', answer: 'SIP (Systematic Investment Plan) is a method of investing a fixed amount in mutual funds at regular intervals (monthly). It helps build wealth through the power of compounding over time.' },
+      { question: 'Is SIP better than lump sum investment?', answer: 'SIP is generally better for regular investors as it averages out market volatility (rupee cost averaging). Lump sum can be better during market lows. SIP is recommended for salaried individuals.' },
+    ],
+  },
+  'roi-calculator': {
+    title: 'ROI Calculator — Return on Investment & CAGR Free | ISHU TOOLS',
+    description: 'Free ROI calculator. Calculate Return on Investment percentage and CAGR from initial investment and final value. Works for stocks, real estate, business. No signup.',
+    keywords: ['roi calculator', 'return on investment calculator', 'cagr calculator', 'investment return calculator', 'roi formula', 'calculate roi online', 'roi percentage calculator', 'ishu roi calculator', 'investment profit calculator'],
+    h1: 'ROI Calculator — Calculate Return on Investment & CAGR Free',
+    faq: [
+      { question: 'How to calculate ROI?', answer: 'ROI = (Final Value - Initial Investment) / Initial Investment × 100%. For example, if you invested ₹1,00,000 and got ₹1,50,000, ROI = (1,50,000 - 1,00,000) / 1,00,000 × 100 = 50%.' },
+      { question: 'What is CAGR?', answer: 'CAGR (Compound Annual Growth Rate) = (Final Value / Initial Value)^(1/years) - 1. It measures the rate at which an investment would have grown if it had grown at a steady rate compounded annually.' },
+    ],
+  },
+  'budget-planner': {
+    title: 'Budget Planner (50/30/20 Rule) — Monthly Budget Free | ISHU TOOLS',
+    description: 'Free monthly budget planner. Split your income using the 50/30/20 rule — 50% Needs, 30% Wants, 20% Savings. Enter monthly salary for instant budget breakdown. No signup.',
+    keywords: ['budget planner', 'monthly budget calculator', '50 30 20 rule', 'budget calculator india', 'salary budget planner', 'personal budget calculator', 'budget planning tool', 'ishu budget planner', 'income budget split calculator'],
+    h1: 'Budget Planner — 50/30/20 Rule Monthly Budget Calculator Free',
+    faq: [
+      { question: 'What is the 50/30/20 budget rule?', answer: 'The 50/30/20 rule divides after-tax income: 50% for Needs (rent, food, bills), 30% for Wants (entertainment, dining, shopping), and 20% for Savings (emergency fund, investments, debt repayment).' },
+    ],
+  },
+  'income-tax-calculator': {
+    title: 'Income Tax Calculator India FY 2024-25 — Free Online | ISHU TOOLS',
+    description: 'Free Indian income tax calculator FY 2024-25. Calculate tax under old and new regime. Slab-wise breakdown, 87A rebate, 4% cess, effective rate. Instant results, no signup.',
+    keywords: ['income tax calculator india', 'income tax calculator 2024-25', 'new tax regime calculator', 'old tax regime calculator', 'india income tax slab', '87a rebate calculator', 'itr calculator', 'tax calculator india 2024', 'ishu income tax calculator', 'salary tax calculator india'],
+    h1: 'Income Tax Calculator India FY 2024-25 — Old & New Regime Free',
+    faq: [
+      { question: 'What are the new tax regime slabs for FY 2024-25?', answer: 'New regime FY 2024-25: ₹0-3L = 0%, ₹3-6L = 5%, ₹6-9L = 10%, ₹9-12L = 15%, ₹12-15L = 20%, above ₹15L = 30%. Plus 4% health & education cess. Rebate u/s 87A up to ₹7L income.' },
+      { question: 'Should I choose old or new tax regime?', answer: 'New regime is better if your deductions (80C, HRA, etc.) are less than ~₹3.5L. Old regime is better if you have high deductions like 80C (₹1.5L), HRA, home loan, etc. Use this calculator to compare both.' },
+      { question: 'What is rebate u/s 87A?', answer: 'Under the new regime, if your annual income is ≤₹7 lakh, you get a rebate of up to ₹25,000 on tax. Under the old regime, if income is ≤₹5 lakh, rebate is up to ₹12,500. This effectively makes income up to ₹7L tax-free under new regime.' },
+    ],
+  },
+
+  // ── EVERYDAY UTILITY (new) ─────────────────────────────────────────────
+  'gst-tax-calculator': {
+    title: 'GST Tax Calculator India — Free Online | ISHU TOOLS',
+    description: 'Free GST tax calculator for India. Instantly calculate GST for any rate. Shows CGST, SGST, IGST breakdown. No signup.',
+    keywords: ['gst tax calculator', 'gst calculator india', 'cgst sgst igst', 'ishu gst calculator'],
+    h1: 'GST Tax Calculator India — Free Online',
+    faq: [],
+  },
+  'number-to-words': {
+    title: 'Number to Words Converter — Indian & International | ISHU TOOLS',
+    description: 'Free number to words converter. Convert numbers to Indian words (Lakh, Crore) and International (Million, Billion). Perfect for cheques and forms. No signup.',
+    keywords: ['number to words', 'number in words', 'lakh crore in words', 'spell number online', 'number to words converter india', 'cheque amount in words', 'ishu number to words'],
+    h1: 'Number to Words Converter — Indian Lakh/Crore System Free',
+    faq: [
+      { question: 'How to write 10 lakh in words?', answer: 'In Indian system: 10,00,000 = "Ten Lakh". In International system: 1,000,000 = "One Million". This converter handles both systems for any number up to 999 billion.' },
+    ],
+  },
+  'roman-numeral-converter': {
+    title: 'Roman Numeral Converter — Arabic to Roman Free | ISHU TOOLS',
+    description: 'Free Roman numeral converter. Convert Arabic numbers 1-3999 to Roman numerals and vice versa. Bidirectional conversion, instant results. No signup required.',
+    keywords: ['roman numeral converter', 'arabic to roman', 'roman to arabic', 'roman numerals online', 'convert to roman numerals', 'roman numeral calculator', 'ishu roman numeral converter'],
+    h1: 'Roman Numeral Converter — Convert Arabic ↔ Roman Free Online',
+    faq: [],
+  },
+  'date-calculator': {
+    title: 'Date Difference Calculator — Days Between Dates Free | ISHU TOOLS',
+    description: 'Free date calculator. Calculate days, weeks, months between two dates. Add or subtract days from any date. No signup, instant results online.',
+    keywords: ['date calculator', 'date difference calculator', 'days between dates', 'date difference online', 'date counter', 'day calculator', 'ishu date calculator'],
+    h1: 'Date Difference Calculator — Days, Weeks, Months Between Dates Free',
+    faq: [],
+  },
+  'age-in-seconds': {
+    title: 'Age Calculator — Age in Seconds, Days, Hours Free | ISHU TOOLS',
+    description: 'Free detailed age calculator. Know your exact age in years, months, days, hours, minutes, and seconds. Shows next birthday countdown. No signup required.',
+    keywords: ['age in seconds', 'age calculator', 'exact age calculator', 'age in days', 'how old am i in seconds', 'birthday countdown', 'ishu age calculator'],
+    h1: 'Age Calculator — Exact Age in Seconds, Days & Hours Free',
+    faq: [],
+  },
 }
 
 /**
@@ -3543,8 +3715,15 @@ export const HOMEPAGE_KEYWORDS = [
   'regex tester', 'diff checker', 'password generator', 'lorem ipsum generator',
   'color picker', 'hex to rgb', 'rgb to hex', 'gradient generator',
   'percentage calculator', 'bmi calculator', 'age calculator',
+  'calorie calculator', 'calorie calculator india', 'tdee calculator', 'bmr calculator',
+  'water intake calculator', 'sleep calculator', 'heart rate zones calculator',
+  'steps to km', 'calories burned calculator', 'body fat calculator',
+  'gst calculator', 'gst calculator india', 'sip calculator', 'roi calculator',
+  'income tax calculator india', 'income tax calculator 2024-25', 'budget planner',
   'emi calculator', 'loan calculator', 'compound interest calculator',
   'simple interest calculator', 'gpa calculator', 'cgpa calculator',
+  'number to words', 'number to words india', 'roman numeral converter',
+  'date difference calculator', 'days between dates', 'random name generator',
   'discount calculator', 'tip calculator', 'scientific calculator',
   'word counter', 'character counter', 'case converter',
   'temperature converter', 'length converter', 'weight converter',

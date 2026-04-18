@@ -6473,3 +6473,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load phase3_handlers: {e}")
 
 print(f"[handlers] COMPLETE TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge health, fitness & finance handlers
+try:
+    from .health_finance_handlers import HEALTH_FINANCE_HANDLERS
+    HANDLERS.update(HEALTH_FINANCE_HANDLERS)
+    print(f"[handlers] Loaded {len(HEALTH_FINANCE_HANDLERS)} health/finance handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load health_finance_handlers: {e}")
+
+print(f"[handlers] FINAL GRAND TOTAL registered handlers: {len(HANDLERS)}")

@@ -1,9 +1,10 @@
-import { startTransition, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { startTransition, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Search, MousePointerClick, Upload, Download, CheckCircle, ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images, Calculator, Star } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
+import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
@@ -80,7 +81,7 @@ export default function HomePage() {
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
 
-  const deferredQuery = useDeferredValue(query)
+  const debouncedQuery = useDebounce(query, 180)
 
   useEffect(() => {
     applyDocumentBranding(
@@ -109,7 +110,7 @@ export default function HomePage() {
   }, [categories, tools])
 
   const filteredTools = useMemo(() => {
-    const normalizedQuery = deferredQuery.trim().toLowerCase()
+    const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
     return tools.filter((tool) => {
       if (activeCategory !== 'all' && tool.category !== activeCategory) return false
@@ -118,7 +119,7 @@ export default function HomePage() {
       const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
       return haystack.includes(normalizedQuery)
     })
-  }, [activeCategory, deferredQuery, tools])
+  }, [activeCategory, debouncedQuery, tools])
 
   const groupedSections = useMemo(() => {
     return categories

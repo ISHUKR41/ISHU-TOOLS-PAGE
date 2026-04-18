@@ -4367,5 +4367,210 @@ TOOLS.extend([
     ),
 ])
 
+# ═══════════════════════════════════════════════════════
+#  Phase 4: Health, Fitness & Finance Tools
+# ═══════════════════════════════════════════════════════
+CATEGORIES.extend([
+    ToolCategory(
+        id="health-tools",
+        label="Health & Fitness",
+        description="Calorie calculator, BMR, body fat, water intake, sleep cycles, heart rate zones, steps counter.",
+    ),
+    ToolCategory(
+        id="finance-tools",
+        label="Finance & Tax",
+        description="GST calculator, SIP planner, ROI, budget planner, income tax (Indian), savings goal.",
+    ),
+])
+
+TOOLS.extend([
+    # ── Health & Fitness ──────────────────────────────────
+    ToolDefinition(
+        slug="calorie-calculator",
+        title="Calorie Calculator (TDEE)",
+        description="Calculate your Total Daily Energy Expenditure (TDEE) and daily calorie needs based on age, weight, height, gender, and activity level.",
+        category="health-tools",
+        tags=["calorie calculator", "tdee", "daily calories", "bmr", "weight loss", "diet"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="bmr-calculator",
+        title="BMR Calculator",
+        description="Calculate your Basal Metabolic Rate using the Mifflin-St Jeor and Harris-Benedict equations.",
+        category="health-tools",
+        tags=["bmr", "basal metabolic rate", "calories at rest", "metabolism", "health"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="body-fat-calculator",
+        title="Body Fat Calculator",
+        description="Calculate body fat percentage using the US Navy method from height, neck, waist, and hip measurements.",
+        category="health-tools",
+        tags=["body fat", "body fat percentage", "navy method", "fitness", "health calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="water-intake-calculator",
+        title="Water Intake Calculator",
+        description="Calculate your recommended daily water intake based on weight, activity level, and climate.",
+        category="health-tools",
+        tags=["water intake", "daily water", "hydration calculator", "water calculator", "health"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="sleep-calculator",
+        title="Sleep Calculator",
+        description="Find the best wake-up times based on sleep cycles. Enter your bedtime to get optimal alarm times.",
+        category="health-tools",
+        tags=["sleep calculator", "sleep cycle", "wake up time", "alarm calculator", "rem sleep"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="heart-rate-zones",
+        title="Heart Rate Zones Calculator",
+        description="Calculate your 5 heart rate training zones using the Karvonen method for maximum workout effectiveness.",
+        category="health-tools",
+        tags=["heart rate zones", "target heart rate", "karvonen method", "cardio training", "exercise"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="steps-to-km",
+        title="Steps to KM Converter",
+        description="Convert steps walked to distance in km and miles. Also estimates calories burned from your daily steps.",
+        category="health-tools",
+        tags=["steps to km", "steps to miles", "steps calculator", "10000 steps", "pedometer"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="calories-burned-calculator",
+        title="Calories Burned Calculator",
+        description="Calculate calories burned for any activity — walking, running, cycling, swimming, gym, yoga and more.",
+        category="health-tools",
+        tags=["calories burned", "exercise calories", "workout calculator", "activity calories", "fitness"],
+        input_kind="text",
+    ),
+    # ── Finance & Tax ─────────────────────────────────────
+    ToolDefinition(
+        slug="gst-calculator",
+        title="GST Calculator",
+        description="Calculate Indian GST (Goods and Services Tax) instantly. Add or remove GST for any rate: 5%, 12%, 18%, 28%. Shows CGST, SGST, and IGST breakdown.",
+        category="finance-tools",
+        tags=["gst calculator", "gst tax", "cgst sgst", "igst calculator", "india tax", "goods services tax"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="sip-calculator",
+        title="SIP Calculator",
+        description="Calculate SIP (Systematic Investment Plan) returns, maturity value, and yearly breakdown for mutual fund investments.",
+        category="finance-tools",
+        tags=["sip calculator", "mutual fund sip", "sip returns", "investment calculator", "sip maturity"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="roi-calculator",
+        title="ROI Calculator",
+        description="Calculate Return on Investment (ROI) and CAGR from initial and final values. Useful for stocks, real estate, and business investments.",
+        category="finance-tools",
+        tags=["roi calculator", "return on investment", "cagr calculator", "investment return", "profit calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="budget-planner",
+        title="Budget Planner (50/30/20 Rule)",
+        description="Instantly split your monthly income using the 50/30/20 budget rule — Needs, Wants, and Savings breakdown.",
+        category="finance-tools",
+        tags=["budget planner", "50 30 20 rule", "monthly budget", "budget calculator", "personal finance"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="savings-goal-calculator",
+        title="Savings Goal Calculator",
+        description="Calculate how many months to reach your savings goal based on current savings, monthly contribution, and interest rate.",
+        category="finance-tools",
+        tags=["savings goal", "savings calculator", "financial goal", "how long to save", "investment goal"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="income-tax-calculator",
+        title="Income Tax Calculator (India)",
+        description="Calculate Indian income tax for FY 2024-25 under both old and new tax regimes. Shows slab-wise breakdown, rebate u/s 87A, and effective rate.",
+        category="finance-tools",
+        tags=["income tax calculator", "india income tax", "new tax regime", "old tax regime", "87a rebate", "itr"],
+        input_kind="text",
+    ),
+    # ── Everyday Utility (under student-tools / utility) ───
+    ToolDefinition(
+        slug="number-to-words",
+        title="Number to Words Converter",
+        description="Convert any number to words in Indian system (Lakh, Crore) and International system (Million, Billion). Supports up to 999 billion.",
+        category="student-tools",
+        tags=["number to words", "numbers in words", "lakh crore words", "spell number", "cheque amount"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="roman-numeral-converter",
+        title="Roman Numeral Converter",
+        description="Convert Arabic numbers to Roman numerals and vice versa. Supports 1 to 3999. Instant bidirectional conversion.",
+        category="student-tools",
+        tags=["roman numeral", "roman numbers", "arabic to roman", "roman to arabic", "numeral converter"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="love-calculator",
+        title="Love Calculator",
+        description="Fun love compatibility calculator — enter two names and find out your love percentage! Entertainment only.",
+        category="student-tools",
+        tags=["love calculator", "love percentage", "compatibility calculator", "love test", "fun calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="time-calculator",
+        title="Time Calculator",
+        description="Add or subtract time values (hours, minutes, seconds). Supports expressions like '2h 30m + 1h 15m'.",
+        category="student-tools",
+        tags=["time calculator", "add time", "subtract time", "time addition", "hours minutes calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="date-calculator",
+        title="Date Difference Calculator",
+        description="Calculate the number of days, weeks, months, and years between two dates. Also add or subtract days from a date.",
+        category="student-tools",
+        tags=["date calculator", "date difference", "days between dates", "date counter", "day calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="age-in-seconds",
+        title="Age Calculator (Seconds, Days, Hours)",
+        description="Calculate your exact age in years, months, days, hours, minutes, and seconds. Shows your next birthday countdown.",
+        category="student-tools",
+        tags=["age in seconds", "exact age calculator", "age in days", "birthday calculator", "age calculator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="random-number-generator",
+        title="Random Number Generator",
+        description="Generate one or more random numbers between any min and max range. Perfect for games, lotteries, and decisions.",
+        category="student-tools",
+        tags=["random number generator", "random number", "number randomizer", "lucky number", "random picker"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="random-name-generator",
+        title="Random Name Generator",
+        description="Generate random Indian names (male, female, or any). Perfect for creating test data, characters, and projects.",
+        category="student-tools",
+        tags=["random name generator", "fake name generator", "indian name generator", "name picker", "random names"],
+        input_kind="text",
+    ),
+])
+
+# Deduplicate categories — keep last definition to preserve any updates
+_seen_cats: dict = {}
+for _cat in CATEGORIES:
+    _seen_cats[_cat.id] = _cat
+CATEGORIES.clear()
+CATEGORIES.extend(_seen_cats.values())
+
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
 

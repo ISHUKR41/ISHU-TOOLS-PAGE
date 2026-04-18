@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with 485+ tools across 33 categories: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, and Student Tools. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **512+ handlers** across **27 categories** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, and **Finance & Tax**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -14,8 +14,10 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Port: 8000
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
-  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py`
-  - 500+ raw registry entries and **458+ available backend handlers**
+  - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + **`health_finance_handlers.py`**
+  - **512 registered handlers** (most recent count)
+  - Rate limiting: 60 req/min per IP on the execute endpoint
+  - Workspace cleanup: auto-removed via BackgroundTasks after every request
 
 ## Key Files
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
@@ -35,18 +37,18 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/public/robots.txt` — no JS/CSS blocking (SPA friendly)
 - `frontend/public/sitemap.xml` — static sitemap; FastAPI also serves a dynamic sitemap from the current backend registry
 
-## SEO Features (Comprehensive v2)
+## SEO Features (Comprehensive v3)
 - Per-tool dynamic meta tags (title, description, keywords, canonical, OG, Twitter cards)
 - Per-tool JSON-LD structured data (WebApplication, Organization, HowTo, BreadcrumbList)
-- Per-tool FAQ JSON-LD from seoData.ts — 286 handcrafted entries covering all major tools
-- Smart auto-generator v2 (createGeneratedSEO) — produces specific competitor-aware and India-SEO-aware SEO for all tools based on type detection: isPdf, isImage, isConvert, isCompress, isKbTool, isPassport, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO — with India-specific keywords (SSC, UPSC, RRB, IBPS, SBI, Aadhaar, PAN, NTA) baked into KB and passport tool FAQs/descriptions
-- Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images); jwt.io (developer)
-- Dynamic sitemap.xml (also served by FastAPI at /sitemap.xml)
+- Per-tool FAQ JSON-LD from seoData.ts — 300+ handcrafted entries covering all major tools + all new health/finance tools
+- Smart auto-generator v3 (createGeneratedSEO) — type detection flags: isPdf, isImage, isConvert, isCompress, isKbTool, isPassport, isCalculator, isDeveloper, isOCR, isSecurity, isSocial, isConverter, isColor, isSEO, **isHealth, isFinance** — each with category-specific title templates and description patterns
+- Health tools: title = "X — Free Online Health Calculator | ISHU TOOLS"; description targets fitness/India
+- Finance tools: title = "X — Free Online Finance Calculator | ISHU TOOLS"; description targets Indian professionals
+- Competitor keywords baked in: iLovePDF, SmallPDF, PDFCandy, Adobe (PDF); iLoveIMG, pi7.org, Canva (images)
+- Dynamic sitemap.xml served by FastAPI — HIGH_PRIORITY expanded to include calorie-calculator, gst-calculator, sip-calculator, income-tax-calculator, roi-calculator, budget-planner, water-intake-calculator, sleep-calculator, etc.
 - robots.txt with no JS/CSS asset blocking (critical for SPA crawlability)
-- sitemap.xml: static file with all 422 tool URLs + 33 category pages + homepage (457 total)
 - WebSite SearchAction schema in index.html for Google sitelinks searchbox
-- Tool pages show deduplicated intent keyword chips covering student, mobile, no-signup, privacy, alternative-tool, and branded Ishu queries
-- Homepage features: "Why ISHU TOOLS" bento-grid comparison section with competitor mentions
+- HOMEPAGE_KEYWORDS updated with health/finance keywords (gst calculator india, calorie calculator india, sip calculator, income tax calculator 2024-25, number to words, etc.)
 
 ## Design System
 - Dark bg: #03060e — accent: #3bd0ff (teal-blue) — hero gradient: teal-to-purple
@@ -101,14 +103,16 @@ Per-category smart steps:
 - PDF tools (general): "Upload PDF → Set options → Click Run, download"
 - Document/office/ebook: "Upload document → Select format → Click Run, download"
 
-## Tool Categories (33 unique)
+## Tool Categories (27 unique after dedup)
 - PDF Core, PDF Security, PDF Advanced, PDF Insights
 - Image Core (image-core: 48), Image Effects, Image Enhance (22), Image Layout (45)
 - Document Convert, Office Suite, OCR Vision, eBook Convert, Vector Lab
 - Text AI, Text Cleanup, Text Ops, Format Lab (28)
 - Developer Tools (43), Code Tools, Color Tools, Hash/Crypto, SEO Tools
 - Math Tools, Unit Converter, Student Tools (24), Security Tools, Conversion Tools, Social Media
-- Batch Automation, Page Ops (15), Data Tools, Archive Lab, Utility
+- **Health & Fitness** (8 tools: calorie, bmr, body-fat, water, sleep, heart-rate-zones, steps-to-km, calories-burned)
+- **Finance & Tax** (6 tools: gst, sip, roi, budget-planner, savings-goal, income-tax)
+- Everyday utilities (number-to-words, roman-numeral, love-calc, date-calc, age-in-seconds, random-name, random-number, time-calc)
 
 ## Backend Libraries
 FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-headless, rembg, rapidocr, deep-translator, python-docx, python-pptx, openpyxl, qrcode, bs4, httpx, python-barcode
@@ -122,6 +126,11 @@ FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-hea
 - QR code generator now shows correct steps (not the generic developer tool steps)
 - Added 8 real student/everyday tools: Citation Generator, Flashcard Generator, Study Planner, Grade Calculator, Attendance Calculator, Reading Time Calculator, Plagiarism Risk Checker, Resume Bullet Generator
 - React duplicate-key warnings from repeated SEO keyword chips fixed with case-insensitive keyword deduplication on tool pages
+- Health/finance handler parameter mismatches fixed: activity_level→activity, bedtime→sleep_time, name1/name2→text/value, birthdate→dob, etc. All new tools use named params matching toolFields.ts
+- Budget planner now supports custom Needs/Wants/Savings percentages (not hardcoded 50/30/20)
+- Random number generator now supports unique=true/false flag for lottery-style draws
+- Rate limiting added to execute endpoint (60 req/min per IP) — prevents abuse
+- Workspace auto-cleanup via BackgroundTasks — prevents disk buildup from tool executions
 
 ## Social Links
 - LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/

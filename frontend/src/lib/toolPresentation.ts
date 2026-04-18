@@ -213,6 +213,18 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(244, 114, 182, 0.22)',
     label: 'Social Media',
   },
+  'health-tools': {
+    accent: '#4ade80',
+    surface: 'rgba(8, 28, 18, 0.86)',
+    glow: 'rgba(74, 222, 128, 0.22)',
+    label: 'Health & Fitness',
+  },
+  'finance-tools': {
+    accent: '#fbbf24',
+    surface: 'rgba(35, 26, 6, 0.86)',
+    glow: 'rgba(251, 191, 36, 0.22)',
+    label: 'Finance & Tax',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([
