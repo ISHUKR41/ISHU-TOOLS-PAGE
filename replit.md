@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **606 handlers** across **38 categories** and **565 unique tools** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools**, **Productivity**, and **Validator Tools**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 604+ tools with critical CSS inline in index.html for instant responsiveness.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **668 handlers** across **38 categories** and **600+ unique tools** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools** (YouTube, TikTok, Twitter/X, Facebook, Vimeo, Dailymotion, Playlist downloader), **Productivity**, and **Validator Tools**. Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 668 handlers registered.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -125,6 +125,38 @@ Per-category smart steps:
 
 ## Backend Libraries
 FastAPI, PyMuPDF/fitz, pikepdf, pypdf, reportlab, WeasyPrint, Pillow, opencv-headless, rembg, rapidocr, deep-translator, python-docx, python-pptx, openpyxl, qrcode, bs4, httpx, python-barcode
+
+## Skills Documentation
+- Full documentation for all 55+ agent skills in `docs/skills/`
+- 34 Replit-provided skills documented: agent-inbox, canvas, database, delegation, deployment, design, design-exploration, diagnostics, environment-secrets, expo, external_apis, follow-up-tasks, integrations, media-generation, mockup-extract, mockup-graduate, mockup-sandbox, package-management, post_merge_setup, project_tasks, react-vite, repl_setup, security_scan, workflows, web-search, video-js, stripe, threat_modeling, validation, skill-authoring, replit-docs, revenuecat, slides, artifacts
+- 14 user-provided skills documented: agent-tools, brainstorming, frontend-design, seo-audit, ui-ux-pro-max, next-best-practices, vercel-react-best-practices, supabase-postgres-best-practices, web-design-guidelines, vercel-composition-patterns, better-auth-best-practices, vercel-react-native-skills, audit-website, skill-creator
+- 40+ secondary skills referenced in docs/skills/48-secondary-skills-overview.md
+- Master index at docs/skills/00-INDEX.md with quick-reference table
+
+## Video Tools Added (v2)
+New handlers in `backend/app/tools/video_extra_handlers.py`:
+- `tiktok-downloader` — TikTok video download without watermark
+- `twitter-video-downloader` / `x-video-downloader` — Twitter/X video download
+- `facebook-video-downloader` — Facebook video/fb.watch download
+- `vimeo-downloader` — Vimeo HD video download
+- `dailymotion-downloader` — Dailymotion video download
+- `youtube-playlist-downloader` / `playlist-downloader` — YouTube playlist ZIP download (up to 10 videos)
+- `youtube-to-mp4` — YouTube to MP4 with quality selection (360p-1080p)
+- `youtube-shorts-downloader` — YouTube Shorts download
+- `audio-extractor` — Extract MP3 audio from any 1000+ site video URL
+- `youtube-audio-downloader` — YouTube audio as high-quality MP3
+All new tools have `toolFields.ts` frontend form fields and `registry.py` definitions.
+
+## UI Changes (v3)
+- **Bento "Why ISHU TOOLS?" section moved BELOW the tool directory** (was incorrectly above it)
+  - New page order: Hero → Search+Filter → Tool Directory → Why ISHU TOOLS? → How It Works → FAQ
+- CSS performance additions:
+  - `will-change: transform; transform: translateZ(0)` on all animated cards (GPU compositing)
+  - `contain: layout style paint` on tool cards (CSS containment for cascade optimization)
+  - Category pill touch snap (scroll-snap-type on mobile)
+  - `text-wrap: balance/pretty` for headings/paragraphs
+  - Improved bento section spacing with border-top separator
+  - Better mobile breakpoints at 640px for hero, bento, steps grid
 
 ## Important Bugs Fixed
 - Compress PDF: returns original when compression fails

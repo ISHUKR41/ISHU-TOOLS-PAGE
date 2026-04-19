@@ -201,29 +201,6 @@ export default function HomePage() {
           </div>
         </section>
 
-
-
-        {/* Features Bento Grid — SEO: competitor comparison, value proposition */}
-        <section className='features-bento-section'>
-          <span className='section-kicker'>Why ISHU TOOLS?</span>
-          <h2>Everything You Need. 100% Free. Always.</h2>
-          <p>The most complete free online toolkit — more tools than iLovePDF, iLoveIMG, SmallPDF, PDFCandy, and pi7.org combined.</p>
-          <div className='bento-grid'>
-            {BENTO_FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className={`bento-card${f.span ? ' ' + f.span : ''}`}
-                style={{ '--bento-accent': f.accent } as CSSProperties}
-              >
-                <div className='bento-icon'><f.icon size={20} /></div>
-                {f.stat && <span className='bento-stat'>{f.stat}</span>}
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section id='tool-directory' className='directory-stack'>
           {loading && (
             <div className='skeleton-grid' aria-label='Loading tools...'>
@@ -247,6 +224,29 @@ export default function HomePage() {
               <ToolCategorySection key={category.id} category={category} tools={categoryTools} />
             ))}
         </section>
+
+        {/* Features Bento Grid — moved below tool directory per UX guidelines */}
+        {!loading && !error && (
+          <section className='features-bento-section'>
+            <span className='section-kicker'>Why ISHU TOOLS?</span>
+            <h2>Everything You Need. 100% Free. Always.</h2>
+            <p>The most complete free online toolkit — more tools than iLovePDF, iLoveIMG, SmallPDF, PDFCandy, and pi7.org combined.</p>
+            <div className='bento-grid'>
+              {BENTO_FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className={`bento-card${f.span ? ' ' + f.span : ''}`}
+                  style={{ '--bento-accent': f.accent } as CSSProperties}
+                >
+                  <div className='bento-icon'><f.icon size={20} /></div>
+                  {f.stat && <span className='bento-stat'>{f.stat}</span>}
+                  <h3>{f.title}</h3>
+                  <p>{f.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* How it Works Section — SEO rich */}
         {!loading && !error && (

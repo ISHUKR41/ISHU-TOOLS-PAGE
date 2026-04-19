@@ -213,6 +213,156 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     return _handle_video_downloader(files, payload, job_dir)
 
 
+def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a TikTok video URL.", data={"error": "No URL"})
+    if "tiktok.com" not in url and "vm.tiktok" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid TikTok URL (tiktok.com/...).", data={"error": "Not TikTok"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a Twitter/X video URL.", data={"error": "No URL"})
+    if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
+    if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a Vimeo video URL.", data={"error": "No URL"})
+    if "vimeo.com" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid Vimeo URL (vimeo.com/...).", data={"error": "Not Vimeo"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a Dailymotion video URL.", data={"error": "No URL"})
+    if "dailymotion.com" not in url and "dai.ly" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid Dailymotion URL.", data={"error": "Not Dailymotion"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_playlist_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    """Download entire YouTube playlist as a ZIP of MP4 files (up to 10 videos)."""
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a YouTube playlist URL.", data={"error": "No URL"})
+
+    if "playlist" not in url.lower() and "list=" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube playlist URL (must contain 'list=...').", data={"error": "Not a playlist URL"})
+
+    try:
+        import yt_dlp
+        import zipfile
+
+        out_template = str(job_dir / "%(playlist_index)02d_%(title)s.%(ext)s")
+        max_videos = int(payload.get("max_videos", 5))
+        max_videos = min(max(1, max_videos), 10)
+
+        ydl_opts = {
+            "format": "bestvideo[height<=720]+bestaudio/best[height<=720]",
+            "outtmpl": out_template,
+            "quiet": True,
+            "no_warnings": True,
+            "merge_output_format": "mp4",
+            "playlist_items": f"1:{max_videos}",
+            "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+
+        playlist_title = info.get("title", "playlist") if info else "playlist"
+        downloaded = sorted(job_dir.glob("*.mp4"))
+
+        if not downloaded:
+            return ExecutionResult(kind="json", message="No videos could be downloaded. The playlist may be private or empty.", data={"error": "No videos"})
+
+        if len(downloaded) == 1:
+            safe_name = re.sub(r'[^\w\s-]', '', downloaded[0].stem)[:50].strip().replace(' ', '_')
+            return ExecutionResult(kind="file", message=f"✅ Downloaded 1 video from playlist", output_path=downloaded[0], filename=f"{safe_name}.mp4", content_type="video/mp4")
+
+        zip_path = job_dir / "playlist_videos.zip"
+        with zipfile.ZipFile(str(zip_path), "w", zipfile.ZIP_DEFLATED) as zf:
+            for mp4 in downloaded:
+                zf.write(mp4, mp4.name)
+
+        safe_playlist = re.sub(r'[^\w\s-]', '', playlist_title)[:40].strip().replace(' ', '_')
+        return ExecutionResult(
+            kind="file",
+            message=f"✅ Downloaded {len(downloaded)} videos from playlist",
+            output_path=zip_path,
+            filename=f"{safe_playlist}_playlist.zip",
+            content_type="application/zip",
+        )
+
+    except Exception as e:
+        err = str(e)
+        if "Private" in err or "private" in err:
+            msg = "This playlist is private and cannot be downloaded."
+        elif "not available" in err.lower():
+            msg = "This playlist is not available in your region."
+        else:
+            msg = f"Playlist download failed: {err[:200]}"
+        return ExecutionResult(kind="json", message=msg, data={"error": err[:500]})
+
+
+def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    """Download YouTube video specifically as MP4 at chosen quality."""
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
+    if "youtube.com" not in url and "youtu.be" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube URL.", data={"error": "Not YouTube"})
+    quality = payload.get("quality", "720")
+    payload["url"] = url
+    payload["quality"] = quality
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    """Download YouTube Shorts videos."""
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a YouTube Shorts URL.", data={"error": "No URL"})
+    if "shorts" not in url.lower() and "youtube.com" not in url and "youtu.be" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube Shorts URL.", data={"error": "Not YouTube Shorts"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_audio_extractor(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    """Extract audio from any video URL as MP3."""
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a video URL to extract audio.", data={"error": "No URL"})
+    if not url.startswith(("http://", "https://")):
+        return ExecutionResult(kind="json", message="Please enter a valid video URL.", data={"error": "Invalid URL"})
+    payload["url"] = url
+    return _handle_youtube_to_mp3(files, payload, job_dir)
+
+
 # ─── Image to Base64 ──────────────────────────────────────────────────────────
 
 def _handle_image_to_base64(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -2141,6 +2291,20 @@ VIDEO_EXTRA_HANDLERS: dict = {
     "calorie-calculator": _handle_calorie_calculator,
     "water-intake-calculator": _handle_water_intake,
     "sleep-calculator": _handle_sleep_calculator,
+
+    # New Video Downloaders
+    "tiktok-downloader": _handle_tiktok_downloader,
+    "twitter-video-downloader": _handle_twitter_downloader,
+    "x-video-downloader": _handle_twitter_downloader,
+    "facebook-video-downloader": _handle_facebook_downloader,
+    "vimeo-downloader": _handle_vimeo_downloader,
+    "dailymotion-downloader": _handle_dailymotion_downloader,
+    "youtube-playlist-downloader": _handle_playlist_downloader,
+    "playlist-downloader": _handle_playlist_downloader,
+    "youtube-to-mp4": _handle_youtube_to_mp4,
+    "youtube-shorts-downloader": _handle_youtube_shorts_downloader,
+    "audio-extractor": _handle_audio_extractor,
+    "youtube-audio-downloader": _handle_youtube_to_mp3,
 }
 
 # Frontend-only interactive tools

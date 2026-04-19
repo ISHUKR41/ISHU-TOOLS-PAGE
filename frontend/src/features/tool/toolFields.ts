@@ -2864,6 +2864,82 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'grammar-checker-advanced': [
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
+
+  // ── New Video Downloader Tools ──────────────────────────────────────────
+  'tiktok-downloader': [
+    { name: 'url', label: 'TikTok Video URL', type: 'text', placeholder: 'Paste TikTok URL, e.g. https://www.tiktok.com/@user/video/123...' },
+  ],
+  'twitter-video-downloader': [
+    { name: 'url', label: 'Twitter / X Video URL', type: 'text', placeholder: 'Paste tweet URL with video, e.g. https://twitter.com/user/status/123...' },
+  ],
+  'x-video-downloader': [
+    { name: 'url', label: 'X (Twitter) Video URL', type: 'text', placeholder: 'Paste X.com or twitter.com video URL...' },
+  ],
+  'facebook-video-downloader': [
+    { name: 'url', label: 'Facebook Video URL', type: 'text', placeholder: 'Paste Facebook video URL or fb.watch link...' },
+  ],
+  'vimeo-downloader': [
+    { name: 'url', label: 'Vimeo Video URL', type: 'text', placeholder: 'Paste Vimeo URL, e.g. https://vimeo.com/123456789...' },
+  ],
+  'dailymotion-downloader': [
+    { name: 'url', label: 'Dailymotion Video URL', type: 'text', placeholder: 'Paste Dailymotion URL, e.g. https://www.dailymotion.com/video/...' },
+  ],
+  'youtube-playlist-downloader': [
+    { name: 'url', label: 'YouTube Playlist URL', type: 'text', placeholder: 'Paste YouTube playlist URL, e.g. https://www.youtube.com/playlist?list=PL...' },
+    {
+      name: 'max_videos',
+      label: 'Max Videos to Download',
+      type: 'select',
+      defaultValue: '5',
+      options: [
+        { label: '1 video', value: '1' },
+        { label: '3 videos', value: '3' },
+        { label: '5 videos (recommended)', value: '5' },
+        { label: '8 videos', value: '8' },
+        { label: '10 videos (max)', value: '10' },
+      ],
+    },
+  ],
+  'playlist-downloader': [
+    { name: 'url', label: 'Playlist URL', type: 'text', placeholder: 'Paste YouTube playlist URL with list=... parameter...' },
+    {
+      name: 'max_videos',
+      label: 'Max Videos to Download',
+      type: 'select',
+      defaultValue: '5',
+      options: [
+        { label: '1 video', value: '1' },
+        { label: '3 videos', value: '3' },
+        { label: '5 videos (recommended)', value: '5' },
+        { label: '10 videos (max)', value: '10' },
+      ],
+    },
+  ],
+  'youtube-to-mp4': [
+    { name: 'url', label: 'YouTube Video URL', type: 'text', placeholder: 'Paste YouTube URL, e.g. https://youtu.be/... or https://www.youtube.com/watch?v=...' },
+    {
+      name: 'quality',
+      label: 'Video Quality',
+      type: 'select',
+      defaultValue: '720',
+      options: [
+        { label: '1080p Full HD', value: '1080' },
+        { label: '720p HD (recommended)', value: '720' },
+        { label: '480p Standard', value: '480' },
+        { label: '360p Low', value: '360' },
+        { label: 'Best Available', value: 'best' },
+      ],
+    },
+  ],
+  'youtube-shorts-downloader': [
+    { name: 'url', label: 'YouTube Shorts URL', type: 'text', placeholder: 'Paste YouTube Shorts URL, e.g. https://youtube.com/shorts/...' },
+  ],
+  'audio-extractor': [
+    { name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste video URL from YouTube, Instagram, TikTok, Twitter, or any 1000+ sites...' },
+  ],
+  'youtube-audio-downloader': [
+    { name: 'url', label: 'YouTube Video URL', type: 'text', placeholder: 'Paste YouTube URL to download audio as MP3...' },
+  ],
 }
 
 export function getToolFields(slug: string): ToolField[] {

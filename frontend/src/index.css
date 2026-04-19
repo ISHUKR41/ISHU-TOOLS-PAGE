@@ -6289,3 +6289,167 @@ img.lazy-img.loaded {
     display: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   PERFORMANCE + RESPONSIVENESS ENHANCEMENTS — FAANG-Level
+   GPU compositing, instant interactions, no layout thrash
+   ══════════════════════════════════════════════════════════════════ */
+
+/* GPU compositing for all animated elements */
+.tool-card,
+.bento-card,
+.category-pill,
+.step-card,
+.faq-item,
+.tool-card-compact,
+.category-tool-card,
+.spotlight-card {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* CSS containment to reduce cascade scope */
+.tool-card,
+.bento-card,
+.tool-card-compact {
+  contain: layout style paint;
+}
+
+/* Instant interaction feedback — no perceived lag */
+button,
+a,
+.tool-card,
+.tool-card-link,
+.category-pill,
+.bento-card {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Category row — scrollable on mobile with snap */
+.category-row {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+}
+.category-pill {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Bento section — improved spacing after tool directory */
+.features-bento-section {
+  padding-top: 4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 1rem;
+}
+
+/* Better text rendering on all screen sizes */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+/* Search input — instant visual feedback */
+.search-input input {
+  transition: none;
+}
+.search-input:focus-within {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* Tool grid — prevent layout shift during load */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  min-height: 400px;
+}
+
+/* Improved mobile hero spacing */
+@media (max-width: 640px) {
+  .hero-section {
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+  }
+
+  .features-bento-section {
+    padding-top: 2.5rem;
+  }
+
+  .bento-grid {
+    gap: 0.75rem;
+  }
+
+  .bento-card {
+    padding: 1.2rem;
+  }
+
+  .bento-stat {
+    font-size: 1.8rem;
+  }
+
+  .how-it-works-section,
+  .home-faq-section {
+    padding: 2rem 0;
+  }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Prevent text selection during rapid clicks */
+.category-pill,
+.tool-card-header {
+  user-select: none;
+}
+
+/* Improved focus states for accessibility */
+.category-pill:focus-visible,
+.tool-card:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Video tools category — special highlight */
+.category-pill[data-category="video-tools"].active {
+  background: linear-gradient(135deg, #ff375f, #ff6b35);
+  border-color: transparent;
+}
+
+/* Content-visibility optimization for below-fold sections */
+.home-faq-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.how-it-works-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400px;
+}
+
+/* Smooth scroll restoration */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Navigation — instant backdrop response */
+.site-nav {
+  transition: none;
+}
+
+/* Loading state — no layout shift */
+.app-loader {
+  min-height: 100dvh;
+}
