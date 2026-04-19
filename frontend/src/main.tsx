@@ -3,20 +3,31 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
-// ── FAANG-Grade Instant Responsiveness ────────────────────────────────────────
+// ── FAANG-Grade CLS & FOUC Prevention ─────────────────────────────────────────
+// Phase 1: Suppress ALL transitions/animations on first paint.
+//   This prevents any framer-motion entrance animation from causing
+//   perceived "jumpiness" during the first React hydration cycle.
+//   We re-enable after React has committed its first real paint.
+document.documentElement.classList.add('js-loading')
+
+// Phase 2: Re-enable after first real paint completes.
+//   Two rAF frames guarantees the browser has painted at least once.
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    document.documentElement.classList.remove('js-loading')
+    document.documentElement.classList.add('js-ready')
+  })
+})
+
+// ── Instant Window Resize Handler ─────────────────────────────────────────────
 // Strategy: disable ALL transitions the MOMENT resize begins (not after debounce).
 // Then re-enable only after layout has fully settled (requestAnimationFrame chain).
 // This is exactly what Google, Apple, Netflix, Stripe do internally.
 // Result: layout snaps INSTANTLY at every pixel during drag-resize.
 let resizeRaf: number | null = null
 let resizeTimer: ReturnType<typeof setTimeout> | null = null
-let resizeStarted = false
 
 function onResizeStart() {
-  if (!resizeStarted) {
-    resizeStarted = true
-    document.documentElement.classList.add('resize-ready')
-  }
   document.documentElement.classList.add('resizing')
   if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = null }
   if (resizeTimer) { clearTimeout(resizeTimer); resizeTimer = null }

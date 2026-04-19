@@ -5,28 +5,80 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- Resource Hints — Speed up external resource loading -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         CRITICAL CSS — Inlined first, no external dependency, zero FOUC.
+         ALL values EXACTLY mirror frontend/src/index.css to prevent reflow.
+         Rule: if it's visible above the fold, it MUST be here.
+         ═══════════════════════════════════════════════════════════════════ -->
+    <style>
+      /* ── Box model & color scheme ── */
+      *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+      :root{
+        color-scheme:dark;
+        --bg:#000000;--bg-soft:#0a0a0c;
+        --panel:rgba(18,18,20,0.6);--panel-border:rgba(255,255,255,0.08);
+        --text:#f0f0f2;--muted:#a0a0a8;--muted-strong:#c8c8cf;
+        --line:rgba(255,255,255,0.06);
+        --accent:#007aff;--accent-2:#34c759;
+        --shadow-md:0 12px 30px rgba(0,0,0,0.4);
+        /* System font stack — renders INSTANTLY, no flash before custom font */
+        --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      }
+      /* ── Base — exact match to index.css ── */
+      html,body,#root{min-height:100%;margin:0;padding:0}
+      html{scroll-behavior:smooth;text-rendering:optimizeSpeed;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      body{
+        color:var(--text);
+        font-family:var(--font-body);
+        /* Exact gradient from index.css body{} — prevents any background flash */
+        background:
+          radial-gradient(circle at 12% 12%,rgba(58,122,255,0.2),transparent 28%),
+          radial-gradient(circle at 82% 10%,rgba(48,255,189,0.14),transparent 24%),
+          radial-gradient(circle at 50% 100%,rgba(139,92,246,0.12),transparent 22%),
+          linear-gradient(180deg,#040813 0%,#03060e 45%,#060b16 100%);
+        overflow-x:hidden;
+        min-width:320px;
+      }
+      #root{display:flex;flex-direction:column;min-height:100vh}
+      a{color:inherit;text-decoration:none}
+      button,input,textarea,select{font:inherit}
+      img,svg{max-width:100%;height:auto;vertical-align:middle}
+      /* ── Layout — EXACT values from index.css to prevent reflow ── */
+      .site-shell{min-height:100vh;position:relative;overflow-x:hidden}
+      .site-content{position:relative;z-index:2}
+      /* EXACT match: index.css .page-wrap — padding MUST match to prevent reflow */
+      .page-wrap{width:min(1280px,92vw);margin:0 auto;padding:1.6rem 0 3.4rem}
+      /* EXACT match: index.css .site-nav */
+      .site-nav{position:sticky;top:0;z-index:10;padding:1rem 0 0;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+      /* EXACT match: index.css .site-nav-inner — prevents nav height shift */
+      .site-nav-inner{width:min(1280px,92vw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.8rem 1rem;border-radius:22px;border:1px solid rgba(146,181,255,0.14);background:rgba(6,10,20,0.62);box-shadow:var(--shadow-md)}
+      /* ── Hero — exact match prevents hero height CLS ── */
+      .hero-v2{position:relative;overflow:hidden;border-radius:28px;border:1px solid rgba(145,180,255,.15);background:linear-gradient(160deg,rgba(8,14,28,.95),rgba(6,10,20,.98));min-height:clamp(720px,92vh,960px)}
+      .hero-v2-inner{position:relative;z-index:2;padding:2rem 2rem 1.6rem;display:flex;flex-direction:column;gap:1.5rem;min-height:inherit;justify-content:space-between}
+      .hero-v2-title{font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);font-weight:800;line-height:.9;letter-spacing:-.05em;margin:0;color:#fff;text-align:center}
+      .hero-v2-subtitle{margin:1.1rem auto 0;max-width:46rem;color:var(--muted);font-size:1.08rem;line-height:1.78;text-align:center}
+      /* ── App loader — shown from first paint before React hydrates ── */
+      .app-loader{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;background:#040813}
+      .app-loader-spinner{width:42px;height:42px;border:3px solid rgba(59,208,255,0.15);border-top-color:#3bd0ff;border-radius:50%;animation:_spin .7s linear infinite}
+      @keyframes _spin{to{transform:rotate(360deg)}}
+      .app-loader-text{font-size:1.05rem;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,0.6)}
+      /* ── Skeleton shimmer ── */
+      .skeleton-shimmer{border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:_shimmer 1.6s ease-in-out infinite}
+      @keyframes _shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+      /* ── Touch targets ── */
+      button,.btn,[role=button]{touch-action:manipulation}
+      /* ── Responsive breakpoints — EXACT match index.css ── */
+      @media(max-width:900px){.hero-v2{min-height:auto}.page-wrap{width:min(1280px,94vw)}}
+      @media(max-width:768px){.site-nav{min-height:auto}}
+      @media(max-width:600px){.hero-v2-inner{padding:1.4rem 1.1rem 1.2rem;min-height:auto}.hero-v2-title{font-size:clamp(2.8rem,12vw,4.5rem)}}
+    </style>
+
+    <!-- Resource Hints — preconnect before any external request -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" />
-    <style>
-      :root{color-scheme:dark;--bg:#03060e;--text:#eef6ff;--muted:#91a4c7;--accent:#3bd0ff;--font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-      html{background:#03060e;scroll-behavior:smooth}
-      body{margin:0;min-width:320px;background:radial-gradient(circle at top left,rgba(59,208,255,.11),transparent 30rem),#03060e;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
-      #root{min-height:100vh}
-      .site-shell{min-height:100vh;position:relative}
-      .site-nav{position:sticky;top:0;z-index:50;padding-top:1rem}
-      .site-content{position:relative;z-index:2}
-      .page-wrap{width:min(1280px,92vw);margin:0 auto;padding-top:1.25rem}
-      .hero-v2{position:relative;overflow:hidden;border-radius:28px;border:1px solid rgba(145,180,255,.15);background:linear-gradient(160deg,rgba(8,14,28,.95),rgba(6,10,20,.98));min-height:clamp(720px,92vh,960px);opacity:1}
-      .hero-v2-inner{position:relative;z-index:2;padding:2rem 2rem 1.6rem;display:flex;flex-direction:column;gap:1.5rem;min-height:inherit;justify-content:space-between}
-      .hero-v2-title{font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);font-weight:800;line-height:.9;letter-spacing:-.05em;margin:0;color:#fff;text-align:center}
-      .hero-v2-subtitle{margin:1.1rem auto 0;max-width:46rem;color:var(--muted);font-size:1.08rem;line-height:1.78;text-align:center}
-      @media(max-width:900px){.hero-v2{min-height:auto}.page-wrap{width:min(1280px,94vw)}}
-      @media(max-width:600px){.hero-v2-inner{padding:1.4rem 1.1rem 1.2rem;min-height:auto}.hero-v2-title{font-size:clamp(2.8rem,12vw,4.5rem)}}
-    </style>
 
     <!-- Primary SEO -->
     <title>ISHU TOOLS – Indian Student Hub University Tools | 715+ Free PDF, Image, Developer & Student Tools by Ishu Kumar</title>
@@ -357,16 +409,12 @@
     }
     </script>
 
-    <!-- Additional SEO -->
-    <meta name="theme-color" content="#0a0f1e" />
+    <!-- Additional SEO & PWA -->
+    <meta name="theme-color" content="#040813" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="ISHU TOOLS" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="ISHU TOOLS" />
     <meta name="application-name" content="ISHU TOOLS" />
     <meta name="format-detection" content="telephone=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -375,55 +423,20 @@
     <meta name="distribution" content="global" />
     <meta name="coverage" content="Worldwide" />
 
-    <!-- Fonts (no duplicate preconnect) -->
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <!-- Google Fonts — NON-BLOCKING async load. media="print" trick:
+         browser fetches but does NOT apply until onload fires → zero render-block.
+         System font stack (defined in :root above) shows instantly with no FOUC. -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional"
+          media="print"
+          onload="this.media='all';this.onload=null" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional" />
+    </noscript>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-
-    <!-- Critical CSS — Prevents FOUC and ensures immediate responsive layout on all devices -->
-    <style>
-      *,*::before,*::after{box-sizing:border-box}
-      html,body,#root{min-height:100%;margin:0;padding:0}
-      body{
-        background:#030610;
-        color:#f0f0f2;
-        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-        -webkit-font-smoothing:antialiased;
-        -moz-osx-font-smoothing:grayscale;
-        overflow-x:hidden;
-        text-rendering:optimizeSpeed;
-      }
-      #root{display:flex;flex-direction:column;min-height:100vh}
-      a{color:inherit;text-decoration:none}
-      button,input,textarea,select{font:inherit}
-      img,svg{max-width:100%;height:auto;vertical-align:middle}
-      /* Prevent layout shift from images */
-      img{aspect-ratio:attr(width)/attr(height)}
-      /* Critical responsive container */
-      .page-wrap{width:100%;max-width:1400px;margin:0 auto;padding:0 1rem}
-      @media(max-width:768px){.page-wrap{padding:0 0.75rem}}
-      @media(max-width:480px){.page-wrap{padding:0 0.5rem}}
-      /* Prevent horizontal scroll */
-      .site-shell,.home-wrap,.tool-page-wrap{width:100%;max-width:100%;overflow-x:hidden}
-      /* App loader - shown immediately before JS loads */
-      .app-loader{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;background:#030610}
-      .app-loader-spinner{width:42px;height:42px;border:3px solid rgba(59,208,255,0.15);border-top-color:#3bd0ff;border-radius:50%;animation:spin 0.7s linear infinite}
-      @keyframes spin{to{transform:rotate(360deg)}}
-      .app-loader-text{font-size:1.05rem;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.6)}
-      /* Skeleton system - immediate visibility */
-      .skeleton-shimmer{border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.10) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.6s ease-in-out infinite}
-      @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-      /* Nav placeholder height - prevents layout shift */
-      .site-nav{height:64px;display:flex;align-items:center}
-      @media(max-width:768px){.site-nav{height:56px}}
-      /* Prevent invisible content flash */
-      .tool-card,.category-card{opacity:1;transform:none}
-      /* Touch-optimized tap targets */
-      button,.btn,.inline-link{min-height:44px;min-width:44px}
-      @media(max-width:600px){button,.btn,.inline-link{min-height:48px}}
-    </style>
 
     <!-- Sitemap reference -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
