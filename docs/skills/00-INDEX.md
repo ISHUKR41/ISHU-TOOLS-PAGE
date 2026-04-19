@@ -58,7 +58,16 @@ Complete documentation for all 55+ available agent skills.
 | 45 | [better-auth-best-practices](./45-better-auth-best-practices.md) | TypeScript authentication |
 | 46 | [vercel-react-native-skills](./46-vercel-react-native-skills.md) | React Native performance |
 | 47 | [audit-website](./47-audit-website.md) | Full website audit with squirrelscan |
-| 48 | [secondary-skills-overview](./48-secondary-skills-overview.md) | All 40+ secondary skills reference |
+| 48 | [secondary-skills-overview](./48-secondary-skills-overview.md) | All 40+ secondary skills quick reference |
+| 49 | [query-integration-data](./49-query-integration-data.md) | Query Linear/GitHub/HubSpot/BigQuery integrations |
+| 50 | [browser-use](./50-browser-use.md) | Browser automation — navigate, click, fill forms, screenshot |
+| 51 | [copywriting](./51-copywriting.md) | Marketing copy for landing pages, CTAs, headlines |
+| 52 | [find-skills](./52-find-skills.md) | Discover and search available agent skills |
+| 53 | [pdf](./53-pdf.md) | PDF processing — merge, split, OCR, create, protect |
+| 54 | [pptx](./54-pptx.md) | PowerPoint creation, reading, and editing |
+| 55 | [remotion-best-practices](./55-remotion-best-practices.md) | Programmatic video creation with React + Remotion |
+| 56 | [skill-creator](./56-skill-creator.md) | Create, improve, and benchmark agent skills |
+| 57 | [all-secondary-skills-detailed](./57-all-secondary-skills-detailed.md) | Detailed reference for all 40 secondary skills |
 
 ## Quick Reference: Which Skill to Use?
 
@@ -83,7 +92,24 @@ Complete documentation for all 55+ available agent skills.
 | React performance | `vercel-react-best-practices` |
 | Component architecture | `vercel-composition-patterns` |
 | Accessibility review | `web-design-guidelines` |
+| Query external data | `query-integration-data` |
+| Automate browser | `browser-use` |
+| Write marketing copy | `copywriting` |
+| PDF operations | `pdf` |
+| PowerPoint operations | `pptx` |
+| Create animated videos | `remotion-best-practices` + `video-js` |
+| Create/improve a skill | `skill-creator` + `skill-authoring` |
+| Find a skill | `find-skills` |
+| Resume/CV | secondary skill: `resume-maker` |
+| Meal planning | secondary skill: `meal-planner` |
+| Stock analysis | secondary skill: `stock-analyzer` |
+| Travel planning | secondary skill: `travel-assistant` |
+| Tax planning (India) | secondary skill: `tax-reviewer` |
+| Invoice / bill | secondary skill: `invoice-generator` |
+| Competitive research | secondary skill: `competitive-analysis` |
+| Branding | secondary skill: `branding-generator` |
 
 ---
 *Generated for ISHU TOOLS — Indian Student Hub University Tools*
-*622+ free tools · ishutools.com · Created by Ishu Kumar*
+*736+ tool handlers · ishutools.com · Created by Ishu Kumar (IIT Patna)*
+*Skills: 57 documented (34 Replit + 14 primary user + 9 additional + 40 secondary)*

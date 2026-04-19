@@ -6514,3 +6514,23 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load mega_new_handlers: {e}")
 
 print(f"[handlers] MEGA GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge social video + developer + security + new tools handlers
+try:
+    from .social_video_handlers import SOCIAL_VIDEO_HANDLERS
+    HANDLERS.update(SOCIAL_VIDEO_HANDLERS)
+    print(f"[handlers] Loaded {len(SOCIAL_VIDEO_HANDLERS)} social/video/dev handlers (pinterest/reddit/twitch/jwt/regex/subnet)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load social_video_handlers: {e}")
+
+print(f"[handlers] SOCIAL GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge mega tools v2 (AI writing, crypto, HR, legal, travel, developer v2, finance v2, productivity)
+try:
+    from .mega_tools_v2 import MEGA_TOOLS_V2_HANDLERS
+    HANDLERS.update(MEGA_TOOLS_V2_HANDLERS)
+    print(f"[handlers] Loaded {len(MEGA_TOOLS_V2_HANDLERS)} mega-v2 handlers (AI/crypto/HR/legal/travel/dev/finance/productivity)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load mega_tools_v2: {e}")
+
+print(f"[handlers] FINAL ULTIMATE TOTAL registered handlers: {len(HANDLERS)}")

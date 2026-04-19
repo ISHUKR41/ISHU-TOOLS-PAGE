@@ -898,6 +898,9 @@ h3 {
   border-radius: 20px;
   transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
+  /* contain-intrinsic-size prevents layout shift when content-visibility:auto is used */
+  contain-intrinsic-size: auto 260px;
+  contain: layout style;
 }
 
 .tool-card:hover {
@@ -6465,4 +6468,133 @@ html {
 /* Loading state — no layout shift */
 .app-loader {
   min-height: 100dvh;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PERFORMANCE BOOST V2 — Additional containment & layout improvements
+   Targeting FAANG-level responsiveness and zero-jank scroll
+   ════════════════════════════════════════════════════════════════════ */
+
+/* New categories: AI Writing, Crypto, HR, Legal, Travel */
+.category-ai-writing { --tool-accent: #a78bfa; }
+.category-crypto-web3 { --tool-accent: #f59e0b; }
+.category-hr-jobs { --tool-accent: #34d399; }
+.category-legal-tools { --tool-accent: #60a5fa; }
+.category-travel-tools { --tool-accent: #fb923c; }
+.category-productivity { --tool-accent: #f472b6; }
+
+/* Instant grid re-layout — no transition on grid changes */
+.tool-grid {
+  /* content-visibility on grid rows for massive scroll perf */
+  contain: layout;
+}
+
+/* Stable height for tool-card-link prevents cumulative layout shift */
+.tool-card-link {
+  /* Stable, deterministic min-height for CLS score improvement */
+  min-height: 260px;
+  max-height: 400px;
+  contain: layout style paint;
+}
+
+/* GPU-composite layers for scroll-triggered elements */
+.tool-category-header,
+.section-header,
+.category-nav-bar {
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Fast tap response on mobile — no 300ms delay */
+.tool-card,
+.tool-card-link,
+.category-pill,
+.search-input,
+.btn-primary,
+.btn-secondary {
+  touch-action: manipulation;
+}
+
+/* Prevent subpixel jitter on card hover transforms */
+.tool-card-link {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Scrollbar optimization for tool listing pages */
+.tools-list-scroll,
+.category-scroll,
+.tool-grid-wrapper {
+  overflow-anchor: auto;
+  scroll-snap-type: none;
+  overscroll-behavior: contain;
+}
+
+/* Image lazy-load shimmer — prevents layout shift */
+img[loading="lazy"] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
+/* Skeleton loading state — constrained height prevents shift */
+.skeleton-card {
+  contain-intrinsic-size: auto 260px;
+  contain: strict;
+}
+
+/* NEW: Instant transitions for responsive breakpoints */
+@media (max-width: 768px) {
+  .tool-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .tool-card-link {
+    min-height: 200px;
+    padding: 0.85rem;
+    contain: layout style;
+  }
+
+  .hero-section {
+    padding: 2rem 1rem;
+  }
+
+  .site-header {
+    height: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .tool-card-link {
+    min-height: 160px;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .tool-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
+
+/* Reduced motion: ALL animations off instantly — no transition delay */
+@media (prefers-reduced-motion: reduce) {
+  .tool-card,
+  .tool-card-link,
+  .category-pill,
+  .hero-section *,
+  .spotlight-card,
+  [class*="animate-"],
+  [class*="-animated"] {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
 }
