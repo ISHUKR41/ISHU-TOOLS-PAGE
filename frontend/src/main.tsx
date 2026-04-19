@@ -1,6 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+// ── CSS is loaded as a render-blocking <link> in index.html ───────────────────
+// This is the correct approach — CSS loads BEFORE any JS runs, ensuring the page
+// is ALWAYS fully styled from the very first paint. Never import CSS via JS
+// modules (which inject styles AFTER JS executes, causing FOUC).
+// See: index.html <link rel="stylesheet" href="/src/index.css" />
 import App from './App.tsx'
 
 // ── FAANG-Grade CLS & FOUC Prevention ─────────────────────────────────────────

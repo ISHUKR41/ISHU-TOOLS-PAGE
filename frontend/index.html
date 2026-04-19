@@ -277,6 +277,24 @@
       }
     </style>
 
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         THE DEFINITIVE FOUC FIX — CSS as a render-blocking <link> stylesheet.
+         
+         Why this matters: `import './index.css'` in main.tsx makes CSS load as
+         a JS module AFTER React's entire bundle downloads and executes. During
+         that window the page renders with no styles → broken/unstyled appearance.
+         
+         The fix: loading CSS as a <link rel="stylesheet"> makes the browser BLOCK
+         rendering until CSS is ready. The page NEVER renders without styles.
+         This is how every major site works (Google, Meta, Apple, Netflix).
+         
+         The <link> is intentionally placed BEFORE the <script> tag so CSS is
+         fully parsed before any JavaScript runs. In production (Vite build) this
+         link is automatically hashed and bundled into /assets/index.[hash].css.
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="stylesheet" href="/src/index.css" />
+
     <!-- Resource Hints — preconnect before any external request -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />

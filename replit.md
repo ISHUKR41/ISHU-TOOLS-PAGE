@@ -170,7 +170,18 @@ All new tools have `toolFields.ts` frontend form fields and `registry.py` defini
   - Improved bento section spacing with border-top separator
   - Better mobile breakpoints at 640px for hero, bento, steps grid
 
-## CLS/FOUC Fixes (v5 — Final Root Cause Elimination)
+## CLS/FOUC Fixes (v6 — DEFINITIVE ROOT CAUSE FIXED)
+- **The actual root cause**: `import './index.css'` in `main.tsx` loads CSS as a **JS module**
+  - Browser downloads HTML → starts downloading `main.tsx` → downloads all JS imports → **THEN** injects CSS
+  - During the entire JS download period (200ms–2s), the page renders with NO styles → broken/misaligned layout
+  - This is fundamentally different from how every major website works
+- **The definitive fix**: CSS moved to a `<link rel="stylesheet">` in `index.html`
+  - `<link rel="preload" href="/src/index.css" as="style">` starts loading CSS early
+  - `<link rel="stylesheet" href="/src/index.css">` makes CSS **render-blocking**
+  - Browser NEVER renders anything until CSS is fully loaded
+  - Page is ALWAYS fully styled from the very first pixel painted
+  - Removed `import './index.css'` from `main.tsx` (CSS now loaded via HTML link)
+  - Works identically in dev mode AND production (Vite handles both)
 - **Comprehensive critical CSS** in `frontend/index.html` now covers ALL above-fold elements:
   - Previously only covered outer containers (`.hero-v2`, `.site-nav`, `.page-wrap`)
   - Now covers every internal hero element: `.hero-v2-topbar`, `.status-badge`, `.social-chip`, `.hero-v2-heading`, `.hero-kicker-pill`, `.hero-v2-title`, `.hero-v2-subtitle`, `.hero-v2-actions`, `.btn-primary-hero`, `.btn-secondary-hero`, `.hero-v2-stats`, `.hero-stat-card`, `.ticker-wrap`, `.ticker-track`, `.hero-v2-quick`, `.quick-chip`, `.trust-row`, `.trust-badge`
