@@ -236,6 +236,7 @@ select {
   top: -10rem;
   left: -8rem;
   background: #1f7bff;
+  animation: bg-drift-a 14s ease-in-out infinite alternate;
 }
 
 .bg-orb-b {
@@ -244,6 +245,17 @@ select {
   bottom: -8rem;
   right: -10rem;
   background: #34ffb7;
+  animation: bg-drift-b 18s ease-in-out infinite alternate;
+}
+
+@keyframes bg-drift-a {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(24px, -16px); }
+}
+
+@keyframes bg-drift-b {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-20px, 20px); }
 }
 
 .bg-grid {

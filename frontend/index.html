@@ -11,8 +11,16 @@
          Rule: if it's visible above the fold, it MUST be here.
          ═══════════════════════════════════════════════════════════════════ -->
     <style>
-      /* ── Box model & color scheme ── */
+      /* ══════════════════════════════════════════════════════════════════════
+         CRITICAL CSS — Covers ALL above-fold elements. Zero FOUC, zero CLS.
+         Every rule EXACTLY mirrors frontend/src/index.css. No approximations.
+         Rule: visible above the fold → MUST be here, not in the lazy bundle.
+         ══════════════════════════════════════════════════════════════════════ */
+
+      /* ── Box model reset ── */
       *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+      /* ── Design tokens — mirror :root in index.css exactly ── */
       :root{
         color-scheme:dark;
         --bg:#000000;--bg-soft:#0a0a0c;
@@ -21,57 +29,244 @@
         --line:rgba(255,255,255,0.06);
         --accent:#007aff;--accent-2:#34c759;
         --shadow-md:0 12px 30px rgba(0,0,0,0.4);
-        /* System font stack — renders INSTANTLY, no flash before custom font */
-        --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        --shadow-lg:0 24px 64px rgba(0,0,0,0.55);
+        /* Exact font stack from index.css — system fonts render instantly */
+        --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
         --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       }
-      /* ── Base — exact match to index.css ── */
+
+      /* ── HTML base ── */
       html,body,#root{min-height:100%;margin:0;padding:0}
       html{scroll-behavior:smooth;text-rendering:optimizeSpeed;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
       body{
-        color:var(--text);
-        font-family:var(--font-body);
-        /* Exact gradient from index.css body{} — prevents any background flash */
+        color:var(--text);font-family:var(--font-body);
         background:
           radial-gradient(circle at 12% 12%,rgba(58,122,255,0.2),transparent 28%),
           radial-gradient(circle at 82% 10%,rgba(48,255,189,0.14),transparent 24%),
           radial-gradient(circle at 50% 100%,rgba(139,92,246,0.12),transparent 22%),
           linear-gradient(180deg,#040813 0%,#03060e 45%,#060b16 100%);
-        overflow-x:hidden;
-        min-width:320px;
+        overflow-x:hidden;min-width:320px;
+      }
+      /* Grid overlay — must be here to avoid FOUC when full CSS loads */
+      body::before{
+        content:'';position:fixed;inset:0;pointer-events:none;
+        background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+        background-size:54px 54px;opacity:0.07;
+        mask-image:linear-gradient(180deg,rgba(0,0,0,0.7),transparent 92%);
       }
       #root{display:flex;flex-direction:column;min-height:100vh}
       a{color:inherit;text-decoration:none}
       button,input,textarea,select{font:inherit}
       img,svg{max-width:100%;height:auto;vertical-align:middle}
-      /* ── Layout — EXACT values from index.css to prevent reflow ── */
-      .site-shell{min-height:100vh;position:relative;overflow-x:hidden}
-      .site-content{position:relative;z-index:2}
-      /* EXACT match: index.css .page-wrap — padding MUST match to prevent reflow */
-      .page-wrap{width:min(1280px,92vw);margin:0 auto;padding:1.6rem 0 3.4rem}
-      /* EXACT match: index.css .site-nav */
-      .site-nav{position:sticky;top:0;z-index:10;padding:1rem 0 0;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-      /* EXACT match: index.css .site-nav-inner — prevents nav height shift */
-      .site-nav-inner{width:min(1280px,92vw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0.8rem 1rem;border-radius:22px;border:1px solid rgba(146,181,255,0.14);background:rgba(6,10,20,0.62);box-shadow:var(--shadow-md)}
-      /* ── Hero — exact match prevents hero height CLS ── */
-      .hero-v2{position:relative;overflow:hidden;border-radius:28px;border:1px solid rgba(145,180,255,.15);background:linear-gradient(160deg,rgba(8,14,28,.95),rgba(6,10,20,.98));min-height:clamp(720px,92vh,960px)}
-      .hero-v2-inner{position:relative;z-index:2;padding:2rem 2rem 1.6rem;display:flex;flex-direction:column;gap:1.5rem;min-height:inherit;justify-content:space-between}
-      .hero-v2-title{font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);font-weight:800;line-height:.9;letter-spacing:-.05em;margin:0;color:#fff;text-align:center}
-      .hero-v2-subtitle{margin:1.1rem auto 0;max-width:46rem;color:var(--muted);font-size:1.08rem;line-height:1.78;text-align:center}
-      /* ── App loader — shown from first paint before React hydrates ── */
+      h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);letter-spacing:-0.04em}
+      button,[role=button]{touch-action:manipulation}
+
+      /* ── App loader — shown before React hydrates ── */
       .app-loader{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;background:#040813}
       .app-loader-spinner{width:42px;height:42px;border:3px solid rgba(59,208,255,0.15);border-top-color:#3bd0ff;border-radius:50%;animation:_spin .7s linear infinite}
       @keyframes _spin{to{transform:rotate(360deg)}}
       .app-loader-text{font-size:1.05rem;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,0.6)}
+
       /* ── Skeleton shimmer ── */
       .skeleton-shimmer{border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:_shimmer 1.6s ease-in-out infinite}
       @keyframes _shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-      /* ── Touch targets ── */
-      button,.btn,[role=button]{touch-action:manipulation}
-      /* ── Responsive breakpoints — EXACT match index.css ── */
-      @media(max-width:900px){.hero-v2{min-height:auto}.page-wrap{width:min(1280px,94vw)}}
-      @media(max-width:768px){.site-nav{min-height:auto}}
-      @media(max-width:600px){.hero-v2-inner{padding:1.4rem 1.1rem 1.2rem;min-height:auto}.hero-v2-title{font-size:clamp(2.8rem,12vw,4.5rem)}}
+
+      /* ══ LAYOUT SHELL ══════════════════════════════════════════════════════ */
+      .site-shell{min-height:100vh;position:relative;overflow-x:hidden}
+      .site-content{position:relative;z-index:2}
+      .page-wrap{width:min(1280px,92vw);margin:0 auto;padding:1.6rem 0 3.4rem}
+
+      /* ══ NAVIGATION ════════════════════════════════════════════════════════ */
+      .site-nav{position:sticky;top:0;z-index:10;padding:1rem 0 0;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+      .site-nav-inner{
+        width:min(1280px,92vw);margin:0 auto;
+        display:flex;align-items:center;justify-content:space-between;gap:1rem;
+        padding:0.8rem 1rem;border-radius:22px;
+        border:1px solid rgba(146,181,255,0.14);
+        background:rgba(6,10,20,0.62);box-shadow:var(--shadow-md);
+      }
+      /* Brand lockup — exact size prevents nav height shift */
+      .brand-lockup{display:inline-flex;align-items:center;gap:0.65rem;text-decoration:none}
+      .brand-mark{
+        width:36px;height:36px;border-radius:10px;flex-shrink:0;
+        background:linear-gradient(135deg,#3bd0ff,#4df0b5);
+        display:flex;align-items:center;justify-content:center;
+        font-size:0.82rem;font-weight:800;color:#030f14;letter-spacing:-0.02em;
+      }
+      .brand-lockup strong{display:block;font-size:0.92rem;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-0.01em}
+      .brand-lockup small{display:block;font-size:0.66rem;color:var(--muted);font-weight:400;letter-spacing:0.01em}
+      /* Desktop nav pills */
+      .nav-links{display:flex;align-items:center;gap:0.35rem}
+      .nav-pill{
+        display:inline-flex;align-items:center;gap:0.35rem;
+        padding:0.48rem 0.85rem;border-radius:12px;
+        font-size:0.85rem;font-weight:500;color:var(--muted-strong);
+        border:1px solid transparent;
+        transition:background 160ms,border-color 160ms,color 160ms;
+      }
+      .nav-pill.active{background:rgba(59,208,255,0.1);border-color:rgba(59,208,255,0.25);color:#3bd0ff}
+      /* Mobile hamburger — reserve space so nav never jumps */
+      .mobile-menu-btn{
+        display:none;align-items:center;justify-content:center;
+        width:38px;height:38px;border-radius:10px;border:1px solid var(--panel-border);
+        background:rgba(255,255,255,0.04);color:var(--muted-strong);cursor:pointer;
+      }
+      @media(max-width:768px){
+        .desktop-nav{display:none!important}
+        .mobile-menu-btn{display:flex}
+        .site-nav{padding:0.6rem 0 0}
+        .site-nav-inner{padding:0.55rem 0.75rem}
+      }
+
+      /* ══ HOME LAYOUT ═══════════════════════════════════════════════════════ */
+      .home-wrap{display:flex;flex-direction:column;gap:2rem}
+
+      /* ══ HERO V2 — full internal coverage ═════════════════════════════════ */
+      .hero-v2{
+        position:relative;overflow:hidden;border-radius:28px;
+        border:1px solid rgba(145,180,255,0.15);
+        background:linear-gradient(160deg,rgba(8,14,28,0.95) 0%,rgba(6,10,20,0.98) 100%);
+        box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;
+        min-height:clamp(720px,92vh,960px);contain:layout paint style;
+      }
+      .hero-v2-inner{
+        position:relative;z-index:2;padding:2rem 2rem 1.6rem;
+        display:flex;flex-direction:column;gap:1.5rem;
+        min-height:inherit;justify-content:space-between;
+      }
+      /* Topbar: status badge + social chips */
+      .hero-v2-topbar{
+        display:flex;align-items:center;justify-content:space-between;
+        flex-wrap:wrap;gap:0.7rem;min-height:2.1rem;
+      }
+      .status-badge{
+        display:inline-flex;align-items:center;gap:0.55rem;
+        padding:0.42rem 0.85rem;border-radius:999px;
+        border:1px solid rgba(164,194,255,0.14);background:rgba(255,255,255,0.03);
+        font-size:0.78rem;color:var(--muted-strong);font-weight:500;min-width:220px;
+      }
+      .status-badge.online{border-color:rgba(61,221,142,0.3);color:#6cf0b0}
+      .status-dot-pulse{width:7px;height:7px;border-radius:50%;background:#3fe08e;position:relative;flex-shrink:0}
+      .hero-v2-social{display:flex;gap:0.5rem;flex-wrap:wrap}
+      .social-chip{
+        padding:0.38rem 0.72rem;border-radius:999px;
+        border:1px solid rgba(160,190,255,0.13);background:rgba(255,255,255,0.025);
+        color:var(--muted);font-size:0.76rem;font-weight:500;
+      }
+      /* Heading area — min-height prevents collapse during hydration */
+      .hero-v2-heading{
+        text-align:center;max-width:60rem;margin:0 auto;
+        min-height:20rem;display:grid;align-content:center;
+      }
+      .hero-kicker-pill{
+        display:inline-flex;align-items:center;gap:0.45rem;
+        padding:0.45rem 0.9rem;border-radius:999px;
+        border:1px solid rgba(162,191,255,0.18);background:rgba(255,255,255,0.04);
+        color:#b0cbff;font-size:0.76rem;font-weight:600;
+        letter-spacing:0.04em;text-transform:uppercase;margin-bottom:1rem;
+      }
+      .hero-v2-title{
+        font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);
+        font-weight:800;line-height:0.9;letter-spacing:-0.05em;margin:0;color:#fff;text-wrap:balance;
+      }
+      .hero-v2-title .accent-gradient{
+        background:linear-gradient(120deg,#4ad4ff 0%,#4df0b5 55%,#a78bfa 100%);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      }
+      .hero-v2-subtitle{
+        margin:1.1rem auto 0;max-width:46rem;
+        color:var(--muted);font-size:1.08rem;line-height:1.78;
+      }
+      /* CTA buttons */
+      .hero-v2-actions{
+        display:flex;gap:0.85rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem;
+      }
+      .btn-primary-hero{
+        display:inline-flex;align-items:center;gap:0.55rem;
+        padding:0.9rem 1.4rem;border-radius:16px;font-weight:700;font-size:0.97rem;
+        color:#021018;background:linear-gradient(120deg,#4ad4ff,#4df0b5);
+        box-shadow:0 16px 40px rgba(67,222,255,0.22);
+        transition:transform 180ms ease,box-shadow 180ms ease;
+      }
+      .btn-secondary-hero{
+        display:inline-flex;align-items:center;gap:0.55rem;
+        padding:0.9rem 1.35rem;border-radius:16px;font-weight:600;font-size:0.95rem;
+        color:#c9dbff;background:rgba(255,255,255,0.04);
+        border:1px solid rgba(156,190,255,0.18);
+        transition:border-color 180ms ease,background 180ms ease,transform 180ms ease;
+      }
+      /* Stats grid — min-height prevents collapse */
+      .hero-v2-stats{
+        display:grid;grid-template-columns:repeat(4,1fr);gap:0.85rem;min-height:7.5rem;
+      }
+      .hero-stat-card{
+        position:relative;overflow:hidden;padding:1.1rem 1rem;border-radius:20px;
+        border:1px solid rgba(160,190,255,0.12);background:rgba(255,255,255,0.03);text-align:center;
+      }
+      .stat-number{
+        display:block;font-family:var(--font-display);font-size:1.7rem;font-weight:800;
+        background:linear-gradient(120deg,#fff 40%,var(--stat-color,#3bd0ff));
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        letter-spacing:-0.04em;
+      }
+      .stat-label{display:block;font-size:0.78rem;color:var(--muted);margin-top:0.2rem;font-weight:500}
+      /* Ticker — min-height holds space */
+      .ticker-wrap{overflow:hidden;mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);padding:0.1rem 0;min-height:2rem}
+      .ticker-track{display:flex;gap:0.6rem;width:max-content;animation:ticker-scroll 45s linear infinite;will-change:transform}
+      @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+      .ticker-item{
+        display:inline-flex;align-items:center;gap:0.45rem;padding:0.4rem 0.85rem;
+        border-radius:999px;border:1px solid rgba(160,190,255,0.1);
+        background:rgba(255,255,255,0.025);color:var(--muted);font-size:0.76rem;font-weight:500;
+        white-space:nowrap;flex-shrink:0;
+      }
+      /* Quick access */
+      .hero-v2-quick{text-align:center;min-height:5.5rem}
+      .quick-label{display:block;font-size:0.74rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:0.75rem}
+      .quick-grid{display:flex;flex-wrap:wrap;gap:0.55rem;justify-content:center}
+      .quick-chip{
+        display:inline-flex;align-items:center;gap:0.45rem;padding:0.56rem 1rem;border-radius:12px;
+        border:1px solid rgba(156,190,255,0.12);background:rgba(255,255,255,0.02);
+        color:var(--muted-strong);font-size:0.83rem;font-weight:500;
+        transition:border-color 180ms ease,background 180ms ease,transform 180ms ease,color 180ms ease;
+      }
+      /* Trust row */
+      .trust-row{
+        display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;
+        padding-top:0.5rem;border-top:1px solid rgba(160,190,255,0.08);min-height:2.5rem;
+      }
+      .trust-badge{
+        display:inline-flex;align-items:center;gap:0.42rem;padding:0.34rem 0.7rem;
+        border-radius:999px;background:rgba(255,255,255,0.025);
+        border:1px solid rgba(160,190,255,0.09);color:var(--muted);font-size:0.74rem;font-weight:500;
+      }
+      /* Hero background orbs — CSS-only, no JS needed */
+      .hero-v2-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px)}
+      .hero-v2 .orb-a{width:28rem;height:28rem;top:-10rem;left:-8rem;background:rgba(56,130,255,0.28);animation:orb-drift-a 12s ease-in-out infinite alternate}
+      .hero-v2 .orb-b{width:22rem;height:22rem;bottom:-8rem;right:-6rem;background:rgba(52,255,183,0.22);animation:orb-drift-b 14s ease-in-out infinite alternate}
+      .hero-v2 .orb-c{width:16rem;height:16rem;top:40%;left:50%;transform:translateX(-50%);background:rgba(167,139,250,0.12);animation:orb-drift-c 10s ease-in-out infinite alternate}
+      @keyframes orb-drift-a{from{transform:translate(0,0) scale(1)}to{transform:translate(3rem,2rem) scale(1.12)}}
+      @keyframes orb-drift-b{from{transform:translate(0,0) scale(1)}to{transform:translate(-2rem,-3rem) scale(1.08)}}
+      @keyframes orb-drift-c{from{transform:translateX(-50%) scale(0.9);opacity:.5}to{transform:translateX(-50%) scale(1.1);opacity:1}}
+      .hero-v2-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(150,180,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(150,180,255,0.06) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.6) 20%,rgba(0,0,0,0.6) 80%,transparent 100%)}
+
+      /* ══ RESPONSIVE ════════════════════════════════════════════════════════ */
+      @media(max-width:900px){
+        .hero-v2{min-height:auto}
+        .hero-v2-stats{grid-template-columns:repeat(2,1fr)}
+        .page-wrap{width:min(1280px,94vw)}
+      }
+      @media(max-width:600px){
+        .hero-v2-inner{padding:1.4rem 1.1rem 1.2rem;gap:1.2rem;min-height:auto;justify-content:start}
+        .hero-v2-heading{min-height:16rem}
+        .hero-v2-title{font-size:clamp(2.8rem,12vw,4.5rem)}
+        .hero-v2-stats{grid-template-columns:repeat(2,1fr);gap:0.6rem;min-height:8.25rem}
+        .hero-v2-topbar{flex-direction:column;align-items:flex-start;gap:0.5rem}
+        .hero-v2-actions{flex-direction:column;align-items:center}
+        .hero-v2-quick{min-height:8rem}
+        .btn-primary-hero,.btn-secondary-hero{width:100%;justify-content:center}
+        .status-badge{min-width:0}
+      }
     </style>
 
     <!-- Resource Hints — preconnect before any external request -->

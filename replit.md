@@ -170,6 +170,21 @@ All new tools have `toolFields.ts` frontend form fields and `registry.py` defini
   - Improved bento section spacing with border-top separator
   - Better mobile breakpoints at 640px for hero, bento, steps grid
 
+## CLS/FOUC Fixes (v4 — Definitive)
+- **Comprehensive critical CSS** in `frontend/index.html` now covers ALL above-fold elements:
+  - Previously only covered outer containers (`.hero-v2`, `.site-nav`, `.page-wrap`)
+  - Now covers every internal hero element: `.hero-v2-topbar`, `.status-badge`, `.social-chip`, `.hero-v2-heading`, `.hero-kicker-pill`, `.hero-v2-title`, `.hero-v2-subtitle`, `.hero-v2-actions`, `.btn-primary-hero`, `.btn-secondary-hero`, `.hero-v2-stats`, `.hero-stat-card`, `.ticker-wrap`, `.ticker-track`, `.hero-v2-quick`, `.quick-chip`, `.trust-row`, `.trust-badge`
+  - Added `body::before` grid overlay to critical CSS (prevents FOUC when full CSS loads)
+  - Added `h1,h2,h3,h4,h5,h6` typography reset with `letter-spacing:-0.04em` (prevents heading reflow)
+  - Added `brand-lockup`, `brand-mark`, `nav-links`, `nav-pill`, `mobile-menu-btn` nav styles
+  - Added all mobile breakpoints for every above-fold element (`@media max-width: 900px/768px/600px`)
+  - Fixed `--font-body` to include `"SF Pro Text"` matching `index.css` exactly
+  - Added `--shadow-lg` token to critical CSS
+- **AnimatedBackdrop** converted from Framer Motion to pure CSS:
+  - Removed `framer-motion` import entirely from `AnimatedBackdrop.tsx`
+  - Added `@keyframes bg-drift-a/b` CSS animations for `bg-orb-a/b` in `index.css`
+  - Zero JS runtime overhead for background orb animation
+
 ## Important Bugs Fixed
 - Compress PDF: returns original when compression fails
 - HTTP header encoding: non-ASCII chars in X-Tool-Message sanitized globally
