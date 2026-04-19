@@ -7216,6 +7216,189 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How do I split expenses with friends?', answer: 'Enter all expenses and participants in ISHU TOOLS Expense Splitter to see exactly who owes what for trips, dinners, and shared costs for free.' },
     ],
   },
+  'time-converter': {
+    title: 'Time Unit Converter Online Free — Seconds Minutes Hours Days | ISHU TOOLS',
+    description: 'Convert between seconds, minutes, hours, days, weeks, months, years, and milliseconds instantly online free. Enter any time value and convert to all units at once.',
+    keywords: ['time converter', 'time unit converter', 'seconds to minutes converter', 'hours to minutes', 'convert time online free', 'time calculator', 'ishu tools time converter', 'seconds minutes hours converter'],
+    h1: 'Time Unit Converter — Convert Seconds, Minutes, Hours Free',
+    faq: [
+      { question: 'How do I convert hours to minutes?', answer: 'Enter the number of hours in ISHU TOOLS Time Converter, select "hours" as the from unit and "minutes" as the to unit, and get the result instantly. 1 hour = 60 minutes.' },
+      { question: 'How many seconds are in a day?', answer: 'There are 86,400 seconds in a day (24 hours × 60 minutes × 60 seconds). Use ISHU TOOLS Time Converter to convert between any time units instantly.' },
+    ],
+  },
+  'coin-flipper': {
+    title: 'Coin Flipper Online Free — Flip a Coin Heads or Tails | ISHU TOOLS',
+    description: 'Flip a virtual coin online free — get instant heads or tails results. Flip multiple coins at once for probability experiments, group decisions, and games. No signup needed.',
+    keywords: ['coin flipper', 'flip a coin online', 'heads or tails', 'virtual coin toss', 'coin flip free', 'random coin flip', 'coin flip simulator', 'ishu tools coin flipper', 'coin flipper online india'],
+    h1: 'Coin Flipper — Flip a Coin Online Free',
+    faq: [
+      { question: 'Is the coin flip truly random?', answer: 'Yes! ISHU TOOLS Coin Flipper uses cryptographically secure random number generation, giving you a true 50/50 chance of heads or tails on every flip.' },
+    ],
+  },
+  'morse-code-converter': {
+    title: 'Morse Code Converter Online Free — Text to Morse & Decode | ISHU TOOLS',
+    description: 'Convert text to Morse code or decode Morse code to text online free. Supports all letters, numbers, and punctuation. Perfect for students, ham radio operators, and cryptography enthusiasts.',
+    keywords: ['morse code converter', 'text to morse code', 'morse code translator free', 'decode morse code online', 'morse code encoder', 'morse code decoder', 'ishu tools morse code', 'morse code converter online india'],
+    h1: 'Morse Code Converter — Text to Morse Code Free',
+    faq: [
+      { question: 'How do I convert text to Morse code?', answer: 'Enter your text in ISHU TOOLS Morse Code Converter and click encode. Each letter is converted to dots (.) and dashes (-) separated by spaces, with three spaces between words.' },
+      { question: 'How do I decode Morse code?', answer: 'Enter Morse code using dots and dashes (separate letters with spaces, words with three spaces), select "decode" mode, and ISHU TOOLS will convert it back to text instantly.' },
+    ],
+  },
+  'fraction-calculator': {
+    title: 'Fraction Calculator Online Free — Add Subtract Multiply Divide Fractions | ISHU TOOLS',
+    description: 'Add, subtract, multiply, and divide fractions online free with automatic simplification. Shows answer as simplified fraction and decimal. Perfect for students and math homework.',
+    keywords: ['fraction calculator', 'add fractions online', 'subtract fractions', 'multiply fractions calculator', 'divide fractions', 'fraction simplifier', 'fraction math calculator free', 'ishu tools fraction calculator', 'fraction calculator for students'],
+    h1: 'Fraction Calculator — Add Subtract Multiply Divide Fractions Free',
+    faq: [
+      { question: 'How do I add fractions with different denominators?', answer: 'Enter your two fractions (e.g., 1/2 and 1/3) in ISHU TOOLS Fraction Calculator, select "add" and get the result (5/6) instantly — with cross-multiplication done automatically.' },
+    ],
+  },
+  'percentage-change-calculator': {
+    title: 'Percentage Change Calculator Online Free — % Increase Decrease | ISHU TOOLS',
+    description: 'Calculate percentage change between two values online free. Find % increase or % decrease instantly by entering old and new values. Perfect for business, finance, and academics.',
+    keywords: ['percentage change calculator', 'percent increase calculator', 'percent decrease calculator', 'percentage difference calculator', 'calculate % change online', 'percent change formula', 'ishu tools percentage calculator'],
+    h1: 'Percentage Change Calculator — Find % Increase or Decrease Free',
+    faq: [
+      { question: 'How do I calculate percentage change?', answer: 'Percentage change = ((New Value - Old Value) / |Old Value|) × 100. Enter your old and new values in ISHU TOOLS to get the result instantly with direction (increase or decrease).' },
+    ],
+  },
+  'emi-calculator': {
+    title: 'EMI Calculator India Free — Home Loan Car Loan Personal Loan EMI | ISHU TOOLS',
+    description: 'Calculate monthly EMI for home loan, car loan, and personal loan online free. Enter loan amount, interest rate, and tenure to get exact EMI, total payment, and interest amount.',
+    keywords: ['emi calculator', 'loan emi calculator india', 'home loan emi calculator', 'car loan emi calculator', 'personal loan emi', 'monthly emi calculator free', 'ishu tools emi calculator', 'emi formula india', 'emi calculation online'],
+    h1: 'EMI Calculator — Calculate Loan EMI Online Free India',
+    faq: [
+      { question: 'What is EMI?', answer: 'EMI (Equated Monthly Instalment) is the fixed monthly payment you make to repay a loan over a set period. It includes both principal and interest.' },
+      { question: 'How is EMI calculated?', answer: 'EMI = P × r × (1+r)^n / ((1+r)^n - 1), where P is principal, r is monthly interest rate, and n is tenure in months. ISHU TOOLS calculates this instantly for free.' },
+    ],
+  },
+  'interest-calculator': {
+    title: 'Interest Calculator Free — Simple & Compound Interest | ISHU TOOLS India',
+    description: 'Calculate simple interest (SI) and compound interest (CI) online free. Enter principal, rate, and time to get total interest and final amount. Perfect for students and investors in India.',
+    keywords: ['interest calculator', 'simple interest calculator', 'compound interest calculator', 'SI CI calculator', 'interest rate calculator free', 'calculate interest online', 'ishu tools interest calculator', 'simple interest formula', 'compound interest formula india'],
+    h1: 'Interest Calculator — Simple & Compound Interest Free',
+    faq: [
+      { question: 'What is the difference between simple and compound interest?', answer: 'Simple interest is calculated only on the principal. Compound interest is calculated on principal plus accumulated interest. Use ISHU TOOLS Interest Calculator to compare both instantly.' },
+    ],
+  },
+  'reading-time-estimator': {
+    title: 'Reading Time Estimator Online Free — How Long to Read Text | ISHU TOOLS',
+    description: 'Estimate how long it takes to read any text online free. Paste your content to get reading time at slow, average, and fast reading speeds. Perfect for bloggers, students, and writers.',
+    keywords: ['reading time estimator', 'how long to read', 'reading time calculator', 'words per minute', 'text reading time online', 'blog reading time', 'article reading time calculator', 'ishu tools reading time', 'reading speed calculator free'],
+    h1: 'Reading Time Estimator — How Long to Read Your Text Free',
+    faq: [
+      { question: 'What is the average reading speed?', answer: 'The average adult reads 200-250 words per minute. ISHU TOOLS Reading Time Estimator shows you reading time at slow (150 wpm), average (200 wpm), and fast (300 wpm) speeds.' },
+    ],
+  },
+  'attendance-calculator': {
+    title: 'Attendance Calculator Online Free — 75% Attendance Checker | ISHU TOOLS',
+    description: 'Calculate your college attendance percentage and see if you meet the 75% requirement. Find how many classes you can skip or need to attend. Free attendance tracker for students India.',
+    keywords: ['attendance calculator', 'attendance percentage calculator', '75 percent attendance calculator', 'college attendance calculator', 'classes to attend calculator', 'attendance tracker free', 'ishu tools attendance calculator', 'how many classes can i skip'],
+    h1: 'Attendance Calculator — Check if You Meet 75% Attendance',
+    faq: [
+      { question: 'How many classes can I miss?', answer: 'Enter your attended classes and total classes in ISHU TOOLS Attendance Calculator. It will tell you exactly how many classes you can skip while maintaining the required attendance percentage.' },
+    ],
+  },
+  'exam-score-calculator': {
+    title: 'Exam Score Calculator — Marks to Percentage & Grade Online Free | ISHU TOOLS',
+    description: 'Convert exam marks to percentage and grade (A+, A, B, C) online free. Enter marks obtained and total marks to get your percentage, grade, and GPA equivalent instantly.',
+    keywords: ['exam score calculator', 'marks to percentage', 'marks to grade calculator', 'exam percentage calculator', 'grade calculator online free', 'marks calculator india', 'ishu tools marks calculator', 'exam result calculator'],
+    h1: 'Exam Score Calculator — Marks to Percentage & Grade Free',
+    faq: [
+      { question: 'How do I calculate percentage from marks?', answer: 'Percentage = (Marks Obtained / Total Marks) × 100. For example, 75 out of 100 = 75%. ISHU TOOLS Exam Score Calculator also shows your grade (A+, A, B...) and GPA equivalent.' },
+    ],
+  },
+  'anagram-checker': {
+    title: 'Anagram Checker Online Free — Check if Two Words are Anagrams | ISHU TOOLS',
+    description: 'Check if two words or phrases are anagrams of each other online free. Get character frequency analysis and see missing characters. Perfect for word games, spelling practice, and students.',
+    keywords: ['anagram checker', 'anagram detector free', 'check anagram online', 'word anagram finder', 'are these words anagrams', 'anagram solver', 'ishu tools anagram checker', 'anagram tool free'],
+    h1: 'Anagram Checker — Check if Two Words are Anagrams Free',
+    faq: [
+      { question: 'What is an anagram?', answer: 'An anagram is a word or phrase formed by rearranging the letters of another. For example, "listen" and "silent" are anagrams. Use ISHU TOOLS to check any two words instantly.' },
+    ],
+  },
+  'text-line-sorter': {
+    title: 'Text Line Sorter Online Free — Sort Lines Alphabetically | ISHU TOOLS',
+    description: 'Sort lines of text alphabetically, reverse, by length, or randomly online free. Paste your list and get sorted output instantly. Perfect for sorting names, data, and code.',
+    keywords: ['text line sorter', 'sort lines alphabetically online', 'alphabetical sorter free', 'list sorter online', 'text sorter tool', 'sort text lines free', 'ishu tools text sorter', 'alphabetical order sorter'],
+    h1: 'Text Line Sorter — Sort Lines Alphabetically Free',
+    faq: [
+      { question: 'Can I sort lines in reverse alphabetical order?', answer: 'Yes! In ISHU TOOLS Text Line Sorter, set the order to "desc" or "Z-A" to sort lines in reverse alphabetical order. You can also sort by line length or randomize the order.' },
+    ],
+  },
+  'list-deduplicator': {
+    title: 'List Deduplicator Online Free — Remove Duplicate Lines | ISHU TOOLS',
+    description: 'Remove duplicate lines or items from any list online free. Paste your list to instantly get unique items only. Perfect for cleaning email lists, data, names, and code.',
+    keywords: ['list deduplicator', 'remove duplicates online free', 'remove duplicate lines', 'unique line extractor', 'deduplicate list tool', 'duplicate remover online', 'ishu tools deduplicator', 'remove duplicate text free'],
+    h1: 'List Deduplicator — Remove Duplicate Lines Free',
+    faq: [
+      { question: 'How do I remove duplicate lines from a list?', answer: 'Paste your list (one item per line) into ISHU TOOLS List Deduplicator and click run. It instantly removes all duplicate lines and shows you only unique items.' },
+    ],
+  },
+  'character-frequency': {
+    title: 'Character Frequency Counter — Letter Frequency Analysis Online Free | ISHU TOOLS',
+    description: 'Count how often each letter or character appears in text online free. Get character frequency analysis with percentages. Perfect for cryptography, language analysis, and writing.',
+    keywords: ['character frequency counter', 'letter frequency counter', 'character frequency analysis', 'char frequency tool', 'text frequency analysis', 'letter count online free', 'ishu tools character frequency', 'cryptography frequency analysis'],
+    h1: 'Character Frequency Counter — Analyze Letter Frequency Free',
+    faq: [
+      { question: 'What is character frequency analysis used for?', answer: 'Character frequency analysis is used in cryptography to crack substitution ciphers, in linguistics to study language patterns, and in writing to check letter distribution. Use ISHU TOOLS for instant analysis.' },
+    ],
+  },
+  'calorie-calculator': {
+    title: 'Calorie Calculator Free — Daily Calorie Needs TDEE BMI India | ISHU TOOLS',
+    description: 'Calculate your daily calorie needs (TDEE) using the Mifflin-St Jeor equation. Get BMR, TDEE, BMI, and calorie goals for weight loss, maintenance, and muscle gain. Free for Indian users.',
+    keywords: ['calorie calculator', 'tdee calculator free', 'daily calorie calculator india', 'calorie needs calculator', 'bmr calculator free', 'calorie deficit calculator', 'ishu tools calorie calculator', 'how many calories per day india'],
+    h1: 'Calorie Calculator — Find Your Daily Calorie Needs (TDEE) Free',
+    faq: [
+      { question: 'How many calories should I eat per day?', answer: 'Your daily calorie needs depend on your weight, height, age, gender, and activity level. Use ISHU TOOLS Calorie Calculator (TDEE) to find your exact daily calorie requirement for free.' },
+    ],
+  },
+  'assignment-deadline-tracker': {
+    title: 'Assignment Deadline Tracker Online Free — Days Left Calculator | ISHU TOOLS',
+    description: 'Track your assignment deadlines and see exactly how many days are left. Enter due dates to get instant countdown, status alerts, and urgency levels. Free for students.',
+    keywords: ['assignment deadline tracker', 'deadline tracker free', 'days until deadline calculator', 'assignment due date', 'homework deadline tracker', 'student deadline tracker', 'ishu tools deadline', 'assignment countdown calculator'],
+    h1: 'Assignment Deadline Tracker — Track Due Dates Free',
+    faq: [
+      { question: 'How do I track my assignment deadlines?', answer: 'Enter the assignment name and due date (YYYY-MM-DD format) in ISHU TOOLS Assignment Deadline Tracker. It shows you exactly how many days are left with color-coded urgency alerts.' },
+    ],
+  },
+  'number-palindrome-checker': {
+    title: 'Palindrome Checker Online Free — Check Word Number Phrase | ISHU TOOLS',
+    description: 'Check if a word, number, or phrase is a palindrome online free. Get instant results with reversal display and word-by-word analysis. Perfect for word games and programming.',
+    keywords: ['palindrome checker', 'palindrome detector free', 'number palindrome checker', 'word palindrome checker', 'is palindrome online', 'check palindrome free', 'ishu tools palindrome checker', 'palindrome finder'],
+    h1: 'Palindrome Checker — Check Words & Numbers Free',
+    faq: [
+      { question: 'What is a palindrome?', answer: 'A palindrome is a word, number, or phrase that reads the same forwards and backwards. Examples: "madam", "racecar", 12321, "A man a plan a canal Panama". Use ISHU TOOLS to check instantly.' },
+    ],
+  },
+  'resume-word-count': {
+    title: 'Resume Word Count & Analyzer Online Free — Resume Checker | ISHU TOOLS',
+    description: 'Count words in your resume and get professional analysis. Checks word count, power words, reading time, page estimate, and gives expert improvement tips. Free resume analyzer.',
+    keywords: ['resume word count', 'resume analyzer free', 'resume length checker', 'resume power words', 'cv word count', 'resume checker online', 'ishu tools resume analyzer', 'how long should resume be'],
+    h1: 'Resume Word Count — Analyze Your Resume Length & Strength Free',
+    faq: [
+      { question: 'How many words should a resume have?', answer: 'A one-page resume should have 400-700 words. ISHU TOOLS Resume Word Count Analyzer counts your words and tells you if your resume is too short, perfect, or too long.' },
+    ],
+  },
+  'study-hours-calculator': {
+    title: 'Study Hours Calculator — Exam Study Planner Online Free | ISHU TOOLS',
+    description: 'Plan your exam study schedule by calculating hours per subject. Enter subjects count, days left, and daily available hours to get a complete study plan with Pomodoro sessions.',
+    keywords: ['study hours calculator', 'study planner free', 'exam study schedule', 'how many hours to study', 'study time calculator online', 'exam preparation planner', 'ishu tools study planner', 'study schedule calculator india'],
+    h1: 'Study Hours Calculator — Plan Your Exam Study Schedule Free',
+    faq: [
+      { question: 'How many hours should I study for exams?', answer: 'Enter your number of subjects, days until exam, and daily study hours in ISHU TOOLS Study Hours Calculator to get a personalized schedule showing how many hours to dedicate per subject.' },
+    ],
+  },
+  'unit-converter': {
+    title: 'Unit Converter Online Free — Length Weight Volume Speed Area | ISHU TOOLS',
+    description: 'Universal unit converter for length (km, m, ft), weight (kg, lb), volume (L, ml, gallon), speed (km/h, mph), area (m², ft², acre), data (KB, MB, GB), and more. Free online.',
+    keywords: ['unit converter', 'universal unit converter free', 'length converter online', 'weight converter', 'volume converter free', 'speed converter', 'area converter', 'convert units online india', 'ishu tools unit converter', 'measurement converter'],
+    h1: 'Unit Converter — Convert Any Unit Online Free',
+    faq: [
+      { question: 'What units can I convert?', answer: 'ISHU TOOLS Unit Converter supports length (m, km, cm, ft, inch, mile, yard), weight (kg, g, lb, oz), volume (L, ml, gallon, cup), speed (km/h, mph, m/s), area (m², ft², acre, hectare), and data storage (bytes, KB, MB, GB, TB).' },
+    ],
+  },
   'bill-splitter': {
     title: 'Bill Splitter Online Free — Split Restaurant Bills Equally | ISHU TOOLS by Ishu Kumar',
     description: 'Split restaurant bills, trip costs, and shared expenses equally among friends online for free. Enter the total amount, number of people, and tip percentage to get each person\'s share instantly. No signup required.',

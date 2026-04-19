@@ -174,7 +174,7 @@ export default function HeroSection({
       className='hero-v2'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.25 }}
     >
       {/* Background orbs */}
       <div className='hero-v2-orb orb-a' />
@@ -188,9 +188,9 @@ export default function HeroSection({
         {/* Status + social bar */}
         <motion.div
           className='hero-v2-topbar'
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: 0.05, duration: 0.2 }}
         >
           <div className={`status-badge ${apiReady ? 'online' : 'loading'}`}>
             <span className='status-dot-pulse' />
@@ -208,9 +208,9 @@ export default function HeroSection({
         {/* Main heading */}
         <motion.div
           className='hero-v2-heading'
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.6 }}
+          transition={{ delay: 0.05, duration: 0.3 }}
         >
           <div className='hero-kicker-pill'>
             <span>Indian Student Hub University Tools</span>
@@ -243,7 +243,7 @@ export default function HeroSection({
           className='hero-v2-stats'
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
           {[
             { label: 'Free Tools', value: toolLabel, suffix: '+', color: '#56a6ff' },
@@ -256,7 +256,7 @@ export default function HeroSection({
               className='hero-stat-card'
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.35 + i * 0.07 }}
+              transition={{ delay: 0.12 + i * 0.04, duration: 0.25 }}
               style={{ '--stat-color': stat.color } as React.CSSProperties}
             >
               <strong className='stat-number'>
@@ -273,7 +273,7 @@ export default function HeroSection({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.18, duration: 0.25 }}
         >
           <TickerRow />
         </motion.div>
@@ -281,9 +281,9 @@ export default function HeroSection({
         {/* Quick access tools */}
         <motion.div
           className='hero-v2-quick'
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.4 }}
+          transition={{ delay: 0.2, duration: 0.25 }}
         >
           <span className='quick-label'>Popular right now</span>
           <div className='quick-grid'>
@@ -292,7 +292,7 @@ export default function HeroSection({
                 key={tool.to}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + i * 0.04 }}
+                transition={{ delay: 0.22 + i * 0.025, duration: 0.2 }}
               >
                 <Link
                   to={tool.to}
@@ -312,7 +312,7 @@ export default function HeroSection({
           className='trust-row'
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.75 }}
+          transition={{ delay: 0.25, duration: 0.2 }}
         >
           {TRUST_BADGES.map((badge) => (
             <div key={badge.label} className='trust-badge'>

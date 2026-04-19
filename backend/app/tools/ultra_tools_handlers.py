@@ -1545,6 +1545,672 @@ def _handle_bill_splitter(files: list[Path], payload: dict[str, Any], job_dir: P
         return _make_json({"error": f"Invalid input: {e}"}, "Error")
 
 
+# ─── Time Converter ─────────────────────────────────────────────────────────
+def _handle_time_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        value = float(payload.get("value", payload.get("amount", 1)))
+        from_unit = str(payload.get("from_unit", payload.get("from", "hours"))).lower().strip()
+        to_unit = str(payload.get("to_unit", payload.get("to", "minutes"))).lower().strip()
+        # Seconds multipliers
+        to_sec = {"seconds": 1, "second": 1, "sec": 1, "s": 1,
+                  "minutes": 60, "minute": 60, "min": 60, "m": 60,
+                  "hours": 3600, "hour": 3600, "hr": 3600, "h": 3600,
+                  "days": 86400, "day": 86400, "d": 86400,
+                  "weeks": 604800, "week": 604800, "w": 604800,
+                  "months": 2592000, "month": 2592000,
+                  "years": 31536000, "year": 31536000, "yr": 31536000,
+                  "milliseconds": 0.001, "ms": 0.001,
+                  "microseconds": 0.000001, "us": 0.000001,
+                  "nanoseconds": 1e-9, "ns": 1e-9}
+        if from_unit not in to_sec or to_unit not in to_sec:
+            return _make_json({"error": f"Unknown time unit. Supported: {', '.join(sorted(set(to_sec.keys())))}"}, "Error")
+        seconds = value * to_sec[from_unit]
+        result = seconds / to_sec[to_unit]
+        return _make_json({
+            "input": value,
+            "from_unit": from_unit,
+            "to_unit": to_unit,
+            "result": round(result, 10) if result < 1 else round(result, 6),
+            "in_seconds": round(seconds, 10),
+            "breakdown": {
+                "years": round(seconds / 31536000, 6),
+                "days": round(seconds / 86400, 6),
+                "hours": round(seconds / 3600, 6),
+                "minutes": round(seconds / 60, 6),
+                "seconds": round(seconds, 4),
+                "milliseconds": round(seconds * 1000, 4),
+            }
+        }, f"{value} {from_unit} = {round(result, 6)} {to_unit}")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Coin Flipper ──────────────────────────────────────────────────────────
+def _handle_coin_flipper(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    import random as _rnd
+    flips = max(1, min(int(payload.get("flips", payload.get("count", 1))), 1000))
+    results = [_rnd.choice(["Heads", "Tails"]) for _ in range(flips)]
+    heads = results.count("Heads")
+    tails = results.count("Tails")
+    return _make_json({
+        "result": results[0] if flips == 1 else results,
+        "total_flips": flips,
+        "heads_count": heads,
+        "tails_count": tails,
+        "heads_percent": round(heads / flips * 100, 1),
+        "tails_percent": round(tails / flips * 100, 1),
+        "summary": f"🪙 {results[0]}" if flips == 1 else f"🪙 {heads} Heads, {tails} Tails out of {flips} flips"
+    }, results[0] if flips == 1 else f"{heads}H {tails}T")
+
+
+# ─── Morse Code Converter ──────────────────────────────────────────────────
+def _handle_morse_code_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    MORSE = {
+        'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+        'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+        'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+        'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+        'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+        '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+        '8': '---..', '9': '----.',  '.': '.-.-.-', ',': '--..--', '?': '..--..',
+        "'": '.----.', '!': '-.-.--', '/': '-..-.', '(': '-.--.', ')': '-.--.-',
+        '&': '.-...', ':': '---...', ';': '-.-.-.', '=': '-...-', '+': '.-.-.',
+        '-': '-....-', '_': '..--.-', '"': '.-..-.', '$': '...-..-', '@': '.--.-.',
+    }
+    REVERSE = {v: k for k, v in MORSE.items()}
+    text = str(payload.get("text", "")).strip()
+    mode = str(payload.get("mode", "encode")).lower()
+    if not text:
+        return _make_json({"error": "Please enter text to convert."}, "No input")
+    if mode in ("decode", "to_text"):
+        words = text.strip().split("   ")
+        decoded_words = []
+        for word in words:
+            chars = word.strip().split()
+            decoded_words.append("".join(REVERSE.get(c, "?") for c in chars))
+        result = " ".join(decoded_words)
+        return _make_json({"morse": text, "text": result, "mode": "decode"}, result)
+    else:
+        encoded = " ".join("   " if c == " " else MORSE.get(c.upper(), "?") for c in text)
+        return _make_json({"text": text, "morse": encoded, "mode": "encode",
+                           "legend": "Dots=., Dashes=-, Letter separator=space, Word separator=3 spaces"}, encoded)
+
+
+# ─── Fraction Calculator ────────────────────────────────────────────────────
+def _handle_fraction_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    from math import gcd
+    def parse_frac(s: str):
+        s = s.strip()
+        if '/' in s:
+            n, d = s.split('/', 1)
+            return int(n.strip()), int(d.strip())
+        return int(s), 1
+    def simplify(n, d):
+        if d == 0:
+            raise ZeroDivisionError("Denominator cannot be zero")
+        sign = -1 if (n * d < 0) else 1
+        n, d = abs(n), abs(d)
+        g = gcd(n, d)
+        return sign * (n // g), d // g
+    def frac_str(n, d):
+        n, d = simplify(n, d)
+        if d == 1:
+            return str(n)
+        return f"{n}/{d}"
+    try:
+        f1 = str(payload.get("fraction1", payload.get("frac1", "1/2")))
+        f2 = str(payload.get("fraction2", payload.get("frac2", "1/3")))
+        op = str(payload.get("operation", payload.get("op", "add"))).lower()
+        n1, d1 = parse_frac(f1)
+        n2, d2 = parse_frac(f2)
+        if op in ("add", "+", "plus"):
+            rn, rd = n1 * d2 + n2 * d1, d1 * d2
+        elif op in ("subtract", "-", "minus", "sub"):
+            rn, rd = n1 * d2 - n2 * d1, d1 * d2
+        elif op in ("multiply", "*", "x", "mul", "times"):
+            rn, rd = n1 * n2, d1 * d2
+        elif op in ("divide", "/", "div"):
+            rn, rd = n1 * d2, d1 * n2
+        else:
+            return _make_json({"error": "Operation must be: add, subtract, multiply, or divide"}, "Error")
+        result = frac_str(rn, rd)
+        decimal = round(rn / rd, 8) if rd != 0 else "undefined"
+        return _make_json({
+            "fraction1": f1, "fraction2": f2, "operation": op,
+            "result_fraction": result, "result_decimal": decimal,
+            "simplified": result,
+            "summary": f"{f1} {op} {f2} = {result} ≈ {decimal}"
+        }, f"{result} (≈ {decimal})")
+    except (ValueError, ZeroDivisionError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Percentage Change Calculator ──────────────────────────────────────────
+def _handle_percentage_change_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        old = float(payload.get("old_value", payload.get("original", payload.get("from", 0))))
+        new = float(payload.get("new_value", payload.get("new", payload.get("to", 0))))
+        if old == 0:
+            return _make_json({"error": "Original value cannot be zero (division by zero)"}, "Error")
+        change = new - old
+        pct = round((change / abs(old)) * 100, 4)
+        direction = "increase" if change > 0 else ("decrease" if change < 0 else "no change")
+        return _make_json({
+            "original_value": old,
+            "new_value": new,
+            "absolute_change": round(change, 4),
+            "percentage_change": pct,
+            "direction": direction,
+            "summary": f"{abs(pct)}% {direction} (from {old} to {new})"
+        }, f"{abs(pct)}% {direction}")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── EMI Calculator ─────────────────────────────────────────────────────────
+def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        principal = float(payload.get("principal", payload.get("loan_amount", payload.get("amount", 100000))))
+        rate = float(payload.get("rate", payload.get("interest_rate", 10)))
+        tenure_months = int(payload.get("tenure_months", payload.get("tenure", payload.get("months", 12))))
+        monthly_rate = rate / 12 / 100
+        if monthly_rate == 0:
+            emi = principal / tenure_months
+        else:
+            emi = principal * monthly_rate * (1 + monthly_rate) ** tenure_months / ((1 + monthly_rate) ** tenure_months - 1)
+        emi = round(emi, 2)
+        total = round(emi * tenure_months, 2)
+        interest = round(total - principal, 2)
+        return _make_json({
+            "principal": principal,
+            "interest_rate_percent": rate,
+            "tenure_months": tenure_months,
+            "tenure_years": round(tenure_months / 12, 2),
+            "monthly_emi": emi,
+            "total_payment": total,
+            "total_interest": interest,
+            "interest_percent_of_principal": round(interest / principal * 100, 2),
+            "summary": f"Monthly EMI: ₹{emi} | Total Payment: ₹{total} | Interest: ₹{interest}"
+        }, f"EMI: ₹{emi}/month")
+    except (ValueError, TypeError, ZeroDivisionError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Interest Calculator ─────────────────────────────────────────────────────
+def _handle_interest_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        principal = float(payload.get("principal", payload.get("amount", 10000)))
+        rate = float(payload.get("rate", payload.get("interest_rate", 8)))
+        time_years = float(payload.get("time", payload.get("years", payload.get("time_years", 1))))
+        mode = str(payload.get("type", payload.get("mode", "compound"))).lower()
+        n = int(payload.get("compounding_times", payload.get("n", 12)))  # per year
+        if mode in ("simple", "si"):
+            interest = round(principal * rate * time_years / 100, 2)
+            final = round(principal + interest, 2)
+            return _make_json({
+                "type": "Simple Interest",
+                "principal": principal, "rate": rate, "time_years": time_years,
+                "simple_interest": interest, "final_amount": final,
+                "summary": f"Simple Interest: ₹{interest} | Final Amount: ₹{final}"
+            }, f"SI: ₹{interest} | Total: ₹{final}")
+        else:
+            final = round(principal * (1 + rate / (n * 100)) ** (n * time_years), 2)
+            interest = round(final - principal, 2)
+            return _make_json({
+                "type": "Compound Interest",
+                "principal": principal, "rate": rate, "time_years": time_years,
+                "compounding_frequency": n,
+                "compound_interest": interest, "final_amount": final,
+                "summary": f"Compound Interest: ₹{interest} | Final Amount: ₹{final}"
+            }, f"CI: ₹{interest} | Total: ₹{final}")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Reading Time Estimator ─────────────────────────────────────────────────
+def _handle_reading_time_estimator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", "")).strip()
+    word_count_input = int(payload.get("word_count", 0))
+    wpm = int(payload.get("wpm", payload.get("reading_speed", 200)))
+    if text:
+        words = len(text.split())
+    elif word_count_input:
+        words = word_count_input
+    else:
+        return _make_json({"error": "Please enter text or provide word count."}, "No input")
+    if wpm <= 0:
+        wpm = 200
+    minutes = words / wpm
+    seconds = round(minutes * 60)
+    m = int(minutes)
+    s = seconds % 60
+    chars = len(text) if text else 0
+    sentences = text.count('.') + text.count('!') + text.count('?') if text else 0
+    return _make_json({
+        "word_count": words,
+        "character_count": chars,
+        "sentence_count": sentences,
+        "reading_speed_wpm": wpm,
+        "reading_time_minutes": round(minutes, 2),
+        "reading_time_seconds": seconds,
+        "reading_time_display": f"{m} min {s} sec" if m > 0 else f"{s} sec",
+        "slow_reader_time": f"{round(words/150, 1)} min (150 wpm)",
+        "average_reader_time": f"{round(words/200, 1)} min (200 wpm)",
+        "fast_reader_time": f"{round(words/300, 1)} min (300 wpm)",
+        "summary": f"~{m} min {s} sec to read {words} words at {wpm} wpm"
+    }, f"~{m} min {s} sec" if m > 0 else f"~{s} sec")
+
+
+# ─── Attendance Calculator ──────────────────────────────────────────────────
+def _handle_attendance_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        attended = int(payload.get("attended", payload.get("classes_attended", payload.get("present", 0))))
+        total = int(payload.get("total", payload.get("total_classes", payload.get("classes", 1))))
+        required_pct = float(payload.get("required_percent", payload.get("required", 75)))
+        if total <= 0:
+            return _make_json({"error": "Total classes must be greater than 0"}, "Error")
+        current_pct = round(attended / total * 100, 2)
+        status = "✅ Safe" if current_pct >= required_pct else "⚠️ Short"
+        if current_pct >= required_pct:
+            # How many classes can be skipped
+            skip = int((attended - required_pct / 100 * total) / (required_pct / 100))
+            advice = f"You can skip up to {max(0, skip)} more classes."
+        else:
+            # How many classes needed to reach required %
+            need = 0
+            while (attended + need) / (total + need) * 100 < required_pct:
+                need += 1
+            advice = f"Attend next {need} classes without missing any to reach {required_pct}%."
+        return _make_json({
+            "classes_attended": attended, "total_classes": total,
+            "current_percentage": current_pct,
+            "required_percentage": required_pct,
+            "status": status, "advice": advice,
+            "summary": f"{current_pct}% attendance — {status}. {advice}"
+        }, f"{current_pct}% — {status}")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Exam Score / Marks Calculator ─────────────────────────────────────────
+def _handle_exam_score_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        obtained = float(payload.get("obtained", payload.get("marks_obtained", payload.get("score", 0))))
+        total_marks = float(payload.get("total", payload.get("total_marks", payload.get("max_marks", 100))))
+        if total_marks <= 0:
+            return _make_json({"error": "Total marks must be greater than 0"}, "Error")
+        percentage = round(obtained / total_marks * 100, 2)
+        if percentage >= 90:
+            grade, gpa = "A+", 10.0
+        elif percentage >= 80:
+            grade, gpa = "A", 9.0
+        elif percentage >= 70:
+            grade, gpa = "B+", 8.0
+        elif percentage >= 60:
+            grade, gpa = "B", 7.0
+        elif percentage >= 50:
+            grade, gpa = "C", 6.0
+        elif percentage >= 40:
+            grade, gpa = "D", 5.0
+        else:
+            grade, gpa = "F (Fail)", 0.0
+        return _make_json({
+            "marks_obtained": obtained, "total_marks": total_marks,
+            "percentage": percentage, "grade": grade, "gpa_equivalent": gpa,
+            "pass_fail": "Pass" if percentage >= 33 else "Fail",
+            "marks_to_pass": max(0, round(total_marks * 0.33 - obtained, 1)),
+            "marks_for_distinction": max(0, round(total_marks * 0.75 - obtained, 1)),
+            "summary": f"{percentage}% | Grade: {grade} | {gpa}/10 GPA"
+        }, f"{percentage}% — {grade}")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Anagram Checker ────────────────────────────────────────────────────────
+def _handle_anagram_checker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    word1 = str(payload.get("word1", payload.get("text1", ""))).strip().lower()
+    word2 = str(payload.get("word2", payload.get("text2", ""))).strip().lower()
+    if not word1 or not word2:
+        return _make_json({"error": "Please enter two words/phrases to check."}, "No input")
+    clean1 = "".join(c for c in word1 if c.isalnum())
+    clean2 = "".join(c for c in word2 if c.isalnum())
+    is_anagram = sorted(clean1) == sorted(clean2)
+    from collections import Counter
+    freq1 = dict(Counter(clean1))
+    freq2 = dict(Counter(clean2))
+    missing_in_2 = {k: v - freq2.get(k, 0) for k, v in freq1.items() if freq2.get(k, 0) < v}
+    missing_in_1 = {k: v - freq1.get(k, 0) for k, v in freq2.items() if freq1.get(k, 0) < v}
+    return _make_json({
+        "word1": word1, "word2": word2,
+        "is_anagram": is_anagram,
+        "result": "✅ Anagram!" if is_anagram else "❌ Not an anagram",
+        "char_count_1": len(clean1), "char_count_2": len(clean2),
+        "missing_chars": {"in_word2": missing_in_2, "in_word1": missing_in_1} if not is_anagram else {},
+        "summary": f"'{word1}' and '{word2}' {'ARE' if is_anagram else 'are NOT'} anagrams"
+    }, "✅ Anagram!" if is_anagram else "❌ Not an anagram")
+
+
+# ─── Text Line Sorter ────────────────────────────────────────────────────────
+def _handle_text_line_sorter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        return _make_json({"error": "Please enter text to sort."}, "No input")
+    order = str(payload.get("order", "asc")).lower()
+    case_sensitive = bool(payload.get("case_sensitive", False))
+    lines = text.split('\n')
+    key_fn = (lambda x: x) if case_sensitive else (lambda x: x.lower())
+    if order in ("desc", "descending", "z-a"):
+        sorted_lines = sorted(lines, key=key_fn, reverse=True)
+    elif order in ("length", "len"):
+        sorted_lines = sorted(lines, key=lambda x: len(x))
+    elif order in ("length_desc", "len_desc"):
+        sorted_lines = sorted(lines, key=lambda x: len(x), reverse=True)
+    elif order in ("random", "shuffle"):
+        import random as _r
+        sorted_lines = lines[:]
+        _r.shuffle(sorted_lines)
+    else:
+        sorted_lines = sorted(lines, key=key_fn)
+    result = '\n'.join(sorted_lines)
+    return _make_json({
+        "original_lines": len(lines), "sort_order": order,
+        "sorted_text": result, "lines": sorted_lines,
+        "summary": f"Sorted {len(lines)} lines ({order})"
+    }, result[:200] + "..." if len(result) > 200 else result)
+
+
+# ─── List Deduplicator ────────────────────────────────────────────────────────
+def _handle_list_deduplicator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        return _make_json({"error": "Please enter a list (one item per line)."}, "No input")
+    case_sensitive = bool(payload.get("case_sensitive", True))
+    sep = str(payload.get("separator", "\n"))
+    if sep == "\\n":
+        sep = "\n"
+    items = [i.strip() for i in text.split(sep) if i.strip()]
+    seen = set()
+    unique = []
+    duplicates = []
+    for item in items:
+        key = item if case_sensitive else item.lower()
+        if key not in seen:
+            seen.add(key)
+            unique.append(item)
+        else:
+            duplicates.append(item)
+    result = sep.join(unique)
+    return _make_json({
+        "original_count": len(items),
+        "unique_count": len(unique),
+        "duplicate_count": len(duplicates),
+        "removed_duplicates": duplicates,
+        "unique_list": unique,
+        "result": result,
+        "summary": f"Removed {len(duplicates)} duplicates. {len(unique)} unique items remain."
+    }, result[:200] + "..." if len(result) > 200 else result)
+
+
+# ─── Character Frequency ─────────────────────────────────────────────────────
+def _handle_character_frequency(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    from collections import Counter
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        return _make_json({"error": "Please enter text."}, "No input")
+    ignore_spaces = bool(payload.get("ignore_spaces", True))
+    case_sensitive = bool(payload.get("case_sensitive", False))
+    target = text if case_sensitive else text.lower()
+    if ignore_spaces:
+        target = target.replace(" ", "")
+    freq = dict(Counter(target))
+    sorted_freq = dict(sorted(freq.items(), key=lambda x: -x[1]))
+    top5 = list(sorted_freq.items())[:5]
+    word_count = len(text.split())
+    return _make_json({
+        "text_length": len(text),
+        "analyzed_chars": len(target),
+        "word_count": word_count,
+        "unique_characters": len(freq),
+        "character_frequency": sorted_freq,
+        "top_5_characters": [{"char": k, "count": v, "percent": round(v/len(target)*100,2)} for k,v in top5],
+        "summary": f"Top char: '{top5[0][0]}' ({top5[0][1]}x) | {len(freq)} unique chars in {len(text)} chars"
+    }, f"Top: '{top5[0][0]}'×{top5[0][1]}" if top5 else "No data")
+
+
+# ─── Calorie Calculator (TDEE) ──────────────────────────────────────────────
+def _handle_calorie_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        weight_kg = float(payload.get("weight", payload.get("weight_kg", 70)))
+        height_cm = float(payload.get("height", payload.get("height_cm", 170)))
+        age = int(payload.get("age", 25))
+        gender = str(payload.get("gender", payload.get("sex", "male"))).lower()
+        activity = str(payload.get("activity", payload.get("activity_level", "moderate"))).lower()
+        # Mifflin-St Jeor BMR
+        if gender in ("male", "m", "man"):
+            bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
+        else:
+            bmr = 10 * weight_kg + 6.25 * height_cm - 5 * age - 161
+        activity_map = {
+            "sedentary": 1.2, "sedentary": 1.2,
+            "light": 1.375, "lightly active": 1.375,
+            "moderate": 1.55, "moderately active": 1.55,
+            "active": 1.725, "very active": 1.725,
+            "extra": 1.9, "extra active": 1.9, "athlete": 1.9,
+        }
+        multiplier = activity_map.get(activity, 1.55)
+        tdee = round(bmr * multiplier)
+        bmi = round(weight_kg / ((height_cm / 100) ** 2), 1)
+        if bmi < 18.5: bmi_cat = "Underweight"
+        elif bmi < 25: bmi_cat = "Normal weight"
+        elif bmi < 30: bmi_cat = "Overweight"
+        else: bmi_cat = "Obese"
+        return _make_json({
+            "bmr": round(bmr),
+            "tdee": tdee,
+            "bmi": bmi,
+            "bmi_category": bmi_cat,
+            "calorie_goals": {
+                "extreme_loss": tdee - 1000, "weight_loss": tdee - 500,
+                "maintenance": tdee, "weight_gain": tdee + 500, "muscle_gain": tdee + 1000
+            },
+            "summary": f"TDEE: {tdee} kcal/day | BMI: {bmi} ({bmi_cat})"
+        }, f"TDEE: {tdee} kcal/day")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Assignment Deadline Tracker ─────────────────────────────────────────────
+def _handle_assignment_deadline_tracker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    from datetime import datetime, timedelta
+    text = str(payload.get("text", payload.get("assignments", ""))).strip()
+    deadline_str = str(payload.get("deadline", payload.get("due_date", ""))).strip()
+    subject = str(payload.get("subject", payload.get("name", "Assignment"))).strip()
+    today = datetime.now().date()
+    results = []
+    if deadline_str:
+        for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%m/%d/%Y"):
+            try:
+                due = datetime.strptime(deadline_str, fmt).date()
+                days_left = (due - today).days
+                status = "⚠️ Overdue" if days_left < 0 else ("🔥 Due today!" if days_left == 0 else ("🚨 Due tomorrow!" if days_left == 1 else (f"✅ {days_left} days left" if days_left <= 7 else f"📅 {days_left} days left")))
+                results.append({"subject": subject, "deadline": deadline_str, "days_left": days_left, "status": status})
+                break
+            except ValueError:
+                continue
+    if text:
+        lines = [l.strip() for l in text.split('\n') if l.strip()]
+        for line in lines:
+            results.append({"item": line, "status": "📝 Pending"})
+    if not results:
+        return _make_json({"error": "Please enter a deadline date (YYYY-MM-DD) or assignment list."}, "No input")
+    return _make_json({
+        "today": str(today),
+        "assignments": results,
+        "count": len(results),
+        "summary": results[0].get("status", "Tracked") if results else "No assignments"
+    }, results[0].get("status", "Tracked") if results else "Tracked")
+
+
+# ─── Number Palindrome Checker ───────────────────────────────────────────────
+def _handle_number_palindrome_checker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", payload.get("number", payload.get("input", "")))).strip()
+    if not text:
+        return _make_json({"error": "Please enter a number or text to check."}, "No input")
+    clean = text.replace(" ", "").lower()
+    reversed_text = clean[::-1]
+    is_palindrome = clean == reversed_text
+    results = []
+    for word in text.split():
+        w_clean = word.lower().strip(".,!?")
+        results.append({"word": word, "is_palindrome": w_clean == w_clean[::-1]})
+    return _make_json({
+        "input": text,
+        "is_palindrome": is_palindrome,
+        "reversed": reversed_text,
+        "result": "✅ Palindrome!" if is_palindrome else "❌ Not a palindrome",
+        "word_analysis": results,
+        "summary": f"'{text}' {'IS' if is_palindrome else 'is NOT'} a palindrome"
+    }, "✅ Palindrome!" if is_palindrome else "❌ Not a palindrome")
+
+
+# ─── Resume Word Count ───────────────────────────────────────────────────────
+def _handle_resume_word_count(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    from collections import Counter
+    text = str(payload.get("text", "")).strip()
+    if not text:
+        return _make_json({"error": "Please paste your resume text."}, "No input")
+    words = text.split()
+    word_count = len(words)
+    char_count = len(text)
+    char_no_space = len(text.replace(" ", ""))
+    sentences = text.count('.') + text.count('!') + text.count('?')
+    paragraphs = len([p for p in text.split('\n\n') if p.strip()])
+    # Estimate reading time
+    reading_min = round(word_count / 200, 1)
+    # Common resume power words
+    power_words = ["achieved", "increased", "decreased", "improved", "managed", "led", "developed", "created",
+                   "designed", "implemented", "optimized", "built", "launched", "delivered", "reduced", "generated"]
+    found_power = [w for w in power_words if w in text.lower()]
+    if word_count < 300:
+        advice = "Too short — aim for 400–700 words for a strong resume."
+    elif word_count <= 700:
+        advice = "Good length! Your resume is within the ideal 400–700 word range."
+    elif word_count <= 1000:
+        advice = "Slightly long — consider trimming to keep it concise."
+    else:
+        advice = "Too long — resume should be under 700 words (1 page). Trim aggressively."
+    return _make_json({
+        "word_count": word_count, "character_count": char_count,
+        "characters_without_spaces": char_no_space,
+        "sentence_count": max(1, sentences),
+        "paragraph_count": paragraphs,
+        "estimated_reading_time": f"{reading_min} min",
+        "page_estimate": round(word_count / 500, 1),
+        "power_words_found": found_power,
+        "power_words_missing": [w for w in power_words if w not in text.lower()][:5],
+        "advice": advice,
+        "summary": f"{word_count} words | {advice}"
+    }, f"{word_count} words — {advice[:50]}")
+
+
+# ─── Study Hours Calculator ──────────────────────────────────────────────────
+def _handle_study_hours_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        subjects = int(payload.get("subjects", payload.get("subject_count", 5)))
+        days_left = int(payload.get("days_left", payload.get("days", payload.get("exam_days", 7))))
+        hours_available = float(payload.get("hours_per_day", payload.get("available_hours", 8)))
+        difficulty = str(payload.get("difficulty", "medium")).lower()
+        if days_left <= 0:
+            return _make_json({"error": "Days left must be greater than 0"}, "Error")
+        diff_multiplier = {"easy": 0.7, "medium": 1.0, "hard": 1.3, "very hard": 1.5}.get(difficulty, 1.0)
+        total_hours = days_left * hours_available
+        per_subject = round(total_hours / subjects, 1)
+        breaks_per_day = max(1, int(hours_available / 2))
+        pomodoros_per_day = int(hours_available * 60 / 25)
+        return _make_json({
+            "subjects": subjects, "days_left": days_left,
+            "hours_available_per_day": hours_available,
+            "total_study_hours": total_hours,
+            "hours_per_subject": per_subject,
+            "recommended_breaks_per_day": breaks_per_day,
+            "pomodoro_sessions_per_day": pomodoros_per_day,
+            "daily_schedule": {
+                "morning": f"{round(hours_available * 0.4, 1)} hours (most difficult topics)",
+                "afternoon": f"{round(hours_available * 0.35, 1)} hours (revision)",
+                "evening": f"{round(hours_available * 0.25, 1)} hours (practice & notes)"
+            },
+            "difficulty": difficulty,
+            "summary": f"{per_subject} hrs/subject over {days_left} days | {total_hours} total study hours"
+        }, f"{per_subject} hrs per subject")
+    except (ValueError, TypeError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
+# ─── Unit Converter (Meta/General) ──────────────────────────────────────────
+def _handle_unit_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        value = float(payload.get("value", 1))
+        from_unit = str(payload.get("from_unit", payload.get("from", ""))).lower().strip()
+        to_unit = str(payload.get("to_unit", payload.get("to", ""))).lower().strip()
+        # All conversions normalized to SI base units
+        conversions: dict[str, float] = {
+            # Length (base: meter)
+            "meter": 1, "m": 1, "meters": 1, "metre": 1, "metres": 1,
+            "kilometer": 1000, "km": 1000, "kilometers": 1000,
+            "centimeter": 0.01, "cm": 0.01, "centimeters": 0.01,
+            "millimeter": 0.001, "mm": 0.001,
+            "inch": 0.0254, "inches": 0.0254, "in": 0.0254,
+            "foot": 0.3048, "feet": 0.3048, "ft": 0.3048,
+            "yard": 0.9144, "yards": 0.9144, "yd": 0.9144,
+            "mile": 1609.344, "miles": 1609.344, "mi": 1609.344,
+            # Weight (base: kg)
+            "kilogram": 1, "kg": 1, "kilograms": 1,
+            "gram": 0.001, "g": 0.001, "grams": 0.001,
+            "milligram": 0.000001, "mg": 0.000001,
+            "pound": 0.453592, "lb": 0.453592, "pounds": 0.453592, "lbs": 0.453592,
+            "ounce": 0.0283495, "oz": 0.0283495, "ounces": 0.0283495,
+            "tonne": 1000, "ton": 1000, "metric ton": 1000,
+            # Volume (base: liter)
+            "liter": 1, "l": 1, "litre": 1, "liters": 1,
+            "milliliter": 0.001, "ml": 0.001, "milliliters": 0.001,
+            "gallon": 3.78541, "gallons": 3.78541, "gal": 3.78541,
+            "cup": 0.236588, "cups": 0.236588,
+            "pint": 0.473176, "pints": 0.473176, "pt": 0.473176,
+            "quart": 0.946353, "quarts": 0.946353, "qt": 0.946353,
+            "tablespoon": 0.0147868, "tbsp": 0.0147868,
+            "teaspoon": 0.00492892, "tsp": 0.00492892,
+            # Data (base: byte)
+            "byte": 1, "bytes": 1, "b": 1,
+            "kilobyte": 1024, "kb": 1024, "kilobytes": 1024,
+            "megabyte": 1048576, "mb": 1048576, "megabytes": 1048576,
+            "gigabyte": 1073741824, "gb": 1073741824, "gigabytes": 1073741824,
+            "terabyte": 1099511627776, "tb": 1099511627776, "terabytes": 1099511627776,
+            # Speed (base: m/s)
+            "m/s": 1, "mps": 1, "meters per second": 1,
+            "km/h": 1/3.6, "kmh": 1/3.6, "kph": 1/3.6, "kilometers per hour": 1/3.6,
+            "mph": 0.44704, "miles per hour": 0.44704,
+            "knot": 0.514444, "knots": 0.514444,
+            # Area (base: m²)
+            "m2": 1, "sqm": 1, "square meter": 1, "square meters": 1,
+            "km2": 1e6, "square kilometer": 1e6,
+            "cm2": 0.0001, "square centimeter": 0.0001,
+            "ft2": 0.092903, "sqft": 0.092903, "square foot": 0.092903, "square feet": 0.092903,
+            "acre": 4046.86, "acres": 4046.86,
+            "hectare": 10000, "hectares": 10000, "ha": 10000,
+        }
+        if from_unit not in conversions or to_unit not in conversions:
+            return _make_json({"error": f"Unit not found. Known units include: km, m, cm, mm, inch, foot, kg, g, lb, liter, ml, gallon, byte, kb, mb, gb, m/s, km/h, mph, etc."}, "Error")
+        base_value = value * conversions[from_unit]
+        result = base_value / conversions[to_unit]
+        return _make_json({
+            "input": value, "from": from_unit, "to": to_unit,
+            "result": round(result, 10) if abs(result) < 0.01 else round(result, 6),
+            "summary": f"{value} {from_unit} = {round(result, 6)} {to_unit}"
+        }, f"{round(result, 6)} {to_unit}")
+    except (ValueError, TypeError, ZeroDivisionError) as e:
+        return _make_json({"error": str(e)}, "Error")
+
+
 # ─── Random Name Picker ────────────────────────────────────────────────────
 def _handle_random_name_picker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     text = str(payload.get("text", payload.get("names", ""))).strip()
@@ -1617,6 +2283,61 @@ ULTRA_HANDLERS: dict[str, Any] = {
     "random-name-picker": _handle_random_name_picker,
     "random-winner-picker": _handle_random_name_picker,
     "name-randomizer": _handle_random_name_picker,
+    # New batch
+    "time-converter": _handle_time_converter,
+    "time-unit-converter": _handle_time_converter,
+    "convert-time": _handle_time_converter,
+    "coin-flipper": _handle_coin_flipper,
+    "flip-coin": _handle_coin_flipper,
+    "coin-toss": _handle_coin_flipper,
+    "morse-code-converter": _handle_morse_code_converter,
+    "morse-code": _handle_morse_code_converter,
+    "text-to-morse": _handle_morse_code_converter,
+    "morse-decoder": _handle_morse_code_converter,
+    "fraction-calculator": _handle_fraction_calculator,
+    "fraction-math": _handle_fraction_calculator,
+    "percentage-change-calculator": _handle_percentage_change_calculator,
+    "percent-change": _handle_percentage_change_calculator,
+    "percentage-change": _handle_percentage_change_calculator,
+    "emi-calculator": _handle_emi_calculator,
+    "loan-emi-calculator": _handle_emi_calculator,
+    "monthly-emi": _handle_emi_calculator,
+    "interest-calculator": _handle_interest_calculator,
+    "simple-interest-calculator": _handle_interest_calculator,
+    "compound-interest-calculator": _handle_interest_calculator,
+    "reading-time-estimator": _handle_reading_time_estimator,
+    "reading-time": _handle_reading_time_estimator,
+    "estimate-reading-time": _handle_reading_time_estimator,
+    "attendance-calculator": _handle_attendance_calculator,
+    "attendance-tracker": _handle_attendance_calculator,
+    "exam-score-calculator": _handle_exam_score_calculator,
+    "marks-calculator": _handle_exam_score_calculator,
+    "marks-to-percentage": _handle_exam_score_calculator,
+    "anagram-checker": _handle_anagram_checker,
+    "anagram-detector": _handle_anagram_checker,
+    "text-line-sorter": _handle_text_line_sorter,
+    "line-sorter": _handle_text_line_sorter,
+    "sort-lines": _handle_text_line_sorter,
+    "list-deduplicator": _handle_list_deduplicator,
+    "remove-duplicates": _handle_list_deduplicator,
+    "deduplicate-list": _handle_list_deduplicator,
+    "character-frequency": _handle_character_frequency,
+    "char-frequency": _handle_character_frequency,
+    "letter-frequency": _handle_character_frequency,
+    "calorie-calculator": _handle_calorie_calculator,
+    "tdee-calculator": _handle_calorie_calculator,
+    "daily-calorie-calculator": _handle_calorie_calculator,
+    "assignment-deadline-tracker": _handle_assignment_deadline_tracker,
+    "deadline-tracker": _handle_assignment_deadline_tracker,
+    "number-palindrome-checker": _handle_number_palindrome_checker,
+    "palindrome-checker": _handle_number_palindrome_checker,
+    "is-palindrome": _handle_number_palindrome_checker,
+    "resume-word-count": _handle_resume_word_count,
+    "resume-analyzer": _handle_resume_word_count,
+    "study-hours-calculator": _handle_study_hours_calculator,
+    "study-planner": _handle_study_hours_calculator,
+    "unit-converter": _handle_unit_converter,
+    "universal-converter": _handle_unit_converter,
 }
 
 
