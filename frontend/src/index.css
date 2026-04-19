@@ -27,6 +27,19 @@
   }
 }
 
+/* ── Instant Responsiveness: Kill all transitions during window resize ────────
+   This is the FAANG technique: Google, Apple, Netflix all do this.
+   Without it, elements "slide" to their new positions, making the site
+   feel laggy. With it, the layout snaps instantly on ANY screen size change.
+   The JS in main.tsx adds/removes .resizing class with a 150ms debounce.
+   ─────────────────────────────────────────────────────────────────────── */
+.resizing *,
+.resizing *::before,
+.resizing *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
 /* ── FAANG-Level Performance Baseline ──────────────────────────────────────
    Techniques used by Google, Meta, Apple, Netflix for instant rendering:
    - contain: layout/style reduces cascade recalculation scope

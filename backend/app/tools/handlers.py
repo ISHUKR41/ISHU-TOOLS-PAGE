@@ -6504,3 +6504,13 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load ultra_tools_handlers: {e}")
 
 print(f"[handlers] ULTRA GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge mega new handlers (science, geography, cooking, productivity, more video, student tools)
+try:
+    from .mega_new_handlers import MEGA_NEW_HANDLERS
+    HANDLERS.update(MEGA_NEW_HANDLERS)
+    print(f"[handlers] Loaded {len(MEGA_NEW_HANDLERS)} mega new handlers (science/geo/cooking/productivity/video)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load mega_new_handlers: {e}")
+
+print(f"[handlers] MEGA GRAND TOTAL registered handlers: {len(HANDLERS)}")

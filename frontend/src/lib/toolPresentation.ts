@@ -243,6 +243,24 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(52, 211, 153, 0.22)',
     label: 'Productivity',
   },
+  'science-tools': {
+    accent: '#38bdf8',
+    surface: 'rgba(6, 18, 30, 0.88)',
+    glow: 'rgba(56, 189, 248, 0.24)',
+    label: 'Science',
+  },
+  'geography-tools': {
+    accent: '#4ade80',
+    surface: 'rgba(7, 24, 14, 0.88)',
+    glow: 'rgba(74, 222, 128, 0.22)',
+    label: 'Geography',
+  },
+  'cooking-tools': {
+    accent: '#fb923c',
+    surface: 'rgba(34, 16, 6, 0.86)',
+    glow: 'rgba(251, 146, 60, 0.24)',
+    label: 'Cooking',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([
