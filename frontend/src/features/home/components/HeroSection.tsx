@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react'
-import { useReducedMotion } from 'framer-motion'
 import {
   ArrowRight,
   Files,
@@ -16,6 +15,12 @@ import {
   Wand2,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+
+// Synchronous check at module level — no useEffect, no re-render, zero CLS.
+// This reads the media query ONCE when the module is imported (before first render).
+const PREFERS_REDUCED_MOTION: boolean =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 type SocialLink = {
   label: string
@@ -66,14 +71,13 @@ const TRUST_BADGES = [
 ]
 
 function TickerRow() {
-  const reduceMotion = useReducedMotion()
   const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
 
   return (
     <div className='ticker-wrap'>
       <div
         className='ticker-track'
-        style={reduceMotion ? { animation: 'none' } : undefined}
+        style={PREFERS_REDUCED_MOTION ? { animation: 'none' } : undefined}
       >
         {items.map((item, i) => (
           <span key={i} className='ticker-item'>

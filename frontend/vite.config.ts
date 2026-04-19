@@ -24,6 +24,9 @@ export default defineConfig({
     minify: 'esbuild',
     reportCompressedSize: false,
     chunkSizeWarningLimit: 1000,
+    // Ensure CSS is extracted as a separate file linked in HTML — loads in parallel
+    // with JS so styles are available before React hydrates.
+    cssCodeSplit: false,
     rollupOptions: {
       output: {
         manualChunks(id: string) {
@@ -46,10 +49,9 @@ export default defineConfig({
         },
         compact: true,
       },
-      treeshake: {
-        moduleSideEffects: false,
-        preset: 'recommended',
-      },
+      // ── NOTE: treeshake removed — `moduleSideEffects: false` was incorrectly
+      // treating CSS @import side-effects as dead code in some Rollup versions.
+      // Rollup's default treeshake is safe and still eliminates dead JS code.
     },
   },
   optimizeDeps: {

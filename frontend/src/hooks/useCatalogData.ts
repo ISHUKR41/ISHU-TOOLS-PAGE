@@ -45,30 +45,46 @@ function writeCatalogCache(categories: ToolCategory[], tools: ToolDefinition[]) 
   }
 }
 
+// ── CRITICAL PERFORMANCE FIX ─────────────────────────────────────────────────
+// Read cache SYNCHRONOUSLY in useState initializer so the VERY FIRST render
+// already has data (loading=false, categories=[...], tools=[...]).
+// Without this, even with a warm cache the component always renders once with
+// loading=true → skeletons flash → re-render with data → CLS.
+// ─────────────────────────────────────────────────────────────────────────────
+function getInitialCache() {
+  try {
+    return readCatalogCache()
+  } catch {
+    return null
+  }
+}
+
 export function useCatalogData() {
-  const [categories, setCategories] = useState<ToolCategory[]>([])
-  const [tools, setTools] = useState<ToolDefinition[]>([])
-  const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState<ToolCategory[]>(() => {
+    const cached = getInitialCache()
+    return cached?.categories ?? []
+  })
+  const [tools, setTools] = useState<ToolDefinition[]>(() => {
+    const cached = getInitialCache()
+    return cached?.tools ?? []
+  })
+  const [loading, setLoading] = useState<boolean>(() => {
+    // Start as NOT loading if we already have cached data
+    const cached = getInitialCache()
+    return !cached
+  })
   const [error, setError] = useState<string | null>(null)
   const [apiReady, setApiReady] = useState(false)
 
   useEffect(() => {
     let mounted = true
-    const cached = readCatalogCache()
-
-    if (cached) {
-      setCategories(cached.categories)
-      setTools(cached.tools)
-      setLoading(false)
-    }
 
     async function loadCatalog() {
       try {
-        if (!cached) setLoading(true)
         const [categoryRecords, toolRecords] = await Promise.all([fetchCategories(), fetchTools()])
         if (!mounted) return
 
-        // Deduplicate categories by id (registry may have duplicate declarations)
+        // Deduplicate categories by id
         const seenCats = new Set<string>()
         const uniqueCategories = categoryRecords.filter((cat) => {
           if (seenCats.has(cat.id)) return false
@@ -96,7 +112,8 @@ export function useCatalogData() {
         }
       } catch (err) {
         if (!mounted) return
-        if (!cached) {
+        // Only show error if we have no data at all
+        if (categories.length === 0) {
           setError(err instanceof Error ? err.message : 'Unable to load tools')
         }
       } finally {
@@ -119,6 +136,7 @@ export function useCatalogData() {
     return () => {
       mounted = false
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {
@@ -129,4 +147,3 @@ export function useCatalogData() {
     apiReady,
   }
 }
-

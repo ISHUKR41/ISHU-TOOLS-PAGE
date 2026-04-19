@@ -118,8 +118,13 @@
         .site-nav-inner{padding:0.55rem 0.75rem}
       }
 
+      /* ── Transition + animation suppressor during JS hydration (mirrors index.css) ── */
+      .js-loading *,.js-loading *::before,.js-loading *::after{transition:none!important;animation-play-state:paused!important}
+      .resizing *,.resizing *::before,.resizing *::after{transition:none!important;animation:none!important}
+
       /* ══ HOME LAYOUT ═══════════════════════════════════════════════════════ */
-      .home-wrap{display:flex;flex-direction:column;gap:2rem}
+      /* EXACT match: index.css .home-wrap — must be grid not flex */
+      .home-wrap{display:grid;gap:1.45rem}
 
       /* ══ HERO V2 — full internal coverage ═════════════════════════════════ */
       .hero-v2{
@@ -139,12 +144,15 @@
         display:flex;align-items:center;justify-content:space-between;
         flex-wrap:wrap;gap:0.7rem;min-height:2.1rem;
       }
+      /* hero-status-wrap — min-width MUST be on wrapper, NOT on badge itself */
+      .hero-status-wrap{min-width:220px}
       .status-badge{
         display:inline-flex;align-items:center;gap:0.55rem;
         padding:0.42rem 0.85rem;border-radius:999px;
         border:1px solid rgba(164,194,255,0.14);background:rgba(255,255,255,0.03);
-        font-size:0.78rem;color:var(--muted-strong);font-weight:500;min-width:220px;
+        font-size:0.78rem;color:var(--muted-strong);font-weight:500;
       }
+      .status-badge-text{white-space:nowrap}
       .status-badge.online{border-color:rgba(61,221,142,0.3);color:#6cf0b0}
       .status-dot-pulse{width:7px;height:7px;border-radius:50%;background:#3fe08e;position:relative;flex-shrink:0}
       .hero-v2-social{display:flex;gap:0.5rem;flex-wrap:wrap}

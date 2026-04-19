@@ -170,7 +170,7 @@ All new tools have `toolFields.ts` frontend form fields and `registry.py` defini
   - Improved bento section spacing with border-top separator
   - Better mobile breakpoints at 640px for hero, bento, steps grid
 
-## CLS/FOUC Fixes (v4 — Definitive)
+## CLS/FOUC Fixes (v5 — Final Root Cause Elimination)
 - **Comprehensive critical CSS** in `frontend/index.html` now covers ALL above-fold elements:
   - Previously only covered outer containers (`.hero-v2`, `.site-nav`, `.page-wrap`)
   - Now covers every internal hero element: `.hero-v2-topbar`, `.status-badge`, `.social-chip`, `.hero-v2-heading`, `.hero-kicker-pill`, `.hero-v2-title`, `.hero-v2-subtitle`, `.hero-v2-actions`, `.btn-primary-hero`, `.btn-secondary-hero`, `.hero-v2-stats`, `.hero-stat-card`, `.ticker-wrap`, `.ticker-track`, `.hero-v2-quick`, `.quick-chip`, `.trust-row`, `.trust-badge`
