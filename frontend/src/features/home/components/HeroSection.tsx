@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
 import {
   ArrowRight,
-  Sparkles,
   Files,
   ShieldCheck,
   Images,
@@ -213,7 +212,6 @@ export default function HeroSection({
           transition={{ delay: 0.15, duration: 0.6 }}
         >
           <div className='hero-kicker-pill'>
-            <Sparkles size={13} />
             <span>Indian Student Hub University Tools</span>
           </div>
 
