@@ -1,7 +1,7 @@
 # ISHU TOOLS
 
 ## Overview
-ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **766 handlers** across **45 categories** and **770+ unique tools** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools** (YouTube, TikTok, Twitter/X, Facebook, Vimeo, Dailymotion, Playlist downloader, Pinterest, Reddit, Twitch, LinkedIn, Bilibili, Rumble), **Productivity**, **Validator Tools**, **AI Writing Tools** (headlines, blog outlines, email subjects, social captions), **Crypto/Web3** (profit calculator, ETH gas, DCA, NFT royalties, mining), **HR/Jobs** (salary hike, notice period, job comparator, interview Q&A, resignation letter, negotiation), **Legal Tools** (NDA, freelance contract, privacy policy), **Travel Tools** (cost estimator, visa checklist, packing list), and **Finance V2** (FD, SIP, advanced EMI calculator). Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 766 handlers registered.
+ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **766 handlers** across **50 categories** and **715+ live catalog tools** including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools** (YouTube, TikTok, Twitter/X, Facebook, Vimeo, Dailymotion, Playlist downloader, Pinterest, Reddit, Twitch, LinkedIn, Bilibili, Rumble), **Productivity**, **Validator Tools**, **AI Writing Tools** (headlines, blog outlines, email subjects, social captions), **Crypto/Web3** (profit calculator, ETH gas, DCA, NFT royalties, mining), **HR/Jobs** (salary hike, notice period, job comparator, interview Q&A, resignation letter, negotiation), **Legal Tools** (NDA, freelance contract, privacy policy), **Travel Tools** (cost estimator, visa checklist, packing list), and **Finance V2** (FD, SIP, advanced EMI calculator). Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 766 handlers registered.
 
 ## Architecture
 - **Frontend**: React + Vite + TypeScript, Framer Motion animations, Lucide icons, dark theme
@@ -30,6 +30,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/src/features/tool/components/SmartResultDisplay.tsx` — intelligent result renderer for 25+ tool types (EMI, GST, DNS, IP, matrices, color palettes, Fibonacci, stats, sleep, currency, etc.)
 - `frontend/src/components/ui/InstallPWA.tsx` — PWA install banner + floating install button
 - `frontend/public/sw.js` — service worker with cache-first/network-first strategies for offline use
+- `frontend/public/manifest.json` — installable PWA manifest with shortcuts for high-value tools
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + FAQ + how-to
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
@@ -86,6 +87,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Backend GZip middleware enabled for all responses — compression for API payloads
 - Tool detail caching (memory + sessionStorage, 10-min TTL) with in-flight request deduplication in `toolsApi.ts`
 - Runtime capabilities cached 30 min — avoids repeated polls on every tool page
+- Catalog cache uses a v2 session key with 15-minute TTL and idle-time writes after the live 715-tool expansion.
 
 ## Error Handling & UX Polish
 - React `ErrorBoundary` wraps entire app (in `App.tsx`) with graceful recovery UI + reload/home buttons

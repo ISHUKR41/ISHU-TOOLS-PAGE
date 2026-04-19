@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useAnimationControls } from 'framer-motion'
+import { useEffect } from 'react'
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion'
 import {
   ArrowRight,
   Files,
@@ -107,32 +107,17 @@ const TRUST_BADGES = [
   { icon: Globe, label: 'Works Everywhere' },
 ]
 
-function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<boolean>(false)
-
-  useEffect(() => {
-    if (ref.current || target === 0) return
-    ref.current = true
-    const startTime = performance.now()
-    const step = (currentTime: number) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [target, duration])
-
-  return <>{count}</>
+function AnimatedCounter({ target }: { target: number; duration?: number }) {
+  return <>{target}</>
 }
 
 function TickerRow() {
   const controls = useAnimationControls()
+  const reduceMotion = useReducedMotion()
   const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
 
   useEffect(() => {
+    if (reduceMotion) return
     void controls.start({
       x: [0, -50 * TICKER_ITEMS.length],
       transition: {
@@ -143,7 +128,7 @@ function TickerRow() {
         },
       },
     })
-  }, [controls])
+  }, [controls, reduceMotion])
 
   return (
     <div className='ticker-wrap'>
@@ -167,7 +152,7 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 565
+  const toolLabel = toolCount > 0 ? toolCount : 770
 
   return (
     <motion.section

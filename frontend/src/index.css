@@ -925,6 +925,20 @@ h3 {
   text-decoration: none;
 }
 
+.tool-card-link h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tool-card-link p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .tool-card-link:hover {
   border-color: color-mix(in srgb, var(--tool-accent) 55%, transparent);
   border-top-color: color-mix(in srgb, var(--tool-accent) 90%, transparent);
@@ -1712,8 +1726,8 @@ h3 {
   }
 
   .site-nav-inner {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
   }
 
   .nav-links {
@@ -1798,6 +1812,9 @@ h3 {
   box-shadow: var(--shadow-lg);
   display: grid;
   gap: 1rem;
+  max-height: min(72vh, 620px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .mobile-nav-section {
@@ -6567,19 +6584,19 @@ img[loading="lazy"] {
 
 @media (max-width: 480px) {
   .tool-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 0.6rem;
   }
 
   .tool-card-link {
-    min-height: 160px;
+    min-height: 190px;
     padding: 0.75rem;
   }
 }
 
 @media (max-width: 360px) {
   .tool-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 }

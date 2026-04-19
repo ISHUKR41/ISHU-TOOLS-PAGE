@@ -12,7 +12,7 @@ import ToolCategorySection from './components/ToolCategorySection'
 const BENTO_FEATURES = [
   {
     icon: Zap, accent: '#56a6ff', span: 'span-2 large',
-    stat: '622+', title: 'Free Professional Tools',
+    stat: '715+', title: 'Free Professional Tools',
     desc: 'PDF, Image, Developer, Math, Text, AI, Color, Security, Finance, Health, Network, Video — every tool you need, completely free.',
   },
   {
@@ -86,7 +86,7 @@ export default function HomePage() {
   useEffect(() => {
     applyDocumentBranding(
       'ISHU TOOLS — Indian Student Hub University Tools',
-      '622+ free online tools for students & professionals. PDF, Image, Developer, Math, Text & AI tools — no signup, no watermark.',
+      '715+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
       '#3bd0ff',
     )
   }, [])
@@ -122,10 +122,20 @@ export default function HomePage() {
   }, [activeCategory, debouncedQuery, tools])
 
   const groupedSections = useMemo(() => {
+    const grouped = new Map<string, typeof filteredTools>()
+    for (const tool of filteredTools) {
+      const list = grouped.get(tool.category)
+      if (list) {
+        list.push(tool)
+      } else {
+        grouped.set(tool.category, [tool])
+      }
+    }
+
     return categories
       .map((category) => ({
         category,
-        tools: filteredTools.filter((tool) => tool.category === category.id),
+        tools: grouped.get(category.id) || [],
       }))
       .filter((entry) => entry.tools.length > 0)
   }, [categories, filteredTools])

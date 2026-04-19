@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react'
 import { checkHealth, fetchCategories, fetchTools } from '../api/toolsApi'
 import type { ToolCategory, ToolDefinition } from '../types/tools'
 
-const CATALOG_CACHE_KEY = 'ishu-tools:catalog:v1'
-const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000
+const CATALOG_CACHE_KEY = 'ishu-tools:catalog:v2'
+const CATALOG_CACHE_TTL_MS = 15 * 60 * 1000
 
 type CatalogCache = {
   timestamp: number
@@ -87,7 +87,13 @@ export function useCatalogData() {
         setCategories(uniqueCategories)
         setTools(uniqueTools)
         setError(null)
-        writeCatalogCache(uniqueCategories, uniqueTools)
+
+        const saveCache = () => writeCatalogCache(uniqueCategories, uniqueTools)
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(saveCache, { timeout: 1200 })
+        } else {
+          window.setTimeout(saveCache, 0)
+        }
       } catch (err) {
         if (!mounted) return
         if (!cached) {

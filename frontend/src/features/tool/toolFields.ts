@@ -3804,6 +3804,95 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
 }
 
+Object.assign(TOOL_FIELDS, {
+  'attendance-tracker': TOOL_FIELDS['attendance-calculator'],
+  'marks-calculator': TOOL_FIELDS['marks-percentage-calculator'],
+  'marks-to-percentage': TOOL_FIELDS['marks-percentage-calculator'],
+  'reading-time': [
+    { name: 'text', label: 'Text to Estimate', type: 'textarea', placeholder: 'Paste the article, essay, or notes...' },
+    { name: 'wpm', label: 'Reading Speed (words per minute)', type: 'number', defaultValue: '200', placeholder: 'e.g. 200' },
+  ],
+  'estimate-reading-time': [
+    { name: 'text', label: 'Text to Estimate', type: 'textarea', placeholder: 'Paste text, or leave blank and enter word count...' },
+    { name: 'word_count', label: 'Word Count (optional)', type: 'number', placeholder: 'e.g. 1200' },
+    { name: 'wpm', label: 'Reading Speed (WPM)', type: 'number', defaultValue: '200', placeholder: 'e.g. 200' },
+  ],
+  'tdee-calculator': TOOL_FIELDS['calorie-calculator'],
+  'daily-calorie-calculator': TOOL_FIELDS['calorie-calculator'],
+  'daily-water-intake': TOOL_FIELDS['water-intake-calculator'],
+  'gst-tax-calculator': TOOL_FIELDS['gst-calculator'],
+  'budget-calculator': TOOL_FIELDS['budget-planner'],
+  'tax-calculator': TOOL_FIELDS['income-tax-calculator'],
+  'india-tax-calculator': TOOL_FIELDS['income-tax-calculator'],
+  'home-loan-emi-calculator': [
+    { name: 'loan_amount', label: 'Loan Amount (₹)', type: 'number', defaultValue: '2500000', placeholder: 'e.g. 2500000' },
+    { name: 'interest_rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: 'e.g. 8.5' },
+    { name: 'tenure', label: 'Tenure (years)', type: 'number', defaultValue: '20', placeholder: 'e.g. 20' },
+  ],
+  'monthly-emi': [
+    { name: 'principal', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: 'e.g. 500000' },
+    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
+    { name: 'tenure_months', label: 'Tenure (months)', type: 'number', defaultValue: '60', placeholder: 'e.g. 60' },
+  ],
+  'percentage-change': [
+    { name: 'old_value', label: 'Old Value', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+    { name: 'new_value', label: 'New Value', type: 'number', defaultValue: '125', placeholder: 'e.g. 125' },
+  ],
+  'percent-change': [
+    { name: 'old_value', label: 'Old Value', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+    { name: 'new_value', label: 'New Value', type: 'number', defaultValue: '80', placeholder: 'e.g. 80' },
+  ],
+  'roman-numeral': TOOL_FIELDS['roman-numeral-converter'],
+  'random-number': TOOL_FIELDS['random-number-generator'],
+  'anagram-detector': [
+    { name: 'word1', label: 'First Word or Phrase', type: 'text', defaultValue: 'listen', placeholder: 'e.g. listen' },
+    { name: 'word2', label: 'Second Word or Phrase', type: 'text', defaultValue: 'silent', placeholder: 'e.g. silent' },
+  ],
+  'sort-lines': [
+    { name: 'text', label: 'Lines to Sort', type: 'textarea', placeholder: 'banana\\napple\\ncherry' },
+    { name: 'order', label: 'Sort Order', type: 'select', defaultValue: 'asc', options: [
+      { label: 'A-Z', value: 'asc' },
+      { label: 'Z-A', value: 'desc' },
+      { label: 'Length', value: 'length' },
+      { label: 'Length Descending', value: 'length_desc' },
+      { label: 'Shuffle', value: 'random' },
+    ] },
+  ],
+  'line-sorter': [
+    { name: 'text', label: 'Lines to Sort', type: 'textarea', placeholder: 'banana\\napple\\ncherry' },
+    { name: 'order', label: 'Sort Order', type: 'select', defaultValue: 'asc', options: [
+      { label: 'A-Z', value: 'asc' },
+      { label: 'Z-A', value: 'desc' },
+      { label: 'Length', value: 'length' },
+      { label: 'Shuffle', value: 'random' },
+    ] },
+  ],
+  'remove-duplicates': [
+    { name: 'text', label: 'List Items', type: 'textarea', placeholder: 'apple\\nbanana\\napple\\ncherry' },
+    { name: 'case_sensitive', label: 'Case Sensitive?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'deduplicate-list': [
+    { name: 'text', label: 'List Items', type: 'textarea', placeholder: 'apple\\nbanana\\napple\\ncherry' },
+    { name: 'case_sensitive', label: 'Case Sensitive?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'char-frequency': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste text to count character frequency...' },
+    { name: 'ignore_spaces', label: 'Ignore Spaces?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'letter-frequency': [
+    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste text to count letters...' },
+    { name: 'ignore_spaces', label: 'Ignore Spaces?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'pan-card-validator': TOOL_FIELDS['pan-validator'],
+  'password-analyzer': TOOL_FIELDS['password-strength-checker'],
+  'jwt-decoder-advanced': TOOL_FIELDS['jwt-decoder'],
+  'text-compare': TOOL_FIELDS['text-diff'],
+  'cidr-calculator': TOOL_FIELDS['ip-subnet-calculator'],
+  'http-headers-viewer': TOOL_FIELDS['http-headers-checker'],
+  'port-scanner': TOOL_FIELDS['port-checker'],
+  'multi-hash-generator': TOOL_FIELDS['hash-generator-advanced'],
+})
+
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }
