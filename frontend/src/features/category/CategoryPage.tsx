@@ -176,8 +176,24 @@ export default function CategoryPage() {
     return (
       <SiteShell>
         <div className='page-wrap'>
-          <div className='tool-loading-state'>
-            <p>Loading category...</p>
+          <div style={{ paddingTop: '2rem' }}>
+            <span className='skeleton' style={{ display: 'block', width: 100, height: 14, borderRadius: 4, marginBottom: '1.5rem' }} />
+            <div className='skeleton-section' style={{ background: 'rgba(13,19,35,0.5)', borderRadius: 20, padding: '2rem', marginBottom: '1.5rem' }}>
+              <span className='skeleton' style={{ display: 'block', width: 120, height: 28, borderRadius: 8, marginBottom: '0.75rem' }} />
+              <span className='skeleton' style={{ display: 'block', width: '60%', height: 14, borderRadius: 4, marginBottom: '0.5rem' }} />
+              <span className='skeleton' style={{ display: 'block', width: '40%', height: 14, borderRadius: 4 }} />
+            </div>
+            <div className='tools-grid compact'>
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className='tool-card-compact skeleton-compact-card' aria-hidden>
+                  <span className='skeleton skeleton-icon-sm' />
+                  <div style={{ flex: 1 }}>
+                    <span className='skeleton skeleton-title-sm' />
+                    <span className='skeleton skeleton-desc-sm' />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </SiteShell>
@@ -241,8 +257,9 @@ export default function CategoryPage() {
             <motion.div
               key={tool.slug}
               initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.02 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px 0px' }}
+              transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.3), ease: 'easeOut' }}
             >
               <Link
                 to={`/tools/${tool.slug}`}

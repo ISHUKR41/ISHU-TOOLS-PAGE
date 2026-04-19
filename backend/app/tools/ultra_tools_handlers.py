@@ -1517,6 +1517,59 @@ def _handle_grammar_score(files: list[Path], payload: dict[str, Any], job_dir: P
     }, f"Grammar Score: {score}/100 ({grade})")
 
 
+# ─── Bill Splitter ────────────────────────────────────────────────────────
+def _handle_bill_splitter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    try:
+        total = float(payload.get("total", payload.get("amount", 0)))
+        people = int(payload.get("people", payload.get("persons", 2)))
+        tip_pct = float(payload.get("tip", payload.get("tip_percent", 0)))
+        if total <= 0:
+            return _make_json({"error": "Enter a valid bill amount greater than 0."}, "Invalid amount")
+        if people < 1:
+            return _make_json({"error": "Number of people must be at least 1."}, "Invalid count")
+        tip_amount = round(total * tip_pct / 100, 2)
+        total_with_tip = round(total + tip_amount, 2)
+        per_person = round(total_with_tip / people, 2)
+        per_person_no_tip = round(total / people, 2)
+        return _make_json({
+            "bill_amount": total,
+            "tip_percent": tip_pct,
+            "tip_amount": tip_amount,
+            "total_with_tip": total_with_tip,
+            "number_of_people": people,
+            "per_person": per_person,
+            "per_person_without_tip": per_person_no_tip,
+            "summary": f"Each person pays ₹{per_person} (₹{per_person_no_tip} bill + ₹{round(tip_amount/people,2)} tip)"
+        }, f"Each person pays ₹{per_person}")
+    except (ValueError, ZeroDivisionError) as e:
+        return _make_json({"error": f"Invalid input: {e}"}, "Error")
+
+
+# ─── Random Name Picker ────────────────────────────────────────────────────
+def _handle_random_name_picker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    text = str(payload.get("text", payload.get("names", ""))).strip()
+    count = int(payload.get("count", payload.get("pick", 1)))
+    if not text:
+        return _make_json({"error": "Please enter a list of names (one per line or comma-separated)."}, "No names")
+    # Support both newline and comma separated
+    if '\n' in text:
+        names = [n.strip() for n in text.split('\n') if n.strip()]
+    else:
+        names = [n.strip() for n in text.split(',') if n.strip()]
+    if not names:
+        return _make_json({"error": "No valid names found. Enter names separated by new lines or commas."}, "No names")
+    count = max(1, min(count, len(names)))
+    picked = random.sample(names, count)
+    return _make_json({
+        "picked": picked,
+        "winner": picked[0] if count == 1 else None,
+        "all_names": names,
+        "total_names": len(names),
+        "picked_count": count,
+        "summary": f"🎉 Winner: {picked[0]}" if count == 1 else f"🎉 Selected: {', '.join(picked)}"
+    }, f"Picked: {', '.join(picked)}")
+
+
 # ─── Registry of all new handlers ─────────────────────────────────────────
 ULTRA_HANDLERS: dict[str, Any] = {
     "text-readability-score": _handle_text_readability_score,
@@ -1558,6 +1611,12 @@ ULTRA_HANDLERS: dict[str, Any] = {
     "color-blindness-simulator": _handle_color_blindness_simulator,
     "grammar-score": _handle_grammar_score,
     "grammar-checker-advanced": _handle_grammar_score,
+    "bill-splitter": _handle_bill_splitter,
+    "split-bill": _handle_bill_splitter,
+    "restaurant-bill-splitter": _handle_bill_splitter,
+    "random-name-picker": _handle_random_name_picker,
+    "random-winner-picker": _handle_random_name_picker,
+    "name-randomizer": _handle_random_name_picker,
 }
 
 

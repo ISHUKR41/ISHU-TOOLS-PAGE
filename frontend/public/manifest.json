@@ -1,8 +1,8 @@
 {
   "name": "ISHU TOOLS - Indian Student Hub University Tools",
   "short_name": "ISHU TOOLS",
-  "description": "622+ free online tools for Indian students and professionals. PDF, Image, Developer, Math, Text, AI, Finance, Health, Video and Productivity tools. No signup, no watermark, no limits.",
-  "start_url": "/",
+  "description": "567+ free online tools for Indian students and professionals by Ishu Kumar. PDF, Image, Developer, Math, Text, AI, Finance, Health, Video, Student and Productivity tools. No signup, no watermark, no limits.",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#0a0f1e",

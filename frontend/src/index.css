@@ -6179,3 +6179,94 @@ img.lazy-img.loaded {
   * { animation: none !important; transition: none !important; }
   .mesh-bg-orb, .ticker-track, .hero-section-animated { display: none !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   COMPACT CARD SKELETON — AllToolsPage loading state
+   ══════════════════════════════════════════════════════════════════ */
+.skeleton-compact-card {
+  pointer-events: none;
+  cursor: default;
+  border-color: rgba(145, 180, 255, 0.05) !important;
+  background: rgba(13, 19, 35, 0.5) !important;
+}
+.skeleton-compact-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+.skeleton-icon-sm {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.skeleton-title-sm {
+  display: block;
+  width: 100%;
+  max-width: 120px;
+  height: 13px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+.skeleton-desc-sm {
+  display: block;
+  width: 80%;
+  height: 11px;
+  border-radius: 3px;
+}
+.skeleton-section {
+  opacity: 0.7;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PERFORMANCE — GPU-accelerated tool cards
+   ══════════════════════════════════════════════════════════════════ */
+.tool-card-compact {
+  will-change: transform;
+  contain: layout style;
+  transform: translateZ(0);
+}
+.tool-card {
+  will-change: transform;
+}
+.category-pill {
+  will-change: transform;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVENESS — Instant layout for mobile
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .tools-grid.compact {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.65rem;
+  }
+  .category-section-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .all-tools-hero {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .tools-grid.compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .category-row {
+    gap: 0.4rem;
+  }
+  .category-pill {
+    font-size: 0.72rem;
+    padding: 0.3rem 0.65rem;
+  }
+  .tool-card-compact strong {
+    font-size: 0.76rem;
+  }
+  .tool-card-compact small {
+    display: none;
+  }
+}

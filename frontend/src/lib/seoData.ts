@@ -2,7 +2,7 @@
  * ISHU TOOLS — Per-tool SEO Data (COMPREHENSIVE v2)
  * Every tool gets unique title, description, keywords, and FAQ for Google #1 ranking.
  * Optimized for: high-volume, long-tail, competitor comparison, Ishu-branded, niche keywords.
- * 510+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
+ * 567+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
  */
 
 export interface ToolSEO {
@@ -7214,6 +7214,27 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Expense Splitter — Split Bills with Friends Free',
     faq: [
       { question: 'How do I split expenses with friends?', answer: 'Enter all expenses and participants in ISHU TOOLS Expense Splitter to see exactly who owes what for trips, dinners, and shared costs for free.' },
+    ],
+  },
+  'bill-splitter': {
+    title: 'Bill Splitter Online Free — Split Restaurant Bills Equally | ISHU TOOLS by Ishu Kumar',
+    description: 'Split restaurant bills, trip costs, and shared expenses equally among friends online for free. Enter the total amount, number of people, and tip percentage to get each person\'s share instantly. No signup required.',
+    keywords: ['bill splitter', 'split bill calculator', 'restaurant bill splitter free', 'divide bill among friends', 'bill split online india', 'ishu tools bill splitter', 'ishu kumar bill splitter', 'split restaurant bill equally', 'tip calculator bill splitter', 'bill share calculator', 'group bill calculator', 'trip bill splitter', 'bill splitter for students', 'dutch pay calculator', 'how to split bill among friends'],
+    h1: 'Bill Splitter — Split Restaurant Bills Among Friends Free',
+    faq: [
+      { question: 'How does the Bill Splitter work?', answer: 'Enter the total bill amount, the number of people splitting it, and an optional tip percentage. ISHU TOOLS Bill Splitter instantly calculates exactly how much each person should pay, including their share of the tip.' },
+      { question: 'Can I include a tip in the bill split?', answer: 'Yes! Enter the tip percentage (e.g., 10% or 15%) and ISHU TOOLS Bill Splitter will calculate the tip amount, total bill with tip, and each person\'s final share including tip.' },
+      { question: 'Is the Bill Splitter free to use?', answer: 'Yes, ISHU TOOLS Bill Splitter is completely free — no signup, no login, no watermarks. Just enter your bill details and get instant results.' },
+    ],
+  },
+  'random-name-picker': {
+    title: 'Random Name Picker Online Free — Pick Random Winner from List | ISHU TOOLS',
+    description: 'Pick a random name from any list instantly — perfect for classroom activities, lucky draws, group selection, and contests. Paste your list and click to get a random winner. Free, no signup required.',
+    keywords: ['random name picker', 'random name picker online free', 'pick random name from list', 'random winner picker', 'classroom name picker', 'lucky draw picker online', 'ishu tools name picker', 'ishu kumar random picker', 'random student picker', 'name randomizer free', 'random selection tool', 'random draw tool india', 'contest winner picker', 'name chooser online free'],
+    h1: 'Random Name Picker — Pick a Random Winner Free',
+    faq: [
+      { question: 'How do I use the Random Name Picker?', answer: 'Enter your list of names (one per line or comma-separated), then click Pick. ISHU TOOLS Random Name Picker instantly selects a random name from your list — perfect for teachers, contests, and group activities.' },
+      { question: 'Can I pick multiple winners?', answer: 'Yes! Enter a number in the "Pick count" field to select multiple random winners from your list at once. Each selected name is unique — no duplicates.' },
     ],
   },
 

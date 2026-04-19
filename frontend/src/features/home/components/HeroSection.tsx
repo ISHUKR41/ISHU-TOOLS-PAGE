@@ -13,6 +13,7 @@ import {
   Star,
   TrendingUp,
   Lock,
+  Wand2,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -89,7 +90,7 @@ const TICKER_ITEMS = [
 const QUICK_TOOLS = [
   { to: '/tools/merge-pdf', label: 'Merge PDF', icon: Files, color: '#56a6ff' },
   { to: '/tools/compress-image', label: 'Compress Image', icon: Images, color: '#3ee58f' },
-  { to: '/tools/remove-background', label: 'Remove BG', icon: Sparkles, color: '#f472b6' },
+  { to: '/tools/remove-background', label: 'Remove BG', icon: Wand2, color: '#f472b6' },
   { to: '/tools/json-formatter', label: 'JSON Formatter', icon: Code2, color: '#06b6d4' },
   { to: '/tools/bmi-calculator', label: 'BMI Calculator', icon: Calculator, color: '#f59e0b' },
   { to: '/tools/password-generator', label: 'Password Gen', icon: ShieldCheck, color: '#f97316' },
@@ -149,7 +150,7 @@ function TickerRow() {
       <motion.div className='ticker-track' animate={controls}>
         {items.map((item, i) => (
           <span key={i} className='ticker-item'>
-            <Sparkles size={10} />
+            <Wand2 size={10} />
             {item}
           </span>
         ))}

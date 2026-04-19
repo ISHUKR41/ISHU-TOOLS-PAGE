@@ -5348,6 +5348,22 @@ TOOLS.extend([
         tags=["instagram downloader", "download instagram video", "instagram reel downloader", "save instagram video", "instagram video download free", "instagram downloader online"],
         input_kind="text",
     ),
+    ToolDefinition(
+        slug="bill-splitter",
+        title="Bill Splitter",
+        description="Split restaurant bills, trips, or shared expenses equally among friends. Enter the total amount, number of people, and optional tip to get per-person amounts instantly.",
+        category="student-tools",
+        tags=["bill splitter", "split bill calculator", "restaurant bill splitter", "expense splitter", "bill split among friends", "divide bill equally", "trip expense calculator", "share expense calculator", "bill splitter online free", "bill split app", "restaurant bill calculator india"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="random-name-picker",
+        title="Random Name Picker",
+        description="Pick a random name from a list — perfect for classroom activities, group selection, lucky draws, and contests. Paste your list and get a random winner instantly.",
+        category="student-tools",
+        tags=["random name picker", "random name generator", "pick random name", "name randomizer", "classroom name picker", "random winner picker", "lucky draw picker", "random student picker", "name chooser online", "random name selector free"],
+        input_kind="text",
+    ),
 ])
 
 # Deduplicate tools — keep last definition (most recently added = most complete)
