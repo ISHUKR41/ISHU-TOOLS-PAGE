@@ -3163,6 +3163,13 @@ h3 {
   display: flex;
   gap: 0.6rem;
   width: max-content;
+  animation: ticker-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .ticker-item {
@@ -6292,6 +6299,44 @@ img.lazy-img.loaded {
   background-size: 400% 100%;
   animation: skeleton-shimmer 1.5s ease infinite;
   contain: strict;
+}
+
+/* ── Tool section skeleton — matches real section height ─────── */
+.tool-skeleton-section {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.6rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+
+.tool-skeleton-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Category pill skeleton ──────────────────────────────────── */
+.category-row-skeleton {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.category-pill-skeleton {
+  width: 100px;
+  height: 34px;
+  border-radius: 999px;
+}
+
+/* ── Status badge — fixed width to prevent layout shift ──────── */
+.hero-status-wrap {
+  min-width: 220px;
+}
+
+.status-badge-text {
+  white-space: nowrap;
 }
 
 /* ── First paint optimization — critical above-fold ─────────── */

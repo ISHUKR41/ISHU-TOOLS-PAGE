@@ -92,6 +92,12 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Hero V2 first paint is no longer opacity-gated; stable min-heights reserve hero/status/stats/ticker/quick-link rows to reduce FOUC/CLS.
 - Homepage directory uses stable containment/min-height instead of first-viewport `content-visibility:auto`; tool sections keep lazy rendering with larger intrinsic reservations.
 - `index.html` includes early font stylesheet preload plus minimal above-the-fold critical CSS for instant dark theme/mobile layout before the bundled CSS finishes loading.
+- **CLS Fix (v3)**: All static sections (bento, comparison table, how-it-works, creator, FAQ, SEO cloud, footer) now render immediately without waiting for API data — eliminates the massive layout shift when tools load.
+- **Ticker animation**: Replaced Framer Motion `useAnimationControls` + `useEffect` ticker with pure CSS `animation: ticker-scroll 45s linear infinite` — ticker starts instantly on first paint with zero JS overhead.
+- **Tool skeleton sections**: During API loading, 3 `ToolSkeleton` section placeholders (with proper heights) replace the empty tool directory — prevents collapse-then-expand CLS.
+- **Category pill skeletons**: Category filter row shows skeleton pills during loading instead of toggling from empty → full list — prevents width/height layout shift.
+- **Status badge min-width**: Fixed `min-width: 220px` on status badge wrapper to prevent layout shift when text changes from "Starting up…" to "All systems operational".
+- **Framer Motion removed from HeroSection**: Removed all `motion.section`, `motion.div` wrappers in hero (they were no-ops with `initial={false}` but still ran Framer Motion engine startup code).
 
 ## Error Handling & UX Polish
 - React `ErrorBoundary` wraps entire app (in `App.tsx`) with graceful recovery UI + reload/home buttons

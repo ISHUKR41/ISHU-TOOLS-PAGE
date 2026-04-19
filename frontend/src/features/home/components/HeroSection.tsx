@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { motion, useAnimationControls, useReducedMotion } from 'framer-motion'
+import type { CSSProperties } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import {
   ArrowRight,
   Files,
@@ -32,59 +32,17 @@ type HeroSectionProps = {
 }
 
 const TICKER_ITEMS = [
-  'Merge PDF',
-  'Compress Images',
-  'OCR PDF',
-  'Remove Background',
-  'JSON Formatter',
-  'BMI Calculator',
-  'Translate PDF',
-  'QR Code Generator',
-  'Password Generator',
-  'Resize Image',
-  'Word to PDF',
-  'PDF to Excel',
-  'Barcode Generator',
-  'Base64 Encoder',
-  'Summarize PDF',
-  'Color Picker',
-  'UUID Generator',
-  'Compress PDF',
-  'Split PDF',
-  'Image to PDF',
-  'YouTube Downloader',
-  'CGPA Calculator',
-  'Attendance Tracker',
-  'Citation Generator',
-  'Regex Tester',
-  'CSV to JSON',
-  'SVG Optimizer',
-  'HTML Beautifier',
-  'Markdown Editor',
-  'Text Summarizer',
-  'Grammar Checker',
-  'Loan Calculator',
-  'Percentage Calculator',
-  'Age Calculator',
-  'Time Zone Converter',
-  'Case Converter',
-  'Diff Checker',
-  'IP Lookup',
-  'Hash Generator',
-  'Instagram Downloader',
-  'Photo Collage Maker',
-  'SIP Calculator',
-  'Meme Generator',
-  'PDF Annotator',
-  'Image Compressor',
-  'CSS Minifier',
-  'SQL Formatter',
-  'EMI Calculator',
-  'GST Calculator',
-  'Unit Converter',
-  'Plagiarism Checker',
-  'Resume Builder',
-  'Signature Generator',
+  'Merge PDF', 'Compress Images', 'OCR PDF', 'Remove Background', 'JSON Formatter',
+  'BMI Calculator', 'Translate PDF', 'QR Code Generator', 'Password Generator', 'Resize Image',
+  'Word to PDF', 'PDF to Excel', 'Barcode Generator', 'Base64 Encoder', 'Summarize PDF',
+  'Color Picker', 'UUID Generator', 'Compress PDF', 'Split PDF', 'Image to PDF',
+  'YouTube Downloader', 'CGPA Calculator', 'Attendance Tracker', 'Citation Generator',
+  'Regex Tester', 'CSV to JSON', 'SVG Optimizer', 'HTML Beautifier', 'Markdown Editor',
+  'Text Summarizer', 'Grammar Checker', 'Loan Calculator', 'Percentage Calculator',
+  'Age Calculator', 'Time Zone Converter', 'Case Converter', 'Diff Checker', 'IP Lookup',
+  'Hash Generator', 'Instagram Downloader', 'Photo Collage Maker', 'SIP Calculator',
+  'Meme Generator', 'PDF Annotator', 'Image Compressor', 'CSS Minifier', 'SQL Formatter',
+  'EMI Calculator', 'GST Calculator', 'Unit Converter', 'Plagiarism Checker', 'Resume Builder',
 ]
 
 const QUICK_TOOLS = [
@@ -107,39 +65,23 @@ const TRUST_BADGES = [
   { icon: Globe, label: 'Works Everywhere' },
 ]
 
-function AnimatedCounter({ target }: { target: number; duration?: number }) {
-  return <>{target}</>
-}
-
 function TickerRow() {
-  const controls = useAnimationControls()
   const reduceMotion = useReducedMotion()
   const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
 
-  useEffect(() => {
-    if (reduceMotion) return
-    void controls.start({
-      x: [0, -50 * TICKER_ITEMS.length],
-      transition: {
-        x: {
-          duration: 30,
-          repeat: Infinity,
-          ease: 'linear',
-        },
-      },
-    })
-  }, [controls, reduceMotion])
-
   return (
     <div className='ticker-wrap'>
-      <motion.div className='ticker-track' animate={controls}>
+      <div
+        className='ticker-track'
+        style={reduceMotion ? { animation: 'none' } : undefined}
+      >
         {items.map((item, i) => (
           <span key={i} className='ticker-item'>
             <Wand2 size={10} />
             {item}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   )
 }
@@ -155,31 +97,21 @@ export default function HeroSection({
   const toolLabel = toolCount > 0 ? toolCount : 770
 
   return (
-    <motion.section
-      className='hero-v2'
-      initial={false}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.25 }}
-    >
-      {/* Background orbs */}
+    <section className='hero-v2'>
       <div className='hero-v2-orb orb-a' />
       <div className='hero-v2-orb orb-b' />
       <div className='hero-v2-orb orb-c' />
-
-      {/* Grid pattern overlay */}
       <div className='hero-v2-grid' />
 
       <div className='hero-v2-inner'>
-        {/* Status + social bar */}
-        <motion.div
-          className='hero-v2-topbar'
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.2 }}
-        >
-          <div className={`status-badge ${apiReady ? 'online' : 'loading'}`}>
-            <span className='status-dot-pulse' />
-            {apiReady ? 'All systems operational' : 'Starting up…'}
+        <div className='hero-v2-topbar'>
+          <div className='hero-status-wrap'>
+            <div className={`status-badge ${apiReady ? 'online' : 'loading'}`}>
+              <span className='status-dot-pulse' />
+              <span className='status-badge-text'>
+                {apiReady ? 'All systems operational' : 'Starting up\u2026'}
+              </span>
+            </div>
           </div>
           <div className='hero-v2-social'>
             {socialLinks.map((link) => (
@@ -188,15 +120,9 @@ export default function HeroSection({
               </a>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Main heading */}
-        <motion.div
-          className='hero-v2-heading'
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, duration: 0.3 }}
-        >
+        <div className='hero-v2-heading'>
           <div className='hero-kicker-pill'>
             <span>Indian Student Hub University Tools</span>
           </div>
@@ -221,92 +147,57 @@ export default function HeroSection({
               Try Merge PDF
             </Link>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Stats grid */}
-        <motion.div
-          className='hero-v2-stats'
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-        >
+        <div className='hero-v2-stats'>
           {[
             { label: 'Free Tools', value: toolLabel, suffix: '+', color: '#56a6ff' },
             { label: 'Categories', value: categoryCount || 38, suffix: '', color: '#3ee58f' },
             { label: 'PDF Workflows', value: pdfCount || 128, suffix: '+', color: '#f472b6' },
             { label: 'Image Tools', value: imageCount || 195, suffix: '+', color: '#f59e0b' },
-          ].map((stat, i) => (
-            <motion.div
+          ].map((stat) => (
+            <div
               key={stat.label}
               className='hero-stat-card'
-              initial={false}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.12 + i * 0.04, duration: 0.25 }}
-              style={{ '--stat-color': stat.color } as React.CSSProperties}
+              style={{ '--stat-color': stat.color } as CSSProperties}
             >
               <strong className='stat-number'>
-                <AnimatedCounter target={stat.value} duration={1800 + i * 200} />
-                {stat.suffix}
+                {stat.value}{stat.suffix}
               </strong>
               <span className='stat-label'>{stat.label}</span>
               <div className='stat-glow' />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Ticker */}
-        <motion.div
-          initial={false}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.18, duration: 0.25 }}
-        >
-          <TickerRow />
-        </motion.div>
+        <TickerRow />
 
-        {/* Quick access tools */}
-        <motion.div
-          className='hero-v2-quick'
-          initial={false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.25 }}
-        >
+        <div className='hero-v2-quick'>
           <span className='quick-label'>Popular right now</span>
           <div className='quick-grid'>
-            {QUICK_TOOLS.map((tool, i) => (
-              <motion.div
+            {QUICK_TOOLS.map((tool) => (
+              <Link
                 key={tool.to}
-                initial={false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22 + i * 0.025, duration: 0.2 }}
+                to={tool.to}
+                className='quick-chip'
+                style={{ '--chip-color': tool.color } as CSSProperties}
               >
-                <Link
-                  to={tool.to}
-                  className='quick-chip'
-                  style={{ '--chip-color': tool.color } as React.CSSProperties}
-                >
-                  <tool.icon size={14} style={{ color: tool.color }} />
-                  {tool.label}
-                </Link>
-              </motion.div>
+                <tool.icon size={14} style={{ color: tool.color }} />
+                {tool.label}
+              </Link>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Trust badges */}
-        <motion.div
-          className='trust-row'
-          initial={false}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.25, duration: 0.2 }}
-        >
+        <div className='trust-row'>
           {TRUST_BADGES.map((badge) => (
             <div key={badge.label} className='trust-badge'>
               <badge.icon size={13} />
               <span>{badge.label}</span>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   )
 }

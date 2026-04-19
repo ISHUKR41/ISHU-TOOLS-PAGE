@@ -294,6 +294,22 @@ function SEOCloud() {
   )
 }
 
+function ToolSkeleton() {
+  return (
+    <div className='tool-skeleton-section'>
+      <div className='tool-skeleton-header'>
+        <div className='skeleton-shimmer' style={{ width: '120px', height: '14px', borderRadius: '6px' }} />
+        <div className='skeleton-shimmer' style={{ width: '200px', height: '22px', borderRadius: '8px', marginTop: '6px' }} />
+      </div>
+      <div className='tool-grid'>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className='skeleton-shimmer tool-skeleton-card' />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
@@ -391,47 +407,57 @@ export default function HomePage() {
             </label>
 
             <div className='category-row'>
-              <button
-                type='button'
-                className={`category-pill ${activeCategory === 'all' ? 'active' : ''}`}
-                onClick={() =>
-                  startTransition(() => {
-                    setActiveCategory('all')
-                  })
-                }
-              >
-                All ({tools.length})
-              </button>
-
-              {categories.map((category) => {
-                const theme = getCategoryTheme(category.id)
-                return (
+              {loading ? (
+                <div className='category-row-skeleton'>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className='skeleton-shimmer category-pill-skeleton' />
+                  ))}
+                </div>
+              ) : (
+                <>
                   <button
                     type='button'
-                    key={category.id}
-                    className={`category-pill themed ${activeCategory === category.id ? 'active' : ''}`}
-                    style={{ '--pill-accent': theme.accent } as CSSProperties}
+                    className={`category-pill ${activeCategory === 'all' ? 'active' : ''}`}
                     onClick={() =>
                       startTransition(() => {
-                        setActiveCategory(category.id)
+                        setActiveCategory('all')
                       })
                     }
                   >
-                    {category.label} ({counts.byCategory[category.id] || 0})
+                    All ({tools.length})
                   </button>
-                )
-              })}
+
+                  {categories.map((category) => {
+                    const theme = getCategoryTheme(category.id)
+                    return (
+                      <button
+                        type='button'
+                        key={category.id}
+                        className={`category-pill themed ${activeCategory === category.id ? 'active' : ''}`}
+                        style={{ '--pill-accent': theme.accent } as CSSProperties}
+                        onClick={() =>
+                          startTransition(() => {
+                            setActiveCategory(category.id)
+                          })
+                        }
+                      >
+                        {category.label} ({counts.byCategory[category.id] || 0})
+                      </button>
+                    )
+                  })}
+                </>
+              )}
             </div>
           </div>
         </section>
 
         <section id='tool-directory' className='directory-stack'>
           {loading && (
-            <div className='skeleton-grid' aria-label='Loading tools...'>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className='skeleton-card' style={{ minHeight: i % 3 === 0 ? '200px' : '160px' }} />
-              ))}
-            </div>
+            <>
+              <ToolSkeleton />
+              <ToolSkeleton />
+              <ToolSkeleton />
+            </>
           )}
           {error && <p className='status-text error'>{error}</p>}
 
@@ -449,75 +475,72 @@ export default function HomePage() {
             ))}
         </section>
 
-        {!loading && !error && (
-          <section className='features-bento-section'>
-            <span className='section-kicker'>Why ISHU TOOLS?</span>
-            <h2>Everything You Need. 100% Free. Always.</h2>
-            <p>The most complete free online toolkit — more tools than iLovePDF, iLoveIMG, SmallPDF, PDFCandy, and pi7.org combined.</p>
-            <div className='bento-grid'>
-              {BENTO_FEATURES.map((f) => (
-                <div
-                  key={f.title}
-                  className={`bento-card${f.span ? ' ' + f.span : ''}`}
-                  style={{ '--bento-accent': f.accent } as CSSProperties}
-                >
-                  <div className='bento-icon'><f.icon size={20} /></div>
-                  {f.stat && <span className='bento-stat'>{f.stat}</span>}
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
-                </div>
-              ))}
+        <section className='features-bento-section'>
+          <span className='section-kicker'>Why ISHU TOOLS?</span>
+          <h2>Everything You Need. 100% Free. Always.</h2>
+          <p>The most complete free online toolkit — more tools than iLovePDF, iLoveIMG, SmallPDF, PDFCandy, and pi7.org combined.</p>
+          <div className='bento-grid'>
+            {BENTO_FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className={`bento-card${f.span ? ' ' + f.span : ''}`}
+                style={{ '--bento-accent': f.accent } as CSSProperties}
+              >
+                <div className='bento-icon'><f.icon size={20} /></div>
+                {f.stat && <span className='bento-stat'>{f.stat}</span>}
+                <h3>{f.title}</h3>
+                <p>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <ComparisonTable />
+
+        <section className='how-it-works-section'>
+          <span className='section-kicker'>Simple &amp; Fast</span>
+          <h2>How ISHU TOOLS Works</h2>
+          <p style={{ color: 'var(--muted)', maxWidth: '42rem', margin: '0 auto 0.5rem', fontSize: '0.97rem' }}>
+            Get things done in seconds — no account, no watermark, no cost.
+          </p>
+          <div className='steps-grid'>
+            <div className='step-card'>
+              <div className='step-number'><MousePointerClick size={20} /></div>
+              <h3>1. Choose a Tool</h3>
+              <p>Search from 715+ free tools across 50 categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
             </div>
-          </section>
-        )}
-
-        {!loading && !error && <ComparisonTable />}
-
-        {!loading && !error && (
-          <section className='how-it-works-section'>
-            <span className='section-kicker'>Simple &amp; Fast</span>
-            <h2>How ISHU TOOLS Works</h2>
-            <p style={{ color: 'var(--muted)', maxWidth: '42rem', margin: '0 auto 0.5rem', fontSize: '0.97rem' }}>
-              Get things done in seconds — no account, no watermark, no cost.
-            </p>
-            <div className='steps-grid'>
-              <div className='step-card'>
-                <div className='step-number'><MousePointerClick size={20} /></div>
-                <h3>1. Choose a Tool</h3>
-                <p>Search from {tools.length}+ free tools across {categories.length} categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
-              </div>
-              <div className='step-card'>
-                <div className='step-number'><Upload size={20} /></div>
-                <h3>2. Upload or Enter Data</h3>
-                <p>Drag &amp; drop your files or enter text and values. Multi-file uploads supported. All files are processed securely with no storage.</p>
-              </div>
-              <div className='step-card'>
-                <div className='step-number'><Download size={20} /></div>
-                <h3>3. Run &amp; Download</h3>
-                <p>Click "Run" and get your result instantly. Download the processed file or copy the output. No signup, no watermark, 100% free.</p>
-              </div>
-              <div className='step-card'>
-                <div className='step-number'><CheckCircle size={20} /></div>
-                <h3>4. Done — Every Time</h3>
-                <p>All tools are production-ready, accurate, and reliable. Works on all devices — mobile, tablet, laptop, desktop. No app needed.</p>
-              </div>
+            <div className='step-card'>
+              <div className='step-number'><Upload size={20} /></div>
+              <h3>2. Upload or Enter Data</h3>
+              <p>Drag &amp; drop your files or enter text and values. Multi-file uploads supported. All files are processed securely with no storage.</p>
             </div>
-          </section>
-        )}
+            <div className='step-card'>
+              <div className='step-number'><Download size={20} /></div>
+              <h3>3. Run &amp; Download</h3>
+              <p>Click "Run" and get your result instantly. Download the processed file or copy the output. No signup, no watermark, 100% free.</p>
+            </div>
+            <div className='step-card'>
+              <div className='step-number'><CheckCircle size={20} /></div>
+              <h3>4. Done — Every Time</h3>
+              <p>All tools are production-ready, accurate, and reliable. Works on all devices — mobile, tablet, laptop, desktop. No app needed.</p>
+            </div>
+          </div>
+        </section>
 
-        {!loading && !error && <CreatorSection />}
+        <CreatorSection />
 
-        {!loading && !error && <AccordionFAQ />}
+        <AccordionFAQ />
 
-        {!loading && !error && <SEOCloud />}
+        <SEOCloud />
 
-        {!loading && !error && (
-          <footer className='home-footer'>
-            <p>
-              <strong>{totalVisibleTools}</strong> tools · <strong>{categories.length}</strong> categories · Free forever · No signup · No watermark
-            </p>
-          </footer>
-        )}
+        <footer className='home-footer'>
+          <p>
+            {loading
+              ? <>715+ tools · 50 categories · Free forever · No signup · No watermark</>
+              : <><strong>{totalVisibleTools}</strong> tools · <strong>{categories.length}</strong> categories · Free forever · No signup · No watermark</>
+            }
+          </p>
+        </footer>
       </div>
     </SiteShell>
   )
