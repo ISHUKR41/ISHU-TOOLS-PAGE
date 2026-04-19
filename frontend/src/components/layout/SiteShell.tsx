@@ -338,7 +338,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <span className='brand-mark sm'>IT</span>
             <div>
               <strong>ISHU TOOLS</strong>
-              <p>Indian Student Hub University Tools — {TOOL_COUNT_LABEL} free PDF, Image, Developer, Math, AI, video, finance, health &amp; text tools. No signup. No watermark. Completely free.</p>
+              <p>Indian Student Hub University Tools — {TOOL_COUNT_LABEL} free PDF, Image, Developer, Math, AI, video, finance, health &amp; text tools by Ishu Kumar (IIT Patna). No signup. No watermark. Completely free.</p>
               <div className='footer-trust-row'>
                 <span><Shield size={11} /> 100% Secure</span>
                 <span><Zap size={11} /> No Signup</span>
@@ -355,9 +355,15 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <Link to='/tools/pdf-to-word'>PDF to Word</Link>
               <Link to='/tools/word-to-pdf'>Word to PDF</Link>
               <Link to='/tools/pdf-to-jpg'>PDF to JPG</Link>
+              <Link to='/tools/jpg-to-pdf'>JPG to PDF</Link>
               <Link to='/tools/ocr-pdf'>OCR PDF</Link>
               <Link to='/tools/protect-pdf'>Protect PDF</Link>
               <Link to='/tools/unlock-pdf'>Unlock PDF</Link>
+              <Link to='/tools/watermark-pdf'>Watermark PDF</Link>
+              <Link to='/tools/rotate-pdf'>Rotate PDF</Link>
+              <Link to='/tools/redact-pdf'>Redact PDF</Link>
+              <Link to='/tools/pdf-to-excel'>PDF to Excel</Link>
+              <Link to='/tools/pdf-to-pdfa'>PDF to PDF/A</Link>
             </div>
             <div className='footer-col'>
               <strong>Image Tools</strong>
@@ -366,39 +372,110 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <Link to='/tools/remove-background'>Remove Background</Link>
               <Link to='/tools/crop-image'>Crop Image</Link>
               <Link to='/tools/convert-image'>Convert Image</Link>
-              <Link to='/tools/jpg-to-pdf'>JPG to PDF</Link>
+              <Link to='/tools/rotate-image'>Rotate Image</Link>
               <Link to='/tools/upscale-image'>Upscale Image</Link>
+              <Link to='/tools/compress-to-100kb'>Compress to 100KB</Link>
+              <Link to='/tools/compress-to-200kb'>Compress to 200KB</Link>
+              <Link to='/tools/compress-to-50kb'>Compress to 50KB</Link>
+              <Link to='/tools/compress-to-20kb'>Compress to 20KB</Link>
+              <Link to='/tools/jpg-to-png'>JPG to PNG</Link>
+              <Link to='/tools/png-to-jpg'>PNG to JPG</Link>
               <Link to='/tools/meme-generator'>Meme Generator</Link>
               <Link to='/tools/image-collage'>Image Collage</Link>
             </div>
             <div className='footer-col'>
-              <strong>Convert & AI</strong>
+              <strong>Convert &amp; AI</strong>
               <Link to='/tools/excel-to-pdf'>Excel to PDF</Link>
               <Link to='/tools/pptx-to-pdf'>PPT to PDF</Link>
               <Link to='/tools/pdf-to-excel'>PDF to Excel</Link>
               <Link to='/tools/translate-pdf'>Translate PDF</Link>
               <Link to='/tools/summarize-pdf'>Summarize PDF</Link>
               <Link to='/tools/ocr-image'>OCR Image</Link>
+              <Link to='/tools/image-to-text'>Image to Text</Link>
               <Link to='/tools/epub-to-pdf'>ePub to PDF</Link>
               <Link to='/tools/chat-with-pdf'>Chat with PDF</Link>
               <Link to='/tools/scan-to-pdf'>Scan to PDF</Link>
+              <Link to='/tools/html-to-pdf'>HTML to PDF</Link>
+              <Link to='/tools/markdown-to-pdf'>Markdown to PDF</Link>
+              <Link to='/tools/text-to-pdf'>Text to PDF</Link>
+              <Link to='/tools/word-counter'>Word Counter</Link>
+              <Link to='/tools/grammar-checker'>Grammar Checker</Link>
             </div>
             <div className='footer-col'>
-              <strong>Developer & Math</strong>
+              <strong>Developer Tools</strong>
               <Link to='/tools/json-formatter'>JSON Formatter</Link>
-              <Link to='/tools/password-generator'>Password Gen</Link>
-              <Link to='/tools/qr-code-generator'>QR Generator</Link>
-              <Link to='/tools/bmi-calculator'>BMI Calculator</Link>
-              <Link to='/tools/scientific-calculator'>Scientific Calc</Link>
-              <Link to='/tools/percentage-calculator'>Percentage Calc</Link>
               <Link to='/tools/base64-encode'>Base64 Encoder</Link>
+              <Link to='/tools/url-encoder'>URL Encoder</Link>
               <Link to='/tools/uuid-generator'>UUID Generator</Link>
+              <Link to='/tools/qr-code-generator'>QR Code Generator</Link>
+              <Link to='/tools/barcode-generator'>Barcode Generator</Link>
+              <Link to='/tools/regex-tester'>Regex Tester</Link>
+              <Link to='/tools/hash-generator'>Hash Generator</Link>
+              <Link to='/tools/jwt-decoder'>JWT Decoder</Link>
+              <Link to='/tools/markdown-to-html'>Markdown to HTML</Link>
+              <Link to='/tools/color-picker'>Color Picker</Link>
+              <Link to='/tools/color-converter'>Color Converter</Link>
+              <Link to='/tools/html-encode'>HTML Encoder</Link>
+              <Link to='/tools/password-generator'>Password Generator</Link>
+              <Link to='/tools/lorem-ipsum-generator'>Lorem Ipsum</Link>
+            </div>
+            <div className='footer-col'>
+              <strong>Calculators</strong>
+              <Link to='/tools/bmi-calculator'>BMI Calculator</Link>
+              <Link to='/tools/scientific-calculator'>Scientific Calculator</Link>
+              <Link to='/tools/percentage-calculator'>Percentage Calculator</Link>
+              <Link to='/tools/emi-calculator-advanced'>EMI Calculator India</Link>
+              <Link to='/tools/gst-calculator-india'>GST Calculator India</Link>
+              <Link to='/tools/sip-calculator'>SIP Calculator</Link>
               <Link to='/tools/compound-interest-calculator'>Compound Interest</Link>
+              <Link to='/tools/calorie-calculator'>Calorie Calculator</Link>
+              <Link to='/tools/age-calculator'>Age Calculator</Link>
+              <Link to='/tools/cgpa-to-percentage'>CGPA to Percentage</Link>
+              <Link to='/tools/income-tax-calculator'>Income Tax Calculator</Link>
+              <Link to='/tools/fd-calculator'>FD Calculator India</Link>
+              <Link to='/tools/currency-converter'>Currency Converter</Link>
+              <Link to='/tools/unit-converter'>Unit Converter</Link>
+              <Link to='/tools/gpa-calculator'>GPA Calculator</Link>
+            </div>
+            <div className='footer-col'>
+              <strong>Student &amp; More</strong>
+              <Link to='/tools/attendance-calculator'>Attendance Calculator</Link>
+              <Link to='/tools/cgpa-to-percentage'>CGPA Converter</Link>
+              <Link to='/tools/passport-size-photo'>Passport Photo Maker</Link>
+              <Link to='/tools/compress-to-20kb'>Photo to 20KB</Link>
+              <Link to='/tools/compress-to-50kb'>Photo to 50KB</Link>
+              <Link to='/tools/upi-qr-generator'>UPI QR Generator</Link>
+              <Link to='/tools/ip-address-lookup'>IP Lookup</Link>
+              <Link to='/tools/whois-lookup'>WHOIS Lookup</Link>
+              <Link to='/tools/plagiarism-checker'>Plagiarism Checker</Link>
+              <Link to='/tools/paraphrasing-tool'>Paraphrasing Tool</Link>
+              <Link to='/tools/text-case-converter'>Case Converter</Link>
+              <Link to='/tools/youtube-downloader'>YouTube Downloader</Link>
+              <Link to='/tools/instagram-downloader'>Instagram Downloader</Link>
+              <Link to='/tools/generate-signature'>Signature Generator</Link>
+              <Link to='/'>All 715+ Tools →</Link>
             </div>
           </div>
         </div>
+
+        <div className='footer-seo-tags'>
+          <div className='footer-seo-inner'>
+            <strong>Popular Searches:</strong>
+            {[
+              'merge pdf online free', 'compress pdf without losing quality', 'pdf to word converter free',
+              'remove background online free', 'compress image to 100kb', 'compress image to 50kb',
+              'compress photo for ssc upsc', 'passport size photo online india', 'image to text online free',
+              'json formatter online', 'qr code generator free', 'bmi calculator india', 'emi calculator india',
+              'gst calculator india', 'sip calculator', 'ishu tools', 'ishutools', 'ishu kumar tools',
+              'free tools for students india', 'online tools no signup',
+            ].map(tag => (
+              <span key={tag}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
         <div className='footer-bottom'>
-          <span>© {new Date().getFullYear()} ISHU TOOLS (Indian Student Hub University Tools) · {TOOL_COUNT_LABEL} tools · All free, no signup, no watermark</span>
+          <span>© {new Date().getFullYear()} ISHU TOOLS (Indian Student Hub University Tools) by Ishu Kumar (IIT Patna) · {TOOL_COUNT_LABEL} tools · Free, no signup, no watermark</span>
           <div className='footer-social'>
             <a href='https://www.linkedin.com/in/ishu-kumar-5a0940281/' target='_blank' rel='noreferrer'>LinkedIn</a>
             <a href='https://www.instagram.com/ishukr10' target='_blank' rel='noreferrer'>Instagram</a>

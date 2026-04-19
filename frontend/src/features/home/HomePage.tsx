@@ -1,6 +1,10 @@
 import { startTransition, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Search, MousePointerClick, Upload, Download, CheckCircle, ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images, Calculator, Star } from 'lucide-react'
+import {
+  Search, MousePointerClick, Upload, Download, CheckCircle,
+  ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
+  Calculator, Star, ChevronDown, Award, Users, Sparkles, X as XIcon,
+} from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
@@ -58,23 +62,237 @@ const BENTO_FEATURES = [
 ]
 
 const socialLinks = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/ishukr10?igsh=OTNoaTJ2bm1ndWlp' },
+  { label: 'YouTube', href: 'https://www.youtube.com/@ishu-fun' },
+  { label: 'X', href: 'https://x.com/ISHU_IITP' },
+]
+
+const COMPARISON_ROWS = [
+  { feature: 'PDF Tools', ishu: '124+', ilovepdf: '25+', smallpdf: '20+', canva: '5+' },
+  { feature: 'Image Tools', ishu: '154+', ilovepdf: '0', smallpdf: '3+', canva: '50+' },
+  { feature: 'Developer Tools', ishu: '80+', ilovepdf: '0', smallpdf: '0', canva: '0' },
+  { feature: 'Math / Finance', ishu: '60+', ilovepdf: '0', smallpdf: '0', canva: '0' },
+  { feature: 'Student Tools', ishu: '40+', ilovepdf: '0', smallpdf: '0', canva: '0' },
+  { feature: 'AI Tools', ishu: '30+', ilovepdf: '5+', smallpdf: '3+', canva: '20+' },
+  { feature: 'Video Tools', ishu: '15+', ilovepdf: '0', smallpdf: '0', canva: '10+' },
+  { feature: 'No Signup', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
+  { feature: 'No Watermark', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
+  { feature: 'No File Limit', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
+  { feature: '100% Free', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
+]
+
+function ComparisonCell({ val }: { val: string | boolean }) {
+  if (typeof val === 'boolean') {
+    return val
+      ? <span className='cmp-yes'><CheckCircle size={15} /> Yes</span>
+      : <span className='cmp-no'><XIcon size={15} /> No</span>
+  }
+  return <span className='cmp-val'>{val}</span>
+}
+
+function ComparisonTable() {
+  return (
+    <section className='comparison-section'>
+      <span className='section-kicker'>Why Switch?</span>
+      <h2>ISHU TOOLS vs Competitors</h2>
+      <p className='comparison-sub'>
+        One platform beats them all — more tools, 100% free, no signup, no watermark, no limits.
+      </p>
+      <div className='comparison-wrap'>
+        <table className='comparison-table'>
+          <thead>
+            <tr>
+              <th className='cmp-feature-col'>Feature</th>
+              <th className='cmp-ishu'>
+                <span className='cmp-logo'>ISHU TOOLS</span>
+                <span className='cmp-best-badge'>Best</span>
+              </th>
+              <th>iLovePDF</th>
+              <th>SmallPDF</th>
+              <th>Canva</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARISON_ROWS.map((row) => (
+              <tr key={row.feature}>
+                <td className='cmp-feature-name'>{row.feature}</td>
+                <td className='cmp-ishu cmp-highlight'><ComparisonCell val={row.ishu} /></td>
+                <td><ComparisonCell val={row.ilovepdf} /></td>
+                <td><ComparisonCell val={row.smallpdf} /></td>
+                <td><ComparisonCell val={row.canva} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+function CreatorSection() {
+  return (
+    <section className='creator-section'>
+      <div className='creator-inner'>
+        <div className='creator-badge-wrap'>
+          <div className='creator-avatar'>
+            <span className='creator-avatar-text'>IK</span>
+            <div className='creator-avatar-ring' />
+          </div>
+          <div className='creator-badges'>
+            <span className='creator-badge'><Award size={12} /> IIT Patna</span>
+            <span className='creator-badge'><Sparkles size={12} /> Founder</span>
+            <span className='creator-badge'><Users size={12} /> 1M+ Users</span>
+          </div>
+        </div>
+        <div className='creator-content'>
+          <span className='section-kicker'>About the Creator</span>
+          <h2>Built by Ishu Kumar, IIT Patna</h2>
+          <p>
+            ISHU TOOLS was created by <strong>Ishu Kumar</strong>, a student at <strong>IIT Patna</strong>,
+            with a simple mission — to give every student and professional access to powerful tools
+            completely free, without any signup, watermark, or hidden cost.
+          </p>
+          <p style={{ marginTop: '0.6rem', color: 'var(--muted)', fontSize: '0.93rem' }}>
+            From the frustration of hitting paywalls and file limits on iLovePDF, SmallPDF, and similar
+            platforms, ISHU TOOLS was born — 715+ tools, all free, all day, every day.
+            <strong> ishutools.com</strong> — the Indian Student Hub for digital tools.
+          </p>
+          <div className='creator-links'>
+            {socialLinks.map((l) => (
+              <a key={l.href} href={l.href} target='_blank' rel='noreferrer' className='creator-social-link'>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const FAQ_ITEMS = [
   {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/',
+    q: 'What is ISHU TOOLS? (ISHU TOOLS kya hai?)',
+    a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 715+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar from IIT Patna, it is designed for students and professionals — no signup, no watermark, completely free. ISHU TOOLS bilkul free hai, koi signup nahi lagta.',
   },
   {
-    label: 'Instagram',
-    href: 'https://www.instagram.com/ishukr10?igsh=OTNoaTJ2bm1ndWlp',
+    q: 'Is ISHU TOOLS free? (ISHU TOOLS free hai kya?)',
+    a: 'Haan! ISHU TOOLS 100% free hai. All 715+ tools are available without any signup, registration, or payment. No watermarks, no limits, no hidden charges. Koi bhi tool use karo, bilkul free mein.',
   },
   {
-    label: 'YouTube',
-    href: 'https://www.youtube.com/@ishu-fun',
+    q: 'Is my data safe? (Mera data safe hai?)',
+    a: 'Absolutely! All uploaded files are processed securely on our servers and automatically deleted after processing. We never store, share, or access your files. Your privacy is our top priority. Aapka data 100% secure hai.',
   },
   {
-    label: 'X',
-    href: 'https://x.com/ISHU_IITP',
+    q: 'Can I use ISHU TOOLS on mobile? (Mobile par use kar sakte hai?)',
+    a: 'Yes! ISHU TOOLS is fully responsive and works perfectly on smartphones, tablets, laptops, and desktops. No app download needed. Mobile browser mein kholo aur koi bhi tool use karo.',
+  },
+  {
+    q: 'What PDF tools are available?',
+    a: 'ISHU TOOLS offers 124+ PDF tools: Merge PDF, Split PDF, Compress PDF, PDF to Word, Word to PDF, PDF to JPG, JPG to PDF, PDF to Excel, PDF to PowerPoint, OCR PDF, Protect PDF, Unlock PDF, Rotate PDF, Watermark PDF, Annotate PDF, Repair PDF, and many more — all free with no signup.',
+  },
+  {
+    q: 'How to compress PDF online free? (PDF ko compress kaise kare?)',
+    a: 'Go to ISHU TOOLS Compress PDF, drag and drop your PDF, choose compression level, and download the compressed file — completely free, no signup, no watermark. PDF compress karna bahut aasaan hai ISHU TOOLS mein.',
+  },
+  {
+    q: 'How to remove image background free? (Background remove kaise kare free mein?)',
+    a: 'Open ISHU TOOLS Remove Background tool, upload your image, and the AI will automatically remove the background in seconds. Download for free with no signup or watermark. Background remove karo free mein.',
+  },
+  {
+    q: 'Is ISHU TOOLS better than iLovePDF or SmallPDF?',
+    a: 'ISHU TOOLS offers all the same PDF tools as iLovePDF and SmallPDF, plus image tools, developer utilities, calculators, and more — all completely free with no signup, no watermark, and no file size limits. ISHU TOOLS is the best free alternative to iLovePDF, SmallPDF, and PDFCandy.',
+  },
+  {
+    q: 'Does ISHU TOOLS have student calculator tools?',
+    a: 'Yes! ISHU TOOLS has 40+ student tools: GPA Calculator, CGPA to Percentage, BMI Calculator, Age Calculator, Percentage Calculator, Scientific Calculator, Loan EMI Calculator, SIP Calculator, Compound Interest, Discount Calculator, Grade Calculator, Attendance Calculator, and more.',
   },
 ]
+
+function AccordionFAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  return (
+    <section className='home-faq-section'>
+      <span className='section-kicker'>Got Questions?</span>
+      <h2>Frequently Asked Questions</h2>
+      <p style={{ color: 'var(--muted)', textAlign: 'center', maxWidth: '38rem', margin: '0 auto 1.5rem', fontSize: '0.95rem' }}>
+        Everything about ISHU TOOLS — answers in English and Hindi/Hinglish
+      </p>
+      <div className='faq-accordion'>
+        {FAQ_ITEMS.map((item, i) => {
+          const isOpen = openIndex === i
+          return (
+            <div
+              key={i}
+              className={`faq-acc-item${isOpen ? ' open' : ''}`}
+            >
+              <button
+                className='faq-acc-trigger'
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+                aria-expanded={isOpen}
+              >
+                <span>{item.q}</span>
+                <ChevronDown
+                  size={18}
+                  className='faq-acc-icon'
+                  style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease' }}
+                />
+              </button>
+              <div
+                className='faq-acc-body'
+                style={{
+                  maxHeight: isOpen ? '400px' : '0',
+                  opacity: isOpen ? 1 : 0,
+                  overflow: 'hidden',
+                  transition: 'max-height 0.3s ease, opacity 0.25s ease',
+                }}
+              >
+                <p className='faq-acc-answer'>{item.a}</p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+const SEO_KEYWORDS = [
+  'ishu tools', 'ishu kumar iit patna', 'indian student hub university tools', 'ishutools.com',
+  'merge pdf free', 'compress pdf online free', 'pdf to word online', 'word to pdf free',
+  'compress image online', 'remove background free', 'resize image online', 'crop image free',
+  'bmi calculator india', 'emi calculator india', 'sip calculator india', 'gst calculator india',
+  'income tax calculator india', 'cgpa to percentage', '75% attendance calculator',
+  'json formatter', 'base64 encoder decoder', 'qr code generator free', 'barcode generator',
+  'password generator', 'uuid generator', 'hash generator md5 sha256',
+  'pdf compress kaise kare', 'image background remove free mein', 'pdf merge kaise kare',
+  'free tools for students india', 'online tools without signup', 'tools without watermark',
+  'ilovepdf alternative free', 'smallpdf alternative free', 'pdfcandy alternative free',
+  'youtube thumbnail downloader', 'instagram photo downloader', 'passport size photo maker',
+  'word counter online', 'character counter', 'case converter online', 'text to speech free',
+  'unit converter online', 'temperature converter', 'length converter', 'weight converter',
+  'compound interest calculator', 'simple interest calculator', 'age calculator online',
+  'days between dates', 'time zone converter', 'roman numeral converter',
+  'color picker online', 'hex to rgb converter', 'gradient generator css',
+  'regex tester online', 'diff checker online', 'sql formatter online', 'html beautifier',
+  'css minifier', 'javascript minifier', 'json to csv converter', 'csv to json online',
+  'ocr pdf free', 'pdf annotator online', 'pdf watermark remover free', 'unlock pdf online',
+  'pdf to excel free', 'excel to pdf online', 'pdf to powerpoint', 'powerpoint to pdf',
+  'meme generator online', 'photo collage maker free', 'image to pdf converter',
+  'svg optimizer', 'webp to jpg converter', 'heic to jpg converter', 'png to jpg online',
+]
+
+function SEOCloud() {
+  return (
+    <div className='seo-cloud' aria-hidden='true'>
+      {SEO_KEYWORDS.map((kw) => (
+        <span key={kw} className='seo-cloud-tag'>{kw}</span>
+      ))}
+    </div>
+  )
+}
 
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
@@ -102,11 +320,7 @@ export default function HomePage() {
       if (tool.category.startsWith('image') || tool.slug.includes('image')) imageCount += 1
     }
 
-    return {
-      byCategory,
-      pdfCount,
-      imageCount,
-    }
+    return { byCategory, pdfCount, imageCount }
   }, [categories, tools])
 
   const filteredTools = useMemo(() => {
@@ -235,7 +449,6 @@ export default function HomePage() {
             ))}
         </section>
 
-        {/* Features Bento Grid — moved below tool directory per UX guidelines */}
         {!loading && !error && (
           <section className='features-bento-section'>
             <span className='section-kicker'>Why ISHU TOOLS?</span>
@@ -258,7 +471,8 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* How it Works Section — SEO rich */}
+        {!loading && !error && <ComparisonTable />}
+
         {!loading && !error && (
           <section className='how-it-works-section'>
             <span className='section-kicker'>Simple &amp; Fast</span>
@@ -291,51 +505,11 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* FAQ Section — SEO snippets */}
-        {!loading && !error && (
-          <section className='home-faq-section'>
-            <span className='section-kicker'>Have Questions?</span>
-            <h2>Frequently Asked Questions</h2>
-            <div className='faq-list'>
-              <details className='faq-item'>
-                <summary className='faq-question'>What is ISHU TOOLS?</summary>
-                <p className='faq-answer'>ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with {tools.length}+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar, it is designed for students and professionals — no signup, no watermark, completely free.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>Is ISHU TOOLS free to use?</summary>
-                <p className='faq-answer'>Yes! ISHU TOOLS is 100% free. All {tools.length}+ tools are available without any signup, registration, or payment. There are no watermarks, no limits, and no hidden charges. Every tool works instantly online.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>Is my data safe on ISHU TOOLS?</summary>
-                <p className='faq-answer'>Absolutely! All uploaded files are processed securely on our servers and automatically deleted after processing. We never store, share, or access your files. Your privacy is our top priority. All processing happens server-side with no cloud storage.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>Can I use ISHU TOOLS on mobile?</summary>
-                <p className='faq-answer'>Yes! ISHU TOOLS is fully responsive and works perfectly on all devices — smartphones, tablets, laptops, and desktop computers. No app download needed. Just open the website in your mobile browser and start using any tool.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>How many tools does ISHU TOOLS have?</summary>
-                <p className='faq-answer'>ISHU TOOLS currently offers {tools.length}+ tools across {categories.length} categories including PDF Tools, Image Tools, Developer Tools, Math Calculators, Text Tools, Color Tools, Unit Converters, Security Tools, and Social Media Tools. New tools are added regularly.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>What PDF tools does ISHU TOOLS offer?</summary>
-                <p className='faq-answer'>ISHU TOOLS offers comprehensive PDF tools including: Merge PDF, Split PDF, Compress PDF, PDF to Word, Word to PDF, PDF to JPG, JPG to PDF, PDF to Excel, Excel to PDF, PDF to PowerPoint, OCR PDF, Protect PDF, Unlock PDF, Rotate PDF, Watermark PDF, and many more — all free with no signup.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>What image tools are available on ISHU TOOLS?</summary>
-                <p className='faq-answer'>ISHU TOOLS has 60+ image tools: Compress Image, Resize Image, Crop Image, Remove Background, Convert Image formats (JPG/PNG/WEBP/HEIC), Passport Photo Maker, Watermark Image, Add Border, Blur Image, Sharpen Image, Invert Image, Meme Generator, Social Media Resize tools, and more.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>Does ISHU TOOLS have student calculator tools?</summary>
-                <p className='faq-answer'>Yes! ISHU TOOLS has dedicated student tools: GPA Calculator, CGPA to Percentage converter, BMI Calculator, Age Calculator, Percentage Calculator, Scientific Calculator, Loan EMI Calculator, Simple Interest, Compound Interest, Discount Calculator, Grade Calculator, Attendance Calculator, and more.</p>
-              </details>
-              <details className='faq-item'>
-                <summary className='faq-question'>Is ISHU TOOLS better than iLovePDF or SmallPDF?</summary>
-                <p className='faq-answer'>ISHU TOOLS offers all the same PDF tools as iLovePDF and SmallPDF, plus image tools, developer utilities, calculators, and more — all completely free with no signup, no watermark, and no file size limits. ISHU TOOLS is the best free alternative to iLovePDF, SmallPDF, and PDFCandy.</p>
-              </details>
-            </div>
-          </section>
-        )}
+        {!loading && !error && <CreatorSection />}
+
+        {!loading && !error && <AccordionFAQ />}
+
+        {!loading && !error && <SEOCloud />}
 
         {!loading && !error && (
           <footer className='home-footer'>
