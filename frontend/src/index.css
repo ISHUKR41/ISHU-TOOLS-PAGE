@@ -2786,6 +2786,9 @@ h3 {
   border: 1px solid rgba(145, 180, 255, 0.15);
   background: linear-gradient(160deg, rgba(8, 14, 28, 0.95) 0%, rgba(6, 10, 20, 0.98) 100%);
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  min-height: clamp(720px, 92vh, 960px);
+  opacity: 1;
+  contain: layout paint style;
 }
 
 .hero-v2-orb {
@@ -2856,6 +2859,8 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: inherit;
+  justify-content: space-between;
 }
 
 .hero-v2-topbar {
@@ -2864,6 +2869,7 @@ h3 {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.7rem;
+  min-height: 2.1rem;
 }
 
 .status-badge {
@@ -2936,6 +2942,9 @@ h3 {
   text-align: center;
   max-width: 60rem;
   margin: 0 auto;
+  min-height: 20rem;
+  display: grid;
+  align-content: center;
 }
 
 .hero-kicker-pill {
@@ -2962,6 +2971,7 @@ h3 {
   letter-spacing: -0.05em;
   margin: 0;
   color: #fff;
+  text-wrap: balance;
 }
 
 .hero-v2-title .accent-gradient {
@@ -3036,6 +3046,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.85rem;
+  min-height: 7.5rem;
 }
 
 .hero-stat-card {
@@ -3097,6 +3108,7 @@ h3 {
   overflow: hidden;
   mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
   padding: 0.1rem 0;
+  min-height: 2rem;
 }
 
 .ticker-track {
@@ -3123,6 +3135,7 @@ h3 {
 /* Quick access */
 .hero-v2-quick {
   text-align: center;
+  min-height: 5.5rem;
 }
 
 .quick-label {
@@ -3171,6 +3184,7 @@ h3 {
   justify-content: center;
   padding-top: 0.5rem;
   border-top: 1px solid rgba(160, 190, 255, 0.08);
+  min-height: 2.5rem;
 }
 
 .trust-badge {
@@ -3190,6 +3204,10 @@ h3 {
    HERO V2 RESPONSIVE
    ═══════════════════════════════════════════════════ */
 @media (max-width: 900px) {
+  .hero-v2 {
+    min-height: auto;
+  }
+
   .hero-v2-stats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -3199,6 +3217,12 @@ h3 {
   .hero-v2-inner {
     padding: 1.4rem 1.1rem 1.2rem;
     gap: 1.2rem;
+    min-height: auto;
+    justify-content: start;
+  }
+
+  .hero-v2-heading {
+    min-height: 16rem;
   }
 
   .hero-v2-title {
@@ -3208,6 +3232,7 @@ h3 {
   .hero-v2-stats {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.6rem;
+    min-height: 8.25rem;
   }
 
   .hero-v2-topbar {
@@ -3219,6 +3244,10 @@ h3 {
   .hero-v2-actions {
     flex-direction: column;
     align-items: center;
+  }
+
+  .hero-v2-quick {
+    min-height: 8rem;
   }
 
   .btn-primary-hero,
@@ -4019,8 +4048,8 @@ h3 {
 
 .category-tools-grid,
 .directory-stack {
-  content-visibility: auto;
-  contain-intrinsic-size: 900px;
+  contain: layout style;
+  min-height: 900px;
 }
 
 @media (prefers-reduced-motion: reduce), (update: slow) {
@@ -4108,7 +4137,8 @@ h3 {
 /* Per-section lazy rendering — massive mobile performance gain */
 .tool-section {
   content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
+  contain-intrinsic-size: 0 720px;
+  min-height: 280px;
 }
 
 /* ── CSS-only Tool Card Hover (GPU-composited, no jank) ── */
@@ -6131,11 +6161,6 @@ button[type="submit"]:hover {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
-}
-
-/* ── Font display swap for LCP improvement ────────────────── */
-@font-face {
-  font-display: swap;
 }
 
 /* ── Scroll anchor fix for tools page ───────────────────────── */

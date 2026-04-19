@@ -88,6 +88,10 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - Tool detail caching (memory + sessionStorage, 10-min TTL) with in-flight request deduplication in `toolsApi.ts`
 - Runtime capabilities cached 30 min — avoids repeated polls on every tool page
 - Catalog cache uses a v2 session key with 15-minute TTL and idle-time writes after the live 715-tool expansion.
+- Above-the-fold HomePage and ToolPage routes are imported eagerly to avoid first-route chunk delay; secondary directory/category pages remain lazy.
+- Hero V2 first paint is no longer opacity-gated; stable min-heights reserve hero/status/stats/ticker/quick-link rows to reduce FOUC/CLS.
+- Homepage directory uses stable containment/min-height instead of first-viewport `content-visibility:auto`; tool sections keep lazy rendering with larger intrinsic reservations.
+- `index.html` includes early font stylesheet preload plus minimal above-the-fold critical CSS for instant dark theme/mobile layout before the bundled CSS finishes loading.
 
 ## Error Handling & UX Polish
 - React `ErrorBoundary` wraps entire app (in `App.tsx`) with graceful recovery UI + reload/home buttons

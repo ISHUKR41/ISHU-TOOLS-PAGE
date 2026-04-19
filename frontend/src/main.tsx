@@ -10,8 +10,13 @@ import App from './App.tsx'
 // Result: layout snaps INSTANTLY at every pixel during drag-resize.
 let resizeRaf: number | null = null
 let resizeTimer: ReturnType<typeof setTimeout> | null = null
+let resizeStarted = false
 
 function onResizeStart() {
+  if (!resizeStarted) {
+    resizeStarted = true
+    document.documentElement.classList.add('resize-ready')
+  }
   document.documentElement.classList.add('resizing')
   if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = null }
   if (resizeTimer) { clearTimeout(resizeTimer); resizeTimer = null }

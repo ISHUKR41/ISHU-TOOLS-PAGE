@@ -10,6 +10,23 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" />
+    <style>
+      :root{color-scheme:dark;--bg:#03060e;--text:#eef6ff;--muted:#91a4c7;--accent:#3bd0ff;--font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+      html{background:#03060e;scroll-behavior:smooth}
+      body{margin:0;min-width:320px;background:radial-gradient(circle at top left,rgba(59,208,255,.11),transparent 30rem),#03060e;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
+      #root{min-height:100vh}
+      .site-shell{min-height:100vh;position:relative}
+      .site-nav{position:sticky;top:0;z-index:50;padding-top:1rem}
+      .site-content{position:relative;z-index:2}
+      .page-wrap{width:min(1280px,92vw);margin:0 auto;padding-top:1.25rem}
+      .hero-v2{position:relative;overflow:hidden;border-radius:28px;border:1px solid rgba(145,180,255,.15);background:linear-gradient(160deg,rgba(8,14,28,.95),rgba(6,10,20,.98));min-height:clamp(720px,92vh,960px);opacity:1}
+      .hero-v2-inner{position:relative;z-index:2;padding:2rem 2rem 1.6rem;display:flex;flex-direction:column;gap:1.5rem;min-height:inherit;justify-content:space-between}
+      .hero-v2-title{font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);font-weight:800;line-height:.9;letter-spacing:-.05em;margin:0;color:#fff;text-align:center}
+      .hero-v2-subtitle{margin:1.1rem auto 0;max-width:46rem;color:var(--muted);font-size:1.08rem;line-height:1.78;text-align:center}
+      @media(max-width:900px){.hero-v2{min-height:auto}.page-wrap{width:min(1280px,94vw)}}
+      @media(max-width:600px){.hero-v2-inner{padding:1.4rem 1.1rem 1.2rem;min-height:auto}.hero-v2-title{font-size:clamp(2.8rem,12vw,4.5rem)}}
+    </style>
 
     <!-- Primary SEO -->
     <title>ISHU TOOLS – Indian Student Hub University Tools | 715+ Free PDF, Image, Developer & Student Tools by Ishu Kumar</title>

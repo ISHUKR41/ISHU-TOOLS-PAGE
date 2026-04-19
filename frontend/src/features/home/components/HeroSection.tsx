@@ -157,7 +157,7 @@ export default function HeroSection({
   return (
     <motion.section
       className='hero-v2'
-      initial={{ opacity: 0 }}
+      initial={false}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.25 }}
     >
@@ -173,7 +173,7 @@ export default function HeroSection({
         {/* Status + social bar */}
         <motion.div
           className='hero-v2-topbar'
-          initial={{ opacity: 0, y: -6 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.2 }}
         >
@@ -193,7 +193,7 @@ export default function HeroSection({
         {/* Main heading */}
         <motion.div
           className='hero-v2-heading'
-          initial={{ opacity: 0, y: 14 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05, duration: 0.3 }}
         >
@@ -226,7 +226,7 @@ export default function HeroSection({
         {/* Stats grid */}
         <motion.div
           className='hero-v2-stats'
-          initial={{ opacity: 0, y: 16 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.3 }}
         >
@@ -239,7 +239,7 @@ export default function HeroSection({
             <motion.div
               key={stat.label}
               className='hero-stat-card'
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={false}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.12 + i * 0.04, duration: 0.25 }}
               style={{ '--stat-color': stat.color } as React.CSSProperties}
@@ -256,7 +256,7 @@ export default function HeroSection({
 
         {/* Ticker */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.18, duration: 0.25 }}
         >
@@ -266,7 +266,7 @@ export default function HeroSection({
         {/* Quick access tools */}
         <motion.div
           className='hero-v2-quick'
-          initial={{ opacity: 0, y: 8 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.25 }}
         >
@@ -275,7 +275,7 @@ export default function HeroSection({
             {QUICK_TOOLS.map((tool, i) => (
               <motion.div
                 key={tool.to}
-                initial={{ opacity: 0, y: 8 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.22 + i * 0.025, duration: 0.2 }}
               >
@@ -295,7 +295,7 @@ export default function HeroSection({
         {/* Trust badges */}
         <motion.div
           className='trust-row'
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.25, duration: 0.2 }}
         >

@@ -1,8 +1,8 @@
 import { lazy } from 'react'
 import { Navigate, useRoutes } from 'react-router-dom'
 
-const HomePage = lazy(() => import('../features/home/HomePage.tsx'))
-const ToolPage = lazy(() => import('../features/tool/ToolPage.tsx'))
+import HomePage from '../features/home/HomePage.tsx'
+import ToolPage from '../features/tool/ToolPage.tsx'
 const AllToolsPage = lazy(() => import('../features/tools/AllToolsPage.tsx'))
 const CategoryPage = lazy(() => import('../features/category/CategoryPage.tsx'))
 
