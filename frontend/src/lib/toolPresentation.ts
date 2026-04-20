@@ -261,6 +261,78 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(251, 146, 60, 0.24)',
     label: 'Cooking',
   },
+  'writing-tools': {
+    accent: '#a78bfa',
+    surface: 'rgba(22, 13, 38, 0.86)',
+    glow: 'rgba(167, 139, 250, 0.26)',
+    label: 'Writing',
+  },
+  'developer-generators': {
+    accent: '#22d3ee',
+    surface: 'rgba(6, 22, 30, 0.86)',
+    glow: 'rgba(34, 211, 238, 0.24)',
+    label: 'Dev Generators',
+  },
+  'business-tools': {
+    accent: '#f59e0b',
+    surface: 'rgba(34, 24, 5, 0.86)',
+    glow: 'rgba(245, 158, 11, 0.24)',
+    label: 'Business',
+  },
+  'ai-writing': {
+    accent: '#f973ff',
+    surface: 'rgba(32, 10, 36, 0.86)',
+    glow: 'rgba(249, 115, 255, 0.22)',
+    label: 'AI Writing',
+  },
+  'crypto-web3': {
+    accent: '#f97316',
+    surface: 'rgba(36, 16, 5, 0.86)',
+    glow: 'rgba(249, 115, 22, 0.24)',
+    label: 'Crypto & Web3',
+  },
+  'finance-tax': {
+    accent: '#fbbf24',
+    surface: 'rgba(36, 26, 5, 0.86)',
+    glow: 'rgba(251, 191, 36, 0.22)',
+    label: 'Finance & Tax',
+  },
+  'health-fitness': {
+    accent: '#4ade80',
+    surface: 'rgba(8, 28, 16, 0.86)',
+    glow: 'rgba(74, 222, 128, 0.22)',
+    label: 'Health & Fitness',
+  },
+  'hr-jobs': {
+    accent: '#60a5fa',
+    surface: 'rgba(10, 20, 36, 0.86)',
+    glow: 'rgba(96, 165, 250, 0.22)',
+    label: 'HR & Jobs',
+  },
+  'legal-tools': {
+    accent: '#e2e8f0',
+    surface: 'rgba(18, 20, 28, 0.88)',
+    glow: 'rgba(226, 232, 240, 0.15)',
+    label: 'Legal',
+  },
+  'math-calculators': {
+    accent: '#f59e0b',
+    surface: 'rgba(34, 24, 5, 0.86)',
+    glow: 'rgba(245, 158, 11, 0.22)',
+    label: 'Math Calculators',
+  },
+  'text-operations': {
+    accent: '#93c5fd',
+    surface: 'rgba(10, 18, 36, 0.86)',
+    glow: 'rgba(147, 197, 253, 0.22)',
+    label: 'Text Operations',
+  },
+  'travel-tools': {
+    accent: '#34d399',
+    surface: 'rgba(8, 26, 20, 0.86)',
+    glow: 'rgba(52, 211, 153, 0.22)',
+    label: 'Travel',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([

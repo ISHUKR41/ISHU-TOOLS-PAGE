@@ -496,9 +496,17 @@ h3 {
 .run-button {
   color: #02121d;
   background: linear-gradient(120deg, #4ad4ff, #4df0b5);
-  box-shadow: 0 16px 36px rgba(67, 222, 255, 0.18);
+  box-shadow: 0 6px 28px rgba(67, 222, 255, 0.28), 0 2px 8px rgba(0,0,0,0.25);
   border: 0;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: box-shadow 160ms ease, transform 120ms ease, filter 120ms ease;
+}
+
+.run-button:hover:not(:disabled) {
+  box-shadow: 0 8px 36px rgba(67, 222, 255, 0.4), 0 2px 12px rgba(0,0,0,0.28);
+  filter: brightness(1.06);
 }
 
 .secondary-link-button,
@@ -736,8 +744,8 @@ h3 {
 .tool-main-panel,
 .insight-card,
 .result-card {
-  border-radius: 26px;
-  padding: 1.2rem;
+  border-radius: 28px;
+  padding: 1.4rem;
 }
 
 .search-panel {
@@ -1026,9 +1034,13 @@ h3 {
 }
 
 .tool-icon-wrap.large {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
+  width: 68px;
+  height: 68px;
+  border-radius: 20px;
+  border: 1.5px solid color-mix(in srgb, var(--card-accent, #3bd0ff) 36%, rgba(255,255,255,0.08));
+  background: color-mix(in srgb, var(--card-accent, #3bd0ff) 14%, rgba(12, 18, 32, 0.7));
+  box-shadow: 0 0 20px color-mix(in srgb, var(--card-accent, #3bd0ff) 22%, transparent), inset 0 1px 0 rgba(255,255,255,0.08);
+  flex-shrink: 0;
 }
 
 .tool-icon {
@@ -1116,15 +1128,29 @@ h3 {
 .tool-main-panel {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--card-surface, rgba(13, 19, 35, 0.86)), rgba(8, 13, 24, 0.92));
+  background: linear-gradient(160deg, var(--card-surface, rgba(13, 19, 35, 0.9)), rgba(7, 11, 22, 0.96));
+  border: 1px solid color-mix(in srgb, var(--card-accent, #3bd0ff) 18%, rgba(80, 110, 160, 0.18));
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.35), 0 8px 40px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .tool-main-panel::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top right, var(--card-glow, rgba(59, 208, 255, 0.18)), transparent 42%);
+  background:
+    radial-gradient(ellipse 70% 50% at 95% 0%, var(--card-glow, rgba(59, 208, 255, 0.14)), transparent 60%),
+    radial-gradient(ellipse 40% 30% at 0% 100%, color-mix(in srgb, var(--card-accent, #3bd0ff) 8%, transparent), transparent 60%);
   pointer-events: none;
+}
+
+.tool-main-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E");
+  background-size: 32px 32px;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .tool-page-hero {
@@ -1132,18 +1158,26 @@ h3 {
   z-index: 1;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.15rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .tool-page-hero h1 {
   margin-top: 0.55rem;
-  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-size: clamp(1.85rem, 3vw, 2.65rem);
+  background: linear-gradient(135deg, #fff 30%, color-mix(in srgb, var(--card-accent, #3bd0ff) 70%, #fff));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
 }
 
 .tool-page-hero p {
   margin: 0.65rem 0 0;
-  color: var(--muted);
-  line-height: 1.75;
+  color: rgba(196, 215, 250, 0.82);
+  line-height: 1.8;
+  max-width: 62ch;
 }
 
 .back-link,
@@ -1169,8 +1203,8 @@ h3 {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 1rem;
-  margin-top: 1.2rem;
+  gap: 1.1rem;
+  margin-top: 1.4rem;
 }
 
 .upload-shell {
@@ -1231,8 +1265,10 @@ h3 {
 .field-block input:focus,
 .field-block textarea:focus,
 .field-block select:focus {
-  border-color: rgba(59, 208, 255, 0.42);
-  box-shadow: 0 0 0 0.2rem rgba(59, 208, 255, 0.08);
+  border-color: color-mix(in srgb, var(--card-accent, #3bd0ff) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--card-accent, #3bd0ff) 10%, transparent);
+  outline: none;
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .field-hint {
@@ -1575,22 +1611,47 @@ h3 {
 }
 
 .tool-progress-bar {
-  height: 4px;
+  height: 5px;
   border-radius: 999px;
-  background: rgba(156, 190, 255, 0.12);
+  background: rgba(156, 190, 255, 0.10);
   overflow: hidden;
+  border: 1px solid rgba(156,190,255,0.07);
+}
+
+@keyframes progress-shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.75; }
+  100% { opacity: 1; }
 }
 
 .tool-progress-fill {
   height: 100%;
   border-radius: 999px;
   transition: width 0.4s ease;
+  animation: progress-shimmer 1.2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.32) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: progress-sweep 1.4s linear infinite;
+}
+
+@keyframes progress-sweep {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
 .tool-progress-label {
   margin: 0;
   color: var(--muted);
   font-size: 0.82rem;
+  letter-spacing: 0.01em;
 }
 
 /* ── Result States ─────────────────────────────────── */
@@ -2114,16 +2175,30 @@ h3 {
   gap: 1rem;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(160deg, rgba(10, 18, 34, 0.94), rgba(6, 11, 22, 0.97));
+  border: 1px solid color-mix(in srgb, var(--card-accent, #3bd0ff) 20%, rgba(80, 120, 180, 0.14));
+  box-shadow: 0 4px 28px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .result-card::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--card-accent, #3bd0ff) 14%, transparent), transparent 65%);
+  pointer-events: none;
+}
+
+.result-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
   right: 0;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--card-accent, #3bd0ff) 16%, transparent), transparent 70%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--card-accent, #3bd0ff) 25%, transparent), transparent);
   pointer-events: none;
 }
 

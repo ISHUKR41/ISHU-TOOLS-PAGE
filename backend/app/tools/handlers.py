@@ -6534,3 +6534,15 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load mega_tools_v2: {e}")
 
 print(f"[handlers] FINAL ULTIMATE TOTAL registered handlers: {len(HANDLERS)}")
+
+# Merge worldwide utility tools (paraphraser, essay outline, flashcards, email, cover letter,
+# hashtag generator, SQL formatter, license generator, README generator, GitHub Actions generator,
+# nginx config, dockerfile, study schedule, social bio, invoice, expense splitter, etc.)
+try:
+    from .worldwide_tools_handlers import WORLDWIDE_HANDLERS
+    HANDLERS.update(WORLDWIDE_HANDLERS)
+    print(f"[handlers] Loaded {len(WORLDWIDE_HANDLERS)} worldwide utility handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load worldwide_tools_handlers: {e}")
+
+print(f"[handlers] WORLDWIDE GRAND TOTAL registered handlers: {len(HANDLERS)}")
