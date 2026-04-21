@@ -47,7 +47,6 @@ export default defineConfig({
             return 'vendor-misc'
           }
         },
-        compact: true,
       },
       // ── NOTE: treeshake removed — `moduleSideEffects: false` was incorrectly
       // treating CSS @import side-effects as dead code in some Rollup versions.

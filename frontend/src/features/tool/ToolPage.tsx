@@ -651,6 +651,10 @@ export default function ToolPage() {
                                   src={item.previewUrl}
                                   alt={item.file.name}
                                   className='file-preview-thumb'
+                                  width={40}
+                                  height={40}
+                                  loading='lazy'
+                                  decoding='async'
                                 />
                               ) : (
                                 <div
@@ -818,7 +822,14 @@ export default function ToolPage() {
 
                   {outputImagePreview && (
                     <div className='output-image-preview'>
-                      <img src={outputImagePreview} alt='Output preview' />
+                      <img
+                        src={outputImagePreview}
+                        alt='Output preview'
+                        width={960}
+                        height={720}
+                        loading='lazy'
+                        decoding='async'
+                      />
                     </div>
                   )}
 
