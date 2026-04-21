@@ -3,8 +3,8 @@
 
 User-agent: *
 Allow: /
-Allow: /t/
-Allow: /c/
+Allow: /tools/
+Allow: /category/
 
 # Block API and internal endpoints
 Disallow: /api/

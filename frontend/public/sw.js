@@ -1,9 +1,9 @@
-// ISHU TOOLS Service Worker v3.0
+// ISHU TOOLS Service Worker v6.0
 // Implements: Cache-First for assets, Network-First for API, Stale-While-Revalidate for pages
 
-const CACHE_NAME = 'ishu-tools-v3';
-const STATIC_CACHE = 'ishu-static-v3';
-const API_CACHE = 'ishu-api-v3';
+const CACHE_NAME = 'ishu-tools-v7';
+const STATIC_CACHE = 'ishu-static-v6';
+const API_CACHE = 'ishu-api-v6';
 
 const STATIC_ASSETS = [
   '/',

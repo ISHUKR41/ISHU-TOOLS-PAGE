@@ -3883,6 +3883,324 @@ Object.assign(TOOL_FIELDS, {
     { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste text to count letters...' },
     { name: 'ignore_spaces', label: 'Ignore Spaces?', type: 'select', defaultValue: 'true', options: booleanOptions },
   ],
+  'user-agent-parser': [
+    { name: 'user_agent', label: 'User Agent String', type: 'textarea', defaultValue: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', placeholder: 'Paste browser user-agent...' },
+  ],
+  'csv-cleaner': [
+    { name: 'csv', label: 'CSV Data', type: 'textarea', defaultValue: 'Name, Score\\n Ishu , 95\\n Tools , 100\\n', placeholder: 'Paste CSV data...' },
+    { name: 'delimiter', label: 'Delimiter', type: 'select', defaultValue: 'auto', options: [
+      { label: 'Auto Detect', value: 'auto' },
+      { label: 'Comma', value: 'comma' },
+      { label: 'Tab', value: 'tab' },
+      { label: 'Semicolon', value: 'semicolon' },
+      { label: 'Pipe', value: 'pipe' },
+    ] },
+    { name: 'trim_cells', label: 'Trim Cells?', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'remove_empty_rows', label: 'Remove Empty Rows?', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'dedupe_rows', label: 'Remove Duplicate Rows?', type: 'select', defaultValue: 'false', options: booleanOptions },
+    { name: 'normalize_headers', label: 'Normalize Headers?', type: 'select', defaultValue: 'false', options: booleanOptions },
+  ],
+  'regex-replace': [
+    { name: 'text', label: 'Input Text', type: 'textarea', defaultValue: 'Call 98765-43210 or 12345-67890', placeholder: 'Paste text...' },
+    { name: 'pattern', label: 'Regex Pattern', type: 'text', defaultValue: '\\\\d{5}-\\\\d{5}', placeholder: 'e.g. \\\\d+' },
+    { name: 'replacement', label: 'Replacement', type: 'text', defaultValue: '[phone]', placeholder: 'Replacement text' },
+    { name: 'flags', label: 'Flags', type: 'text', defaultValue: 'i', placeholder: 'i, m, s' },
+  ],
+  'weighted-gpa-calculator': [
+    { name: 'courses', label: 'Courses (name, grade, credits)', type: 'textarea', defaultValue: 'Math,A,4\\nPhysics,B+,3\\nEnglish,A-,2', placeholder: 'Math,A,4' },
+    { name: 'scale', label: 'GPA Scale', type: 'number', defaultValue: '4', placeholder: '4 or 10' },
+  ],
+  'grade-average-calculator': [
+    { name: 'scores', label: 'Scores', type: 'textarea', defaultValue: '78, 85, 91, 66', placeholder: 'Enter scores separated by comma or lines' },
+    { name: 'max_marks', label: 'Max Marks Per Score', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+  ],
+  'syllabus-study-planner': [
+    { name: 'topics', label: 'Topics (topic, difficulty)', type: 'textarea', defaultValue: 'Algebra, hard\\nPhysics numericals, medium\\nEnglish grammar, easy', placeholder: 'Topic, easy/medium/hard' },
+    { name: 'days', label: 'Days Left', type: 'number', defaultValue: '7', placeholder: 'e.g. 7' },
+    { name: 'daily_hours', label: 'Daily Study Hours', type: 'number', defaultValue: '2', placeholder: 'e.g. 2' },
+  ],
+  'citation-url-cleaner': [
+    { name: 'urls', label: 'URLs', type: 'textarea', defaultValue: 'https://example.com/article?utm_source=twitter&gclid=abc&id=42', placeholder: 'Paste citation URLs...' },
+    { name: 'keep_fragment', label: 'Keep URL Fragment?', type: 'select', defaultValue: 'false', options: booleanOptions },
+  ],
+  'url-query-parser': [
+    { name: 'url', label: 'URL', type: 'textarea', defaultValue: 'https://example.com/search?q=ishu&sort=new#top', placeholder: 'Paste URL...' },
+  ],
+  'timestamp-converter': [
+    { name: 'timestamp', label: 'Timestamp or Date', type: 'text', defaultValue: '1700000000', placeholder: 'Unix timestamp, milliseconds, or ISO date' },
+    { name: 'offset_minutes', label: 'Local Offset Minutes', type: 'number', defaultValue: '330', placeholder: 'India = 330, UTC = 0' },
+  ],
+  'markdown-table-generator': [
+    { name: 'data', label: 'CSV / Table Data', type: 'textarea', defaultValue: 'Name,Score\\nIshu,95\\nTools,100', placeholder: 'Paste CSV, TSV, or table data...' },
+    { name: 'delimiter', label: 'Delimiter', type: 'select', defaultValue: 'auto', options: [
+      { label: 'Auto Detect', value: 'auto' },
+      { label: 'Comma', value: 'comma' },
+      { label: 'Tab', value: 'tab' },
+      { label: 'Pipe', value: 'pipe' },
+      { label: 'Semicolon', value: 'semicolon' },
+    ] },
+    { name: 'has_header', label: 'First Row is Header?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'email-extractor': [
+    { name: 'text', label: 'Text', type: 'textarea', defaultValue: 'Contact ishu@example.com and support@ishutools.com for help.', placeholder: 'Paste text containing emails...' },
+  ],
+  'phone-number-extractor': [
+    { name: 'text', label: 'Text', type: 'textarea', defaultValue: 'Call +91 98765 43210 or 011-2345-6789 today.', placeholder: 'Paste text containing phone numbers...' },
+  ],
+  'keyword-density-checker': [
+    { name: 'text', label: 'Content', type: 'textarea', defaultValue: 'ISHU TOOLS is a free online tools website for students, developers, and creators. These tools are fast and free.', placeholder: 'Paste SEO content...' },
+    { name: 'min_length', label: 'Minimum Word Length', type: 'number', defaultValue: '3', placeholder: 'e.g. 3' },
+    { name: 'top_n', label: 'Top Keywords', type: 'number', defaultValue: '20', placeholder: 'e.g. 20' },
+  ],
+  'robots-txt-generator': [
+    { name: 'site_url', label: 'Site URL', type: 'text', defaultValue: 'https://ishutools.com', placeholder: 'https://example.com' },
+    { name: 'sitemap_url', label: 'Sitemap URL', type: 'text', defaultValue: 'https://ishutools.com/sitemap.xml', placeholder: 'https://example.com/sitemap.xml' },
+    { name: 'allow', label: 'Allow Paths', type: 'textarea', defaultValue: '/', placeholder: 'One path per line' },
+    { name: 'disallow', label: 'Disallow Paths', type: 'textarea', defaultValue: '/api/\\n/admin/', placeholder: 'One path per line' },
+    { name: 'crawl_delay', label: 'Crawl Delay', type: 'text', placeholder: 'Optional, e.g. 1' },
+  ],
+  'meta-description-generator': [
+    { name: 'topic', label: 'Page / Tool Topic', type: 'text', defaultValue: 'Free PDF tools', placeholder: 'e.g. YouTube playlist downloader' },
+    { name: 'audience', label: 'Audience', type: 'text', defaultValue: 'students and professionals', placeholder: 'e.g. Indian students' },
+    { name: 'keywords', label: 'Keywords', type: 'textarea', defaultValue: 'free tools, online tools, ISHU TOOLS', placeholder: 'Comma-separated keywords' },
+    { name: 'max_length', label: 'Max Description Length', type: 'number', defaultValue: '155', placeholder: '120-180' },
+  ],
+  'utm-builder': [
+    { name: 'url', label: 'Website URL', type: 'text', defaultValue: 'https://ishutools.com/tools', placeholder: 'https://example.com/page' },
+    { name: 'source', label: 'UTM Source', type: 'text', defaultValue: 'newsletter', placeholder: 'google, instagram, newsletter' },
+    { name: 'medium', label: 'UTM Medium', type: 'text', defaultValue: 'email', placeholder: 'cpc, social, email' },
+    { name: 'campaign', label: 'UTM Campaign', type: 'text', defaultValue: 'student_tools_launch', placeholder: 'campaign name' },
+    { name: 'term', label: 'UTM Term', type: 'text', placeholder: 'Optional keyword' },
+    { name: 'content', label: 'UTM Content', type: 'text', placeholder: 'Optional ad/content variant' },
+  ],
+  'html-table-generator': [
+    { name: 'data', label: 'CSV / Table Data', type: 'textarea', defaultValue: 'Name,Score\\nIshu,95\\nTools,100', placeholder: 'Paste CSV data...' },
+    { name: 'delimiter', label: 'Delimiter', type: 'select', defaultValue: 'auto', options: [
+      { label: 'Auto Detect', value: 'auto' },
+      { label: 'Comma', value: 'comma' },
+      { label: 'Tab', value: 'tab' },
+      { label: 'Pipe', value: 'pipe' },
+      { label: 'Semicolon', value: 'semicolon' },
+    ] },
+    { name: 'has_header', label: 'First Row is Header?', type: 'select', defaultValue: 'true', options: booleanOptions },
+    { name: 'class_name', label: 'CSS Class Name', type: 'text', defaultValue: 'ishu-table', placeholder: 'e.g. pricing-table' },
+  ],
+  'json-schema-generator': [
+    { name: 'json', label: 'JSON Data', type: 'textarea', defaultValue: '{"name":"Ishu","score":95,"tags":["tools","student"]}', placeholder: 'Paste valid JSON...' },
+  ],
+  'css-clamp-generator': [
+    { name: 'min_px', label: 'Minimum Size (px)', type: 'number', defaultValue: '16', placeholder: 'e.g. 16' },
+    { name: 'max_px', label: 'Maximum Size (px)', type: 'number', defaultValue: '32', placeholder: 'e.g. 32' },
+    { name: 'min_viewport', label: 'Minimum Viewport (px)', type: 'number', defaultValue: '360', placeholder: 'e.g. 360' },
+    { name: 'max_viewport', label: 'Maximum Viewport (px)', type: 'number', defaultValue: '1440', placeholder: 'e.g. 1440' },
+    { name: 'base_px', label: 'REM Base (px)', type: 'number', defaultValue: '16', placeholder: 'e.g. 16' },
+    { name: 'unit', label: 'Output Unit', type: 'select', defaultValue: 'rem', options: [
+      { label: 'rem', value: 'rem' },
+      { label: 'px', value: 'px' },
+    ] },
+  ],
+  'slug-bulk-generator': [
+    { name: 'text', label: 'Titles / Lines', type: 'textarea', defaultValue: 'Hello World\\nISHU Tools Page', placeholder: 'One title per line' },
+    { name: 'separator', label: 'Separator', type: 'text', defaultValue: '-', placeholder: '- or _' },
+    { name: 'max_length', label: 'Max Slug Length', type: 'number', defaultValue: '80', placeholder: 'e.g. 80' },
+    { name: 'preserve_numbers', label: 'Keep Numbers?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'table-to-csv-converter': [
+    { name: 'table', label: 'Table Text', type: 'textarea', defaultValue: '| Name | Score |\\n| --- | --- |\\n| Ishu | 95 |', placeholder: 'Paste Markdown/table text...' },
+  ],
+  'csv-column-extractor': [
+    { name: 'csv', label: 'CSV Data', type: 'textarea', defaultValue: 'Name,Score,City\\nIshu,95,Patna\\nTools,100,Web', placeholder: 'Paste CSV data...' },
+    { name: 'columns', label: 'Columns to Extract', type: 'text', defaultValue: 'Name,Score', placeholder: 'Names or 1-based indexes' },
+    { name: 'delimiter', label: 'Delimiter', type: 'select', defaultValue: 'auto', options: [
+      { label: 'Auto Detect', value: 'auto' },
+      { label: 'Comma', value: 'comma' },
+      { label: 'Tab', value: 'tab' },
+      { label: 'Pipe', value: 'pipe' },
+      { label: 'Semicolon', value: 'semicolon' },
+    ] },
+    { name: 'has_header', label: 'First Row is Header?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'css-specificity-calculator': [
+    { name: 'selectors', label: 'CSS Selectors', type: 'textarea', defaultValue: '#app .card button:hover\\nmain article h2', placeholder: 'One selector per line' },
+  ],
+  'http-status-code-lookup': [
+    { name: 'code', label: 'HTTP Status Code', type: 'number', defaultValue: '404', placeholder: 'e.g. 404' },
+  ],
+  'mime-type-lookup': [
+    { name: 'extension', label: 'File Extension or Filename', type: 'text', defaultValue: 'pdf', placeholder: 'pdf, image.png, json' },
+  ],
+  'loan-comparison-calculator': [
+    { name: 'principal', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: 'e.g. 500000' },
+    { name: 'years', label: 'Tenure (years)', type: 'number', defaultValue: '5', placeholder: 'e.g. 5' },
+    { name: 'rates', label: 'Interest Rates (%)', type: 'text', defaultValue: '8.5, 10, 12', placeholder: 'Comma-separated rates' },
+  ],
+  'break-even-calculator': [
+    { name: 'fixed_cost', label: 'Fixed Cost', type: 'number', defaultValue: '100000', placeholder: 'e.g. 100000' },
+    { name: 'price_per_unit', label: 'Price Per Unit', type: 'number', defaultValue: '500', placeholder: 'e.g. 500' },
+    { name: 'variable_cost_per_unit', label: 'Variable Cost Per Unit', type: 'number', defaultValue: '250', placeholder: 'e.g. 250' },
+  ],
+  'profit-margin-calculator': [
+    { name: 'cost', label: 'Cost Price', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+    { name: 'selling_price', label: 'Selling Price', type: 'number', defaultValue: '150', placeholder: 'e.g. 150' },
+  ],
+  'gst-reverse-calculator': [
+    { name: 'inclusive_amount', label: 'GST-Inclusive Amount (₹)', type: 'number', defaultValue: '1180', placeholder: 'e.g. 1180' },
+    { name: 'gst_rate', label: 'GST Rate (%)', type: 'number', defaultValue: '18', placeholder: 'e.g. 18' },
+  ],
+  'discount-stack-calculator': [
+    { name: 'price', label: 'Original Price', type: 'number', defaultValue: '1000', placeholder: 'e.g. 1000' },
+    { name: 'discounts', label: 'Discounts (%)', type: 'text', defaultValue: '10,5', placeholder: 'Comma-separated discounts' },
+  ],
+  'study-break-planner': [
+    { name: 'total_minutes', label: 'Total Study Minutes', type: 'number', defaultValue: '180', placeholder: 'e.g. 180' },
+    { name: 'focus_minutes', label: 'Focus Block Minutes', type: 'number', defaultValue: '50', placeholder: 'e.g. 50' },
+    { name: 'break_minutes', label: 'Break Minutes', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
+    { name: 'start_time', label: 'Start Time', type: 'text', defaultValue: '09:00', placeholder: 'HH:MM' },
+  ],
+  'water-reminder-schedule': [
+    { name: 'wake_time', label: 'Wake Time', type: 'text', defaultValue: '07:00', placeholder: 'HH:MM' },
+    { name: 'sleep_time', label: 'Sleep Time', type: 'text', defaultValue: '22:30', placeholder: 'HH:MM' },
+    { name: 'glasses', label: 'Glasses Per Day', type: 'number', defaultValue: '8', placeholder: 'e.g. 8' },
+  ],
+  'workout-plan-generator': [
+    { name: 'goal', label: 'Goal', type: 'select', defaultValue: 'fitness', options: [
+      { label: 'General Fitness', value: 'fitness' },
+      { label: 'Strength', value: 'strength' },
+      { label: 'Weight Loss', value: 'weight_loss' },
+    ] },
+    { name: 'level', label: 'Level', type: 'select', defaultValue: 'beginner', options: [
+      { label: 'Beginner', value: 'beginner' },
+      { label: 'Intermediate', value: 'intermediate' },
+      { label: 'Advanced', value: 'advanced' },
+    ] },
+    { name: 'days_per_week', label: 'Days Per Week', type: 'number', defaultValue: '4', placeholder: '1-7' },
+  ],
+  'meal-plan-generator': [
+    { name: 'calories', label: 'Daily Calories', type: 'number', defaultValue: '2000', placeholder: 'e.g. 2000' },
+    { name: 'meals', label: 'Meals Per Day', type: 'number', defaultValue: '4', placeholder: '2-6' },
+    { name: 'diet', label: 'Diet Style', type: 'select', defaultValue: 'balanced', options: [
+      { label: 'Balanced', value: 'balanced' },
+      { label: 'High Protein', value: 'high protein' },
+    ] },
+  ],
+  'name-initials-generator': [
+    { name: 'names', label: 'Names', type: 'textarea', defaultValue: 'Ishu Kumar\\nIndian Student Hub', placeholder: 'One name per line' },
+  ],
+  'acronym-generator': [
+    { name: 'phrase', label: 'Phrase', type: 'text', defaultValue: 'Indian Student Hub University Tools', placeholder: 'Enter phrase...' },
+  ],
+  'username-generator': [
+    { name: 'name', label: 'Name', type: 'text', defaultValue: 'Ishu Kumar', placeholder: 'Your name' },
+    { name: 'keyword', label: 'Keyword', type: 'text', defaultValue: 'tools', placeholder: 'tools, dev, art...' },
+    { name: 'count', label: 'How Many?', type: 'number', defaultValue: '12', placeholder: '5-50' },
+  ],
+  'youtube-thumbnail-url-generator': [
+    { name: 'url', label: 'YouTube URL or Video ID', type: 'text', defaultValue: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', placeholder: 'Paste YouTube URL...' },
+  ],
+  'youtube-embed-code-generator': [
+    { name: 'url', label: 'YouTube URL or Video ID', type: 'text', defaultValue: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', placeholder: 'Paste YouTube URL...' },
+    { name: 'start_seconds', label: 'Start Seconds', type: 'number', defaultValue: '0', placeholder: 'e.g. 30' },
+    { name: 'autoplay', label: 'Autoplay?', type: 'select', defaultValue: 'false', options: booleanOptions },
+    { name: 'responsive', label: 'Responsive Embed?', type: 'select', defaultValue: 'true', options: booleanOptions },
+  ],
+  'video-aspect-ratio-calculator': [
+    { name: 'width', label: 'Width', type: 'number', defaultValue: '1920', placeholder: 'e.g. 1920' },
+    { name: 'height', label: 'Height', type: 'number', defaultValue: '1080', placeholder: 'e.g. 1080' },
+  ],
+  'video-bitrate-calculator': [
+    { name: 'size_mb', label: 'File Size (MB)', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+    { name: 'duration', label: 'Duration', type: 'text', defaultValue: '00:03:00', placeholder: 'HH:MM:SS or seconds' },
+    { name: 'audio_kbps', label: 'Audio Bitrate (kbps)', type: 'number', defaultValue: '128', placeholder: 'e.g. 128' },
+  ],
+  'video-file-size-estimator': [
+    { name: 'duration', label: 'Duration', type: 'text', defaultValue: '00:03:00', placeholder: 'HH:MM:SS or seconds' },
+    { name: 'video_kbps', label: 'Video Bitrate (kbps)', type: 'number', defaultValue: '2500', placeholder: 'e.g. 2500' },
+    { name: 'audio_kbps', label: 'Audio Bitrate (kbps)', type: 'number', defaultValue: '128', placeholder: 'e.g. 128' },
+  ],
+  'video-duration-calculator': [
+    { name: 'duration', label: 'Duration / Timecode', type: 'text', defaultValue: '01:23:45', placeholder: 'HH:MM:SS or seconds' },
+    { name: 'fps', label: 'FPS', type: 'number', defaultValue: '30', placeholder: 'e.g. 30' },
+  ],
+  'serp-snippet-preview': [
+    { name: 'title', label: 'SEO Title', type: 'text', defaultValue: 'ISHU TOOLS - Free Online Tools', placeholder: 'Page title...' },
+    { name: 'description', label: 'Meta Description', type: 'textarea', defaultValue: 'Use free online tools for students, developers, finance, SEO, images, PDF and more.', placeholder: 'Meta description...' },
+    { name: 'url', label: 'URL', type: 'text', defaultValue: 'https://ishutools.com/tools', placeholder: 'https://example.com/page' },
+  ],
+  'keyword-cluster-generator': [
+    { name: 'keywords', label: 'Keywords', type: 'textarea', defaultValue: 'pdf merge\\nmerge pdf online\\ncompress pdf\\nimage compressor', placeholder: 'One keyword per line' },
+  ],
+  'headline-analyzer': [
+    { name: 'headline', label: 'Headline', type: 'text', defaultValue: 'Best Free Online Tools for Students', placeholder: 'Enter headline...' },
+  ],
+  'json-path-extractor': [
+    { name: 'json', label: 'JSON Data', type: 'textarea', defaultValue: '{"user":{"name":"Ishu","scores":[95,100]}}', placeholder: 'Paste JSON...' },
+    { name: 'path', label: 'Path', type: 'text', defaultValue: 'user.name', placeholder: 'e.g. user.name or items[0].title' },
+  ],
+  'uuid-validator': [
+    { name: 'uuid', label: 'UUID', type: 'text', defaultValue: '550e8400-e29b-41d4-a716-446655440000', placeholder: 'Paste UUID...' },
+  ],
+  'ulid-generator': [
+    { name: 'count', label: 'How Many?', type: 'number', defaultValue: '5', placeholder: '1-50' },
+  ],
+  'ics-calendar-generator': [
+    { name: 'title', label: 'Event Title', type: 'text', defaultValue: 'ISHU TOOLS Event', placeholder: 'Event title' },
+    { name: 'start', label: 'Start Date Time', type: 'text', defaultValue: '2026-01-01 10:00', placeholder: 'YYYY-MM-DD HH:MM' },
+    { name: 'duration_minutes', label: 'Duration Minutes', type: 'number', defaultValue: '60', placeholder: 'e.g. 60' },
+    { name: 'location', label: 'Location', type: 'text', placeholder: 'Optional location' },
+    { name: 'description', label: 'Description', type: 'textarea', placeholder: 'Optional description' },
+  ],
+  'vcard-generator': [
+    { name: 'name', label: 'Full Name', type: 'text', defaultValue: 'Ishu Kumar', placeholder: 'Full name' },
+    { name: 'email', label: 'Email', type: 'text', defaultValue: 'hello@example.com', placeholder: 'Email address' },
+    { name: 'phone', label: 'Phone', type: 'text', placeholder: 'Phone number' },
+    { name: 'organization', label: 'Organization', type: 'text', placeholder: 'Company / school' },
+    { name: 'title', label: 'Title', type: 'text', placeholder: 'Job title' },
+    { name: 'url', label: 'Website', type: 'text', placeholder: 'https://example.com' },
+  ],
+  'salary-to-hourly-calculator': [
+    { name: 'annual_salary', label: 'Annual Salary', type: 'number', defaultValue: '600000', placeholder: 'e.g. 600000' },
+    { name: 'hours_per_week', label: 'Hours Per Week', type: 'number', defaultValue: '40', placeholder: 'e.g. 40' },
+    { name: 'weeks_per_year', label: 'Weeks Per Year', type: 'number', defaultValue: '52', placeholder: 'e.g. 52' },
+  ],
+  'hourly-to-salary-calculator': [
+    { name: 'hourly_rate', label: 'Hourly Rate', type: 'number', defaultValue: '500', placeholder: 'e.g. 500' },
+    { name: 'hours_per_week', label: 'Hours Per Week', type: 'number', defaultValue: '40', placeholder: 'e.g. 40' },
+    { name: 'weeks_per_year', label: 'Weeks Per Year', type: 'number', defaultValue: '52', placeholder: 'e.g. 52' },
+  ],
+  'debt-payoff-planner': [
+    { name: 'debts', label: 'Debts (name,balance,rate,min payment)', type: 'textarea', defaultValue: 'Card,50000,24,5000\\nLoan,200000,12,8000', placeholder: 'One debt per line' },
+    { name: 'extra_payment', label: 'Extra Monthly Payment', type: 'number', defaultValue: '2000', placeholder: 'e.g. 2000' },
+    { name: 'strategy', label: 'Strategy', type: 'select', defaultValue: 'avalanche', options: [
+      { label: 'Avalanche (highest rate first)', value: 'avalanche' },
+      { label: 'Snowball (smallest balance first)', value: 'snowball' },
+    ] },
+  ],
+  'goal-progress-calculator': [
+    { name: 'start', label: 'Start Value', type: 'number', defaultValue: '0', placeholder: 'e.g. 0' },
+    { name: 'current', label: 'Current Value', type: 'number', defaultValue: '40', placeholder: 'e.g. 40' },
+    { name: 'target', label: 'Target Value', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
+    { name: 'daily_rate', label: 'Daily Rate', type: 'number', defaultValue: '5', placeholder: 'Optional ETA rate' },
+  ],
+  'habit-streak-calculator': [
+    { name: 'dates', label: 'Completion Dates', type: 'textarea', defaultValue: '2026-04-20\\n2026-04-21\\n2026-04-22', placeholder: 'YYYY-MM-DD, one per line' },
+    { name: 'today', label: 'Today', type: 'text', defaultValue: '2026-04-22', placeholder: 'YYYY-MM-DD' },
+  ],
+  'exam-timetable-generator': [
+    { name: 'subjects', label: 'Subjects', type: 'textarea', defaultValue: 'Math,Physics,English', placeholder: 'Subjects separated by commas or lines' },
+    { name: 'days', label: 'Days Left', type: 'number', defaultValue: '7', placeholder: 'e.g. 7' },
+    { name: 'daily_hours', label: 'Daily Study Hours', type: 'number', defaultValue: '3', placeholder: 'e.g. 3' },
+  ],
+  'flashcard-csv-generator': [
+    { name: 'notes', label: 'Notes', type: 'textarea', defaultValue: 'HTML: HyperText Markup Language\\nCSS: Cascading Style Sheets', placeholder: 'Term: Definition, one per line' },
+  ],
+  'notes-to-quiz-generator': [
+    { name: 'notes', label: 'Notes', type: 'textarea', defaultValue: 'Photosynthesis converts light energy into chemical energy. HTML means HyperText Markup Language.', placeholder: 'Paste notes...' },
+  ],
+  'simple-rubric-generator': [
+    { name: 'assignment', label: 'Assignment Name', type: 'text', defaultValue: 'Essay', placeholder: 'e.g. Science Project' },
+    { name: 'criteria', label: 'Criteria', type: 'textarea', defaultValue: 'Content,Organization,Grammar,References', placeholder: 'Comma or line separated' },
+    { name: 'points_each', label: 'Points Per Criterion', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
+  ],
   'pan-card-validator': TOOL_FIELDS['pan-validator'],
   'password-analyzer': TOOL_FIELDS['password-strength-checker'],
   'jwt-decoder-advanced': TOOL_FIELDS['jwt-decoder'],
@@ -3891,6 +4209,22 @@ Object.assign(TOOL_FIELDS, {
   'http-headers-viewer': TOOL_FIELDS['http-headers-checker'],
   'port-scanner': TOOL_FIELDS['port-checker'],
   'multi-hash-generator': TOOL_FIELDS['hash-generator-advanced'],
+})
+
+Object.assign(TOOL_FIELDS, {
+  'browser-user-agent-parser': TOOL_FIELDS['user-agent-parser'],
+  'clean-csv': TOOL_FIELDS['csv-cleaner'],
+  'regex-find-replace': TOOL_FIELDS['regex-replace'],
+  'gpa-weighted-calculator': TOOL_FIELDS['weighted-gpa-calculator'],
+  'marks-average-calculator': TOOL_FIELDS['grade-average-calculator'],
+  'study-plan-from-syllabus': TOOL_FIELDS['syllabus-study-planner'],
+  'clean-citation-url': TOOL_FIELDS['citation-url-cleaner'],
+  'query-string-parser': TOOL_FIELDS['url-query-parser'],
+  'csv-to-markdown-table': TOOL_FIELDS['markdown-table-generator'],
+  'extract-emails': TOOL_FIELDS['email-extractor'],
+  'extract-phone-numbers': TOOL_FIELDS['phone-number-extractor'],
+  'robots-generator': TOOL_FIELDS['robots-txt-generator'],
+  'seo-meta-generator': TOOL_FIELDS['meta-description-generator'],
 })
 
 export function getToolFields(slug: string): ToolField[] {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, X, Smartphone, Monitor } from 'lucide-react'
+import { Download, X, Smartphone } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>
@@ -11,23 +11,16 @@ export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [showBanner, setShowBanner] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
-  const [installed, setInstalled] = useState(false)
-  const [dismissed, setDismissed] = useState(false)
+  const [installed, setInstalled] = useState(() => {
+    return (
+      localStorage.getItem('pwa-installed') === 'true' ||
+      window.matchMedia('(display-mode: standalone)').matches
+    )
+  })
+  const [dismissed, setDismissed] = useState(() => Boolean(localStorage.getItem('pwa-banner-dismissed')))
 
   useEffect(() => {
-    // Check if already dismissed or installed
-    const wasDismissed = localStorage.getItem('pwa-banner-dismissed')
-    const wasInstalled = localStorage.getItem('pwa-installed')
-    if (wasDismissed || wasInstalled) {
-      setDismissed(true)
-      return
-    }
-
-    // Check if already in standalone mode (already installed)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setInstalled(true)
-      return
-    }
+    if (dismissed || installed) return
 
     const handler = (e: Event) => {
       e.preventDefault()
@@ -43,19 +36,23 @@ export default function InstallPWA() {
     // iOS detection (Safari doesn't support beforeinstallprompt)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
     const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as Navigator & { standalone?: boolean }).standalone
-    if (isIOS && !isInStandaloneMode && !wasDismissed) {
+    if (isIOS && !isInStandaloneMode) {
       setTimeout(() => setShowBanner(true), 5000)
     }
 
-    window.addEventListener('appinstalled', () => {
+    const appInstalledHandler = () => {
       setInstalled(true)
       setShowBanner(false)
       setShowFloating(false)
       localStorage.setItem('pwa-installed', 'true')
-    })
+    }
+    window.addEventListener('appinstalled', appInstalledHandler)
 
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler)
+      window.removeEventListener('appinstalled', appInstalledHandler)
+    }
+  }, [dismissed, installed])
 
   const handleInstall = async () => {
     if (!deferredPrompt) return

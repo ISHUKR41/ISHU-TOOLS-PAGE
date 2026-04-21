@@ -4,6 +4,7 @@ import base64
 import csv
 import difflib
 import html
+import inspect
 import io
 import json
 import math
@@ -19,6 +20,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from email import policy
 from email.parser import BytesParser
+from functools import wraps
 from pathlib import Path
 from typing import Any, Callable
 
@@ -6546,3 +6548,107 @@ except Exception as e:
     print(f"[handlers] WARNING: Could not load worldwide_tools_handlers: {e}")
 
 print(f"[handlers] WORLDWIDE GRAND TOTAL registered handlers: {len(HANDLERS)}")
+
+
+def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
+    if isinstance(payload, dict):
+        for key in ("message", "summary", "result", "error"):
+            value = payload.get(key)
+            if value not in (None, ""):
+                return str(value)
+    if payload not in (None, "") and not isinstance(payload, (dict, list)):
+        return str(payload)
+    return fallback
+
+
+def _coerce_execution_result(raw_result: Any, output_dir: Path) -> ExecutionResult:
+    """Normalize legacy handler return shapes into the platform contract.
+
+    Several newer tool packs were written as lightweight two-argument handlers
+    that return {"type": "json", "payload": ...}. The FastAPI route and smoke
+    matrix expect ExecutionResult, so normalize once at registry load time.
+    """
+    if isinstance(raw_result, ExecutionResult):
+        return raw_result
+
+    if isinstance(raw_result, dict):
+        result_type = str(raw_result.get("kind") or raw_result.get("type") or "json").lower()
+        payload = raw_result.get("payload", raw_result.get("data", raw_result))
+        message = str(raw_result.get("message") or _message_from_payload(payload))
+
+        if result_type == "file":
+            path_value = (
+                raw_result.get("output_path")
+                or raw_result.get("path")
+                or raw_result.get("file")
+                or raw_result.get("filename")
+            )
+            output_path = Path(path_value) if path_value else None
+            if output_path and not output_path.is_absolute():
+                output_path = output_dir / output_path
+            if output_path and output_path.exists():
+                return ExecutionResult(
+                    kind="file",
+                    message=message,
+                    output_path=output_path,
+                    filename=str(raw_result.get("filename") or output_path.name),
+                    content_type=str(raw_result.get("content_type") or raw_result.get("media_type") or "application/octet-stream"),
+                )
+
+        data = payload if isinstance(payload, dict) else {"result": payload}
+        return ExecutionResult(kind="json", message=message, data=data)
+
+    if raw_result is None:
+        raise RuntimeError("Tool handler returned no result")
+
+    return ExecutionResult(
+        kind="json",
+        message="Tool completed successfully",
+        data={"result": raw_result},
+    )
+
+
+def _normalize_tool_handler(slug: str, handler: ToolHandler) -> ToolHandler:
+    if getattr(handler, "_ishu_normalized", False):
+        return handler
+
+    try:
+        parameter_count = len(inspect.signature(handler).parameters)
+    except (TypeError, ValueError):
+        parameter_count = 3
+
+    @wraps(handler)
+    def wrapped(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+        if parameter_count >= 3:
+            raw_result = handler(files, payload, output_dir)
+        elif parameter_count == 2:
+            raw_result = handler(files, payload)
+        elif parameter_count == 1:
+            raw_result = handler(payload)
+        else:
+            raw_result = handler()
+        return _coerce_execution_result(raw_result, output_dir)
+
+    wrapped._ishu_normalized = True  # type: ignore[attr-defined]
+    wrapped._ishu_slug = slug  # type: ignore[attr-defined]
+    wrapped.__signature__ = inspect.Signature(  # type: ignore[attr-defined]
+        parameters=[
+            inspect.Parameter("files", inspect.Parameter.POSITIONAL_OR_KEYWORD),
+            inspect.Parameter("payload", inspect.Parameter.POSITIONAL_OR_KEYWORD),
+            inspect.Parameter("output_dir", inspect.Parameter.POSITIONAL_OR_KEYWORD),
+        ]
+    )
+    return wrapped
+
+
+_LEGACY_HANDLER_COUNT = 0
+for _slug, _handler in list(HANDLERS.items()):
+    try:
+        _param_count = len(inspect.signature(_handler).parameters)
+    except (TypeError, ValueError):
+        _param_count = 3
+    if _param_count != 3:
+        _LEGACY_HANDLER_COUNT += 1
+    HANDLERS[_slug] = _normalize_tool_handler(_slug, _handler)
+
+print(f"[handlers] Normalized {len(HANDLERS)} handlers ({_LEGACY_HANDLER_COUNT} legacy signatures)")

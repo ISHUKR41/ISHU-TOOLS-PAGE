@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useState } from 'react'
+﻿import { startTransition, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
@@ -16,7 +16,7 @@ import ToolCategorySection from './components/ToolCategorySection'
 const BENTO_FEATURES = [
   {
     icon: Zap, accent: '#56a6ff', span: 'span-2 large',
-    stat: '715+', title: 'Free Professional Tools',
+    stat: '810+', title: 'Free Professional Tools',
     desc: 'PDF, Image, Developer, Math, Text, AI, Color, Security, Finance, Health, Network, Video — every tool you need, completely free.',
   },
   {
@@ -155,7 +155,7 @@ function CreatorSection() {
           </p>
           <p style={{ marginTop: '0.6rem', color: 'var(--muted)', fontSize: '0.93rem' }}>
             From the frustration of hitting paywalls and file limits on iLovePDF, SmallPDF, and similar
-            platforms, ISHU TOOLS was born — 715+ tools, all free, all day, every day.
+            platforms, ISHU TOOLS was born — 810+ tools, all free, all day, every day.
             <strong> ishutools.com</strong> — the Indian Student Hub for digital tools.
           </p>
           <div className='creator-links'>
@@ -174,11 +174,11 @@ function CreatorSection() {
 const FAQ_ITEMS = [
   {
     q: 'What is ISHU TOOLS? (ISHU TOOLS kya hai?)',
-    a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 715+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar from IIT Patna, it is designed for students and professionals — no signup, no watermark, completely free. ISHU TOOLS bilkul free hai, koi signup nahi lagta.',
+    a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 810+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar from IIT Patna, it is designed for students and professionals — no signup, no watermark, completely free. ISHU TOOLS bilkul free hai, koi signup nahi lagta.',
   },
   {
     q: 'Is ISHU TOOLS free? (ISHU TOOLS free hai kya?)',
-    a: 'Haan! ISHU TOOLS 100% free hai. All 715+ tools are available without any signup, registration, or payment. No watermarks, no limits, no hidden charges. Koi bhi tool use karo, bilkul free mein.',
+    a: 'Haan! ISHU TOOLS 100% free hai. All 810+ tools are available without any signup, registration, or payment. No watermarks, no limits, no hidden charges. Koi bhi tool use karo, bilkul free mein.',
   },
   {
     q: 'Is my data safe? (Mera data safe hai?)',
@@ -320,7 +320,7 @@ export default function HomePage() {
   useEffect(() => {
     applyDocumentBranding(
       'ISHU TOOLS — Indian Student Hub University Tools',
-      '715+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
+      '810+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
       '#3bd0ff',
     )
   }, [])
@@ -507,7 +507,7 @@ export default function HomePage() {
             <div className='step-card'>
               <div className='step-number'><MousePointerClick size={20} /></div>
               <h3>1. Choose a Tool</h3>
-              <p>Search from 715+ free tools across 50 categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
+              <p>Search from 810+ free tools across 54 categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
             </div>
             <div className='step-card'>
               <div className='step-number'><Upload size={20} /></div>
@@ -536,7 +536,7 @@ export default function HomePage() {
         <footer className='home-footer'>
           <p>
             {loading
-              ? <>715+ tools · 50 categories · Free forever · No signup · No watermark</>
+              ? <>810+ tools · 54 categories · Free forever · No signup · No watermark</>
               : <><strong>{totalVisibleTools}</strong> tools · <strong>{categories.length}</strong> categories · Free forever · No signup · No watermark</>
             }
           </p>

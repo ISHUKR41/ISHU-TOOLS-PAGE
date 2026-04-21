@@ -43,6 +43,11 @@ export default defineConfig({
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons'
           }
+          // ── Tool field definitions (201KB source / ~151KB minified) ──
+          // Only needed on /tools/:slug pages, never on homepage.
+          if (id.includes('features/tool/toolFields')) {
+            return 'tool-fields'
+          }
           if (id.includes('node_modules/')) {
             return 'vendor-misc'
           }

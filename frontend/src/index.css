@@ -87,6 +87,9 @@ body {
   margin: 0;
   color: var(--text);
   font-family: var(--font-body);
+  overscroll-behavior: none;
+  overflow-x: hidden;
+  min-width: 320px;
   background:
     radial-gradient(circle at 12% 12%, rgba(58, 122, 255, 0.2), transparent 28%),
     radial-gradient(circle at 82% 10%, rgba(48, 255, 189, 0.14), transparent 24%),
@@ -105,6 +108,13 @@ body::before {
   background-size: 54px 54px;
   opacity: 0.07;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 92%);
+}
+
+/* Disable expensive grid overlay on small mobile — barely visible, saves GPU compositing */
+@media (max-width: 480px) {
+  body::before {
+    display: none;
+  }
 }
 
 a {
@@ -131,6 +141,8 @@ select {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  overflow-x: clip;
+  isolation: isolate; /* Creates stacking context — prevents z-index bleed */
 }
 
 .site-content {
@@ -267,6 +279,7 @@ select {
   width: min(1280px, 92vw);
   margin: 0 auto;
   padding: 1.6rem 0 3.4rem;
+  overflow-x: hidden;
 }
 
 .home-wrap {
@@ -3354,6 +3367,7 @@ h3 {
 @media (max-width: 900px) {
   .hero-v2 {
     min-height: auto;
+    border-radius: 22px;
   }
 
   .hero-v2-stats {
@@ -3362,25 +3376,60 @@ h3 {
 }
 
 @media (max-width: 600px) {
+  .page-wrap {
+    width: calc(100vw - 1rem);
+    padding: 0.8rem 0 2rem;
+  }
+
+  .site-nav-inner {
+    width: calc(100vw - 1rem);
+  }
+
+  .hero-v2 {
+    border-radius: 18px;
+    border-width: 1px;
+  }
+
   .hero-v2-inner {
-    padding: 1.4rem 1.1rem 1.2rem;
-    gap: 1.2rem;
+    padding: 1.2rem 0.85rem 1rem;
+    gap: 1rem;
     min-height: auto;
     justify-content: start;
   }
 
   .hero-v2-heading {
-    min-height: 16rem;
+    min-height: auto;
   }
 
   .hero-v2-title {
-    font-size: clamp(2.8rem, 12vw, 4.5rem);
+    font-size: clamp(2.2rem, 11vw, 4rem);
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .hero-v2-subtitle {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    padding: 0 0.2rem;
   }
 
   .hero-v2-stats {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
-    min-height: 8.25rem;
+    gap: 0.5rem;
+    min-height: auto;
+  }
+
+  .hero-stat-card {
+    padding: 0.85rem 0.6rem;
+    border-radius: 14px;
+  }
+
+  .stat-number {
+    font-size: 1.35rem;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
   }
 
   .hero-v2-topbar {
@@ -3391,17 +3440,207 @@ h3 {
 
   .hero-v2-actions {
     flex-direction: column;
-    align-items: center;
-  }
-
-  .hero-v2-quick {
-    min-height: 8rem;
+    align-items: stretch;
   }
 
   .btn-primary-hero,
   .btn-secondary-hero {
     width: 100%;
     justify-content: center;
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 14px;
+  }
+
+  .hero-v2-quick {
+    min-height: auto;
+  }
+
+  .quick-grid {
+    gap: 0.4rem;
+  }
+
+  .quick-chip {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.76rem;
+    border-radius: 10px;
+  }
+
+  .trust-row {
+    gap: 0.4rem;
+  }
+
+  .trust-badge {
+    padding: 0.28rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
+  .hero-kicker-pill {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .social-chip {
+    padding: 0.32rem 0.55rem;
+    font-size: 0.7rem;
+  }
+
+  /* Search panel mobile */
+  .surface-panel {
+    padding: 1rem 0.8rem;
+    border-radius: 18px;
+  }
+
+  .toolbar-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .toolbar-meta h2 {
+    font-size: 1.2rem;
+  }
+
+  .toolbar-meta p {
+    font-size: 0.88rem;
+  }
+
+  .search-input {
+    min-height: 48px;
+    border-radius: 14px;
+  }
+
+  .category-row {
+    gap: 0.45rem;
+  }
+
+  .category-pill {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  /* Tool grid mobile */
+  .tool-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .tool-card-link {
+    min-height: 200px;
+    padding: 0.9rem;
+    border-radius: 16px;
+  }
+
+  .section-heading {
+    padding-left: 0.75rem;
+  }
+
+  /* Bento mobile */
+  .bento-card {
+    padding: 1.2rem;
+    border-radius: 16px;
+  }
+
+  .bento-card.large {
+    padding: 1.2rem;
+  }
+
+  /* Comparison mobile */
+  .comparison-section {
+    padding: 2rem 0;
+  }
+
+  /* Steps mobile */
+  .step-card {
+    padding: 1.2rem;
+  }
+
+  /* Creator mobile */
+  .creator-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  /* FAQ mobile */
+  .faq-acc-trigger {
+    padding: 0.85rem 0.75rem;
+    font-size: 0.88rem;
+  }
+
+  .home-footer {
+    font-size: 0.78rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   EXTRA SMALL DEVICES (320px-380px)
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .page-wrap {
+    width: calc(100vw - 0.75rem);
+  }
+
+  .site-nav-inner {
+    width: calc(100vw - 0.75rem);
+    padding: 0.5rem 0.6rem;
+    border-radius: 16px;
+  }
+
+  .hero-v2 {
+    border-radius: 14px;
+  }
+
+  .hero-v2-inner {
+    padding: 1rem 0.65rem 0.85rem;
+    gap: 0.85rem;
+  }
+
+  .hero-v2-title {
+    font-size: clamp(1.8rem, 10vw, 3rem);
+  }
+
+  .hero-v2-subtitle {
+    font-size: 0.84rem;
+  }
+
+  .hero-v2-stats {
+    gap: 0.4rem;
+  }
+
+  .hero-stat-card {
+    padding: 0.7rem 0.45rem;
+    border-radius: 12px;
+  }
+
+  .stat-number {
+    font-size: 1.15rem;
+  }
+
+  .quick-chip {
+    padding: 0.38rem 0.55rem;
+    font-size: 0.72rem;
+  }
+
+  .surface-panel {
+    padding: 0.85rem 0.65rem;
+    border-radius: 14px;
+  }
+
+  .category-pill {
+    padding: 0.38rem 0.55rem;
+    font-size: 0.72rem;
+  }
+
+  .brand-lockup small {
+    display: none;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
   }
 }
 
@@ -7216,7 +7455,7 @@ th.cmp-ishu {
   body { font-size-adjust: 0.52; }
 }
 
-/* Below-fold sections: contain layout cascade */
+/* Below-fold sections: contain layout cascade + defer rendering */
 .features-bento-section,
 .comparison-section,
 .how-it-works-section,
@@ -7224,10 +7463,20 @@ th.cmp-ishu {
 .home-faq-section,
 .seo-cloud {
   contain: layout style;
+  content-visibility: auto;
 }
 
+/* Explicit intrinsic sizes so scrollbar doesn't jump when content-visibility
+   kicks in — these must approximate the rendered height of each section */
+.features-bento-section { contain-intrinsic-size: auto 600px; }
+.comparison-section     { contain-intrinsic-size: auto 520px; }
+.how-it-works-section   { contain-intrinsic-size: auto 420px; }
+.creator-section        { contain-intrinsic-size: auto 320px; }
+.home-faq-section       { contain-intrinsic-size: auto 480px; }
+.seo-cloud              { contain-intrinsic-size: auto 80px; }
+
 /* Tool category sections: content-visibility for long list pages */
-.tool-category-section {
+.tool-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 400px;
 }
@@ -7254,6 +7503,11 @@ th.cmp-ishu {
 /* Prevent images from causing layout shift */
 img:not([width]):not([height]) {
   aspect-ratio: auto;
+}
+
+/* The site-footer is heavy (6 columns of links) — contain it */
+.site-footer {
+  contain: layout style;
 }
 
 /* js-ready: after React hydration is complete — safe to re-enable animations */

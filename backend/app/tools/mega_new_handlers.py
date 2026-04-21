@@ -1521,17 +1521,20 @@ def _handle_json_formatter(files, payload):
         parsed = json.loads(json_str)
         if action == "minify":
             result = json.dumps(parsed, separators=(",", ":"), ensure_ascii=False)
+            action_message = "minified"
         elif action == "sort_keys":
             result = json.dumps(parsed, indent=2, sort_keys=True, ensure_ascii=False)
+            action_message = "sorted by keys"
         else:
             result = json.dumps(parsed, indent=2, ensure_ascii=False)
+            action_message = "formatted"
         return _json({
             "formatted": result,
             "valid": True,
             "original_length": len(json_str),
             "formatted_length": len(result),
             "action": action,
-            "message": f"JSON is valid and {action}d successfully",
+            "message": f"JSON is valid and {action_message} successfully",
         })
     except json.JSONDecodeError as e:
         return _json({"valid": False, "error": str(e), "message": f"Invalid JSON: {e}"})

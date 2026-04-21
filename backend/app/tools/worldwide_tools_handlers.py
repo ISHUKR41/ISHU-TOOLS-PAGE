@@ -6,14 +6,20 @@ All pure-Python — no external APIs required.
 """
 from __future__ import annotations
 
+import csv
+import html
+import io
 import json
 import math
 import random
 import re
 import textwrap
-from datetime import datetime, timedelta
+import time
+import uuid
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from .handlers import ExecutionResult
 
@@ -1874,6 +1880,1570 @@ def handle_compound_interest_calculator(files, payload, output_dir) -> Execution
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# 26.  HIGH-DEMAND STUDENT / DEVELOPER / SEO TOOLS
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _payload_bool(payload: dict, key: str, default: bool = False) -> bool:
+    value = payload.get(key, default)
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _payload_float(payload: dict, key: str, default: float = 0.0) -> float:
+    try:
+        return float(str(payload.get(key, default)).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return default
+
+
+def _payload_int(payload: dict, key: str, default: int = 0) -> int:
+    try:
+        return int(float(str(payload.get(key, default)).replace(",", "").strip()))
+    except (TypeError, ValueError):
+        return default
+
+
+def _input_text(payload: dict, *keys: str, default: str = "") -> str:
+    return _get(payload, *keys, "text", "input", default=default)
+
+
+def _slug_header(value: str) -> str:
+    cleaned = re.sub(r"[^a-zA-Z0-9]+", "_", value.strip().lower()).strip("_")
+    return cleaned or "column"
+
+
+def handle_user_agent_parser(files, payload, output_dir) -> ExecutionResult:
+    ua = _input_text(payload, "user_agent", "ua")
+    if not ua:
+        return _j({"error": "No user agent supplied"}, "Paste a browser user-agent string.")
+
+    browser_rules = [
+        ("Microsoft Edge", r"Edg/([\d.]+)"),
+        ("Opera", r"OPR/([\d.]+)|Opera/([\d.]+)"),
+        ("Chrome", r"Chrome/([\d.]+)"),
+        ("Firefox", r"Firefox/([\d.]+)"),
+        ("Safari", r"Version/([\d.]+).*Safari"),
+    ]
+    browser = "Unknown"
+    browser_version = ""
+    for name, pattern in browser_rules:
+        match = re.search(pattern, ua)
+        if match:
+            browser = name
+            browser_version = next((g for g in match.groups() if g), "")
+            break
+
+    os_rules = [
+        ("Windows", r"Windows NT ([\d.]+)"),
+        ("macOS", r"Mac OS X ([\d_]+)"),
+        ("Android", r"Android ([\d.]+)"),
+        ("iOS", r"(?:iPhone|iPad).*OS ([\d_]+)"),
+        ("Linux", r"Linux"),
+    ]
+    os_name = "Unknown"
+    os_version = ""
+    for name, pattern in os_rules:
+        match = re.search(pattern, ua)
+        if match:
+            os_name = name
+            os_version = match.group(1).replace("_", ".") if match.groups() else ""
+            break
+
+    device = "Mobile" if re.search(r"Mobile|Android|iPhone|iPod", ua, re.I) else "Tablet" if re.search(r"iPad|Tablet", ua, re.I) else "Desktop"
+    is_bot = bool(re.search(r"bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp", ua, re.I))
+
+    return _j({
+        "browser": browser,
+        "browser_version": browser_version,
+        "os": os_name,
+        "os_version": os_version,
+        "device_type": device,
+        "is_bot": is_bot,
+        "engine": "Blink/WebKit" if browser in {"Chrome", "Microsoft Edge", "Opera", "Safari"} else "Gecko" if browser == "Firefox" else "Unknown",
+        "raw_user_agent": ua,
+    }, f"Detected {browser} on {os_name} ({device}).")
+
+
+def handle_csv_cleaner(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "csv", "data")
+    if not text:
+        return _j({"error": "No CSV supplied"}, "Paste CSV data to clean.")
+
+    delimiter_option = _get(payload, "delimiter", default="auto").lower()
+    delimiter_map = {"comma": ",", "semicolon": ";", "tab": "\t", "pipe": "|"}
+    delimiter = delimiter_map.get(delimiter_option)
+    if delimiter is None:
+        try:
+            delimiter = csv.Sniffer().sniff(text[:2048]).delimiter
+        except csv.Error:
+            delimiter = ","
+
+    trim_cells = _payload_bool(payload, "trim_cells", True)
+    remove_empty = _payload_bool(payload, "remove_empty_rows", True)
+    dedupe_rows = _payload_bool(payload, "dedupe_rows", False)
+    normalize_headers = _payload_bool(payload, "normalize_headers", False)
+
+    rows = list(csv.reader(io.StringIO(text), delimiter=delimiter))
+    original_rows = len(rows)
+    if trim_cells:
+        rows = [[cell.strip() for cell in row] for row in rows]
+    if remove_empty:
+        rows = [row for row in rows if any(cell.strip() for cell in row)]
+    if normalize_headers and rows:
+        rows[0] = [_slug_header(cell) for cell in rows[0]]
+    if dedupe_rows:
+        seen = set()
+        unique_rows = []
+        for row in rows:
+            key = tuple(row)
+            if key not in seen:
+                seen.add(key)
+                unique_rows.append(row)
+        rows = unique_rows
+
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerows(rows)
+    cleaned = out.getvalue()
+    columns = max((len(row) for row in rows), default=0)
+
+    return _j({
+        "cleaned_csv": cleaned,
+        "rows": len(rows),
+        "columns": columns,
+        "removed_rows": max(0, original_rows - len(rows)),
+        "delimiter": "\\t" if delimiter == "\t" else delimiter,
+        "preview": rows[:10],
+    }, f"Cleaned CSV: {len(rows)} rows, {columns} columns.")
+
+
+def handle_regex_replace(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "text")
+    pattern = _get(payload, "pattern", "regex")
+    replacement = _get(payload, "replacement", "replace", default="")
+    flags_raw = _get(payload, "flags", default="")
+    if not pattern:
+        return _j({"error": "Regex pattern required"}, "Enter a regex pattern.")
+
+    flags = 0
+    if "i" in flags_raw.lower():
+        flags |= re.IGNORECASE
+    if "m" in flags_raw.lower():
+        flags |= re.MULTILINE
+    if "s" in flags_raw.lower():
+        flags |= re.DOTALL
+
+    try:
+        compiled = re.compile(pattern, flags)
+    except re.error as exc:
+        return _j({"error": str(exc), "pattern": pattern}, f"Invalid regex: {exc}")
+
+    matches = [m.group(0) for m in compiled.finditer(text)]
+    output, count = compiled.subn(replacement, text)
+    return _j({
+        "output": output,
+        "matches": matches[:50],
+        "match_count": len(matches),
+        "replace_count": count,
+        "pattern": pattern,
+        "flags": flags_raw,
+    }, f"Replaced {count} match{'es' if count != 1 else ''}.")
+
+
+_GRADE_POINTS = {
+    "A+": 4.0, "A": 4.0, "A-": 3.7,
+    "B+": 3.3, "B": 3.0, "B-": 2.7,
+    "C+": 2.3, "C": 2.0, "C-": 1.7,
+    "D+": 1.3, "D": 1.0, "F": 0.0,
+    "O": 10.0, "S": 10.0, "E": 9.0,
+}
+
+
+def _grade_for_percent(percent: float) -> str:
+    if percent >= 90:
+        return "A+"
+    if percent >= 80:
+        return "A"
+    if percent >= 70:
+        return "B"
+    if percent >= 60:
+        return "C"
+    if percent >= 50:
+        return "D"
+    return "F"
+
+
+def handle_weighted_gpa_calculator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "courses", default="Math,A,4\nPhysics,B+,3\nEnglish,A-,2")
+    scale = _payload_float(payload, "scale", 4.0)
+    rows = []
+    total_points = 0.0
+    total_credits = 0.0
+
+    for line in [ln.strip() for ln in text.splitlines() if ln.strip()]:
+        parts = [p.strip() for p in re.split(r"[,|]", line) if p.strip()]
+        if len(parts) == 2:
+            name = f"Course {len(rows) + 1}"
+            grade, credits_raw = parts
+        elif len(parts) >= 3:
+            name, grade, credits_raw = parts[:3]
+        else:
+            continue
+
+        try:
+            credits = float(credits_raw)
+        except ValueError:
+            credits = 1.0
+        grade_key = grade.upper()
+        if grade_key in _GRADE_POINTS:
+            points = _GRADE_POINTS[grade_key]
+            if points > scale:
+                points = points / 10 * scale
+        else:
+            try:
+                points = float(grade)
+            except ValueError:
+                points = 0.0
+        points = max(0.0, min(scale, points))
+        total_points += points * credits
+        total_credits += credits
+        rows.append({"course": name, "grade": grade, "credits": credits, "points": round(points, 3)})
+
+    if total_credits <= 0:
+        return _j({"error": "No valid courses"}, "Enter courses like: Math,A,4")
+
+    gpa = total_points / total_credits
+    return _j({
+        "gpa": round(gpa, 3),
+        "scale": scale,
+        "total_credits": round(total_credits, 2),
+        "courses": rows,
+        "formula": "sum(grade_points * credits) / sum(credits)",
+    }, f"Weighted GPA: {gpa:.3f} / {scale:g}.")
+
+
+def handle_grade_average_calculator(files, payload, output_dir) -> ExecutionResult:
+    scores_text = _input_text(payload, "scores", "marks", default="78, 85, 91, 66")
+    max_marks = _payload_float(payload, "max_marks", 100.0) or 100.0
+    scores = []
+    for token in re.split(r"[\s,;|]+", scores_text):
+        if not token.strip():
+            continue
+        try:
+            scores.append(float(token))
+        except ValueError:
+            pass
+    if not scores:
+        return _j({"error": "No valid scores"}, "Enter marks separated by commas or lines.")
+
+    total = sum(scores)
+    percent = total / (len(scores) * max_marks) * 100
+    return _j({
+        "scores": scores,
+        "count": len(scores),
+        "total_obtained": round(total, 2),
+        "total_possible": round(len(scores) * max_marks, 2),
+        "average_marks": round(total / len(scores), 2),
+        "percentage": round(percent, 2),
+        "grade": _grade_for_percent(percent),
+        "highest": max(scores),
+        "lowest": min(scores),
+    }, f"Average: {percent:.2f}% ({_grade_for_percent(percent)}).")
+
+
+def handle_syllabus_study_planner(files, payload, output_dir) -> ExecutionResult:
+    topics_text = _input_text(payload, "topics", "syllabus", default="Algebra, hard\nPhysics numericals, medium\nEnglish grammar, easy")
+    days = max(1, min(_payload_int(payload, "days", 7), 120))
+    daily_hours = max(0.5, min(_payload_float(payload, "daily_hours", 2.0), 16.0))
+    difficulty_weight = {"easy": 1.0, "medium": 1.5, "hard": 2.0}
+
+    topics = []
+    for line in [ln.strip() for ln in topics_text.splitlines() if ln.strip()]:
+        parts = [p.strip() for p in re.split(r"[,|]", line) if p.strip()]
+        name = parts[0]
+        diff = parts[1].lower() if len(parts) > 1 else "medium"
+        weight = difficulty_weight.get(diff, 1.5)
+        topics.append({"topic": name, "difficulty": diff if diff in difficulty_weight else "medium", "weight": weight})
+    if not topics:
+        return _j({"error": "No topics"}, "Enter at least one syllabus topic.")
+
+    total_weight = sum(t["weight"] for t in topics)
+    total_hours = days * daily_hours
+    for topic in topics:
+        topic["estimated_hours"] = round(total_hours * topic["weight"] / total_weight, 2)
+
+    plan = []
+    topic_index = 0
+    for day in range(1, days + 1):
+        remaining = daily_hours
+        sessions = []
+        guard = 0
+        while remaining > 0.05 and guard < len(topics) * 2:
+            topic = topics[topic_index % len(topics)]
+            block = min(remaining, max(0.5, daily_hours / 2))
+            sessions.append({"topic": topic["topic"], "hours": round(block, 2)})
+            remaining -= block
+            topic_index += 1
+            guard += 1
+        plan.append({"day": day, "total_hours": daily_hours, "sessions": sessions})
+
+    return _j({
+        "days": days,
+        "daily_hours": daily_hours,
+        "total_study_hours": round(total_hours, 2),
+        "topics": topics,
+        "plan": plan,
+        "revision_tip": "Keep the final day lighter for revision and past-paper practice.",
+    }, f"Created a {days}-day study plan with {total_hours:.1f} total hours.")
+
+
+_TRACKING_PARAMS = {
+    "fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid", "igshid",
+    "ref", "ref_src", "spm", "si", "feature", "cmpid",
+}
+
+
+def _clean_tracking_url(url: str, keep_fragment: bool = False) -> str:
+    parsed = urlparse(url if re.match(r"^[a-z][a-z0-9+.-]*://", url, re.I) else "https://" + url)
+    kept = []
+    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
+        lower_key = key.lower()
+        if lower_key.startswith("utm_") or lower_key in _TRACKING_PARAMS:
+            continue
+        kept.append((key, value))
+    return urlunparse((parsed.scheme, parsed.netloc.lower(), parsed.path or "/", parsed.params, urlencode(kept, doseq=True), parsed.fragment if keep_fragment else ""))
+
+
+def handle_citation_url_cleaner(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "url", "urls")
+    keep_fragment = _payload_bool(payload, "keep_fragment", False)
+    urls = re.findall(r"https?://[^\s<>\"]+|(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}[^\s<>\"]*", text)
+    if not urls:
+        return _j({"error": "No URLs found"}, "Paste one or more URLs to clean.")
+    cleaned = [_clean_tracking_url(url.rstrip(".,)"), keep_fragment) for url in urls[:100]]
+    return _j({
+        "cleaned_urls": cleaned,
+        "count": len(cleaned),
+        "removed_tracking_parameters": sorted(_TRACKING_PARAMS | {"utm_*"}),
+    }, f"Cleaned {len(cleaned)} URL{'s' if len(cleaned) != 1 else ''}.")
+
+
+def handle_url_query_parser(files, payload, output_dir) -> ExecutionResult:
+    raw_url = _input_text(payload, "url")
+    if not raw_url:
+        return _j({"error": "URL required"}, "Paste a URL to parse.")
+    parsed = urlparse(raw_url if re.match(r"^[a-z][a-z0-9+.-]*://", raw_url, re.I) else "https://" + raw_url)
+    params = parse_qsl(parsed.query, keep_blank_values=True)
+    param_map: dict[str, list[str]] = {}
+    for key, value in params:
+        param_map.setdefault(key, []).append(value)
+    sorted_query = urlencode(sorted(params), doseq=True)
+    rebuilt = urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, sorted_query, parsed.fragment))
+    return _j({
+        "scheme": parsed.scheme,
+        "domain": parsed.netloc,
+        "path": parsed.path or "/",
+        "query_parameters": param_map,
+        "parameter_count": len(params),
+        "fragment": parsed.fragment,
+        "sorted_url": rebuilt,
+    }, f"Parsed {len(params)} query parameter{'s' if len(params) != 1 else ''}.")
+
+
+def handle_timestamp_converter(files, payload, output_dir) -> ExecutionResult:
+    value = _input_text(payload, "timestamp", "date", "datetime", default=str(int(datetime.now(tz=timezone.utc).timestamp())))
+    offset_minutes = _payload_int(payload, "offset_minutes", 330)
+
+    try:
+        numeric = float(value)
+        if numeric > 10_000_000_000:
+            numeric = numeric / 1000
+        dt_utc = datetime.fromtimestamp(numeric, tz=timezone.utc)
+    except ValueError:
+        try:
+            dt_utc = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            if dt_utc.tzinfo is None:
+                dt_utc = dt_utc.replace(tzinfo=timezone.utc)
+            dt_utc = dt_utc.astimezone(timezone.utc)
+        except ValueError:
+            return _j({"error": "Invalid timestamp or date"}, "Enter Unix timestamp or ISO date.")
+
+    local_tz = timezone(timedelta(minutes=offset_minutes))
+    dt_local = dt_utc.astimezone(local_tz)
+    return _j({
+        "unix_seconds": int(dt_utc.timestamp()),
+        "unix_milliseconds": int(dt_utc.timestamp() * 1000),
+        "utc_iso": dt_utc.isoformat().replace("+00:00", "Z"),
+        "local_iso": dt_local.isoformat(),
+        "local_offset_minutes": offset_minutes,
+        "rfc_2822": dt_utc.strftime("%a, %d %b %Y %H:%M:%S GMT"),
+    }, f"Timestamp converted: {dt_utc.isoformat().replace('+00:00', 'Z')}.")
+
+
+def handle_markdown_table_generator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "table", "csv", "data", default="Name,Score\nIshu,95\nTools,100")
+    has_header = _payload_bool(payload, "has_header", True)
+    delimiter_option = _get(payload, "delimiter", default="auto").lower()
+    delimiter = {"comma": ",", "tab": "\t", "pipe": "|", "semicolon": ";"}.get(delimiter_option)
+    if delimiter is None:
+        try:
+            delimiter = csv.Sniffer().sniff(text[:1024]).delimiter
+        except csv.Error:
+            delimiter = "," if "," in text else "\t" if "\t" in text else "|"
+    rows = [[cell.strip() for cell in row] for row in csv.reader(io.StringIO(text), delimiter=delimiter) if row]
+    if not rows:
+        return _j({"error": "No rows"}, "Paste CSV or table data.")
+    max_cols = max(len(row) for row in rows)
+    rows = [row + [""] * (max_cols - len(row)) for row in rows]
+    if has_header:
+        header, body = rows[0], rows[1:]
+    else:
+        header = [f"Column {i + 1}" for i in range(max_cols)]
+        body = rows
+
+    def esc_cell(cell: str) -> str:
+        return cell.replace("|", "\\|").replace("\n", " ")
+
+    lines = [
+        "| " + " | ".join(esc_cell(c) for c in header) + " |",
+        "| " + " | ".join("---" for _ in header) + " |",
+    ]
+    lines.extend("| " + " | ".join(esc_cell(c) for c in row) + " |" for row in body)
+    markdown = "\n".join(lines)
+    return _j({
+        "markdown": markdown,
+        "rows": len(body),
+        "columns": max_cols,
+        "preview": lines[:8],
+    }, f"Generated Markdown table with {len(body)} rows and {max_cols} columns.")
+
+
+def handle_email_extractor(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "text")
+    emails = re.findall(r"(?i)\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b", text)
+    unique = list(dict.fromkeys(email.lower() for email in emails))
+    domains: dict[str, int] = {}
+    for email in unique:
+        domain = email.split("@", 1)[1]
+        domains[domain] = domains.get(domain, 0) + 1
+    return _j({
+        "emails": unique,
+        "count": len(unique),
+        "domains": domains,
+        "csv": "\n".join(unique),
+    }, f"Extracted {len(unique)} unique email address{'es' if len(unique) != 1 else ''}.")
+
+
+def handle_phone_number_extractor(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "text")
+    candidates = re.findall(r"(?:\+\d{1,3}[\s-]?)?(?:\(?\d{2,5}\)?[\s-]?){2,5}\d{2,5}", text)
+    phones = []
+    for item in candidates:
+        digits = re.sub(r"\D", "", item)
+        if 7 <= len(digits) <= 15:
+            normalized = "+" + digits if item.strip().startswith("+") else digits
+            phones.append({"raw": item.strip(), "digits": digits, "normalized": normalized})
+    unique = []
+    seen = set()
+    for phone in phones:
+        if phone["normalized"] not in seen:
+            seen.add(phone["normalized"])
+            unique.append(phone)
+    return _j({
+        "phones": unique,
+        "count": len(unique),
+        "plain_list": "\n".join(phone["normalized"] for phone in unique),
+    }, f"Extracted {len(unique)} phone number{'s' if len(unique) != 1 else ''}.")
+
+
+_KEYWORD_STOPWORDS = {
+    "the", "and", "for", "with", "that", "this", "from", "are", "was", "were",
+    "you", "your", "have", "has", "had", "not", "but", "all", "can", "will",
+    "use", "using", "into", "online", "free", "tool", "tools", "our", "their",
+}
+
+
+def handle_keyword_density_checker(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "text", "content")
+    min_length = max(1, _payload_int(payload, "min_length", 3))
+    top_n = max(5, min(_payload_int(payload, "top_n", 20), 100))
+    words = [w.lower() for w in re.findall(r"[a-zA-Z][a-zA-Z0-9'-]*", text)]
+    filtered = [w for w in words if len(w) >= min_length and w not in _KEYWORD_STOPWORDS]
+    counts: dict[str, int] = {}
+    for word in filtered:
+        counts[word] = counts.get(word, 0) + 1
+    total = len(filtered) or 1
+    keywords = [
+        {"keyword": word, "count": count, "density_percent": round(count / total * 100, 2)}
+        for word, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:top_n]
+    ]
+    return _j({
+        "word_count": len(words),
+        "analyzed_word_count": len(filtered),
+        "unique_keywords": len(counts),
+        "keywords": keywords,
+    }, f"Analyzed {len(words)} words and found {len(counts)} unique keywords.")
+
+
+def handle_robots_txt_generator(files, payload, output_dir) -> ExecutionResult:
+    site_url = _get(payload, "site_url", "url", default="https://example.com").rstrip("/")
+    sitemap_url = _get(payload, "sitemap_url", default=f"{site_url}/sitemap.xml")
+    disallow_raw = _get(payload, "disallow", default="/api/\n/admin/")
+    allow_raw = _get(payload, "allow", default="/")
+    crawl_delay = _get(payload, "crawl_delay", default="")
+
+    lines = ["User-agent: *"]
+    for path in [p.strip() for p in re.split(r"[\n,]+", allow_raw) if p.strip()]:
+        lines.append(f"Allow: {path}")
+    for path in [p.strip() for p in re.split(r"[\n,]+", disallow_raw) if p.strip()]:
+        lines.append(f"Disallow: {path}")
+    if crawl_delay:
+        lines.append(f"Crawl-delay: {crawl_delay}")
+    lines.append(f"Sitemap: {sitemap_url}")
+    robots = "\n".join(lines) + "\n"
+    return _j({
+        "robots_txt": robots,
+        "site_url": site_url,
+        "sitemap_url": sitemap_url,
+    }, "robots.txt generated successfully.")
+
+
+def handle_meta_description_generator(files, payload, output_dir) -> ExecutionResult:
+    topic = _get(payload, "topic", "title", "text", default="Free online tools").strip()
+    audience = _get(payload, "audience", default="students and professionals")
+    keyword_text = _get(payload, "keywords", default=topic)
+    max_length = max(120, min(_payload_int(payload, "max_length", 155), 180))
+    keywords = [k.strip() for k in re.split(r"[,|\n]+", keyword_text) if k.strip()][:6]
+    primary = keywords[0] if keywords else topic
+
+    raw_options = [
+        f"{topic} for {audience}. Use {primary} online free with fast results, no signup, mobile support, and clean professional output.",
+        f"Try {topic} on ISHU TOOLS. Free {primary} for {audience}, built for speed, accuracy, privacy, and easy daily use.",
+        f"Free {topic} online for {audience}. Get instant results, SEO-friendly output, no watermark, no signup, and reliable processing.",
+    ]
+    descriptions = [option[:max_length].rstrip(" ,.-") for option in raw_options]
+    titles = [
+        f"{topic} Online Free | ISHU TOOLS",
+        f"Free {primary} Tool for {audience.title()}",
+        f"{topic} - Fast, Free, No Signup",
+    ]
+    return _j({
+        "titles": titles,
+        "descriptions": descriptions,
+        "keywords": keywords,
+        "max_length": max_length,
+        "lengths": [len(desc) for desc in descriptions],
+    }, f"Generated {len(descriptions)} SEO meta descriptions.")
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 27.  PRODUCTION UTILITY BATCH 2
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _detect_delimiter(text: str, requested: str = "auto") -> str:
+    delimiter = {"comma": ",", "tab": "\t", "pipe": "|", "semicolon": ";"}.get(requested.lower())
+    if delimiter:
+        return delimiter
+    try:
+        return csv.Sniffer().sniff(text[:2048]).delimiter
+    except csv.Error:
+        if "\t" in text:
+            return "\t"
+        if "|" in text:
+            return "|"
+        if ";" in text:
+            return ";"
+        return ","
+
+
+def _parse_table_rows(text: str, delimiter: str = "auto") -> list[list[str]]:
+    delim = _detect_delimiter(text, delimiter)
+    return [[cell.strip() for cell in row] for row in csv.reader(io.StringIO(text), delimiter=delim) if row]
+
+
+def handle_utm_builder(files, payload, output_dir) -> ExecutionResult:
+    raw_url = _get(payload, "url", "site_url", default="https://ishutools.com").strip()
+    parsed = urlparse(raw_url if re.match(r"^[a-z][a-z0-9+.-]*://", raw_url, re.I) else "https://" + raw_url)
+    existing = dict(parse_qsl(parsed.query, keep_blank_values=True))
+
+    utm_values = {
+        "utm_source": _get(payload, "source", "utm_source", default="newsletter"),
+        "utm_medium": _get(payload, "medium", "utm_medium", default="email"),
+        "utm_campaign": _get(payload, "campaign", "utm_campaign", default="spring_launch"),
+        "utm_term": _get(payload, "term", "utm_term", default=""),
+        "utm_content": _get(payload, "content", "utm_content", default=""),
+    }
+    for key, value in utm_values.items():
+        if value:
+            existing[key] = value
+    tagged_url = urlunparse((parsed.scheme, parsed.netloc, parsed.path or "/", parsed.params, urlencode(existing, doseq=True), parsed.fragment))
+    return _j({
+        "tagged_url": tagged_url,
+        "utm_parameters": {key: value for key, value in utm_values.items() if value},
+        "base_url": urlunparse((parsed.scheme, parsed.netloc, parsed.path or "/", "", "", "")),
+    }, "UTM campaign URL generated successfully.")
+
+
+def handle_html_table_generator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "data", "csv", "table", default="Name,Score\nIshu,95\nTools,100")
+    rows = _parse_table_rows(text, _get(payload, "delimiter", default="auto"))
+    if not rows:
+        return _j({"error": "No table rows"}, "Paste CSV or table data.")
+    has_header = _payload_bool(payload, "has_header", True)
+    table_class = re.sub(r"[^a-zA-Z0-9_-]+", "-", _get(payload, "class_name", default="ishu-table")).strip("-") or "ishu-table"
+    max_cols = max(len(row) for row in rows)
+    rows = [row + [""] * (max_cols - len(row)) for row in rows]
+    header = rows[0] if has_header else []
+    body = rows[1:] if has_header else rows
+    indent = "  "
+    lines = [f'<table class="{html.escape(table_class, quote=True)}">']
+    if header:
+        lines.extend([indent + "<thead>", indent * 2 + "<tr>"])
+        lines.extend(indent * 3 + f"<th>{html.escape(cell)}</th>" for cell in header)
+        lines.extend([indent * 2 + "</tr>", indent + "</thead>"])
+    lines.extend([indent + "<tbody>"])
+    for row in body:
+        lines.append(indent * 2 + "<tr>")
+        lines.extend(indent * 3 + f"<td>{html.escape(cell)}</td>" for cell in row)
+        lines.append(indent * 2 + "</tr>")
+    lines.extend([indent + "</tbody>", "</table>"])
+    table_html = "\n".join(lines)
+    return _j({
+        "html": table_html,
+        "rows": len(body),
+        "columns": max_cols,
+        "class_name": table_class,
+    }, f"Generated HTML table with {len(body)} rows and {max_cols} columns.")
+
+
+def _infer_json_schema(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        properties = {str(key): _infer_json_schema(val) for key, val in value.items()}
+        return {"type": "object", "properties": properties, "required": list(properties.keys())}
+    if isinstance(value, list):
+        if not value:
+            return {"type": "array", "items": {}}
+        item_schemas = [_infer_json_schema(item) for item in value[:25]]
+        unique_types = list(dict.fromkeys(json.dumps(schema, sort_keys=True) for schema in item_schemas))
+        if len(unique_types) == 1:
+            items = item_schemas[0]
+        else:
+            items = {"anyOf": [json.loads(schema) for schema in unique_types[:8]]}
+        return {"type": "array", "items": items}
+    if isinstance(value, bool):
+        return {"type": "boolean"}
+    if isinstance(value, int) and not isinstance(value, bool):
+        return {"type": "integer"}
+    if isinstance(value, float):
+        return {"type": "number"}
+    if value is None:
+        return {"type": "null"}
+    return {"type": "string"}
+
+
+def handle_json_schema_generator(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "json", "data", default='{"name":"Ishu","score":95,"tags":["tools","student"]}')
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return _j({"error": str(exc), "line": exc.lineno, "column": exc.colno}, f"Invalid JSON: {exc.msg}")
+    schema = {"$schema": "https://json-schema.org/draft/2020-12/schema", **_infer_json_schema(parsed)}
+    return _j({
+        "schema": schema,
+        "schema_json": json.dumps(schema, indent=2, ensure_ascii=False),
+    }, "JSON Schema generated successfully.")
+
+
+def handle_css_clamp_generator(files, payload, output_dir) -> ExecutionResult:
+    min_px = _payload_float(payload, "min_px", 16)
+    max_px = _payload_float(payload, "max_px", 32)
+    min_vw = _payload_float(payload, "min_viewport", 360)
+    max_vw = _payload_float(payload, "max_viewport", 1440)
+    base_px = _payload_float(payload, "base_px", 16) or 16
+    unit = _get(payload, "unit", default="rem").lower()
+    if max_vw <= min_vw or max_px < min_px:
+        return _j({"error": "Invalid size or viewport range"}, "Max viewport must be larger and max size must be >= min size.")
+    slope = (max_px - min_px) / (max_vw - min_vw) * 100
+    intercept = min_px - (slope * min_vw / 100)
+    if unit == "px":
+        clamp = f"clamp({min_px:.2f}px, {intercept:.4f}px + {slope:.4f}vw, {max_px:.2f}px)"
+    else:
+        clamp = f"clamp({min_px / base_px:.4f}rem, {intercept / base_px:.4f}rem + {slope:.4f}vw, {max_px / base_px:.4f}rem)"
+    return _j({
+        "clamp": clamp,
+        "css": f"font-size: {clamp};",
+        "slope_vw": round(slope, 6),
+        "intercept_px": round(intercept, 6),
+        "range": {"min_px": min_px, "max_px": max_px, "min_viewport": min_vw, "max_viewport": max_vw},
+    }, "CSS clamp() value generated successfully.")
+
+
+def handle_slug_bulk_generator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "text", "titles", default="Hello World\nISHU Tools Page")
+    separator = _get(payload, "separator", default="-")[:3] or "-"
+    max_length = max(10, min(_payload_int(payload, "max_length", 80), 200))
+    preserve_numbers = _payload_bool(payload, "preserve_numbers", True)
+    slugs = []
+    for line in [ln.strip() for ln in text.splitlines() if ln.strip()]:
+        pattern = r"[^a-z0-9]+" if preserve_numbers else r"[^a-z]+"
+        slug = re.sub(pattern, separator, line.lower()).strip(separator)
+        slug = re.sub(re.escape(separator) + r"{2,}", separator, slug)[:max_length].strip(separator)
+        slugs.append({"input": line, "slug": slug})
+    return _j({
+        "slugs": slugs,
+        "plain_list": "\n".join(item["slug"] for item in slugs),
+        "count": len(slugs),
+    }, f"Generated {len(slugs)} slug{'s' if len(slugs) != 1 else ''}.")
+
+
+def handle_table_to_csv_converter(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "table", "text", default="| Name | Score |\n| --- | --- |\n| Ishu | 95 |")
+    rows = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if re.fullmatch(r"\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?", stripped):
+            continue
+        if "|" in stripped:
+            parts = [part.strip() for part in stripped.strip("|").split("|")]
+        elif "\t" in stripped:
+            parts = [part.strip() for part in stripped.split("\t")]
+        else:
+            parts = [part.strip() for part in re.split(r"\s{2,}", stripped) if part.strip()]
+        if parts:
+            rows.append(parts)
+    out = io.StringIO()
+    csv.writer(out, lineterminator="\n").writerows(rows)
+    return _j({
+        "csv": out.getvalue(),
+        "rows": len(rows),
+        "columns": max((len(row) for row in rows), default=0),
+        "preview": rows[:10],
+    }, f"Converted table to CSV with {len(rows)} rows.")
+
+
+def handle_csv_column_extractor(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "csv", "data", default="Name,Score,City\nIshu,95,Patna\nTools,100,Web")
+    columns_raw = _get(payload, "columns", default="Name")
+    has_header = _payload_bool(payload, "has_header", True)
+    rows = _parse_table_rows(text, _get(payload, "delimiter", default="auto"))
+    if not rows:
+        return _j({"error": "No CSV rows"}, "Paste CSV data.")
+    header = rows[0] if has_header else [str(i + 1) for i in range(max(len(row) for row in rows))]
+    body = rows[1:] if has_header else rows
+    selected_indices = []
+    for token in [part.strip() for part in re.split(r"[,|]", columns_raw) if part.strip()]:
+        if token.isdigit():
+            idx = int(token) - 1
+        else:
+            lowered = [h.lower() for h in header]
+            idx = lowered.index(token.lower()) if token.lower() in lowered else -1
+        if 0 <= idx < len(header) and idx not in selected_indices:
+            selected_indices.append(idx)
+    if not selected_indices:
+        return _j({"error": "No matching columns", "available_columns": header}, "Choose valid column names or 1-based indexes.")
+    extracted = [[row[i] if i < len(row) else "" for i in selected_indices] for row in body]
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow([header[i] for i in selected_indices])
+    writer.writerows(extracted)
+    return _j({
+        "csv": out.getvalue(),
+        "columns": [header[i] for i in selected_indices],
+        "rows": len(extracted),
+        "preview": extracted[:10],
+    }, f"Extracted {len(selected_indices)} column{'s' if len(selected_indices) != 1 else ''}.")
+
+
+def handle_css_specificity_calculator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "selectors", "selector", default="#app .card button:hover")
+    results = []
+    for selector in [ln.strip() for ln in re.split(r"[\n,]+", text) if ln.strip()]:
+        cleaned = re.sub(r":not\(([^)]*)\)", r"\1", selector)
+        ids = len(re.findall(r"#[a-zA-Z_][\w-]*", cleaned))
+        classes = len(re.findall(r"\.[a-zA-Z_][\w-]*|\[[^\]]+\]|:(?!:)[a-zA-Z-]+(?:\([^)]*\))?", cleaned))
+        elements = len(re.findall(r"(^|[\s>+~])([a-zA-Z][\w-]*|\*)", cleaned))
+        pseudo_elements = len(re.findall(r"::[a-zA-Z-]+", cleaned))
+        specificity = (ids, classes, max(0, elements + pseudo_elements))
+        score = ids * 100 + classes * 10 + specificity[2]
+        results.append({"selector": selector, "specificity": specificity, "score": score})
+    return _j({
+        "results": results,
+        "strongest": max(results, key=lambda item: item["score"]) if results else None,
+    }, f"Calculated specificity for {len(results)} selector{'s' if len(results) != 1 else ''}.")
+
+
+_HTTP_STATUS_TEXT = {
+    100: "Continue", 101: "Switching Protocols", 102: "Processing",
+    200: "OK", 201: "Created", 202: "Accepted", 204: "No Content", 206: "Partial Content",
+    301: "Moved Permanently", 302: "Found", 304: "Not Modified", 307: "Temporary Redirect", 308: "Permanent Redirect",
+    400: "Bad Request", 401: "Unauthorized", 403: "Forbidden", 404: "Not Found", 405: "Method Not Allowed", 408: "Request Timeout", 409: "Conflict", 410: "Gone", 413: "Payload Too Large", 415: "Unsupported Media Type", 422: "Unprocessable Entity", 429: "Too Many Requests",
+    500: "Internal Server Error", 501: "Not Implemented", 502: "Bad Gateway", 503: "Service Unavailable", 504: "Gateway Timeout",
+}
+
+
+def handle_http_status_code_lookup(files, payload, output_dir) -> ExecutionResult:
+    code = _payload_int(payload, "code", 200)
+    phrase = _HTTP_STATUS_TEXT.get(code, "Unknown Status Code")
+    category = "Informational" if code < 200 else "Success" if code < 300 else "Redirect" if code < 400 else "Client Error" if code < 500 else "Server Error" if code < 600 else "Unknown"
+    return _j({
+        "code": code,
+        "phrase": phrase,
+        "category": category,
+        "is_error": code >= 400,
+        "common_fix": "Check request URL, method, headers, authentication, and server logs." if code >= 400 else "No fix needed for normal success/redirect statuses.",
+    }, f"HTTP {code}: {phrase}.")
+
+
+_MIME_TYPES = {
+    "html": "text/html", "css": "text/css", "js": "text/javascript", "json": "application/json",
+    "xml": "application/xml", "pdf": "application/pdf", "txt": "text/plain", "csv": "text/csv",
+    "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif", "svg": "image/svg+xml",
+    "mp3": "audio/mpeg", "wav": "audio/wav", "mp4": "video/mp4", "webm": "video/webm",
+    "zip": "application/zip", "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+}
+
+
+def handle_mime_type_lookup(files, payload, output_dir) -> ExecutionResult:
+    value = _get(payload, "extension", "filename", "text", default="pdf").strip().lower()
+    ext = value.rsplit(".", 1)[-1].lstrip(".")
+    mime = _MIME_TYPES.get(ext, "application/octet-stream")
+    return _j({
+        "extension": ext,
+        "mime_type": mime,
+        "category": mime.split("/", 1)[0],
+        "known": ext in _MIME_TYPES,
+    }, f".{ext} uses MIME type {mime}.")
+
+
+def handle_loan_comparison_calculator(files, payload, output_dir) -> ExecutionResult:
+    principal = max(0.0, _payload_float(payload, "principal", 500000))
+    years = max(0.1, _payload_float(payload, "years", 5))
+    rates = [float(token) for token in re.findall(r"\d+(?:\.\d+)?", _get(payload, "rates", default="8.5, 10, 12"))][:8]
+    tenure_months = int(years * 12)
+    options = []
+    for rate in rates:
+        monthly_rate = rate / 100 / 12
+        if monthly_rate == 0:
+            emi = principal / tenure_months
+        else:
+            emi = principal * monthly_rate * ((1 + monthly_rate) ** tenure_months) / (((1 + monthly_rate) ** tenure_months) - 1)
+        total = emi * tenure_months
+        options.append({"rate": rate, "emi": round(emi, 2), "total_payment": round(total, 2), "total_interest": round(total - principal, 2)})
+    best = min(options, key=lambda item: item["total_payment"]) if options else None
+    return _j({
+        "principal": principal,
+        "years": years,
+        "options": options,
+        "best_option": best,
+    }, f"Compared {len(options)} loan options. Best rate: {best['rate']}%." if best else "No loan options to compare.")
+
+
+def handle_break_even_calculator(files, payload, output_dir) -> ExecutionResult:
+    fixed_cost = _payload_float(payload, "fixed_cost", 100000)
+    price = _payload_float(payload, "price_per_unit", 500)
+    variable = _payload_float(payload, "variable_cost_per_unit", 250)
+    contribution = price - variable
+    if contribution <= 0:
+        return _j({"error": "Contribution margin must be positive"}, "Price per unit must be greater than variable cost.")
+    units = fixed_cost / contribution
+    revenue = units * price
+    return _j({
+        "break_even_units": math.ceil(units),
+        "break_even_revenue": round(revenue, 2),
+        "contribution_margin": round(contribution, 2),
+        "contribution_margin_percent": round(contribution / price * 100, 2) if price else 0,
+    }, f"Break-even point: {math.ceil(units)} units.")
+
+
+def handle_profit_margin_calculator(files, payload, output_dir) -> ExecutionResult:
+    cost = _payload_float(payload, "cost", 100)
+    selling_price = _payload_float(payload, "selling_price", 150)
+    profit = selling_price - cost
+    margin = profit / selling_price * 100 if selling_price else 0
+    markup = profit / cost * 100 if cost else 0
+    return _j({
+        "cost": cost,
+        "selling_price": selling_price,
+        "profit": round(profit, 2),
+        "margin_percent": round(margin, 2),
+        "markup_percent": round(markup, 2),
+        "status": "profit" if profit >= 0 else "loss",
+    }, f"Profit margin: {margin:.2f}% ({'profit' if profit >= 0 else 'loss'}).")
+
+
+def handle_gst_reverse_calculator(files, payload, output_dir) -> ExecutionResult:
+    inclusive_amount = _payload_float(payload, "inclusive_amount", 1180)
+    gst_rate = _payload_float(payload, "gst_rate", 18)
+    base = inclusive_amount / (1 + gst_rate / 100)
+    gst = inclusive_amount - base
+    return _j({
+        "inclusive_amount": round(inclusive_amount, 2),
+        "base_amount": round(base, 2),
+        "gst_rate": gst_rate,
+        "gst_amount": round(gst, 2),
+        "cgst": round(gst / 2, 2),
+        "sgst": round(gst / 2, 2),
+    }, f"Base amount: {base:.2f}, GST: {gst:.2f}.")
+
+
+def handle_discount_stack_calculator(files, payload, output_dir) -> ExecutionResult:
+    price = _payload_float(payload, "price", 1000)
+    discounts = [float(token) for token in re.findall(r"\d+(?:\.\d+)?", _get(payload, "discounts", default="10,5"))][:10]
+    current = price
+    steps = []
+    for discount in discounts:
+        reduction = current * discount / 100
+        current -= reduction
+        steps.append({"discount_percent": discount, "saved": round(reduction, 2), "price_after": round(current, 2)})
+    total_saved = price - current
+    return _j({
+        "original_price": price,
+        "final_price": round(current, 2),
+        "total_saved": round(total_saved, 2),
+        "effective_discount_percent": round(total_saved / price * 100, 2) if price else 0,
+        "steps": steps,
+    }, f"Final price: {current:.2f} after stacked discounts.")
+
+
+def handle_study_break_planner(files, payload, output_dir) -> ExecutionResult:
+    total_minutes = max(15, _payload_int(payload, "total_minutes", 180))
+    focus_minutes = max(10, _payload_int(payload, "focus_minutes", 50))
+    break_minutes = max(5, _payload_int(payload, "break_minutes", 10))
+    start_time = _get(payload, "start_time", default="09:00")
+    try:
+        current = datetime.strptime(start_time, "%H:%M")
+    except ValueError:
+        current = datetime.strptime("09:00", "%H:%M")
+    elapsed = 0
+    schedule = []
+    while elapsed < total_minutes:
+        focus = min(focus_minutes, total_minutes - elapsed)
+        end_focus = current + timedelta(minutes=focus)
+        schedule.append({"type": "focus", "start": current.strftime("%H:%M"), "end": end_focus.strftime("%H:%M"), "minutes": focus})
+        current = end_focus
+        elapsed += focus
+        if elapsed >= total_minutes:
+            break
+        rest = min(break_minutes, total_minutes - elapsed)
+        end_break = current + timedelta(minutes=rest)
+        schedule.append({"type": "break", "start": current.strftime("%H:%M"), "end": end_break.strftime("%H:%M"), "minutes": rest})
+        current = end_break
+        elapsed += rest
+    return _j({
+        "schedule": schedule,
+        "total_minutes": total_minutes,
+        "focus_blocks": sum(1 for item in schedule if item["type"] == "focus"),
+        "end_time": current.strftime("%H:%M"),
+    }, f"Created study schedule ending at {current.strftime('%H:%M')}.")
+
+
+def handle_water_reminder_schedule(files, payload, output_dir) -> ExecutionResult:
+    wake_time = _get(payload, "wake_time", default="07:00")
+    sleep_time = _get(payload, "sleep_time", default="22:30")
+    glasses = max(1, min(_payload_int(payload, "glasses", 8), 30))
+    try:
+        start = datetime.strptime(wake_time, "%H:%M")
+        end = datetime.strptime(sleep_time, "%H:%M")
+    except ValueError:
+        start = datetime.strptime("07:00", "%H:%M")
+        end = datetime.strptime("22:30", "%H:%M")
+    if end <= start:
+        end += timedelta(days=1)
+    interval = (end - start) / max(1, glasses - 1)
+    times = [(start + interval * i).strftime("%H:%M") for i in range(glasses)]
+    return _j({
+        "reminders": times,
+        "glasses": glasses,
+        "interval_minutes": round(interval.total_seconds() / 60, 1),
+    }, f"Generated {glasses} water reminders.")
+
+
+def handle_workout_plan_generator(files, payload, output_dir) -> ExecutionResult:
+    goal = _get(payload, "goal", default="fitness").lower()
+    days = max(1, min(_payload_int(payload, "days_per_week", 4), 7))
+    level = _get(payload, "level", default="beginner").lower()
+    pools = {
+        "strength": ["Squats", "Push-ups", "Rows", "Lunges", "Plank", "Hip hinge"],
+        "weight_loss": ["Brisk walk", "Bodyweight circuit", "Mountain climbers", "Step-ups", "Jumping jacks", "Core finisher"],
+        "fitness": ["Mobility warm-up", "Squats", "Push-ups", "Glute bridge", "Plank", "Easy cardio"],
+    }
+    exercises = pools.get(goal, pools["fitness"])
+    rounds = 2 if level == "beginner" else 3 if level == "intermediate" else 4
+    plan = []
+    for day in range(1, days + 1):
+        chosen = [exercises[(day + i) % len(exercises)] for i in range(4)]
+        plan.append({"day": day, "focus": goal.replace("_", " ").title(), "rounds": rounds, "exercises": chosen, "rest": "60-90 seconds"})
+    return _j({
+        "goal": goal,
+        "level": level,
+        "days_per_week": days,
+        "plan": plan,
+        "note": "Warm up before exercise and adjust intensity to your fitness level.",
+    }, f"Generated {days}-day workout plan.")
+
+
+def handle_meal_plan_generator(files, payload, output_dir) -> ExecutionResult:
+    calories = max(800, _payload_int(payload, "calories", 2000))
+    meals = max(2, min(_payload_int(payload, "meals", 4), 6))
+    diet = _get(payload, "diet", default="balanced").lower()
+    protein_ratio = 0.25 if diet != "high protein" else 0.35
+    fat_ratio = 0.25
+    carb_ratio = 1 - protein_ratio - fat_ratio
+    meal_names = ["Breakfast", "Lunch", "Snack", "Dinner", "Evening Snack", "Post-workout"]
+    per_meal = calories / meals
+    plan = []
+    for index in range(meals):
+        plan.append({
+            "meal": meal_names[index],
+            "calories": round(per_meal),
+            "protein_g": round(per_meal * protein_ratio / 4),
+            "carbs_g": round(per_meal * carb_ratio / 4),
+            "fat_g": round(per_meal * fat_ratio / 9),
+        })
+    return _j({
+        "daily_calories": calories,
+        "diet": diet,
+        "meals": plan,
+        "macro_split": {"protein_percent": round(protein_ratio * 100), "carbs_percent": round(carb_ratio * 100), "fat_percent": round(fat_ratio * 100)},
+    }, f"Generated {meals}-meal plan for {calories} calories.")
+
+
+def handle_name_initials_generator(files, payload, output_dir) -> ExecutionResult:
+    names = [line.strip() for line in _input_text(payload, "names", "text", default="Ishu Kumar\nIndian Student Hub").splitlines() if line.strip()]
+    results = []
+    for name in names:
+        parts = re.findall(r"[A-Za-z0-9]+", name)
+        initials = "".join(part[0].upper() for part in parts)
+        monogram = initials[:3]
+        results.append({"name": name, "initials": initials, "monogram": monogram, "short_name": " ".join(part.capitalize() for part in parts[:2])})
+    return _j({
+        "results": results,
+        "plain_list": "\n".join(item["initials"] for item in results),
+    }, f"Generated initials for {len(results)} name{'s' if len(results) != 1 else ''}.")
+
+
+def handle_acronym_generator(files, payload, output_dir) -> ExecutionResult:
+    phrase = _input_text(payload, "phrase", "text", default="Indian Student Hub University Tools")
+    words = [w for w in re.findall(r"[A-Za-z0-9]+", phrase) if w.lower() not in {"and", "of", "the", "for", "to", "in"}]
+    acronym = "".join(word[0].upper() for word in words)
+    variants = [acronym, ".".join(acronym) + ".", acronym.lower(), "-".join(word.lower() for word in words)]
+    return _j({
+        "phrase": phrase,
+        "acronym": acronym,
+        "variants": variants,
+        "words_used": words,
+    }, f"Acronym generated: {acronym}.")
+
+
+def handle_username_generator(files, payload, output_dir) -> ExecutionResult:
+    name = _get(payload, "name", "text", default="Ishu Kumar")
+    keyword = _get(payload, "keyword", default="tools")
+    count = max(5, min(_payload_int(payload, "count", 12), 50))
+    base = re.sub(r"[^a-z0-9]+", "", name.lower()) or "user"
+    key = re.sub(r"[^a-z0-9]+", "", keyword.lower())
+    random.seed(f"{base}:{key}:{count}")
+    variants = []
+    patterns = [
+        f"{base}{key}", f"{base}_{key}", f"{key}_{base}", f"{base}.official",
+        f"the{base}", f"{base}hq", f"{base}{random.randint(10, 9999)}",
+    ]
+    while len(variants) < count:
+        candidate = random.choice(patterns)
+        if candidate not in variants:
+            variants.append(candidate)
+        patterns.append(f"{base}{random.randint(100, 99999)}")
+    return _j({
+        "usernames": variants,
+        "count": len(variants),
+        "base": base,
+    }, f"Generated {len(variants)} username ideas.")
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# 28.  PRODUCTION UTILITY BATCH 3
+# ═════════════════════════════════════════════════════════════════════════════
+
+def _duration_seconds(payload: dict) -> float:
+    duration = _get(payload, "duration", "time", default="")
+    if duration:
+        parts = [float(part) for part in re.findall(r"\d+(?:\.\d+)?", duration)]
+        if ":" in duration and parts:
+            total = 0.0
+            for part in parts:
+                total = total * 60 + part
+            return total
+        if parts:
+            return parts[0]
+    return (
+        _payload_float(payload, "hours", 0) * 3600
+        + _payload_float(payload, "minutes", 0) * 60
+        + _payload_float(payload, "seconds", 0)
+    )
+
+
+def _format_duration(total_seconds: float) -> str:
+    total = max(0, int(round(total_seconds)))
+    hours, rem = divmod(total, 3600)
+    minutes, seconds = divmod(rem, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
+
+def _extract_youtube_id(url_or_id: str) -> str | None:
+    text = url_or_id.strip()
+    if re.fullmatch(r"[A-Za-z0-9_-]{11}", text):
+        return text
+    parsed = urlparse(text if re.match(r"^[a-z][a-z0-9+.-]*://", text, re.I) else "https://" + text)
+    query = dict(parse_qsl(parsed.query))
+    if "v" in query and re.fullmatch(r"[A-Za-z0-9_-]{11}", query["v"]):
+        return query["v"]
+    patterns = [
+        r"youtu\.be/([A-Za-z0-9_-]{11})",
+        r"/embed/([A-Za-z0-9_-]{11})",
+        r"/shorts/([A-Za-z0-9_-]{11})",
+        r"/live/([A-Za-z0-9_-]{11})",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, parsed.geturl())
+        if match:
+            return match.group(1)
+    return None
+
+
+def handle_youtube_thumbnail_url_generator(files, payload, output_dir) -> ExecutionResult:
+    video_id = _extract_youtube_id(_input_text(payload, "url", "video_id", "youtube_url"))
+    if not video_id:
+        return _j({"error": "Invalid YouTube URL or ID"}, "Enter a valid YouTube URL or 11-character video ID.")
+    base = f"https://img.youtube.com/vi/{video_id}"
+    thumbnails = {
+        "default": f"{base}/default.jpg",
+        "medium": f"{base}/mqdefault.jpg",
+        "high": f"{base}/hqdefault.jpg",
+        "standard": f"{base}/sddefault.jpg",
+        "max_resolution": f"{base}/maxresdefault.jpg",
+    }
+    return _j({
+        "video_id": video_id,
+        "thumbnails": thumbnails,
+        "best_guess": thumbnails["max_resolution"],
+    }, "YouTube thumbnail URLs generated.")
+
+
+def handle_youtube_embed_code_generator(files, payload, output_dir) -> ExecutionResult:
+    video_id = _extract_youtube_id(_input_text(payload, "url", "video_id", "youtube_url"))
+    if not video_id:
+        return _j({"error": "Invalid YouTube URL or ID"}, "Enter a valid YouTube URL or 11-character video ID.")
+    start = max(0, _payload_int(payload, "start_seconds", 0))
+    autoplay = _payload_bool(payload, "autoplay", False)
+    responsive = _payload_bool(payload, "responsive", True)
+    params = []
+    if start:
+        params.append(("start", str(start)))
+    if autoplay:
+        params.append(("autoplay", "1"))
+    src = f"https://www.youtube.com/embed/{video_id}"
+    if params:
+        src += "?" + urlencode(params)
+    iframe = (
+        f'<iframe width="560" height="315" src="{src}" title="YouTube video player" '
+        'frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" '
+        "allowfullscreen></iframe>"
+    )
+    code = (
+        '<div style="position:relative;width:100%;aspect-ratio:16/9;">\n'
+        f'  <iframe src="{src}" title="YouTube video player" frameborder="0" allowfullscreen '
+        'style="position:absolute;inset:0;width:100%;height:100%;"></iframe>\n'
+        "</div>"
+        if responsive else iframe
+    )
+    return _j({"video_id": video_id, "embed_url": src, "embed_code": code, "responsive": responsive}, "YouTube embed code generated.")
+
+
+def handle_video_aspect_ratio_calculator(files, payload, output_dir) -> ExecutionResult:
+    width = max(1, _payload_int(payload, "width", 1920))
+    height = max(1, _payload_int(payload, "height", 1080))
+    divisor = math.gcd(width, height)
+    ratio_w, ratio_h = width // divisor, height // divisor
+    ratio_decimal = width / height
+    common = {
+        "16:9": 16 / 9,
+        "9:16": 9 / 16,
+        "4:3": 4 / 3,
+        "1:1": 1,
+        "21:9": 21 / 9,
+    }
+    closest = min(common.items(), key=lambda item: abs(item[1] - ratio_decimal))[0]
+    return _j({
+        "width": width,
+        "height": height,
+        "ratio": f"{ratio_w}:{ratio_h}",
+        "decimal": round(ratio_decimal, 6),
+        "orientation": "landscape" if width > height else "portrait" if height > width else "square",
+        "closest_common_ratio": closest,
+    }, f"Aspect ratio: {ratio_w}:{ratio_h}.")
+
+
+def handle_video_bitrate_calculator(files, payload, output_dir) -> ExecutionResult:
+    size_mb = max(0.0, _payload_float(payload, "size_mb", 100))
+    duration = max(1.0, _duration_seconds(payload) or 60)
+    audio_kbps = max(0.0, _payload_float(payload, "audio_kbps", 128))
+    total_kbps = size_mb * 8192 / duration
+    video_kbps = max(0.0, total_kbps - audio_kbps)
+    return _j({
+        "file_size_mb": size_mb,
+        "duration_seconds": round(duration, 3),
+        "duration": _format_duration(duration),
+        "total_bitrate_kbps": round(total_kbps, 2),
+        "video_bitrate_kbps": round(video_kbps, 2),
+        "audio_bitrate_kbps": audio_kbps,
+    }, f"Estimated total bitrate: {total_kbps:.2f} kbps.")
+
+
+def handle_video_file_size_estimator(files, payload, output_dir) -> ExecutionResult:
+    duration = max(1.0, _duration_seconds(payload) or 60)
+    video_kbps = max(0.0, _payload_float(payload, "video_kbps", 2500))
+    audio_kbps = max(0.0, _payload_float(payload, "audio_kbps", 128))
+    total_kbps = video_kbps + audio_kbps
+    size_mb = total_kbps * duration / 8192
+    return _j({
+        "duration_seconds": round(duration, 3),
+        "duration": _format_duration(duration),
+        "video_kbps": video_kbps,
+        "audio_kbps": audio_kbps,
+        "total_kbps": total_kbps,
+        "estimated_size_mb": round(size_mb, 2),
+        "estimated_size_gb": round(size_mb / 1024, 3),
+    }, f"Estimated video size: {size_mb:.2f} MB.")
+
+
+def handle_video_duration_calculator(files, payload, output_dir) -> ExecutionResult:
+    duration = max(0.0, _duration_seconds(payload))
+    fps = max(0.001, _payload_float(payload, "fps", 30))
+    return _j({
+        "total_seconds": round(duration, 3),
+        "total_minutes": round(duration / 60, 3),
+        "total_hours": round(duration / 3600, 3),
+        "hh_mm_ss": _format_duration(duration),
+        "frames": int(round(duration * fps)),
+        "fps": fps,
+    }, f"Duration: {_format_duration(duration)}.")
+
+
+def handle_serp_snippet_preview(files, payload, output_dir) -> ExecutionResult:
+    title = _get(payload, "title", default="ISHU TOOLS - Free Online Tools")
+    description = _get(payload, "description", default="Use free online tools for students, developers, finance, SEO, images, PDF and more.")
+    url = _get(payload, "url", default="https://ishutools.com/tools")
+    title_limit = 60
+    desc_limit = 160
+    display_title = title if len(title) <= title_limit else title[: title_limit - 1].rstrip() + "…"
+    display_description = description if len(description) <= desc_limit else description[: desc_limit - 1].rstrip() + "…"
+    return _j({
+        "display_title": display_title,
+        "display_url": url,
+        "display_description": display_description,
+        "title_length": len(title),
+        "description_length": len(description),
+        "title_ok": len(title) <= title_limit,
+        "description_ok": len(description) <= desc_limit,
+    }, "SERP snippet preview generated.")
+
+
+def handle_keyword_cluster_generator(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "keywords", "text", default="pdf merge\nmerge pdf online\ncompress pdf\nimage compressor")
+    keywords = [line.strip().lower() for line in re.split(r"[\n,]+", raw) if line.strip()]
+    clusters: dict[str, list[str]] = {}
+    for keyword in keywords:
+        tokens = [re.sub(r"s$", "", token) for token in re.findall(r"[a-z0-9]+", keyword) if token not in _KEYWORD_STOPWORDS]
+        key = tokens[0] if tokens else "misc"
+        if "pdf" in tokens:
+            key = "pdf"
+        elif "image" in tokens or "photo" in tokens:
+            key = "image"
+        elif "calculator" in tokens:
+            key = "calculator"
+        clusters.setdefault(key, []).append(keyword)
+    rows = [{"cluster": key, "keywords": values, "count": len(values)} for key, values in sorted(clusters.items())]
+    return _j({"clusters": rows, "cluster_count": len(rows), "keyword_count": len(keywords)}, f"Clustered {len(keywords)} keywords into {len(rows)} groups.")
+
+
+_HEADLINE_POWER_WORDS = {"free", "best", "easy", "proven", "ultimate", "fast", "new", "complete", "simple", "secret", "powerful"}
+
+
+def handle_headline_analyzer(files, payload, output_dir) -> ExecutionResult:
+    headline = _input_text(payload, "headline", "title", "text", default="Best Free Online Tools for Students")
+    words = re.findall(r"[A-Za-z0-9']+", headline)
+    power = [word for word in words if word.lower() in _HEADLINE_POWER_WORDS]
+    length_score = 35 if 6 <= len(words) <= 12 else 25 if 4 <= len(words) <= 15 else 15
+    power_score = min(25, len(power) * 8)
+    clarity_score = 25 if any(word.lower() in {"tool", "tools", "calculator", "guide", "generator"} for word in words) else 15
+    case_score = 15 if headline[:1].isupper() else 8
+    score = min(100, length_score + power_score + clarity_score + case_score)
+    return _j({
+        "headline": headline,
+        "score": score,
+        "word_count": len(words),
+        "character_count": len(headline),
+        "power_words": power,
+        "tips": [
+            "Keep headlines around 6-12 words for clarity.",
+            "Use one specific benefit or outcome.",
+            "Add a strong word only if it stays truthful.",
+        ],
+    }, f"Headline score: {score}/100.")
+
+
+def _json_path_tokens(path: str) -> list[Any]:
+    path = path.strip()
+    if path.startswith("$"):
+        path = path[1:]
+    path = path.lstrip(".")
+    tokens: list[Any] = []
+    for part in re.finditer(r"([A-Za-z_][\w-]*)|\[(\d+)\]", path):
+        if part.group(1) is not None:
+            tokens.append(part.group(1))
+        else:
+            tokens.append(int(part.group(2)))
+    return tokens
+
+
+def handle_json_path_extractor(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "json", "data", default='{"user":{"name":"Ishu","scores":[95,100]}}')
+    path = _get(payload, "path", default="user.name")
+    try:
+        current: Any = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return _j({"error": str(exc), "line": exc.lineno, "column": exc.colno}, f"Invalid JSON: {exc.msg}")
+    try:
+        for token in _json_path_tokens(path):
+            current = current[token]
+    except (KeyError, IndexError, TypeError) as exc:
+        return _j({"error": f"Path not found: {path}", "details": str(exc)}, "JSON path not found.")
+    return _j({"path": path, "value": current, "value_json": json.dumps(current, indent=2, ensure_ascii=False)}, "JSON path extracted successfully.")
+
+
+def handle_uuid_validator(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "uuid", "text")
+    try:
+        parsed = uuid.UUID(raw)
+    except (ValueError, AttributeError):
+        return _j({"valid": False, "input": raw}, "Invalid UUID.")
+    return _j({"valid": True, "uuid": str(parsed), "version": parsed.version, "variant": parsed.variant}, f"Valid UUID v{parsed.version}.")
+
+
+_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+
+
+def _encode_ulid(value: int, length: int) -> str:
+    chars = []
+    for _ in range(length):
+        chars.append(_ULID_ALPHABET[value & 31])
+        value >>= 5
+    return "".join(reversed(chars))
+
+
+def handle_ulid_generator(files, payload, output_dir) -> ExecutionResult:
+    count = max(1, min(_payload_int(payload, "count", 5), 50))
+    timestamp_ms = _payload_int(payload, "timestamp_ms", int(time.time() * 1000))
+    ulids = []
+    for _ in range(count):
+        random_part = random.getrandbits(80)
+        ulids.append(_encode_ulid(timestamp_ms, 10) + _encode_ulid(random_part, 16))
+    return _j({"ulids": ulids, "count": count, "timestamp_ms": timestamp_ms}, f"Generated {count} ULID{'s' if count != 1 else ''}.")
+
+
+def handle_ics_calendar_generator(files, payload, output_dir) -> ExecutionResult:
+    title = _get(payload, "title", default="ISHU TOOLS Event")
+    start_raw = _get(payload, "start", default="2026-01-01 10:00")
+    end_raw = _get(payload, "end", default="")
+    duration_minutes = max(1, _payload_int(payload, "duration_minutes", 60))
+    location = _get(payload, "location", default="")
+    description = _get(payload, "description", default="")
+    try:
+        start = datetime.fromisoformat(start_raw.replace("Z", "+00:00"))
+    except ValueError:
+        start = datetime.strptime(start_raw, "%Y-%m-%d %H:%M")
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
+    if end_raw:
+        try:
+            end = datetime.fromisoformat(end_raw.replace("Z", "+00:00"))
+        except ValueError:
+            end = start + timedelta(minutes=duration_minutes)
+    else:
+        end = start + timedelta(minutes=duration_minutes)
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=start.tzinfo)
+    uid = f"{uuid.uuid4()}@ishutools.com"
+    def dtstamp(dt: datetime) -> str:
+        return dt.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ics = "\n".join([
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ISHU TOOLS//Calendar Generator//EN",
+        "BEGIN:VEVENT", f"UID:{uid}", f"DTSTAMP:{dtstamp(datetime.now(timezone.utc))}",
+        f"DTSTART:{dtstamp(start)}", f"DTEND:{dtstamp(end)}", f"SUMMARY:{title}",
+        f"LOCATION:{location}", f"DESCRIPTION:{description}", "END:VEVENT", "END:VCALENDAR", ""
+    ])
+    return _j({"ics": ics, "uid": uid, "start_utc": dtstamp(start), "end_utc": dtstamp(end)}, "ICS calendar event generated.")
+
+
+def handle_vcard_generator(files, payload, output_dir) -> ExecutionResult:
+    name = _get(payload, "name", default="Ishu Kumar")
+    email = _get(payload, "email", default="hello@example.com")
+    phone = _get(payload, "phone", default="")
+    org = _get(payload, "organization", "org", default="")
+    title = _get(payload, "title", default="")
+    url = _get(payload, "url", default="")
+    parts = name.split()
+    family = parts[-1] if len(parts) > 1 else ""
+    given = " ".join(parts[:-1]) if family else name
+    vcard = "\n".join([
+        "BEGIN:VCARD", "VERSION:3.0", f"N:{family};{given};;;", f"FN:{name}",
+        f"ORG:{org}", f"TITLE:{title}", f"EMAIL:{email}", f"TEL:{phone}", f"URL:{url}", "END:VCARD", ""
+    ])
+    return _j({"vcard": vcard, "name": name, "email": email, "phone": phone}, "vCard contact generated.")
+
+
+def handle_salary_to_hourly_calculator(files, payload, output_dir) -> ExecutionResult:
+    annual = _payload_float(payload, "annual_salary", 600000)
+    hours_per_week = max(1, _payload_float(payload, "hours_per_week", 40))
+    weeks_per_year = max(1, _payload_float(payload, "weeks_per_year", 52))
+    hourly = annual / (hours_per_week * weeks_per_year)
+    return _j({"annual_salary": annual, "hourly_rate": round(hourly, 2), "monthly_salary": round(annual / 12, 2), "weekly_salary": round(annual / weeks_per_year, 2)}, f"Hourly rate: {hourly:.2f}.")
+
+
+def handle_hourly_to_salary_calculator(files, payload, output_dir) -> ExecutionResult:
+    hourly = _payload_float(payload, "hourly_rate", 500)
+    hours_per_week = max(1, _payload_float(payload, "hours_per_week", 40))
+    weeks_per_year = max(1, _payload_float(payload, "weeks_per_year", 52))
+    annual = hourly * hours_per_week * weeks_per_year
+    return _j({"hourly_rate": hourly, "annual_salary": round(annual, 2), "monthly_salary": round(annual / 12, 2), "weekly_salary": round(hourly * hours_per_week, 2)}, f"Annual salary: {annual:.2f}.")
+
+
+def handle_debt_payoff_planner(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "debts", default="Card,50000,24,5000\nLoan,200000,12,8000")
+    extra = max(0.0, _payload_float(payload, "extra_payment", 2000))
+    strategy = _get(payload, "strategy", default="avalanche").lower()
+    debts = []
+    for line in [ln.strip() for ln in raw.splitlines() if ln.strip()]:
+        parts = [p.strip() for p in line.split(",")]
+        if len(parts) < 4:
+            continue
+        try:
+            debts.append({"name": parts[0], "balance": float(parts[1]), "rate": float(parts[2]), "minimum": float(parts[3])})
+        except ValueError:
+            continue
+    if not debts:
+        return _j({"error": "No valid debts"}, "Enter debts as: name,balance,annual_rate,minimum_payment")
+    month = 0
+    total_interest = 0.0
+    payoff_order = []
+    while any(debt["balance"] > 0.01 for debt in debts) and month < 600:
+        active = [debt for debt in debts if debt["balance"] > 0.01]
+        target = max(active, key=lambda debt: debt["rate"]) if strategy == "avalanche" else min(active, key=lambda debt: debt["balance"])
+        for debt in active:
+            interest = debt["balance"] * debt["rate"] / 100 / 12
+            total_interest += interest
+            payment = min(debt["balance"] + interest, debt["minimum"] + (extra if debt is target else 0))
+            debt["balance"] = max(0.0, debt["balance"] + interest - payment)
+            if debt["balance"] <= 0.01 and debt["name"] not in payoff_order:
+                payoff_order.append(debt["name"])
+        month += 1
+    return _j({"months": month, "years": round(month / 12, 2), "total_interest": round(total_interest, 2), "payoff_order": payoff_order, "strategy": strategy}, f"Debt-free estimate: {month} months.")
+
+
+def handle_goal_progress_calculator(files, payload, output_dir) -> ExecutionResult:
+    current = _payload_float(payload, "current", 40)
+    target = _payload_float(payload, "target", 100)
+    start = _payload_float(payload, "start", 0)
+    daily_rate = _payload_float(payload, "daily_rate", 0)
+    total_span = target - start
+    progress = (current - start) / total_span * 100 if total_span else 100
+    remaining = target - current
+    eta_days = math.ceil(remaining / daily_rate) if daily_rate > 0 and remaining > 0 else 0
+    return _j({"progress_percent": round(max(0, min(100, progress)), 2), "remaining": round(remaining, 2), "eta_days": eta_days, "current": current, "target": target}, f"Progress: {progress:.2f}%.")
+
+
+def handle_habit_streak_calculator(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "dates", default="2026-04-20\n2026-04-21\n2026-04-22")
+    today_raw = _get(payload, "today", default=datetime.now().date().isoformat())
+    dates = sorted({datetime.fromisoformat(d.strip()).date() for d in re.findall(r"\d{4}-\d{2}-\d{2}", raw)})
+    today = datetime.fromisoformat(today_raw).date()
+    date_set = set(dates)
+    current = 0
+    cursor = today
+    while cursor in date_set:
+        current += 1
+        cursor -= timedelta(days=1)
+    longest = 0
+    running = 0
+    last = None
+    for day in dates:
+        running = running + 1 if last and (day - last).days == 1 else 1
+        longest = max(longest, running)
+        last = day
+    return _j({"current_streak": current, "longest_streak": longest, "completed_days": len(dates), "today": today.isoformat()}, f"Current streak: {current} day{'s' if current != 1 else ''}.")
+
+
+def handle_exam_timetable_generator(files, payload, output_dir) -> ExecutionResult:
+    subjects = [s.strip() for s in re.split(r"[\n,]+", _input_text(payload, "subjects", default="Math,Physics,English")) if s.strip()]
+    days = max(1, min(_payload_int(payload, "days", 7), 90))
+    hours = max(0.5, _payload_float(payload, "daily_hours", 3))
+    plan = []
+    for day in range(1, days + 1):
+        subject = subjects[(day - 1) % len(subjects)] if subjects else "Revision"
+        secondary = subjects[day % len(subjects)] if len(subjects) > 1 else "Practice"
+        plan.append({"day": day, "primary_subject": subject, "secondary_subject": secondary, "hours": hours, "task": "Concept review + practice questions"})
+    return _j({"days": days, "daily_hours": hours, "subjects": subjects, "plan": plan}, f"Generated {days}-day exam timetable.")
+
+
+def handle_flashcard_csv_generator(files, payload, output_dir) -> ExecutionResult:
+    raw = _input_text(payload, "notes", "text", default="HTML: HyperText Markup Language\nCSS: Cascading Style Sheets")
+    rows = [["Front", "Back"]]
+    for line in [ln.strip() for ln in raw.splitlines() if ln.strip()]:
+        if ":" in line:
+            front, back = line.split(":", 1)
+        elif "-" in line:
+            front, back = line.split("-", 1)
+        else:
+            words = line.split()
+            front, back = " ".join(words[: min(5, len(words))]), line
+        rows.append([front.strip(), back.strip()])
+    out = io.StringIO()
+    csv.writer(out, lineterminator="\n").writerows(rows)
+    return _j({"csv": out.getvalue(), "card_count": max(0, len(rows) - 1), "preview": rows[:8]}, f"Generated {max(0, len(rows)-1)} flashcards.")
+
+
+def handle_notes_to_quiz_generator(files, payload, output_dir) -> ExecutionResult:
+    text = _input_text(payload, "notes", "text", default="Photosynthesis converts light energy into chemical energy. HTML means HyperText Markup Language.")
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if len(s.strip()) > 20][:20]
+    questions = []
+    for sentence in sentences:
+        words = [w for w in re.findall(r"[A-Za-z][A-Za-z0-9-]*", sentence) if len(w) > 5]
+        answer = max(words, key=len) if words else sentence.split()[0]
+        question = sentence.replace(answer, "_____", 1)
+        questions.append({"question": question, "answer": answer, "source": sentence})
+    return _j({"questions": questions, "count": len(questions)}, f"Generated {len(questions)} quiz questions.")
+
+
+def handle_simple_rubric_generator(files, payload, output_dir) -> ExecutionResult:
+    assignment = _get(payload, "assignment", default="Essay")
+    criteria = [c.strip() for c in re.split(r"[\n,]+", _get(payload, "criteria", default="Content,Organization,Grammar,References")) if c.strip()]
+    points = max(1, _payload_int(payload, "points_each", 10))
+    rows = []
+    for criterion in criteria:
+        rows.append({
+            "criterion": criterion,
+            "excellent": f"{points} pts - clear, complete, accurate",
+            "good": f"{round(points * 0.75, 1)} pts - mostly complete",
+            "needs_work": f"{round(points * 0.5, 1)} pts - incomplete or unclear",
+        })
+    return _j({"assignment": assignment, "total_points": points * len(criteria), "rubric": rows}, f"Rubric generated for {assignment}.")
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # HANDLER MAP
 # ═════════════════════════════════════════════════════════════════════════════
 
@@ -1937,4 +3507,79 @@ WORLDWIDE_HANDLERS: dict = {
     "compound-interest-calculator": handle_compound_interest_calculator,
     "compound-interest": handle_compound_interest_calculator,
     "investment-calculator": handle_compound_interest_calculator,
+    "user-agent-parser": handle_user_agent_parser,
+    "browser-user-agent-parser": handle_user_agent_parser,
+    "csv-cleaner": handle_csv_cleaner,
+    "clean-csv": handle_csv_cleaner,
+    "regex-replace": handle_regex_replace,
+    "regex-find-replace": handle_regex_replace,
+    "weighted-gpa-calculator": handle_weighted_gpa_calculator,
+    "gpa-weighted-calculator": handle_weighted_gpa_calculator,
+    "grade-average-calculator": handle_grade_average_calculator,
+    "marks-average-calculator": handle_grade_average_calculator,
+    "syllabus-study-planner": handle_syllabus_study_planner,
+    "study-plan-from-syllabus": handle_syllabus_study_planner,
+    "citation-url-cleaner": handle_citation_url_cleaner,
+    "clean-citation-url": handle_citation_url_cleaner,
+    "url-query-parser": handle_url_query_parser,
+    "query-string-parser": handle_url_query_parser,
+    "timestamp-converter": handle_timestamp_converter,
+    "unix-timestamp-converter": handle_timestamp_converter,
+    "markdown-table-generator": handle_markdown_table_generator,
+    "csv-to-markdown-table": handle_markdown_table_generator,
+    "email-extractor": handle_email_extractor,
+    "extract-emails": handle_email_extractor,
+    "phone-number-extractor": handle_phone_number_extractor,
+    "extract-phone-numbers": handle_phone_number_extractor,
+    "keyword-density-checker": handle_keyword_density_checker,
+    "keyword-density": handle_keyword_density_checker,
+    "robots-txt-generator": handle_robots_txt_generator,
+    "robots-generator": handle_robots_txt_generator,
+    "meta-description-generator": handle_meta_description_generator,
+    "seo-meta-generator": handle_meta_description_generator,
+    "utm-builder": handle_utm_builder,
+    "html-table-generator": handle_html_table_generator,
+    "json-schema-generator": handle_json_schema_generator,
+    "css-clamp-generator": handle_css_clamp_generator,
+    "slug-bulk-generator": handle_slug_bulk_generator,
+    "table-to-csv-converter": handle_table_to_csv_converter,
+    "csv-column-extractor": handle_csv_column_extractor,
+    "css-specificity-calculator": handle_css_specificity_calculator,
+    "http-status-code-lookup": handle_http_status_code_lookup,
+    "mime-type-lookup": handle_mime_type_lookup,
+    "loan-comparison-calculator": handle_loan_comparison_calculator,
+    "break-even-calculator": handle_break_even_calculator,
+    "profit-margin-calculator": handle_profit_margin_calculator,
+    "gst-reverse-calculator": handle_gst_reverse_calculator,
+    "discount-stack-calculator": handle_discount_stack_calculator,
+    "study-break-planner": handle_study_break_planner,
+    "water-reminder-schedule": handle_water_reminder_schedule,
+    "workout-plan-generator": handle_workout_plan_generator,
+    "meal-plan-generator": handle_meal_plan_generator,
+    "name-initials-generator": handle_name_initials_generator,
+    "acronym-generator": handle_acronym_generator,
+    "username-generator": handle_username_generator,
+    "youtube-thumbnail-url-generator": handle_youtube_thumbnail_url_generator,
+    "youtube-embed-code-generator": handle_youtube_embed_code_generator,
+    "video-aspect-ratio-calculator": handle_video_aspect_ratio_calculator,
+    "video-bitrate-calculator": handle_video_bitrate_calculator,
+    "video-file-size-estimator": handle_video_file_size_estimator,
+    "video-duration-calculator": handle_video_duration_calculator,
+    "serp-snippet-preview": handle_serp_snippet_preview,
+    "keyword-cluster-generator": handle_keyword_cluster_generator,
+    "headline-analyzer": handle_headline_analyzer,
+    "json-path-extractor": handle_json_path_extractor,
+    "uuid-validator": handle_uuid_validator,
+    "ulid-generator": handle_ulid_generator,
+    "ics-calendar-generator": handle_ics_calendar_generator,
+    "vcard-generator": handle_vcard_generator,
+    "salary-to-hourly-calculator": handle_salary_to_hourly_calculator,
+    "hourly-to-salary-calculator": handle_hourly_to_salary_calculator,
+    "debt-payoff-planner": handle_debt_payoff_planner,
+    "goal-progress-calculator": handle_goal_progress_calculator,
+    "habit-streak-calculator": handle_habit_streak_calculator,
+    "exam-timetable-generator": handle_exam_timetable_generator,
+    "flashcard-csv-generator": handle_flashcard_csv_generator,
+    "notes-to-quiz-generator": handle_notes_to_quiz_generator,
+    "simple-rubric-generator": handle_simple_rubric_generator,
 }

@@ -4,7 +4,6 @@ import { useDropzone } from 'react-dropzone'
 import {
   ArrowLeft,
   CheckCircle2,
-  ClipboardCopy,
   Download,
   ExternalLink,
   FileText,
@@ -29,6 +28,7 @@ import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
 import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
+import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -74,13 +74,26 @@ type FilePreviewItem = {
   previewUrl?: string
 }
 
+function findFallbackTool(slug?: string) {
+  if (!slug) return null
+  return FALLBACK_TOOLS.find((item) => item.slug === slug) || null
+}
+
+function findFallbackRelatedTools(tool: ToolDefinition | null) {
+  if (!tool) return []
+  return FALLBACK_TOOLS.filter(
+    (item) => item.category === tool.category && item.slug !== tool.slug,
+  ).slice(0, 18)
+}
+
 export default function ToolPage() {
   const { slug } = useParams<{ slug: string }>()
   const toast = useToast()
+  const initialTool = useMemo(() => findFallbackTool(slug), [slug])
 
-  const [tool, setTool] = useState<ToolDefinition | null>(null)
-  const [relatedTools, setRelatedTools] = useState<ToolDefinition[]>([])
-  const [toolLoading, setToolLoading] = useState(true)
+  const [tool, setTool] = useState<ToolDefinition | null>(() => initialTool)
+  const [relatedTools, setRelatedTools] = useState<ToolDefinition[]>(() => findFallbackRelatedTools(initialTool))
+  const [toolLoading, setToolLoading] = useState(() => !initialTool)
   const [toolError, setToolError] = useState<string | null>(null)
   const [runtimeCapabilities, setRuntimeCapabilities] = useState<RuntimeCapabilities | null>(null)
 
@@ -93,15 +106,30 @@ export default function ToolPage() {
   const [jsonResult, setJsonResult] = useState<ToolRunJsonResult | null>(null)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [downloadName, setDownloadName] = useState<string | null>(null)
-  const [_outputContentType, setOutputContentType] = useState<string | null>(null)
   const [outputImagePreview, setOutputImagePreview] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
 
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null)
   const resultRef = useRef<HTMLElement | null>(null)
 
   // ─── Scroll to top + reset state on slug change ───
   useEffect(() => {
+    const fallback = findFallbackTool(slug)
+    setTool(fallback)
+    setRelatedTools(findFallbackRelatedTools(fallback))
+    setToolLoading(!fallback)
+    setToolError(null)
+    if (fallback) {
+      const seo = getToolSEO(fallback.slug, fallback.title, fallback.description, fallback.category)
+      const toolUrl = `https://ishutools.com/tools/${fallback.slug}`
+      document.title = seo.title
+      applyDocumentBranding(
+        seo.title,
+        seo.description,
+        getCategoryTheme(fallback.category).accent,
+      )
+      upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
+      upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: toolUrl })
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     // Reset all run-related state when switching tools
     setRunError(null)
@@ -110,9 +138,7 @@ export default function ToolPage() {
     if (downloadUrl) URL.revokeObjectURL(downloadUrl)
     setDownloadUrl(null)
     setDownloadName(null)
-    setOutputContentType(null)
     setOutputImagePreview(null)
-    setCopied(false)
     setProgress(0)
     setRunning(false)
     // Reset files
@@ -129,17 +155,18 @@ export default function ToolPage() {
     let mounted = true
 
     async function load() {
+      const fallback = findFallbackTool(currentSlug)
       try {
-        setToolLoading(true)
-        const [detail, capabilities] = await Promise.all([
-          fetchTool(currentSlug),
-          fetchRuntimeCapabilities().catch(() => null),
-        ])
+        setToolLoading(!fallback)
+        const capabilitiesPromise = fetchRuntimeCapabilities().catch(() => null)
+        const detail = await fetchTool(currentSlug)
         if (!mounted) return
 
         setTool(detail)
-        setRuntimeCapabilities(capabilities)
         setToolError(null)
+        void capabilitiesPromise.then((capabilities) => {
+          if (mounted) setRuntimeCapabilities(capabilities)
+        })
 
         // ─── Per-tool SEO injection ───
         const seo = getToolSEO(detail.slug, detail.title, detail.description, detail.category)
@@ -260,7 +287,13 @@ export default function ToolPage() {
         setRelatedTools(sameCategoryTools.filter((item) => item.slug !== detail.slug))
       } catch (err) {
         if (!mounted) return
-        setToolError(err instanceof Error ? err.message : 'Unable to load tool details')
+        if (fallback) {
+          setTool(fallback)
+          setRelatedTools(findFallbackRelatedTools(fallback))
+          setToolError(null)
+        } else {
+          setToolError(err instanceof Error ? err.message : 'Unable to load tool details')
+        }
       } finally {
         if (mounted) setToolLoading(false)
       }
@@ -395,7 +428,6 @@ export default function ToolPage() {
     setJsonResult(null)
     setDownloadUrl(null)
     setDownloadName(null)
-    setOutputContentType(null)
     setOutputImagePreview(null)
   }
 
@@ -433,7 +465,6 @@ export default function ToolPage() {
         setDownloadUrl(objectUrl)
         setDownloadName(result.filename)
         setRunMessage(result.message)
-        setOutputContentType(result.contentType || null)
 
         if (isImageBlob(result.contentType || '')) {
           setOutputImagePreview(objectUrl)
@@ -455,17 +486,6 @@ export default function ToolPage() {
       scrollToResult()
     } finally {
       setRunning(false)
-    }
-  }
-
-  async function handleCopyText(text: string) {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      toast.show('Copied to clipboard!', 'success', 2000)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      toast.show('Copy failed — please copy manually.', 'error', 3000)
     }
   }
 

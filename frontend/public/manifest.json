@@ -1,7 +1,7 @@
 {
   "name": "ISHU TOOLS — Indian Student Hub University Tools",
   "short_name": "ISHU TOOLS",
-  "description": "715+ free PDF, image, developer, student, finance, health and video tools by Ishu Kumar.",
+  "description": "880+ free PDF, image, developer, student, finance, health and video tools by Ishu Kumar.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -37,6 +37,18 @@
       "short_name": "YT Downloader",
       "url": "/tools/youtube-video-downloader",
       "description": "Download videos online free."
+    },
+    {
+      "name": "JSON Formatter",
+      "short_name": "JSON",
+      "url": "/tools/json-formatter",
+      "description": "Format, validate, and minify JSON online free."
+    },
+    {
+      "name": "Attendance Calculator",
+      "short_name": "Attendance",
+      "url": "/tools/attendance-calculator",
+      "description": "Calculate required attendance for students."
     }
   ]
 }

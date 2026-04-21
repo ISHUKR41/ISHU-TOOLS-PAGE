@@ -33,17 +33,13 @@ export function useThrottle<T>(value: T, limitMs: number): T {
   useEffect(() => {
     const now = Date.now()
     const remaining = limitMs - (now - lastUpdated.current)
+    const delay = remaining <= 0 ? 0 : remaining
 
-    if (remaining <= 0) {
-      lastUpdated.current = now
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      lastUpdated.current = Date.now()
       setThrottledValue(value)
-    } else {
-      if (timerRef.current) clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(() => {
-        lastUpdated.current = Date.now()
-        setThrottledValue(value)
-      }, remaining)
-    }
+    }, delay)
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
@@ -64,7 +60,10 @@ export function useThrottledCallback<T extends (...args: unknown[]) => void>(
   const lastCalled = useRef<number>(0)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const callbackRef = useRef(callback)
-  callbackRef.current = callback
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
   const throttled = useCallback(
     (...args: unknown[]) => {
@@ -104,7 +103,10 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => void>(
 ): T {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const callbackRef = useRef(callback)
-  callbackRef.current = callback
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
   const debounced = useCallback(
     (...args: unknown[]) => {

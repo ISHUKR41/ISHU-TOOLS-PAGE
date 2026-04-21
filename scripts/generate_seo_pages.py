@@ -15,6 +15,7 @@ from backend.app.registry import CATEGORIES, TOOLS
 
 BASE_URL = "https://ishutools.com"
 DIST_DIR = Path("frontend/dist")
+PUBLIC_DIR = Path("frontend/public")
 INDEX_FILE = DIST_DIR / "index.html"
 TODAY = date.today().isoformat()
 
@@ -238,7 +239,10 @@ def write_sitemap(tools, categories):
         priority = "0.98" if any(token in tool.slug for token in ["pdf", "image", "calculator", "json", "password", "qr"]) else "0.86"
         lines.append(f"  <url><loc>{BASE_URL}/tools/{tool.slug}</loc><lastmod>{TODAY}</lastmod><changefreq>weekly</changefreq><priority>{priority}</priority></url>")
     lines.append("</urlset>")
-    (DIST_DIR / "sitemap.xml").write_text("\n".join(lines), encoding="utf-8")
+    sitemap = "\n".join(lines)
+    (DIST_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
+    PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
+    (PUBLIC_DIR / "sitemap.xml").write_text(sitemap, encoding="utf-8")
 
 
 def main():

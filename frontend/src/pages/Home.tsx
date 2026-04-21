@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
-  FileText, Image, Wand2, Zap, Shield, Globe, ArrowRight,
+  FileText, Image, Wand2, Zap, ArrowRight,
   Calculator, Code2, Palette, Lock, BarChart3, Heart, Wifi,
   DollarSign, Video, FileSearch, Type, SlidersHorizontal,
   Star, CheckCircle, TrendingUp, Users, Award, Sparkles,
@@ -10,26 +10,26 @@ import {
 } from 'lucide-react'
 
 const categories = [
-  { id: 'pdf-core', label: 'PDF Tools', desc: 'Merge, split, compress & convert PDFs', icon: FileText, color: '#56a6ff', tools: '80+' },
-  { id: 'image-core', label: 'Image Tools', desc: 'Resize, compress, convert & enhance images', icon: Image, color: '#c084fc', tools: '70+' },
-  { id: 'ocr-vision', label: 'OCR & Vision', desc: 'Extract text, remove backgrounds, AI tools', icon: FileSearch, color: '#4ade80', tools: '20+' },
-  { id: 'text-ops', label: 'Text Tools', desc: 'Word count, summarize, translate & more', icon: Type, color: '#60a5fa', tools: '30+' },
-  { id: 'developer-tools', label: 'Developer', desc: 'JSON, base64, minify, regex & more', icon: Code2, color: '#34d399', tools: '50+' },
-  { id: 'math-tools', label: 'Math Tools', desc: 'Algebra, statistics, matrices & calculus', icon: Calculator, color: '#f59e0b', tools: '20+' },
-  { id: 'security-tools', label: 'Security', desc: 'Password, hash, encrypt & decrypt', icon: Lock, color: '#f87171', tools: '15+' },
+  { id: 'pdf-core', label: 'PDF Tools', desc: 'Merge, split, compress & convert PDFs', icon: FileText, color: '#56a6ff', tools: '11+' },
+  { id: 'image-core', label: 'Image Tools', desc: 'Resize, compress, convert & enhance images', icon: Image, color: '#c084fc', tools: '60+' },
+  { id: 'ocr-vision', label: 'OCR & Vision', desc: 'Extract text, remove backgrounds, AI tools', icon: FileSearch, color: '#4ade80', tools: '9+' },
+  { id: 'text-ops', label: 'Text Tools', desc: 'Word count, summarize, translate & more', icon: Type, color: '#60a5fa', tools: '40+' },
+  { id: 'developer-tools', label: 'Developer', desc: 'JSON, base64, minify, regex & more', icon: Code2, color: '#34d399', tools: '75+' },
+  { id: 'math-tools', label: 'Math Tools', desc: 'Algebra, statistics, matrices & calculus', icon: Calculator, color: '#f59e0b', tools: '28+' },
+  { id: 'security-tools', label: 'Security', desc: 'Password, hash, encrypt & decrypt', icon: Lock, color: '#f87171', tools: '10+' },
   { id: 'color-tools', label: 'Color Tools', desc: 'Color picker, palette generator & converter', icon: Palette, color: '#fb7185', tools: '10+' },
   { id: 'seo-tools', label: 'SEO Tools', desc: 'Meta tags, sitemap, keyword analyzer', icon: BarChart3, color: '#38bdf8', tools: '15+' },
-  { id: 'finance-tools', label: 'Finance', desc: 'EMI, GST, currency & tax calculators', icon: DollarSign, color: '#fbbf24', tools: '10+' },
-  { id: 'health-tools', label: 'Health', desc: 'BMI, calorie, water & sleep calculators', icon: Heart, color: '#4ade80', tools: '10+' },
-  { id: 'network-tools', label: 'Network', desc: 'IP lookup, DNS, WHOIS & SSL checker', icon: Wifi, color: '#818cf8', tools: '8+' },
-  { id: 'video-tools', label: 'Video Tools', desc: 'Download videos from YouTube & more', icon: Video, color: '#f87171', tools: '5+' },
-  { id: 'productivity', label: 'Productivity', desc: 'Pomodoro, notepad, stopwatch & more', icon: Zap, color: '#34d399', tools: '10+' },
-  { id: 'student-tools', label: 'Student Tools', desc: 'CGPA, percentages, GK quiz & more', icon: SlidersHorizontal, color: '#a78bfa', tools: '20+' },
-  { id: 'batch-automation', label: 'Batch Tools', desc: 'Process multiple files at once', icon: Wand2, color: '#f59e0b', tools: '15+' },
+  { id: 'finance-tools', label: 'Finance', desc: 'EMI, GST, currency & tax calculators', icon: DollarSign, color: '#fbbf24', tools: '63+' },
+  { id: 'health-tools', label: 'Health', desc: 'BMI, calorie, water & sleep calculators', icon: Heart, color: '#4ade80', tools: '26+' },
+  { id: 'network-tools', label: 'Network', desc: 'IP lookup, DNS, WHOIS & SSL checker', icon: Wifi, color: '#818cf8', tools: '13+' },
+  { id: 'video-tools', label: 'Video Tools', desc: 'Download videos from YouTube & more', icon: Video, color: '#f87171', tools: '47+' },
+  { id: 'productivity', label: 'Productivity', desc: 'Pomodoro, notepad, stopwatch & more', icon: Zap, color: '#34d399', tools: '32+' },
+  { id: 'student-tools', label: 'Student Tools', desc: 'CGPA, percentages, GK quiz & more', icon: SlidersHorizontal, color: '#a78bfa', tools: '70+' },
+  { id: 'batch-automation', label: 'Batch Tools', desc: 'Process multiple files at once', icon: Wand2, color: '#f59e0b', tools: '6+' },
 ]
 
 const stats = [
-  { value: '715+', label: 'Free Tools', icon: Sparkles },
+  { value: '880+', label: 'Free Tools', icon: Sparkles },
   { value: '1M+', label: 'Happy Users', icon: Users },
   { value: '10M+', label: 'Files Processed', icon: TrendingUp },
   { value: '100%', label: 'Always Free', icon: Award },
@@ -72,20 +72,20 @@ const comparisons = [
   { feature: 'No Signup Required', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
   { feature: 'No Watermark', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
   { feature: 'No File Size Limit', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
-  { feature: '715+ Tools', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
+  { feature: '880+ Tools', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
   { feature: 'Indian Gov. Form Tools', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
   { feature: 'UPI QR Generator', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
   { feature: 'GST & EMI Calculators', ishu: true, ilovepdf: false, smallpdf: false, canva: false },
 ]
 
 const homeFaqs = [
-  { q: 'What is ISHU TOOLS?', a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 715+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and AI-powered features. Created by Ishu Kumar (IIT Patna student), it is designed for Indian students and professionals — no signup, no watermark, completely free.' },
-  { q: 'Is ISHU TOOLS completely free?', a: 'Yes! ISHU TOOLS is 100% free. All 715+ tools are available without any signup, registration, or payment. No watermarks, no daily limits, no hidden charges. Free forever — that\'s the ISHU promise.' },
+  { q: 'What is ISHU TOOLS?', a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 880+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and AI-powered features. Created by Ishu Kumar (IIT Patna student), it is designed for Indian students and professionals — no signup, no watermark, completely free.' },
+  { q: 'Is ISHU TOOLS completely free?', a: 'Yes! ISHU TOOLS is 100% free. All 880+ tools are available without any signup, registration, or payment. No watermarks, no daily limits, no hidden charges. Free forever — that\'s the ISHU promise.' },
   { q: 'Who created ISHU TOOLS?', a: 'ISHU TOOLS was created by Ishu Kumar, a student at IIT Patna (Indian Institute of Technology Patna). The full form is Indian Student Hub University Tools. Ishu Kumar built this platform to provide free tools to Indian students and professionals.' },
   { q: 'Can I use ISHU TOOLS for government exam photo resizing?', a: 'Yes! ISHU TOOLS has specialized tools for Indian government exam portals — compress photo to specific KB sizes for SSC CGL, UPSC, RRB NTPC, IBPS PO, SBI PO, NEET, JEE and all other competitive exams. All photo size requirements are supported.' },
-  { q: 'Is ISHU TOOLS better than iLovePDF or SmallPDF?', a: 'ISHU TOOLS offers all the same core PDF features as iLovePDF and SmallPDF — completely free, with no signup, no watermark, and no file limits. Plus, ISHU TOOLS has 715+ additional tools including Indian-specific calculators (SIP, EMI, GST), UPI QR Generator, CGPA Converter, and government exam photo resizers.' },
+  { q: 'Is ISHU TOOLS better than iLovePDF or SmallPDF?', a: 'ISHU TOOLS offers all the same core PDF features as iLovePDF and SmallPDF — completely free, with no signup, no watermark, and no file limits. Plus, ISHU TOOLS has 880+ additional tools including Indian-specific calculators (SIP, EMI, GST), UPI QR Generator, CGPA Converter, and government exam photo resizers.' },
   { q: 'Can I install ISHU TOOLS as an app?', a: 'Yes! ISHU TOOLS is a Progressive Web App (PWA). You can install it on your phone or desktop like a native app. On mobile, tap the browser menu and select "Add to Home Screen". On desktop, click the install icon in the browser address bar.' },
-  { q: 'ISHU TOOLS ka full form kya hai?', a: 'ISHU TOOLS ka full form hai: Indian Student Hub University Tools. Yeh ek free online platform hai jisme 715+ tools hain — PDF, image, calculator, developer aur student tools ke liye. Ise Ishu Kumar ne banaya hai jo IIT Patna ke student hain. Bilkul free, koi signup nahi, koi watermark nahi.' },
+  { q: 'ISHU TOOLS ka full form kya hai?', a: 'ISHU TOOLS ka full form hai: Indian Student Hub University Tools. Yeh ek free online platform hai jisme 880+ tools hain — PDF, image, calculator, developer aur student tools ke liye. Ise Ishu Kumar ne banaya hai jo IIT Patna ke student hain. Bilkul free, koi signup nahi, koi watermark nahi.' },
 ]
 
 const fadeUp = {
@@ -144,7 +144,7 @@ export default function Home() {
             fontSize: 13, fontWeight: 700, color: 'var(--accent)',
             letterSpacing: '0.04em', textTransform: 'uppercase',
           }}>
-            <Star size={12} fill="currentColor" /> 715+ Tools • 100% Free • No Signup
+            <Star size={12} fill="currentColor" /> 880+ Tools • 100% Free • No Signup
           </span>
         </motion.div>
 
@@ -201,7 +201,7 @@ export default function Home() {
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 48px rgba(59,208,255,0.4)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(59,208,255,0.3)' }}
           >
-            Explore All 715+ Tools <ArrowRight size={18} />
+            Explore All 880+ Tools <ArrowRight size={18} />
           </Link>
           <a href="#categories" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -304,7 +304,7 @@ export default function Home() {
               background: 'rgba(255,255,255,0.05)',
               color: 'var(--muted-strong)', fontWeight: 600, fontSize: 14,
             }}>
-              View All 715+ Tools <ArrowRight size={16} />
+              View All 880+ Tools <ArrowRight size={16} />
             </Link>
           </motion.div>
         </div>
@@ -315,7 +315,7 @@ export default function Home() {
         <motion.div {...fadeUp} style={{ textAlign: 'center', marginBottom: 48 }}>
           <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-display)' }}>Browse by Category</h2>
           <p style={{ color: 'var(--muted)', fontSize: 17, maxWidth: 560, margin: '0 auto' }}>
-            38 categories, 715+ tools — everything you need, completely free
+            53 categories, 880+ tools — everything you need, completely free
           </p>
         </motion.div>
 

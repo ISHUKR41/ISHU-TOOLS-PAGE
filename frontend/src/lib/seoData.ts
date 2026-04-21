@@ -365,13 +365,13 @@ function generateSmartFAQs(
   // Voice/featured-snippet style FAQ
   faqs.push({
     question: `Is ${toolTitle} available on ISHU TOOLS?`,
-    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.com). It is one of 600+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
+    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.com). It is one of 880+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
   })
 
   // Creator/brand trust signal
   faqs.push({
     question: `Who created ${toolTitle} on ISHU TOOLS?`,
-    answer: `${toolTitle} is part of ISHU TOOLS — a free online tool platform created by Ishu Kumar (IIT Patna student). ISHU TOOLS stands for Indian Student Hub University Tools and provides 600+ free tools for Indian students, developers, and working professionals.`,
+    answer: `${toolTitle} is part of ISHU TOOLS — a free online tool platform created by Ishu Kumar (IIT Patna student). ISHU TOOLS stands for Indian Student Hub University Tools and provides 880+ free tools for Indian students, developers, and working professionals.`,
   })
 
   // Speed/performance FAQ
@@ -5068,7 +5068,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   },
   'time-zone-converter': {
     title: 'Time Zone Converter Online Free — Convert Time Zones | ISHU TOOLS',
-    description: 'Convert time between time zones online for free. IST to EST, UTC to PST, and 600+ time zones worldwide. Essential for international meetings and remote work.',
+    description: 'Convert time between time zones online for free. IST to EST, UTC to PST, and 810+ time zones worldwide. Essential for international meetings and remote work.',
     keywords: ['time zone converter', 'convert time zones', 'ist to est', 'utc to ist', 'time zone online free', 'world time converter', 'ishu tools time zone', 'timezone converter', 'time zone calculator'],
     h1: 'Time Zone Converter — Convert Time Zones Free Online',
     faq: [],

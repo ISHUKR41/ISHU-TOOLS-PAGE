@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp } from 'lucide-react'
 import AnimatedBackdrop from './AnimatedBackdrop'
 
-const TOOL_COUNT_LABEL = '715+'
+const TOOL_COUNT_LABEL = '810+'
 
 type NavCategory = {
   icon: typeof FileText
@@ -453,7 +453,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <Link to='/tools/youtube-downloader'>YouTube Downloader</Link>
               <Link to='/tools/instagram-downloader'>Instagram Downloader</Link>
               <Link to='/tools/generate-signature'>Signature Generator</Link>
-              <Link to='/'>All 715+ Tools →</Link>
+              <Link to='/'>All 810+ Tools →</Link>
             </div>
           </div>
         </div>

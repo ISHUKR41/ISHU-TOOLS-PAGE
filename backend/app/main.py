@@ -98,6 +98,7 @@ _NO_CACHE_SLUGS = {
     "uuid-generator", "password-generator", "random-number-generator",
     "coin-flip", "dice-roller", "random-color-generator", "random-name-generator",
     "love-calculator", "atm-pin-generator", "world-clock", "stopwatch",
+    "ulid-generator", "ics-calendar-generator", "vcard-generator",
     "currency-converter",  # live rates
     "ip-address-lookup", "dns-lookup", "whois-lookup", "ssl-certificate-checker",
     "ip-lookup",

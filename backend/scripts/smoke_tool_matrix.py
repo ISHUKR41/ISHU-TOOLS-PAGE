@@ -13,6 +13,8 @@ from openpyxl import Workbook
 from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.util import Inches
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
@@ -47,6 +49,31 @@ def _create_demo_image(path: Path, text: str, color: tuple[int, int, int]) -> No
     draw = ImageDraw.Draw(image)
     draw.text((24, 24), text, fill=(255, 255, 255))
     image.save(path)
+
+
+def _create_demo_pdf(path: Path) -> None:
+    pdf = canvas.Canvas(str(path), pagesize=A4)
+    pdf.setTitle("ISHU TOOLS Smoke Test PDF")
+    width, height = A4
+    lines = [
+        "ISHU TOOLS SMOKE TEST PDF",
+        "This generated PDF validates merge, split, convert, text extraction,",
+        "metadata, watermark, OCR fallback, and export workflows.",
+        "Sample table: name Ishu score 95.",
+    ]
+    y = height - 72
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(72, y, lines[0])
+    pdf.setFont("Helvetica", 11)
+    for line in lines[1:]:
+        y -= 24
+        pdf.drawString(72, y, line)
+    pdf.showPage()
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(72, height - 72, "Second page for page operation checks")
+    pdf.setFont("Helvetica", 11)
+    pdf.drawString(72, height - 104, "Redaction keyword: Ishu. Page order and extraction smoke content.")
+    pdf.save()
 
 
 def _create_ocr_text_image(path: Path) -> None:
@@ -90,7 +117,7 @@ def prepare_fixtures(fixtures_dir: Path) -> dict[str, Path]:
 
     pdf_path = fixtures_dir / "sample.pdf"
     if not _copy_if_exists(assets_two / "sample.pdf", pdf_path):
-        raise FileNotFoundError("sample.pdf is required in tmp_smoke_assets_2")
+        _create_demo_pdf(pdf_path)
     fixture_paths["pdf"] = pdf_path
 
     pdf_b = fixtures_dir / "sample-b.pdf"
@@ -516,6 +543,66 @@ def build_cases() -> list[Case]:
         Case("jpeg-to-pdf-under-200kb", ["jpeg"], {}),
         Case("jpg-to-pdf-under-300kb", ["jpg"], {}),
         Case("jpg-to-pdf-under-500kb", ["jpg"], {}),
+        Case("user-agent-parser", [], {"user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"}),
+        Case("csv-cleaner", [], {"csv": "Name, Score\n Ishu , 95\n Tools , 100\n", "trim_cells": True, "remove_empty_rows": True}),
+        Case("regex-replace", [], {"text": "Call 98765-43210 today", "pattern": r"\d{5}-\d{5}", "replacement": "[phone]"}),
+        Case("weighted-gpa-calculator", [], {"courses": "Math,A,4\nPhysics,B+,3\nEnglish,A-,2", "scale": 4}),
+        Case("grade-average-calculator", [], {"scores": "78,85,91,66", "max_marks": 100}),
+        Case("syllabus-study-planner", [], {"topics": "Algebra, hard\nPhysics, medium\nEnglish, easy", "days": 5, "daily_hours": 2}),
+        Case("citation-url-cleaner", [], {"urls": "https://example.com/article?utm_source=x&gclid=abc&id=42"}),
+        Case("url-query-parser", [], {"url": "https://example.com/search?q=ishu&sort=new#top"}),
+        Case("timestamp-converter", [], {"timestamp": "1700000000", "offset_minutes": 330}),
+        Case("markdown-table-generator", [], {"data": "Name,Score\nIshu,95\nTools,100"}),
+        Case("email-extractor", [], {"text": "Contact ishu@example.com and support@ishutools.com"}),
+        Case("phone-number-extractor", [], {"text": "Call +91 98765 43210 or 011-2345-6789"}),
+        Case("keyword-density-checker", [], {"text": "ISHU TOOLS free tools for students and developers. Free tools online."}),
+        Case("robots-txt-generator", [], {"site_url": "https://ishutools.com", "disallow": "/api/"}),
+        Case("meta-description-generator", [], {"topic": "Free PDF tools", "audience": "students", "keywords": "pdf tools, merge pdf"}),
+        Case("utm-builder", [], {"url": "https://ishutools.com/tools", "source": "newsletter", "medium": "email", "campaign": "student_tools"}),
+        Case("html-table-generator", [], {"data": "Name,Score\nIshu,95\nTools,100", "has_header": True}),
+        Case("json-schema-generator", [], {"json": "{\"name\":\"Ishu\",\"score\":95,\"tags\":[\"tools\"]}"}),
+        Case("css-clamp-generator", [], {"min_px": 16, "max_px": 32, "min_viewport": 360, "max_viewport": 1440}),
+        Case("slug-bulk-generator", [], {"text": "Hello World\nISHU Tools Page"}),
+        Case("table-to-csv-converter", [], {"table": "| Name | Score |\n| --- | --- |\n| Ishu | 95 |"}),
+        Case("csv-column-extractor", [], {"csv": "Name,Score,City\nIshu,95,Patna\nTools,100,Web", "columns": "Name,Score"}),
+        Case("css-specificity-calculator", [], {"selectors": "#app .card button:hover\nmain article h2"}),
+        Case("http-status-code-lookup", [], {"code": 404}),
+        Case("mime-type-lookup", [], {"extension": "pdf"}),
+        Case("loan-comparison-calculator", [], {"principal": 500000, "years": 5, "rates": "8.5,10,12"}),
+        Case("break-even-calculator", [], {"fixed_cost": 100000, "price_per_unit": 500, "variable_cost_per_unit": 250}),
+        Case("profit-margin-calculator", [], {"cost": 100, "selling_price": 150}),
+        Case("gst-reverse-calculator", [], {"inclusive_amount": 1180, "gst_rate": 18}),
+        Case("discount-stack-calculator", [], {"price": 1000, "discounts": "10,5"}),
+        Case("study-break-planner", [], {"total_minutes": 180, "focus_minutes": 50, "break_minutes": 10, "start_time": "09:00"}),
+        Case("water-reminder-schedule", [], {"wake_time": "07:00", "sleep_time": "22:30", "glasses": 8}),
+        Case("workout-plan-generator", [], {"goal": "fitness", "level": "beginner", "days_per_week": 4}),
+        Case("meal-plan-generator", [], {"calories": 2000, "meals": 4, "diet": "balanced"}),
+        Case("name-initials-generator", [], {"names": "Ishu Kumar\nIndian Student Hub"}),
+        Case("acronym-generator", [], {"phrase": "Indian Student Hub University Tools"}),
+        Case("username-generator", [], {"name": "Ishu Kumar", "keyword": "tools", "count": 12}),
+        Case("youtube-thumbnail-url-generator", [], {"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}),
+        Case("youtube-embed-code-generator", [], {"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "responsive": True}),
+        Case("video-aspect-ratio-calculator", [], {"width": 1920, "height": 1080}),
+        Case("video-bitrate-calculator", [], {"size_mb": 100, "duration": "00:03:00", "audio_kbps": 128}),
+        Case("video-file-size-estimator", [], {"duration": "00:03:00", "video_kbps": 2500, "audio_kbps": 128}),
+        Case("video-duration-calculator", [], {"duration": "01:23:45", "fps": 30}),
+        Case("serp-snippet-preview", [], {"title": "Free Online Tools for Students", "description": "Use fast PDF, image, developer, finance, and study tools for free.", "url": "https://ishutools.com/tools"}),
+        Case("keyword-cluster-generator", [], {"keywords": "pdf merge\nmerge pdf online\ncompress pdf\nimage compressor"}),
+        Case("headline-analyzer", [], {"headline": "Best Free Online Tools for Students"}),
+        Case("json-path-extractor", [], {"json": "{\"user\":{\"name\":\"Ishu\",\"scores\":[95,100]}}", "path": "user.name"}),
+        Case("uuid-validator", [], {"uuid": "550e8400-e29b-41d4-a716-446655440000"}),
+        Case("ulid-generator", [], {"count": 5}),
+        Case("ics-calendar-generator", [], {"title": "Study Session", "start": "2026-01-01 10:00", "duration_minutes": 90}),
+        Case("vcard-generator", [], {"name": "Ishu Kumar", "email": "ishu@example.com", "phone": "+91 98765 43210"}),
+        Case("salary-to-hourly-calculator", [], {"annual_salary": 600000, "hours_per_week": 40, "weeks_per_year": 52}),
+        Case("hourly-to-salary-calculator", [], {"hourly_rate": 500, "hours_per_week": 40, "weeks_per_year": 52}),
+        Case("debt-payoff-planner", [], {"debts": "Card,25000,24\nLoan,100000,12", "extra_payment": 5000, "strategy": "avalanche"}),
+        Case("goal-progress-calculator", [], {"start": 0, "current": 45, "target": 100, "daily_rate": 5}),
+        Case("habit-streak-calculator", [], {"dates": "2026-01-01\n2026-01-02\n2026-01-03", "today": "2026-01-03"}),
+        Case("exam-timetable-generator", [], {"subjects": "Math,Physics,English", "days": 6, "daily_hours": 3}),
+        Case("flashcard-csv-generator", [], {"notes": "Photosynthesis: Plants make food using sunlight\nGravity: Force that attracts objects"}),
+        Case("notes-to-quiz-generator", [], {"notes": "Photosynthesis uses sunlight to make glucose. Gravity attracts objects toward Earth."}),
+        Case("simple-rubric-generator", [], {"assignment": "Essay", "criteria": "Content,Organization,Grammar,References", "points_each": 10}),
     ]
 
 

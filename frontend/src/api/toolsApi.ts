@@ -171,7 +171,7 @@ export async function fetchTools(params?: {
       const data: ToolDefinition[] = await res.json()
       TOOLS_LIST_CACHE.set(cacheKey, { data, ts: Date.now() })
       return data
-    } catch (err) {
+    } catch {
       // Filter fallback tools to match current query so the UI stays hydrated instantly
       const fallback = FALLBACK_TOOLS.filter((tool) => {
         if (params?.category && tool.category !== params.category) return false

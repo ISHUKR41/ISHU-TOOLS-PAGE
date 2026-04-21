@@ -4,7 +4,7 @@
  */
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ClipboardCopy, Check, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { ClipboardCopy, Check, ChevronDown, ChevronUp } from 'lucide-react'
 
 interface SmartResultProps {
   data: Record<string, unknown>
@@ -259,7 +259,7 @@ function IssuesList({ issues }: { issues: Array<{ message: string; replacements:
   )
 }
 
-export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: SmartResultProps) {
+export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartResultProps) {
   // Color palette tool
   if (data.palette && Array.isArray(data.palette)) {
     return (
@@ -1198,8 +1198,6 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
   // Fallback: generic smart display
   const scalarKeys = Object.keys(data).filter(k => data[k] !== null && data[k] !== undefined && typeof data[k] !== 'object' && !Array.isArray(data[k]))
   const arrayKeys = Object.keys(data).filter(k => Array.isArray(data[k]) && !((data[k] as unknown[])[0] && typeof (data[k] as unknown[])[0] === 'object'))
-  const nestedObjects = Object.keys(data).filter(k => data[k] && typeof data[k] === 'object' && !Array.isArray(data[k]))
-
   // Check for primary text output
   const textKeys = ['output', 'text', 'result', 'content', 'answer', 'paraphrased', 'words', 'in_words', 'ascii_art']
   const primaryText = textKeys.find(k => data[k] && typeof data[k] === 'string')
