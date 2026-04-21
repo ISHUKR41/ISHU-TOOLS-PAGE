@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { checkHealth, fetchCategories, fetchTools } from '../api/toolsApi'
 import type { ToolCategory, ToolDefinition } from '../types/tools'
+import { FALLBACK_CATEGORIES, FALLBACK_TOOLS } from '../data/catalogFallback'
 
 const CATALOG_CACHE_KEY = 'ishu-tools:catalog:v2'
 const CATALOG_CACHE_TTL_MS = 15 * 60 * 1000
@@ -60,19 +61,16 @@ function getInitialCache() {
 }
 
 export function useCatalogData() {
-  const [categories, setCategories] = useState<ToolCategory[]>(() => {
-    const cached = getInitialCache()
-    return cached?.categories ?? []
-  })
-  const [tools, setTools] = useState<ToolDefinition[]>(() => {
-    const cached = getInitialCache()
-    return cached?.tools ?? []
-  })
-  const [loading, setLoading] = useState<boolean>(() => {
-    // Start as NOT loading if we already have cached data
-    const cached = getInitialCache()
-    return !cached
-  })
+  const initialCache = getInitialCache()
+  const initialCategories = initialCache?.categories?.length
+    ? initialCache.categories
+    : FALLBACK_CATEGORIES
+  const initialTools = initialCache?.tools?.length ? initialCache.tools : FALLBACK_TOOLS
+
+  const [categories, setCategories] = useState<ToolCategory[]>(initialCategories)
+  const [tools, setTools] = useState<ToolDefinition[]>(initialTools)
+  // Keep loading false by default so the layout renders immediately with the shipped fallback data.
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [apiReady, setApiReady] = useState(false)
 

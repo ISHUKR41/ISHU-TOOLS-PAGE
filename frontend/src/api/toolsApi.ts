@@ -1,5 +1,6 @@
 import type { RuntimeCapabilities, ToolCategory, ToolDefinition, ToolRunResponse } from '../types/tools'
 import { API_BASE_URL } from './config'
+import { FALLBACK_CATEGORIES, FALLBACK_TOOLS } from '../data/catalogFallback'
 
 function parseFilename(contentDisposition: string | null, fallback: string): string {
   if (!contentDisposition) return fallback
@@ -130,11 +131,16 @@ export async function fetchCategories(): Promise<ToolCategory[]> {
     return categoriesCache.data
   }
 
-  const res = await fetchWithRetry(`${API_BASE_URL}/api/categories`)
-  if (!res.ok) throw await readError(res)
-  const data: ToolCategory[] = await res.json()
-  categoriesCache = { data, ts: Date.now() }
-  return data
+  try {
+    const res = await fetchWithRetry(`${API_BASE_URL}/api/categories`)
+    if (!res.ok) throw await readError(res)
+    const data: ToolCategory[] = await res.json()
+    categoriesCache = { data, ts: Date.now() }
+    return data
+  } catch {
+    categoriesCache = { data: FALLBACK_CATEGORIES, ts: Date.now() }
+    return FALLBACK_CATEGORIES
+  }
 }
 
 export async function fetchTools(params?: {
@@ -159,11 +165,25 @@ export async function fetchTools(params?: {
 
   const suffix = query.toString() ? `?${query.toString()}` : ''
   const promise = (async () => {
-    const res = await fetchWithRetry(`${API_BASE_URL}/api/tools${suffix}`)
-    if (!res.ok) throw await readError(res)
-    const data: ToolDefinition[] = await res.json()
-    TOOLS_LIST_CACHE.set(cacheKey, { data, ts: Date.now() })
-    return data
+    try {
+      const res = await fetchWithRetry(`${API_BASE_URL}/api/tools${suffix}`)
+      if (!res.ok) throw await readError(res)
+      const data: ToolDefinition[] = await res.json()
+      TOOLS_LIST_CACHE.set(cacheKey, { data, ts: Date.now() })
+      return data
+    } catch (err) {
+      // Filter fallback tools to match current query so the UI stays hydrated instantly
+      const fallback = FALLBACK_TOOLS.filter((tool) => {
+        if (params?.category && tool.category !== params.category) return false
+        if (params?.q) {
+          const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
+          if (!haystack.includes(params.q.toLowerCase())) return false
+        }
+        return true
+      })
+      TOOLS_LIST_CACHE.set(cacheKey, { data: fallback, ts: Date.now() })
+      return fallback
+    }
   })()
 
   IN_FLIGHT_LISTS.set(cacheKey, promise)
@@ -184,11 +204,21 @@ export async function fetchTool(slug: string): Promise<ToolDefinition> {
   if (existing) return existing
 
   const promise = (async () => {
-    const res = await fetchWithRetry(`${API_BASE_URL}/api/tools/${slug}`)
-    if (!res.ok) throw await readError(res)
-    const data: ToolDefinition = await res.json()
-    writeToolCache(slug, data)
-    return data
+    try {
+      const res = await fetchWithRetry(`${API_BASE_URL}/api/tools/${slug}`)
+      if (!res.ok) throw await readError(res)
+      const data: ToolDefinition = await res.json()
+      writeToolCache(slug, data)
+      return data
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') throw err
+      const fallback = FALLBACK_TOOLS.find((tool) => tool.slug === slug)
+      if (fallback) {
+        writeToolCache(slug, fallback)
+        return fallback
+      }
+      throw err
+    }
   })()
 
   IN_FLIGHT.set(slug, promise)
