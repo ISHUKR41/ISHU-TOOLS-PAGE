@@ -13983,6 +13983,219 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
     "accepts_multiple": false
   },
   {
+    "slug": "text-shuffler",
+    "title": "Text Shuffler — Randomize Words, Lines or Characters",
+    "description": "Shuffle the order of words, lines, or characters in any pasted text. Great for quizzes, name-pickers, and creative prompts.",
+    "category": "text-ops",
+    "tags": [
+      "text shuffler",
+      "shuffle words",
+      "randomize text",
+      "shuffle lines",
+      "random order"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "sponge-case",
+    "title": "Sponge Case Converter — sPoNgEbOb MoCkInG TeXt",
+    "description": "Convert any text to sPoNgEbOb mocking case with alternating upper and lower characters. Perfect for memes and Discord messages.",
+    "category": "text-ops",
+    "tags": [
+      "sponge case",
+      "spongebob text",
+      "mocking text",
+      "alternating case",
+      "meme text"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "inverse-case",
+    "title": "Inverse Case Converter — Flip Upper and Lower Case",
+    "description": "Flip every character's case at once. UPPER becomes lower and lower becomes UPPER for any pasted text.",
+    "category": "text-ops",
+    "tags": [
+      "inverse case",
+      "swap case",
+      "flip case",
+      "case flipper",
+      "invert text case"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "alternate-case",
+    "title": "Alternate Case — Word-Level UPPER/lower Pattern",
+    "description": "Apply alternating UPPER and lower case word by word. Useful for stylized headers and social media captions.",
+    "category": "text-ops",
+    "tags": [
+      "alternate case",
+      "alternating words",
+      "stylized text",
+      "word case toggle"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "reverse-words",
+    "title": "Reverse Words — Flip Word Order Per Line",
+    "description": "Reverse the order of words in each line while keeping line breaks intact. Handy for poetry, palindrome practice, and text effects.",
+    "category": "text-ops",
+    "tags": [
+      "reverse words",
+      "flip word order",
+      "word reverser",
+      "backwards words"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "unicode-escape",
+    "title": "Unicode Escape — Encode Text to \\uXXXX Sequences",
+    "description": "Convert non-ASCII characters in your text to \\uXXXX escape sequences for safe embedding in code, JSON, or config files.",
+    "category": "developer-tools",
+    "tags": [
+      "unicode escape",
+      "encode unicode",
+      "uXXXX escape",
+      "ascii safe encoding"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "unicode-unescape",
+    "title": "Unicode Unescape — Decode \\uXXXX Back to Text",
+    "description": "Decode \\uXXXX-escaped strings back into readable Unicode text. Reverses the unicode escaping done by JSON or source code.",
+    "category": "developer-tools",
+    "tags": [
+      "unicode unescape",
+      "decode unicode",
+      "uXXXX decoder",
+      "unescape string"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "url-slug-generator",
+    "title": "URL Slug Generator — Convert Titles to Clean URL Slugs",
+    "description": "Generate SEO-friendly URL slugs from any title or sentence with custom separator and case options.",
+    "category": "developer-tools",
+    "tags": [
+      "url slug",
+      "slug generator",
+      "seo slug",
+      "permalink generator",
+      "title to slug"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "emoji-counter",
+    "title": "Emoji Counter — Count Emojis in Text",
+    "description": "Count total emojis, unique emojis, and the top emojis used in any pasted text. Works on captions, chats, and posts.",
+    "category": "text-ops",
+    "tags": [
+      "emoji counter",
+      "count emojis",
+      "emoji frequency",
+      "emoji statistics",
+      "emoji analyzer"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "sentence-counter",
+    "title": "Sentence Counter — Count Sentences in Text",
+    "description": "Count sentences and average words per sentence in any pasted passage. Useful for essays, emails, and SEO content.",
+    "category": "text-ops",
+    "tags": [
+      "sentence counter",
+      "count sentences",
+      "sentence analyzer",
+      "essay sentences"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "paragraph-counter",
+    "title": "Paragraph Counter — Count Paragraphs, Words and Characters",
+    "description": "Count paragraphs, words, and characters in any text instantly. Perfect for academic and content writing.",
+    "category": "text-ops",
+    "tags": [
+      "paragraph counter",
+      "count paragraphs",
+      "essay paragraph count",
+      "text counter"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "wpm-calculator",
+    "title": "WPM Calculator — Words Per Minute Typing Speed",
+    "description": "Calculate your typing speed in words per minute (WPM) and characters per minute (CPM) by entering typed text and the time you took.",
+    "category": "productivity",
+    "tags": [
+      "wpm calculator",
+      "typing speed calculator",
+      "words per minute",
+      "cpm calculator"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "syllable-counter",
+    "title": "Syllable Counter — Count Syllables in Words and Text",
+    "description": "Estimate syllables in words and full passages. Helpful for readability checks, poetry, haiku, and ESL learners.",
+    "category": "text-ops",
+    "tags": [
+      "syllable counter",
+      "count syllables",
+      "haiku helper",
+      "readability"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "json-escape",
+    "title": "JSON Escape — Escape Text for JSON Strings",
+    "description": "Escape special characters in any text so it becomes a valid JSON string value. Returns both the inner escaped form and the fully quoted version.",
+    "category": "developer-tools",
+    "tags": [
+      "json escape",
+      "escape json string",
+      "json string encoder"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
+    "slug": "json-unescape",
+    "title": "JSON Unescape — Decode Escaped JSON Strings",
+    "description": "Decode JSON-escaped strings back to plain text. Handles \\n, \\t, \\\", and \\uXXXX sequences correctly.",
+    "category": "developer-tools",
+    "tags": [
+      "json unescape",
+      "decode json string",
+      "unescape json"
+    ],
+    "input_kind": "text",
+    "accepts_multiple": false
+  },
+  {
     "slug": "audio-compressor",
     "title": "Audio Compressor — Reduce MP3/WAV/M4A File Size Free",
     "description": "Compress MP3, WAV, M4A, OGG, FLAC audio online — choose max/high/medium/low quality. Perfect for WhatsApp voice notes, email attachments, podcasts and ringtones. Free, no signup.",

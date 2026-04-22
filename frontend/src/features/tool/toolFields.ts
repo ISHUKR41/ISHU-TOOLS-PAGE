@@ -4836,6 +4836,70 @@ TOOL_FIELDS['compress-image-to-500kb'] = TOOL_FIELDS['compress-image-to-200kb'] 
   { name: 'file', label: 'Upload Image', type: 'file', required: true, accept: 'image/*' },
 ]
 
+// ── Fresh April 2026 batch — text/utility tool form fields ─────────────────
+TOOL_FIELDS['text-shuffler'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste any text…' },
+  {
+    name: 'mode', label: 'Shuffle By', type: 'select', defaultValue: 'words',
+    options: [
+      { label: 'Words', value: 'words' },
+      { label: 'Lines', value: 'lines' },
+      { label: 'Characters', value: 'characters' },
+    ],
+  },
+]
+TOOL_FIELDS['sponge-case'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text to mock-case…' },
+]
+TOOL_FIELDS['inverse-case'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text to invert case…' },
+]
+TOOL_FIELDS['alternate-case'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text…' },
+]
+TOOL_FIELDS['reverse-words'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text — word order will flip per line…' },
+]
+TOOL_FIELDS['unicode-escape'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text containing Unicode characters…' },
+]
+TOOL_FIELDS['unicode-unescape'] = [
+  { name: 'text', label: 'Escaped Text', type: 'textarea', placeholder: 'Paste text with \\uXXXX sequences…' },
+]
+TOOL_FIELDS['url-slug-generator'] = [
+  { name: 'text', label: 'Title or Sentence', type: 'text', placeholder: 'My Awesome Blog Post Title' },
+  { name: 'separator', label: 'Separator', type: 'text', defaultValue: '-', placeholder: '-' },
+  {
+    name: 'case', label: 'Letter Case', type: 'select', defaultValue: 'lower',
+    options: [
+      { label: 'lowercase', value: 'lower' },
+      { label: 'Keep Original', value: 'keep' },
+    ],
+  },
+]
+TOOL_FIELDS['emoji-counter'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste a caption, chat, or post 🎉…' },
+]
+TOOL_FIELDS['sentence-counter'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste a paragraph or essay…' },
+]
+TOOL_FIELDS['paragraph-counter'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste your full text…' },
+]
+TOOL_FIELDS['wpm-calculator'] = [
+  { name: 'text', label: 'What You Typed', type: 'textarea', placeholder: 'Paste the text you typed during the test…' },
+  { name: 'seconds', label: 'Seconds Taken', type: 'number', defaultValue: '60', placeholder: '60' },
+]
+TOOL_FIELDS['syllable-counter'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste words or a passage…' },
+]
+TOOL_FIELDS['json-escape'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste raw text to escape for JSON…' },
+]
+TOOL_FIELDS['json-unescape'] = [
+  { name: 'text', label: 'Escaped JSON String', type: 'textarea', placeholder: 'Paste a JSON-escaped string (with or without surrounding quotes)…' },
+]
+
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }

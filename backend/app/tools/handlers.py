@@ -6569,6 +6569,14 @@ try:
 except Exception as e:
     print(f"[handlers] WARNING: Could not load extra_media_handlers: {e}")
 
+# Merge fresh text/utility tools (April 2026 batch)
+try:
+    from .fresh_text_handlers import FRESH_TEXT_HANDLERS
+    HANDLERS.update(FRESH_TEXT_HANDLERS)
+    print(f"[handlers] Loaded {len(FRESH_TEXT_HANDLERS)} fresh text/utility handlers (Apr-2026 batch)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load fresh_text_handlers: {e}")
+
 print(f"[handlers] EXTRA-MEDIA TOTAL registered handlers: {len(HANDLERS)}")
 
 # Merge office tools (CSV ↔ Excel, PDF page extractor)
