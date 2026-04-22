@@ -6601,6 +6601,16 @@ except Exception as e:
 
 print(f"[handlers] AV-STUDIO TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge Enhance handlers (noise-reducer/voice-enhancer/video-upscaler/stabilizer)
+try:
+    from .enhance_handlers import ENHANCE_HANDLERS
+    HANDLERS.update(ENHANCE_HANDLERS)
+    print(f"[handlers] Loaded {len(ENHANCE_HANDLERS)} enhance handlers (denoise/normalize/upscale/stabilize)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load enhance_handlers: {e}")
+
+print(f"[handlers] ENHANCE TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):

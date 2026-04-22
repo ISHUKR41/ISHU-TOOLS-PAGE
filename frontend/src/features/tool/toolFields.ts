@@ -2873,6 +2873,105 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'files', label: 'Upload Audio Files (2 to 12)', type: 'file', accept: 'audio/*', multiple: true },
   ],
 
+  // ── 2026 Enhance Pack ──
+  'noise-reducer': [
+    { name: 'file', label: 'Upload Audio File', type: 'file', accept: 'audio/*' },
+    {
+      name: 'strength',
+      label: 'Noise Reduction Strength',
+      type: 'select',
+      defaultValue: 'medium',
+      options: [
+        { label: 'Light (gentle, preserves voice)', value: 'light' },
+        { label: 'Medium (recommended)', value: 'medium' },
+        { label: 'Strong (heavy noise)', value: 'strong' },
+        { label: 'Extreme (very noisy recordings)', value: 'extreme' },
+      ],
+    },
+  ],
+  'audio-normalizer': [
+    { name: 'file', label: 'Upload Audio File', type: 'file', accept: 'audio/*' },
+    {
+      name: 'target',
+      label: 'Target Loudness (LUFS)',
+      type: 'select',
+      defaultValue: '-16',
+      options: [
+        { label: '-14 LUFS (Spotify / YouTube / streaming)', value: '-14' },
+        { label: '-16 LUFS (podcasts — recommended)', value: '-16' },
+        { label: '-19 LUFS (Apple Music)', value: '-19' },
+        { label: '-23 LUFS (EBU R128 broadcast / TV)', value: '-23' },
+      ],
+    },
+  ],
+  'voice-enhancer': [
+    { name: 'file', label: 'Upload Voice Recording', type: 'file', accept: 'audio/*' },
+  ],
+  'silence-remover': [
+    { name: 'file', label: 'Upload Audio File', type: 'file', accept: 'audio/*' },
+    {
+      name: 'threshold',
+      label: 'Silence Threshold',
+      type: 'select',
+      defaultValue: '-35dB',
+      options: [
+        { label: '-25 dB (only very loud silence)', value: '-25dB' },
+        { label: '-30 dB (loose)', value: '-30dB' },
+        { label: '-35 dB (recommended)', value: '-35dB' },
+        { label: '-40 dB (strict — quiet rooms)', value: '-40dB' },
+        { label: '-45 dB (very strict)', value: '-45dB' },
+      ],
+    },
+  ],
+  'audio-fade': [
+    { name: 'file', label: 'Upload Audio File', type: 'file', accept: 'audio/*' },
+    { name: 'fade_in', label: 'Fade In (seconds, 0 to skip)', type: 'number', defaultValue: '2', placeholder: '2' },
+    { name: 'fade_out', label: 'Fade Out (seconds, 0 to skip)', type: 'number', defaultValue: '2', placeholder: '2' },
+  ],
+  'audio-equalizer': [
+    { name: 'file', label: 'Upload Audio File', type: 'file', accept: 'audio/*' },
+    {
+      name: 'preset',
+      label: 'EQ Preset',
+      type: 'select',
+      defaultValue: 'balanced',
+      options: [
+        { label: 'Balanced (subtle polish)', value: 'balanced' },
+        { label: 'Bass Boost', value: 'bass-boost' },
+        { label: 'Treble Boost', value: 'treble-boost' },
+        { label: 'Vocal Boost', value: 'vocal-boost' },
+        { label: 'Warm', value: 'warm' },
+        { label: 'Bright', value: 'bright' },
+      ],
+    },
+  ],
+  'video-stabilizer': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+  ],
+  'video-upscaler': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'target',
+      label: 'Upscale To',
+      type: 'select',
+      defaultValue: '1080p',
+      options: [
+        { label: '720p HD', value: '720p' },
+        { label: '1080p Full HD (recommended)', value: '1080p' },
+        { label: '1440p 2K', value: '1440p' },
+        { label: '2160p 4K UHD', value: '2160p' },
+      ],
+    },
+  ],
+  'video-to-1080p': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+  ],
+  'video-fade': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    { name: 'fade_in', label: 'Fade In (seconds, 0 to skip)', type: 'number', defaultValue: '1.5', placeholder: '1.5' },
+    { name: 'fade_out', label: 'Fade Out (seconds, 0 to skip)', type: 'number', defaultValue: '1.5', placeholder: '1.5' },
+  ],
+
   // ── 2026 Batch: Spotify / Snapchat / Threads / Subtitles / Video→GIF / MP3 Cutter ──
   'spotify-downloader': [
     { name: 'url', label: 'Spotify URL', type: 'text', placeholder: 'Paste Spotify URL e.g. https://open.spotify.com/episode/...' },
