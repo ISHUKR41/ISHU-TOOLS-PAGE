@@ -2560,6 +2560,74 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
 
+  // ── 2026 Batch #2: TTS / Video Trim / Video Compress / Audio Merger ───────
+  'text-to-speech': [
+    { name: 'text', label: 'Text to Speak', type: 'textarea', placeholder: 'Type or paste text here (max 5000 characters)...' },
+    {
+      name: 'lang',
+      label: 'Voice Language',
+      type: 'select',
+      defaultValue: 'en',
+      options: [
+        { label: 'English (en)', value: 'en' },
+        { label: 'Hindi (hi)', value: 'hi' },
+        { label: 'Tamil (ta)', value: 'ta' },
+        { label: 'Telugu (te)', value: 'te' },
+        { label: 'Bengali (bn)', value: 'bn' },
+        { label: 'Marathi (mr)', value: 'mr' },
+        { label: 'Gujarati (gu)', value: 'gu' },
+        { label: 'Kannada (kn)', value: 'kn' },
+        { label: 'Malayalam (ml)', value: 'ml' },
+        { label: 'Punjabi (pa)', value: 'pa' },
+        { label: 'Urdu (ur)', value: 'ur' },
+        { label: 'Spanish (es)', value: 'es' },
+        { label: 'French (fr)', value: 'fr' },
+        { label: 'German (de)', value: 'de' },
+        { label: 'Italian (it)', value: 'it' },
+        { label: 'Portuguese (pt)', value: 'pt' },
+        { label: 'Russian (ru)', value: 'ru' },
+        { label: 'Japanese (ja)', value: 'ja' },
+        { label: 'Korean (ko)', value: 'ko' },
+        { label: 'Chinese (zh-CN)', value: 'zh-CN' },
+        { label: 'Arabic (ar)', value: 'ar' },
+        { label: 'Turkish (tr)', value: 'tr' },
+      ],
+    },
+    {
+      name: 'slow',
+      label: 'Speech Speed',
+      type: 'select',
+      defaultValue: 'no',
+      options: [
+        { label: 'Normal speed', value: 'no' },
+        { label: 'Slow speed', value: 'yes' },
+      ],
+    },
+  ],
+  'video-trimmer': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    { name: 'start', label: 'Start Time (seconds or mm:ss)', type: 'text', defaultValue: '0', placeholder: 'e.g. 30 or 0:30' },
+    { name: 'duration', label: 'Clip Length (seconds)', type: 'number', defaultValue: '30', placeholder: '30' },
+    { name: 'end', label: 'OR End Time (optional, overrides duration)', type: 'text', placeholder: 'leave blank to use duration' },
+  ],
+  'video-compressor': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'quality',
+      label: 'Compression Level',
+      type: 'select',
+      defaultValue: 'medium',
+      options: [
+        { label: 'High compression (smallest file, 360p-ish)', value: 'high' },
+        { label: 'Medium (recommended, 480p-ish)', value: 'medium' },
+        { label: 'Low compression (better quality, 720p-ish)', value: 'low' },
+      ],
+    },
+  ],
+  'audio-merger': [
+    { name: 'files', label: 'Upload Audio Files (2 to 12)', type: 'file', accept: 'audio/*', multiple: true },
+  ],
+
   // ── 2026 Batch: Spotify / Snapchat / Threads / Subtitles / Video→GIF / MP3 Cutter ──
   'spotify-downloader': [
     { name: 'url', label: 'Spotify URL', type: 'text', placeholder: 'Paste Spotify URL e.g. https://open.spotify.com/episode/...' },

@@ -5540,6 +5540,39 @@ TOOLS.extend([
         tags=["random name picker", "random name generator", "pick random name", "name randomizer", "classroom name picker", "random winner picker", "lucky draw picker", "random student picker", "name chooser online", "random name selector free"],
         input_kind="text",
     ),
+    # ─── 2026 Batch #2: TTS, Video Trim/Compress, Audio Merger ──────────────
+    ToolDefinition(
+        slug="text-to-speech",
+        title="Text to Speech (TTS) — Convert Text to MP3 Voice Free",
+        description="Convert any text into natural-sounding speech audio (MP3) in 60+ languages including English, Hindi, Tamil, Telugu, Bengali. Free online text-to-speech generator — no signup.",
+        category="audio-tools",
+        tags=["text to speech", "tts free", "text to mp3", "text to voice", "text to audio", "voice generator", "speech synthesizer", "text to speech online", "hindi tts", "english tts", "natural voice generator"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="video-trimmer",
+        title="Video Trimmer — Cut Video Clips Online Free",
+        description="Trim or cut any MP4, MOV, WebM video online. Set start time and duration (or end time) and download the trimmed clip in HD quality — works on mobile and desktop.",
+        category="video-tools",
+        tags=["video trimmer", "video cutter", "trim video online", "cut video free", "mp4 trimmer", "video clip cutter", "shorten video", "video editor online", "trim mp4 online"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="video-compressor",
+        title="Video Compressor — Reduce Video File Size Free",
+        description="Compress MP4 / MOV / WebM videos online without losing too much quality. Choose high / medium / low compression — perfect for WhatsApp, Telegram and email upload limits.",
+        category="video-tools",
+        tags=["video compressor", "compress video online", "reduce video size", "mp4 compressor", "video size reducer", "compress mp4 free", "video shrink online", "make video smaller", "compress video for whatsapp"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="audio-merger",
+        title="Audio Merger — Join Multiple MP3 Files Online Free",
+        description="Combine 2 to 12 audio files (MP3, WAV, M4A) into one continuous track. Perfect for creating mixtapes, podcast episodes or merging recordings — free, no signup.",
+        category="audio-tools",
+        tags=["audio merger", "audio joiner", "merge mp3", "join audio files", "combine mp3", "mp3 joiner online", "audio combiner free", "concatenate audio", "merge audio online"],
+        input_kind="files",
+    ),
     # ─── 2026 Batch: Spotify, Snapchat, Threads, Subtitles, Video→GIF, MP3 Cutter ──
     ToolDefinition(
         slug="spotify-downloader",
@@ -7234,6 +7267,10 @@ _POPULARITY: dict[str, int] = {
     "youtube-downloader": 200,
     "youtube-shorts-downloader": 198,
     # 2026 batch — high demand
+    "text-to-speech": 210,
+    "video-trimmer": 200,
+    "video-compressor": 199,
+    "audio-merger": 178,
     "spotify-downloader": 205,
     "snapchat-downloader": 192,
     "threads-downloader": 175,

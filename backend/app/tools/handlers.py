@@ -6561,6 +6561,16 @@ except Exception as e:
 
 print(f"[handlers] NEW-EXTRAS TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge extra media tools (TTS, video trimmer/compressor, audio merger)
+try:
+    from .extra_media_handlers import EXTRA_MEDIA_HANDLERS
+    HANDLERS.update(EXTRA_MEDIA_HANDLERS)
+    print(f"[handlers] Loaded {len(EXTRA_MEDIA_HANDLERS)} extra-media handlers (tts/video-trim/video-compress/audio-merge)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load extra_media_handlers: {e}")
+
+print(f"[handlers] EXTRA-MEDIA TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):
