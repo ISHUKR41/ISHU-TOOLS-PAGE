@@ -1,6 +1,26 @@
 # ISHU TOOLS
 
 ## Latest Update (2026-04-22)
+**Smart search — relevance-ranked results, distractions hidden during search.**
+- **Relevance scoring** (`AllToolsPage.tsx` `filteredTools`): replaced naive substring match with a weighted-score algorithm.
+  - Title exact: +1000  |  Title startsWith: +500  |  Title word-prefix: +300  |  Title contains: +150
+  - Slug exact: +800  |  Slug starts: +250  |  Slug contains: +100
+  - Tag contains: +80  |  Description contains: +30
+  - Per-word bonuses for multi-word queries (every word must match somewhere — AND semantics)
+  - Shorter-title bonus (more specific match wins ties)
+  - Trending +8, New +4 tiebreakers
+  - Final sort: score desc → alphabetical
+- **Distraction-free search UI**: when the user types a query, the page now hides:
+  - Quick searches strip (already did)
+  - Featured / Most Popular section (already did)
+  - Recent tools section (already did)
+  - **Category pills row** (new — was always visible before)
+  - **Grouped category sections** (new — replaced with one flat ranked grid)
+  - **Category browser** at the bottom (already did)
+- **Flat ranked results grid** replaces grouped sections during search. Top 200 results shown with a "refine to narrow further" hint when more match.
+- Result counter now says "sorted by relevance".
+
+## Previous Update (2026-04-22)
 **Performance — buttery-smooth, lag-free across the entire site.**
 - **Idle-time route prefetch** (`main.tsx`): `requestIdleCallback` warms the ToolPage + AllToolsPage + CategoryPage chunks **after** first paint, so navigation to any page feels instant (zero loading flash).
 - **Smarter chunk splitting** (`vite.config.ts`): Three.js + R3F → `vendor-three`; GSAP → `vendor-gsap`; axios + dropzone + file-saver → `vendor-tool-runtime`; SEO data (140KB) → `seo-data`. Smaller initial bundle, faster homepage TTI.

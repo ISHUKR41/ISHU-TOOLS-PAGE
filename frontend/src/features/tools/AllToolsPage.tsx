@@ -968,23 +968,80 @@ export default function AllToolsPage() {
     }
   }, [categories, sortBy, toolCountByCategory])
 
+  // ── Smart relevance-scored search ──
+  // Multi-word: every word must match somewhere. Sort by computed score
+  // (title exact > title prefix > title word-prefix > slug > tags > description).
   const filteredTools = useMemo(() => {
-    const q = deferredQuery.trim().toLowerCase()
-    return tools.filter(tool => {
-      if (activeCategory !== 'all' && tool.category !== activeCategory) return false
-      if (!q) return true
-      return [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase().includes(q)
-    })
+    const raw = deferredQuery.trim().toLowerCase()
+    const inCat = (tool: { category: string }) =>
+      activeCategory === 'all' || tool.category === activeCategory
+
+    if (!raw) return tools.filter(inCat)
+
+    const words = raw.split(/\s+/).filter(Boolean)
+
+    type Scored = { tool: typeof tools[number]; score: number }
+    const scored: Scored[] = []
+
+    for (const tool of tools) {
+      if (!inCat(tool)) continue
+      const title = tool.title.toLowerCase()
+      const slug = tool.slug.toLowerCase()
+      const desc = (tool.description || '').toLowerCase()
+      const tagText = (tool.tags || []).join(' ').toLowerCase()
+      const haystack = `${title} ${slug} ${desc} ${tagText}`
+
+      // Multi-word AND — every word must appear somewhere
+      if (!words.every(w => haystack.includes(w))) continue
+
+      let score = 0
+      // ── Whole-query bonuses (most important) ──
+      if (title === raw) score += 1000
+      else if (title.startsWith(raw)) score += 500
+      else {
+        // Word-boundary prefix match (e.g. "merge" → "Merge PDF")
+        const titleWords = title.split(/\s+/)
+        if (titleWords.some(w => w.startsWith(raw))) score += 300
+        else if (title.includes(raw)) score += 150
+      }
+      if (slug === raw) score += 800
+      else if (slug.startsWith(raw)) score += 250
+      else if (slug.includes(raw)) score += 100
+      if (tagText.includes(raw)) score += 80
+      if (desc.includes(raw)) score += 30
+
+      // ── Per-word bonuses (multi-word queries) ──
+      for (const w of words) {
+        if (title.includes(w)) score += 40
+        if (slug.includes(w)) score += 20
+        if (tagText.includes(w)) score += 15
+        if (desc.includes(w)) score += 5
+      }
+
+      // Shorter titles = more specific match → small boost
+      score += Math.max(0, 30 - title.length / 2)
+
+      // Trending/new tools get a tiny tiebreaker boost
+      if (TRENDING_SLUGS.has(tool.slug)) score += 8
+      if (NEW_SLUGS.has(tool.slug)) score += 4
+
+      scored.push({ tool, score })
+    }
+
+    scored.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
+    return scored.map(s => s.tool)
   }, [activeCategory, deferredQuery, tools])
 
-  const groupedSections = useMemo(() =>
-    sortedCategories
-      .map(cat => ({ category: cat, tools: filteredTools.filter(t => t.category === cat.id) }))
-      .filter(e => e.tools.length > 0),
-    [sortedCategories, filteredTools],
-  )
-
   const isSearching   = deferredQuery.trim().length > 0
+
+  // Grouped category sections — ONLY when not searching (search shows flat ranked list)
+  const groupedSections = useMemo(() => {
+    if (isSearching) return []
+    return sortedCategories
+      .map(cat => ({ category: cat, tools: filteredTools.filter(t => t.category === cat.id) }))
+      .filter(e => e.tools.length > 0)
+  }, [sortedCategories, filteredTools, isSearching])
+
   const showPopular   = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showRecent    = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showFavorites = activeTab === 'favorites'
@@ -1065,7 +1122,8 @@ export default function AllToolsPage() {
             </button>
           </div>
 
-          {/* ── Category pills ── */}
+          {/* ── Category pills (hidden during active search to give results full focus) ── */}
+          {!isSearching && (
           <div className='category-row' style={{ marginTop: '0.75rem' }}>
             {loading ? (
               Array.from({ length: 8 }).map((_, i) => (
@@ -1093,6 +1151,7 @@ export default function AllToolsPage() {
               </>
             )}
           </div>
+          )}
         </section>
 
         {/* ── Directory ── */}
@@ -1134,9 +1193,34 @@ export default function AllToolsPage() {
               {isSearching && filteredTools.length > 0 && (
                 <p className='search-result-count'>
                   Found <strong>{filteredTools.length}</strong> tool{filteredTools.length !== 1 ? 's' : ''} for "<em>{deferredQuery}</em>"
+                  {' '}— sorted by relevance.
                 </p>
               )}
-              {groupedSections.map(({ category, tools: catTools }) => (
+
+              {/* ── Flat ranked search results — replaces grouped sections during search ── */}
+              {isSearching && filteredTools.length > 0 && (
+                <section className='category-section search-results-section'>
+                  <div className={`tool-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
+                    {filteredTools.slice(0, 200).map(tool => (
+                      <ToolCardCompact
+                        key={tool.slug}
+                        tool={tool}
+                        theme={getCategoryTheme(tool.category)}
+                        favorites={favorites}
+                        onToggleFav={onToggleFav}
+                        viewMode={viewMode}
+                      />
+                    ))}
+                  </div>
+                  {filteredTools.length > 200 && (
+                    <p className='search-result-count' style={{ marginTop: '0.75rem', opacity: 0.8 }}>
+                      Showing top 200 of {filteredTools.length}. Refine your search to narrow down further.
+                    </p>
+                  )}
+                </section>
+              )}
+
+              {!isSearching && groupedSections.map(({ category, tools: catTools }) => (
                 <AnimatedSection
                   key={category.id}
                   category={category}
