@@ -167,7 +167,7 @@ export default function AllToolsPage() {
             transition={{ duration: 0.5 }}
           >
             <span className='section-kicker'>Complete Library</span>
-            <h1>All {loading ? '625' : tools.length}+ Free Online Tools</h1>
+            <h1>All {loading ? '1200' : tools.length}+ Free Online Tools</h1>
             <p>Browse every tool across {loading ? '29' : categories.length} categories — find exactly what you need.</p>
           </motion.div>
 
