@@ -6611,6 +6611,16 @@ except Exception as e:
 
 print(f"[handlers] ENHANCE TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge Format Converter handlers (mp3-to-wav, mp4-to-mov, video-to-mp3, audio-compressor, etc.)
+try:
+    from .format_converters import FORMAT_CONVERTER_HANDLERS
+    HANDLERS.update(FORMAT_CONVERTER_HANDLERS)
+    print(f"[handlers] Loaded {len(FORMAT_CONVERTER_HANDLERS)} format-converter handlers (mp3-to-wav/mp4-to-mov/video-to-mp3/audio-compressor)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load format_converters: {e}")
+
+print(f"[handlers] FORMAT-CONVERTER TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):
