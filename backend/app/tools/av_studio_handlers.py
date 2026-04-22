@@ -388,8 +388,61 @@ def _handle_audio_trimmer(files: list[Path], payload: dict[str, Any], job_dir: P
 
 # ─── Registry ────────────────────────────────────────────────────────────────
 
+_VIDEO_FORMATS = {
+    "mp4":  {"ext": "mp4",  "vcodec": "libx264",  "acodec": "aac",      "extra": ["-pix_fmt", "yuv420p", "-movflags", "+faststart"], "mime": "video/mp4"},
+    "mov":  {"ext": "mov",  "vcodec": "libx264",  "acodec": "aac",      "extra": ["-pix_fmt", "yuv420p", "-movflags", "+faststart"], "mime": "video/quicktime"},
+    "mkv":  {"ext": "mkv",  "vcodec": "libx264",  "acodec": "aac",      "extra": ["-pix_fmt", "yuv420p"], "mime": "video/x-matroska"},
+    "webm": {"ext": "webm", "vcodec": "libvpx-vp9","acodec": "libopus",  "extra": ["-b:v", "1M", "-deadline", "good", "-cpu-used", "4"], "mime": "video/webm"},
+    "avi":  {"ext": "avi",  "vcodec": "mpeg4",    "acodec": "libmp3lame","extra": ["-q:v", "5"], "mime": "video/x-msvideo"},
+    "flv":  {"ext": "flv",  "vcodec": "libx264",  "acodec": "aac",      "extra": ["-pix_fmt", "yuv420p"], "mime": "video/x-flv"},
+    "mpeg": {"ext": "mpg",  "vcodec": "mpeg2video","acodec": "mp2",     "extra": ["-q:v", "5"], "mime": "video/mpeg"},
+    "m4v":  {"ext": "m4v",  "vcodec": "libx264",  "acodec": "aac",      "extra": ["-pix_fmt", "yuv420p", "-movflags", "+faststart"], "mime": "video/x-m4v"},
+    "wmv":  {"ext": "wmv",  "vcodec": "wmv2",     "acodec": "wmav2",    "extra": ["-q:v", "5"], "mime": "video/x-ms-wmv"},
+}
+
+
+def _handle_video_converter(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    if not files:
+        return ExecutionResult(kind="json", message="Please upload a video file.", data={"error": "No file"})
+    if (e := _ff()): return e
+    src = files[0]
+    fmt = str(payload.get("format") or "mp4").lower().strip()
+    if fmt not in _VIDEO_FORMATS:
+        return ExecutionResult(kind="json", message="Choose a valid output video format.", data={"error": "bad format"})
+
+    spec = _VIDEO_FORMATS[fmt]
+    out = job_dir / f"{src.stem}.{spec['ext']}"
+
+    cmd = ["ffmpeg", "-y", "-i", str(src),
+           "-c:v", spec["vcodec"], "-preset", "fast", "-crf", "23",
+           "-c:a", spec["acodec"]]
+    if spec["acodec"] not in ("pcm_s16le",):
+        cmd += ["-b:a", "192k"]
+    cmd += spec["extra"]
+    cmd.append(str(out))
+
+    ok, err = _run(cmd, timeout=1200)
+    if not ok or not out.exists() or out.stat().st_size == 0:
+        return ExecutionResult(kind="json",
+                               message=f"Could not convert to {fmt.upper()} — try a different source video.",
+                               data={"error": err or "empty output"})
+
+    orig = src.stat().st_size
+    new = out.stat().st_size
+    msg = f"✅ Converted to {fmt.upper()} — {round(new / 1_048_576, 2)} MB"
+    if orig and new < orig:
+        saved = round((1 - new / orig) * 100, 1)
+        msg += f" ({saved}% smaller than original)"
+    return ExecutionResult(kind="file", message=msg,
+                           output_path=out, filename=f"{_safe(src.stem)}.{spec['ext']}",
+                           content_type=spec["mime"])
+
+
 AV_STUDIO_HANDLERS = {
     # Video
+    "video-converter": _handle_video_converter,
+    "convert-video": _handle_video_converter,
+    "video-format-converter": _handle_video_converter,
     "video-reverser": _handle_video_reverser,
     "reverse-video": _handle_video_reverser,
     "video-cropper": _handle_video_cropper,

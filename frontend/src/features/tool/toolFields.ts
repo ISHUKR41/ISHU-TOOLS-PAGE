@@ -2561,6 +2561,26 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
 
   // ── 2026 Batch #5: A/V Studio (10 tools) ──────────────────────────────────
+  'video-converter': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'format',
+      label: 'Output Format',
+      type: 'select',
+      defaultValue: 'mp4',
+      options: [
+        { label: 'MP4 — Most universal (H.264 + AAC, web-friendly)', value: 'mp4' },
+        { label: 'MOV — Apple QuickTime (H.264 + AAC)', value: 'mov' },
+        { label: 'MKV — Matroska (H.264 + AAC)', value: 'mkv' },
+        { label: 'WebM — Open web video (VP9 + Opus)', value: 'webm' },
+        { label: 'AVI — Classic Windows (MPEG-4 + MP3)', value: 'avi' },
+        { label: 'FLV — Flash legacy (H.264 + AAC)', value: 'flv' },
+        { label: 'MPEG — DVD compatible (MPEG-2)', value: 'mpeg' },
+        { label: 'M4V — iTunes/Apple TV (H.264 + AAC)', value: 'm4v' },
+        { label: 'WMV — Windows Media (WMV2 + WMA)', value: 'wmv' },
+      ],
+    },
+  ],
   'video-reverser': [
     { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
     {

@@ -5542,6 +5542,14 @@ TOOLS.extend([
     ),
     # ─── 2026 Batch #5: A/V Studio (10 tools) ────────────────────────────────
     ToolDefinition(
+        slug="video-converter",
+        title="Video Converter — MP4, MOV, MKV, WebM, AVI, FLV, MPEG, M4V, WMV",
+        description="Convert any video file between 9 popular formats — MP4, MOV, MKV, WebM, AVI, FLV, MPEG, M4V and WMV. Smart codec selection per format, faststart for instant web playback. Free online video converter, no signup.",
+        category="video-tools",
+        tags=["video converter", "convert video", "mp4 converter", "mov to mp4", "mkv to mp4", "webm to mp4", "avi to mp4", "flv to mp4", "wmv to mp4", "video format converter", "online video converter free", "any video converter"],
+        input_kind="files",
+    ),
+    ToolDefinition(
         slug="video-reverser",
         title="Video Reverser — Play Video in Reverse Online Free",
         description="Reverse any video so it plays backwards — with or without reversed audio. Perfect for reels, comedy edits, magic effects and viral social-media clips. Free, no signup.",
@@ -7414,6 +7422,7 @@ _POPULARITY: dict[str, int] = {
     "youtube-downloader": 200,
     "youtube-shorts-downloader": 198,
     # 2026 batch — high demand
+    "video-converter": 215,
     "video-reverser": 188,
     "video-cropper": 196,
     "video-resizer": 201,
