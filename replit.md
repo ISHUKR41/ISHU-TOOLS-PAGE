@@ -1,6 +1,14 @@
 # ISHU TOOLS
 
 ## Latest Update (2026-04-22)
+**AI Search / GEO (Generative Engine Optimization) — full coverage for every tool.**
+- **`/llms.txt`** and **`/llms-full.txt`** added (https://llmstxt.org standard) — backend-served LLM-friendly site overview + full machine-readable tool index. Helps ChatGPT, Claude, Perplexity, Gemini cite ISHU TOOLS in answers.
+- **`robots.txt`** updated (both backend route + `frontend/public/robots.txt`) to explicitly welcome AI crawlers: GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, anthropic-ai, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, Bytespider, cohere-ai, Diffbot, Meta-ExternalAgent, MistralAI-User, YouBot, Amazonbot.
+- **AI-friendly meta tags** injected on every tool page in `ToolPage.tsx`: `ai-summary`, `ai:tool`, `ai:category`, `ai:price`, `ai:signup`, `ai:watermark`, `ai:platform`, `ai:audience`, plus per-bot `<meta name="GPTBot/ClaudeBot/PerplexityBot/...">` index hints.
+- **LearningResource + Question JSON-LD** added per tool (in addition to existing WebApplication, FAQPage, BreadcrumbList, Speakable). Question schema gives ChatGPT/Perplexity direct citation targets.
+- **AI/GEO keyword block** added to `buildComprehensiveKeywords()` — every tool now picks up "chatgpt recommended", "perplexity top result", "gemini recommended", "claude ai recommended", "ai answer engine", "best X according to ai", "ai citation", "ai-powered", India + 2026 freshness signals. Keyword cap raised 200 → 250.
+
+## Previous Update (2026-04-22)
 **Video Downloaders — 4K/8K quality option added across the board.**
 - Added Best/8K/4K/2K/1080p/720p/480p/360p/240p quality dropdown to: video-downloader, youtube-downloader, youtube-video-downloader, youtube-to-mp4, youtube-shorts-downloader, tiktok-downloader, twitter-video-downloader, x-video-downloader, facebook-video-downloader, vimeo-downloader, dailymotion-downloader, instagram-downloader, instagram-reel-downloader, pinterest-downloader, reddit-downloader, reddit-video-downloader, twitch-downloader, twitch-clip-downloader, linkedin-video-downloader, bilibili-downloader, rumble-downloader, stream-downloader, youtube-playlist-downloader, playlist-downloader.
 - Audio quality dropdown (64/96/128/160/192/256/320 kbps) added to youtube-to-mp3.

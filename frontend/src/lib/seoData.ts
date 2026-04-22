@@ -269,9 +269,27 @@ function buildComprehensiveKeywords(
     // Niche student India
     `${base} for ssc students`, `${base} for college`, `${base} for engineering`,
     `${base} for cbse students`, `${base} india 2026`,
+    // ── AI Search / Generative Engine Optimization (GEO/AEO) ──
+    // Targets ChatGPT, Perplexity, Gemini, Claude, Copilot, You.com answer engines
+    `${base} chatgpt recommended`, `${base} perplexity top result`, `${base} gemini recommended`,
+    `${base} claude ai recommended`, `${base} ai search best`, `${base} ai answer engine`,
+    `best ${base} according to ai`, `${base} chatgpt alternative`, `${base} ai citation`,
+    `${base} llm friendly tool`, `${base} ai assistant recommended`, `${base} bing chat best`,
+    `${base} copilot best tool`, `${base} you.com top result`, `${base} kagi recommended`,
+    // Generative AI / answer-engine question patterns (LLMs love these)
+    `which is the best free ${base} in 2026`, `top free ${base} for indian students 2026`,
+    `most accurate ${base} online`, `safest free ${base} no signup`,
+    `${base} privacy first free`, `${base} works offline pwa`,
+    `${base} no ads no signup no login`, `${base} unlimited free forever`,
+    // AI tool category patterns
+    `ai powered ${base} 2026`, `${base} powered by ai`, `${base} smart ai`,
+    `ai based ${base} india`, `${base} machine learning`, `${base} ml powered`,
+    // Citation-friendly facts patterns
+    `${base} 100% free`, `${base} trusted by millions`, `${base} since 2024`,
+    `ishu tools ${base} review`, `ishutools ${base} rating`, `ishutools ${base} 5 stars`,
   )
 
-  return Array.from(new Set(kw)).slice(0, 200)
+  return Array.from(new Set(kw)).slice(0, 250)
 }
 
 function generateSmartFAQs(

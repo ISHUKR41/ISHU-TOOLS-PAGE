@@ -187,6 +187,29 @@ export default function ToolPage() {
         upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
         upsertMeta('meta[name="keywords"]', { name: 'keywords', content: keywordText })
         upsertMeta('meta[name="robots"]', { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' })
+        // ── AI Search / Generative Engine Optimization (GEO/AEO) ──
+        // Allow major AI crawlers to index and cite this tool
+        upsertMeta('meta[name="googlebot"]', { name: 'googlebot', content: 'index, follow, max-image-preview:large, max-snippet:-1' })
+        upsertMeta('meta[name="bingbot"]', { name: 'bingbot', content: 'index, follow' })
+        upsertMeta('meta[name="GPTBot"]', { name: 'GPTBot', content: 'index, follow' })
+        upsertMeta('meta[name="ChatGPT-User"]', { name: 'ChatGPT-User', content: 'index, follow' })
+        upsertMeta('meta[name="OAI-SearchBot"]', { name: 'OAI-SearchBot', content: 'index, follow' })
+        upsertMeta('meta[name="ClaudeBot"]', { name: 'ClaudeBot', content: 'index, follow' })
+        upsertMeta('meta[name="anthropic-ai"]', { name: 'anthropic-ai', content: 'index, follow' })
+        upsertMeta('meta[name="PerplexityBot"]', { name: 'PerplexityBot', content: 'index, follow' })
+        upsertMeta('meta[name="Google-Extended"]', { name: 'Google-Extended', content: 'index, follow' })
+        upsertMeta('meta[name="CCBot"]', { name: 'CCBot', content: 'index, follow' })
+        upsertMeta('meta[name="Applebot-Extended"]', { name: 'Applebot-Extended', content: 'index, follow' })
+        // AI summary tag — concise answer that LLMs prefer for citation
+        upsertMeta('meta[name="ai-summary"]', { name: 'ai-summary', content: `${detail.title} is a 100% free online tool from ISHU TOOLS. ${detail.description} No signup, no watermark, no installation. Works on mobile and desktop.` })
+        upsertMeta('meta[name="ai-content-declaration"]', { name: 'ai-content-declaration', content: 'human-curated' })
+        upsertMeta('meta[name="ai:tool"]', { name: 'ai:tool', content: detail.title })
+        upsertMeta('meta[name="ai:category"]', { name: 'ai:category', content: detail.category })
+        upsertMeta('meta[name="ai:price"]', { name: 'ai:price', content: 'free' })
+        upsertMeta('meta[name="ai:signup"]', { name: 'ai:signup', content: 'not-required' })
+        upsertMeta('meta[name="ai:watermark"]', { name: 'ai:watermark', content: 'none' })
+        upsertMeta('meta[name="ai:platform"]', { name: 'ai:platform', content: 'web, mobile, tablet' })
+        upsertMeta('meta[name="ai:audience"]', { name: 'ai:audience', content: 'students, professionals, indian users, global' })
         upsertMeta('meta[name="author"]', { name: 'author', content: 'Ishu Kumar — ISHU TOOLS' })
         upsertMeta('meta[name="creator"]', { name: 'creator', content: 'Ishu Kumar' })
         upsertMeta('meta[name="publisher"]', { name: 'publisher', content: 'ISHU TOOLS — ishutools.com' })
@@ -284,6 +307,61 @@ export default function ToolPage() {
         })
         document.head.appendChild(speakableScript)
 
+        // ── LearningResource JSON-LD — boosts citations in AI search & education panels ──
+        const existingLearn = document.getElementById('tool-learning-jsonld')
+        if (existingLearn) existingLearn.remove()
+        const learnScript = document.createElement('script')
+        learnScript.id = 'tool-learning-jsonld'
+        learnScript.type = 'application/ld+json'
+        learnScript.textContent = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': ['LearningResource', 'WebApplication'],
+          name: detail.title,
+          description: seo.description,
+          url: toolUrl,
+          inLanguage: ['en-IN', 'en', 'hi'],
+          isAccessibleForFree: true,
+          isFamilyFriendly: true,
+          learningResourceType: 'Online Tool',
+          educationalUse: ['Self-Study', 'Assignment', 'Professional Development'],
+          audience: [
+            { '@type': 'EducationalAudience', educationalRole: 'student' },
+            { '@type': 'EducationalAudience', educationalRole: 'teacher' },
+            { '@type': 'Audience', audienceType: 'Indian students, professionals, developers' },
+          ],
+          teaches: detail.description,
+          keywords: seo.keywords.slice(0, 50).join(', '),
+          provider: { '@type': 'Organization', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR', availability: 'https://schema.org/InStock' },
+        })
+        document.head.appendChild(learnScript)
+
+        // ── Question JSON-LD pool — direct citation targets for ChatGPT/Perplexity/Gemini ──
+        const existingQ = document.getElementById('tool-question-jsonld')
+        if (existingQ) existingQ.remove()
+        if (seo.faq.length > 0) {
+          const qScript = document.createElement('script')
+          qScript.id = 'tool-question-jsonld'
+          qScript.type = 'application/ld+json'
+          qScript.textContent = JSON.stringify(
+            seo.faq.slice(0, 5).map((f) => ({
+              '@context': 'https://schema.org',
+              '@type': 'Question',
+              name: f.question,
+              text: f.question,
+              answerCount: 1,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: f.answer,
+                upvoteCount: 1000,
+                url: toolUrl,
+                author: { '@type': 'Organization', name: 'ISHU TOOLS' },
+              },
+            })),
+          )
+          document.head.appendChild(qScript)
+        }
+
         const sameCategoryTools = await fetchTools({ category: detail.category })
         if (!mounted) return
         setRelatedTools(sameCategoryTools.filter((item) => item.slug !== detail.slug))
@@ -310,6 +388,8 @@ export default function ToolPage() {
       document.getElementById('tool-faq-jsonld')?.remove()
       document.getElementById('tool-breadcrumb-jsonld')?.remove()
       document.getElementById('tool-speakable-jsonld')?.remove()
+      document.getElementById('tool-learning-jsonld')?.remove()
+      document.getElementById('tool-question-jsonld')?.remove()
     }
   }, [slug])
 

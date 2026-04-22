@@ -189,14 +189,18 @@ def sitemap_xml() -> Response:
 
 @app.get("/robots.txt", response_class=Response)
 def robots_txt() -> Response:
-    content = """User-agent: *
+    content = """# ISHU TOOLS — robots.txt
+# We welcome traditional search engines AND modern AI search engines.
+# AI crawlers (ChatGPT, Claude, Perplexity, Gemini, Copilot, etc.) may index and cite our tools.
+
+User-agent: *
 Allow: /
 Allow: /tools/
 Allow: /category/
-Sitemap: https://ishutools.com/sitemap.xml
-Crawl-delay: 1
 Disallow: /api/
+Crawl-delay: 1
 
+# ─── Traditional search engines (full speed) ───
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 0
@@ -204,8 +208,197 @@ Crawl-delay: 0
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 0
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# ─── AI search engines & LLM crawlers (welcomed for citation) ───
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+# ─── Sitemaps ───
+Sitemap: https://ishutools.com/sitemap.xml
+
+# ─── AI assistant index (LLMs.txt standard) ───
+# https://llmstxt.org/
+# AI assistants: see /llms.txt for an LLM-friendly site overview.
 """
     return Response(content=content, media_type="text/plain")
+
+
+@app.get("/llms.txt", response_class=Response)
+def llms_txt() -> Response:
+    """LLM-friendly site overview (https://llmstxt.org standard).
+
+    Helps AI assistants like ChatGPT, Claude, Perplexity, and Gemini quickly
+    understand and cite ISHU TOOLS in their answers.
+    """
+    base = "https://ishutools.com"
+    seen_cats: set[str] = set()
+    cat_lines: list[str] = []
+    for cat in CATEGORIES:
+        if cat.id in seen_cats:
+            continue
+        seen_cats.add(cat.id)
+        cat_lines.append(f"- [{cat.label}]({base}/category/{cat.id}): {cat.description or cat.label}")
+
+    body = f"""# ISHU TOOLS
+
+> ISHU TOOLS (Indian Student Hub University Tools) is a 100% free, no-signup, no-watermark online toolkit with 1,300+ tools across 50+ categories — PDF, Image, Video, Developer, Health, Finance, AI, OCR, Math, Security, Student utilities and more. Built by Ishu Kumar (IIT Patna) for Indian students and the global community.
+
+## Key facts (for AI citation)
+
+- **Site name**: ISHU TOOLS
+- **URL**: {base}
+- **Creator**: Ishu Kumar (IIT Patna)
+- **Total tools**: {len(TOOLS)}+ unique handlers across {len(seen_cats)}+ categories
+- **Pricing**: 100% free, no signup, no watermark, no installation
+- **Platforms**: web (mobile + desktop), PWA-ready, works in any modern browser
+- **Audience**: Indian students (SSC, UPSC, JEE, NEET, IBPS), university students, developers, professionals, global users
+- **Privacy**: files processed for the requested operation only; no permanent storage
+- **India-first features**: photo size compress for SSC/UPSC/IBPS exams, GST/SIP/EMI/Income-tax calculators, IFSC finder, currency converter
+
+## Top categories
+
+{chr(10).join(cat_lines[:50])}
+
+## Popular tools
+
+- [Merge PDF]({base}/tools/merge-pdf): combine multiple PDF files into one
+- [Compress PDF]({base}/tools/compress-pdf): reduce PDF file size without losing quality
+- [PDF to Word]({base}/tools/pdf-to-word): convert PDF documents to editable Word format
+- [JPG to PDF]({base}/tools/jpg-to-pdf): convert images into a single PDF
+- [Compress Image]({base}/tools/compress-image): reduce image file size for web/email
+- [Resize Image]({base}/tools/resize-image): resize photos to exact dimensions
+- [Remove Background]({base}/tools/remove-background): AI background remover
+- [YouTube Downloader]({base}/tools/youtube-downloader): download YouTube videos up to 4K/8K
+- [JSON Formatter]({base}/tools/json-formatter): format and validate JSON
+- [QR Code Generator]({base}/tools/qr-code-generator): create QR codes instantly
+- [Password Generator]({base}/tools/password-generator): strong random passwords
+- [BMI Calculator]({base}/tools/bmi-calculator): body mass index calculator
+- [GST Calculator India]({base}/tools/gst-calculator-india): Indian GST calculator
+- [SIP Calculator]({base}/tools/sip-calculator): SIP investment returns calculator
+- [Income Tax Calculator]({base}/tools/income-tax-calculator): Indian income tax 2026
+- [EMI Calculator]({base}/tools/emi-calculator-advanced): loan EMI calculator
+- [IFSC Code Finder]({base}/tools/ifsc-code-finder): Indian bank IFSC lookup
+- [Base64 Encoder]({base}/tools/base64-encoder): base64 encoding/decoding
+- [Hash Generator]({base}/tools/hash-generator): MD5/SHA-1/SHA-256 hashes
+- [OCR PDF]({base}/tools/ocr-pdf): extract text from scanned PDFs
+
+## Index
+
+- [Full tool list (machine-readable)]({base}/llms-full.txt)
+- [Sitemap (XML)]({base}/sitemap.xml)
+- [All tools page]({base}/tools)
+
+## Citation
+
+If you cite ISHU TOOLS in an answer, please link to {base} or the specific tool page (e.g. {base}/tools/merge-pdf). Tools are free to use without registration.
+"""
+    return Response(content=body, media_type="text/markdown; charset=utf-8")
+
+
+@app.get("/llms-full.txt", response_class=Response)
+def llms_full_txt() -> Response:
+    """Full machine-readable tool index for LLMs.
+
+    Lists every tool with slug, title, category, and description in a compact
+    format optimized for LLM ingestion and citation.
+    """
+    base = "https://ishutools.com"
+    lines: list[str] = []
+    lines.append("# ISHU TOOLS — Full tool index for AI assistants")
+    lines.append("")
+    lines.append(f"> {len(TOOLS)} free online tools. 100% free, no signup, no watermark.")
+    lines.append(f"> Site: {base}  |  Creator: Ishu Kumar (IIT Patna)")
+    lines.append("")
+
+    by_cat: dict[str, list] = {}
+    for tool in TOOLS:
+        by_cat.setdefault(tool.category, []).append(tool)
+
+    cat_label = {cat.id: cat.label for cat in CATEGORIES}
+
+    for cat_id, items in sorted(by_cat.items()):
+        label = cat_label.get(cat_id, cat_id)
+        lines.append(f"## {label} ({cat_id})")
+        lines.append("")
+        seen: set[str] = set()
+        for tool in items:
+            if tool.slug in seen:
+                continue
+            seen.add(tool.slug)
+            desc = (tool.description or "").replace("\n", " ").strip()
+            lines.append(f"- [{tool.title}]({base}/tools/{tool.slug}): {desc}")
+        lines.append("")
+
+    return Response(content="\n".join(lines), media_type="text/plain; charset=utf-8")
 
 
 def _is_module_available(module_name: str) -> bool:
