@@ -4532,6 +4532,23 @@ Object.assign(TOOL_FIELDS, {
   'seo-meta-generator': TOOL_FIELDS['meta-description-generator'],
 })
 
+// ── 2026 Number Base Converter Pack ─────────────────────────────────────────
+const NUM_BASE_DECIMAL = ['decimal-to-binary','decimal-to-hex','decimal-to-hexadecimal','decimal-to-octal'];
+const NUM_BASE_BINARY  = ['binary-to-decimal','binary-to-hex','binary-to-hexadecimal','binary-to-octal'];
+const NUM_BASE_HEX     = ['hex-to-decimal','hex-to-binary','hex-to-octal','hexadecimal-to-decimal','hexadecimal-to-binary'];
+const NUM_BASE_OCTAL   = ['octal-to-decimal','octal-to-binary','octal-to-hex'];
+const NUM_BASE_TEXT    = ['text-to-binary','string-to-binary','text-to-hex','string-to-hex','text-to-octal','text-to-ascii','string-to-ascii','ascii-to-binary','ascii-to-hex'];
+const NUM_BASE_ASCII   = ['ascii-to-text','ascii-to-string'];
+const _baseFields = (label: string, ph: string, rows = 3) => [
+  { name: 'value', label, type: 'textarea' as const, placeholder: ph, rows } as any,
+];
+for (const s of NUM_BASE_DECIMAL) TOOL_FIELDS[s] = _baseFields('Enter decimal number', '255', 2);
+for (const s of NUM_BASE_BINARY)  TOOL_FIELDS[s] = _baseFields('Enter binary number',  '11111111 (or 0b11111111)', 2);
+for (const s of NUM_BASE_HEX)     TOOL_FIELDS[s] = _baseFields('Enter hexadecimal number', 'FF (or 0xFF, #FF)', 2);
+for (const s of NUM_BASE_OCTAL)   TOOL_FIELDS[s] = _baseFields('Enter octal number', '377 (or 0o377)', 2);
+for (const s of NUM_BASE_TEXT)    TOOL_FIELDS[s] = _baseFields('Enter text', 'Hello World', 4);
+for (const s of NUM_BASE_ASCII)   TOOL_FIELDS[s] = _baseFields('Enter ASCII codes (space or comma separated)', '72 101 108 108 111', 3);
+
 // ── 2026 Unit Converter Pack — single shared "value" field for all 150+ converters ──
 const UNIT_CONVERTER_SLUGS = [
   'celsius-to-fahrenheit','fahrenheit-to-celsius','celsius-to-kelvin','kelvin-to-celsius',

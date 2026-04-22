@@ -153,13 +153,16 @@ select {
   position: sticky;
   top: 0;
   z-index: 10;
-  padding: 1rem 0 0;
+  padding: 1rem clamp(0.65rem, 3vw, 1.5rem) 0;
   backdrop-filter: blur(18px);
+  box-sizing: border-box;
 }
 
 .site-nav-inner {
-  width: min(1280px, 92vw);
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -275,10 +278,40 @@ select {
 }
 
 .page-wrap {
-  width: min(1280px, 92vw);
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1.6rem 0 3.4rem;
-  overflow-x: hidden;
+  padding: 1.6rem clamp(0.75rem, 3.5vw, 2rem) 3.4rem;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+/* ─── Global mobile responsive safety net ────────────────────────────── */
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+  .page-wrap { padding: 1rem clamp(0.65rem, 3vw, 1rem) 2.2rem; }
+  /* Tame any oversized hero / panel paddings on phones */
+  .hero-section-full,
+  .tool-card,
+  .tool-card-compact,
+  .panel,
+  .glass-panel,
+  .surface-card { padding: clamp(0.9rem, 4vw, 1.4rem) !important; }
+  /* Force long words / URLs to wrap inside any text container */
+  p, h1, h2, h3, h4, h5, h6, li, a, span, label { overflow-wrap: anywhere; word-break: break-word; }
+  /* Allow horizontal scroll for unavoidable wide content (tables, code) */
+  pre, code, table { max-width: 100%; }
+  pre { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: pre; }
+  /* Prevent buttons/inputs from forcing horizontal scroll */
+  input[type="text"], input[type="number"], input[type="email"], input[type="url"],
+  textarea, select, button { max-width: 100%; box-sizing: border-box; }
+}
+
+@media (max-width: 420px) {
+  html { font-size: 14.5px; }
+  .page-wrap { padding: 0.9rem 0.6rem 2rem; }
+  /* Stack any 2-column micro grids */
+  .stat-grid, .metric-grid, .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
 .home-wrap {
@@ -1799,7 +1832,8 @@ h3 {
 @media (max-width: 900px) {
   .site-nav-inner,
   .page-wrap {
-    width: min(1280px, 94vw);
+    width: 100%;
+    max-width: 1280px;
   }
 
   .toolbar-meta,

@@ -7626,6 +7626,45 @@ for _slug, _title, _desc, _tags in _DATA_FORMAT_DEFS:
     _existing_slugs.add(_slug)
 
 
+_BASE_DEFS: list[tuple[str, str, str, list[str]]] = [
+    ("decimal-to-binary",  "Decimal to Binary Converter — Free Online",  "Convert any decimal number to binary instantly. Free, accurate, supports negatives.", ["decimal to binary", "dec to bin", "convert decimal to binary"]),
+    ("decimal-to-hex",     "Decimal to Hex Converter — Free Online",     "Convert decimal numbers to hexadecimal (base-16). Free, instant.", ["decimal to hex", "dec to hex", "decimal to hexadecimal"]),
+    ("decimal-to-hexadecimal", "Decimal to Hexadecimal Converter — Free", "Same as decimal-to-hex. Convert base-10 to base-16 instantly.", ["decimal to hexadecimal"]),
+    ("decimal-to-octal",   "Decimal to Octal Converter — Free Online",   "Convert decimal to octal (base-8) numbers. Free.", ["decimal to octal", "dec to oct"]),
+    ("binary-to-decimal",  "Binary to Decimal Converter — Free Online",  "Convert binary (base-2) numbers to decimal instantly. Accepts 0b prefix.", ["binary to decimal", "bin to dec"]),
+    ("hex-to-decimal",     "Hex to Decimal Converter — Free Online",     "Convert hexadecimal to decimal. Accepts 0x and # prefixes. Free.", ["hex to decimal", "hexadecimal to decimal"]),
+    ("hexadecimal-to-decimal", "Hexadecimal to Decimal Converter — Free", "Convert hex to base-10 instantly. Free.", ["hexadecimal to decimal"]),
+    ("octal-to-decimal",   "Octal to Decimal Converter — Free Online",   "Convert octal (base-8) to decimal. Free.", ["octal to decimal", "oct to dec"]),
+    ("binary-to-hex",      "Binary to Hex Converter — Free Online",      "Convert binary directly to hexadecimal. Free.", ["binary to hex", "bin to hex"]),
+    ("binary-to-hexadecimal", "Binary to Hexadecimal Converter — Free",  "Convert binary to hex (base-16) instantly.", ["binary to hexadecimal"]),
+    ("hex-to-binary",      "Hex to Binary Converter — Free Online",      "Convert hexadecimal to binary instantly. Free.", ["hex to binary", "hexadecimal to binary"]),
+    ("hexadecimal-to-binary", "Hexadecimal to Binary Converter — Free",  "Convert hex (base-16) to binary instantly.", ["hexadecimal to binary"]),
+    ("binary-to-octal",    "Binary to Octal Converter — Free Online",    "Convert binary to octal (base-8). Free.", ["binary to octal"]),
+    ("octal-to-binary",    "Octal to Binary Converter — Free Online",    "Convert octal to binary instantly. Free.", ["octal to binary"]),
+    ("hex-to-octal",       "Hex to Octal Converter — Free Online",       "Convert hexadecimal to octal. Free.", ["hex to octal"]),
+    ("octal-to-hex",       "Octal to Hex Converter — Free Online",       "Convert octal to hexadecimal. Free.", ["octal to hex"]),
+    ("text-to-binary",     "Text to Binary Converter — Free Online",     "Convert any text/string to binary (UTF-8). Free, instant.", ["text to binary", "string to binary", "ascii text to binary"]),
+    ("string-to-binary",   "String to Binary Converter — Free Online",   "Convert any string to binary using UTF-8 encoding. Free.", ["string to binary"]),
+    ("text-to-hex",        "Text to Hex Converter — Free Online",        "Convert text/string to hexadecimal (UTF-8). Free.", ["text to hex", "string to hex"]),
+    ("string-to-hex",      "String to Hex Converter — Free Online",      "Convert any string to hex using UTF-8. Free.", ["string to hex"]),
+    ("text-to-octal",      "Text to Octal Converter — Free Online",      "Convert text to octal (UTF-8 byte values). Free.", ["text to octal"]),
+    ("text-to-ascii",      "Text to ASCII Code Converter — Free Online", "Convert text characters to ASCII decimal codes. Free.", ["text to ascii", "string to ascii", "text to ascii codes"]),
+    ("string-to-ascii",    "String to ASCII Codes — Free Online",        "Convert each character to its ASCII decimal code.", ["string to ascii"]),
+    ("ascii-to-text",      "ASCII to Text Converter — Free Online",      "Convert ASCII codes (space/comma separated) back to text. Free.", ["ascii to text", "ascii codes to text"]),
+    ("ascii-to-string",    "ASCII to String Converter — Free Online",    "Decode ASCII codes back to original string.", ["ascii to string"]),
+    ("ascii-to-binary",    "ASCII to Binary Converter — Free Online",    "Convert ASCII text characters to binary (UTF-8). Free.", ["ascii to binary"]),
+    ("ascii-to-hex",       "ASCII to Hex Converter — Free Online",       "Convert ASCII text to hex (UTF-8). Free.", ["ascii to hex"]),
+]
+
+for _slug, _title, _desc, _tags in _BASE_DEFS:
+    if _slug in _existing_slugs:
+        continue
+    TOOLS.append(ToolDefinition(
+        slug=_slug, title=_title, description=_desc,
+        category='developer-tools', tags=_tags, input_kind='text',
+    ))
+    _existing_slugs.add(_slug)
+
 _UNIT_DEFS: list[tuple[str, str, str, list[str]]] = [
 ('celsius-to-fahrenheit', 'Celsius to Fahrenheit Converter — Free Online', 'Convert celsius to fahrenheit instantly. Free, accurate calculator, no signup.', ['celsius to fahrenheit', 'celsius to fahrenheit', 'celsius fahrenheit converter']),
     ('fahrenheit-to-celsius', 'Fahrenheit to Celsius Converter — Free Online', 'Convert fahrenheit to celsius instantly. Free, accurate calculator, no signup.', ['fahrenheit to celsius', 'fahrenheit to celsius', 'fahrenheit celsius converter']),
@@ -8151,6 +8190,34 @@ _POPULARITY: dict[str, int] = {
     "kwh-to-joules":    85,
     "atm-to-psi":       82,
     "kpa-to-psi":       80,
+    # Number Base Converters — extreme dev/student traffic
+    "decimal-to-binary":      235,
+    "binary-to-decimal":      232,
+    "decimal-to-hex":         225,
+    "hex-to-decimal":         222,
+    "decimal-to-hexadecimal": 218,
+    "hexadecimal-to-decimal": 215,
+    "decimal-to-octal":       180,
+    "octal-to-decimal":       178,
+    "binary-to-hex":          172,
+    "hex-to-binary":          170,
+    "binary-to-hexadecimal":  168,
+    "hexadecimal-to-binary":  166,
+    "binary-to-octal":        140,
+    "octal-to-binary":        138,
+    "hex-to-octal":           115,
+    "octal-to-hex":           113,
+    "text-to-binary":         200,
+    "string-to-binary":       195,
+    "text-to-hex":            188,
+    "string-to-hex":          185,
+    "text-to-octal":          120,
+    "text-to-ascii":          175,
+    "string-to-ascii":        170,
+    "ascii-to-text":          172,
+    "ascii-to-string":        168,
+    "ascii-to-binary":        165,
+    "ascii-to-hex":           160,
     "snapchat-downloader": 192,
     "threads-downloader": 175,
     "youtube-subtitle-downloader": 188,
