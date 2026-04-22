@@ -9858,3 +9858,140 @@ table { max-width: 100%; }
   will-change: opacity, transform;
   transform: translateZ(0);
 }
+
+/* ═══ SMOOTHNESS & FEEL LAYER ═══════════════════════════════
+   Better easing, touch optimization, micro-interaction polish.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Remove tap flash on all interactive elements (mobile) */
+a, button, [role="button"], [tabindex] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Smooth momentum scroll on iOS for all scrollable areas */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent overscroll bounce on mobile (feels more app-like) */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* Better easing on nav links — ease-out-quart feels snappier */
+.nav-pill,
+.mega-link,
+.view-all-link,
+.brand-lockup {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Tool cards: use spring-like easing instead of flat "ease" */
+.tool-card-compact {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-duration: 160ms;
+}
+
+/* Favorite star button: bouncy scale on click */
+.fav-star-btn {
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              color 160ms ease,
+              opacity 160ms ease;
+}
+
+.fav-star-btn:active {
+  transform: scale(0.78);
+}
+
+.fav-star-btn.active {
+  transform: scale(1.15);
+}
+
+/* Category pills: spring bounce */
+.cat-pill {
+  transition: background 180ms ease,
+              color 180ms ease,
+              border-color 180ms ease,
+              transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 180ms ease;
+}
+
+.cat-pill:active {
+  transform: scale(0.94);
+}
+
+/* Sort + view-mode buttons */
+.view-mode-btn,
+.sort-select {
+  transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Back-to-top button: spring scale on hover */
+.back-to-top:hover {
+  transform: translateZ(0) scale(1.08) translateY(-2px);
+}
+
+.back-to-top:active {
+  transform: translateZ(0) scale(0.93);
+}
+
+/* Category browser cards: spring scale */
+.cat-browser-card {
+  transition: border-color 180ms ease,
+              background 180ms ease,
+              box-shadow 180ms ease,
+              transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cat-browser-card:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.cat-browser-card:active {
+  transform: scale(0.97);
+}
+
+/* Featured bento cards: smooth lift */
+.bento-card {
+  transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 200ms ease,
+              border-color 200ms ease;
+}
+
+/* Autocomplete items: fast response */
+.autocomplete-item {
+  transition: background 90ms ease,
+              border-color 90ms ease;
+}
+
+/* Popular strip pill hover */
+.pop-tool-pill {
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 160ms ease,
+              color 160ms ease;
+}
+
+.pop-tool-pill:active {
+  transform: scale(0.94);
+}
+
+/* Smooth focus rings — feels modern */
+:focus-visible {
+  outline: 2px solid rgba(59, 208, 255, 0.7);
+  outline-offset: 3px;
+  border-radius: 6px;
+  transition: outline-color 120ms ease;
+}
+
+/* Respect reduced-motion — accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
