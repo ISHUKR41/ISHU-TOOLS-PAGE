@@ -1,9 +1,11 @@
 ﻿import { startTransition, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
   Calculator, Star, ChevronDown, Award, Users, Sparkles, X as XIcon,
+  TrendingUp, Flame,
 } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
@@ -376,6 +378,15 @@ export default function HomePage() {
 
   const totalVisibleTools = filteredTools.length
 
+  // Top Most-Popular tools — pinned section above categorised tools
+  const topPopularTools = useMemo(() => {
+    if (activeCategory !== 'all' || debouncedQuery.trim()) return []
+    return [...tools]
+      .filter((t) => (t.popularity_rank ?? 0) >= 200)
+      .sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
+      .slice(0, 18)
+  }, [tools, activeCategory, debouncedQuery])
+
   return (
     <SiteShell>
       <div className='page-wrap home-wrap'>
@@ -454,6 +465,36 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {topPopularTools.length > 0 && (
+          <section className='popular-tools-section' aria-label='Most popular tools'>
+            <div className='popular-tools-header'>
+              <span className='section-kicker'>
+                <Flame size={14} style={{ display: 'inline', marginRight: 6, verticalAlign: '-2px' }} />
+                Most Popular
+              </span>
+              <h2>Top Tools used by everyone</h2>
+              <p>Daily-use tools millions of students &amp; professionals trust. One click — instant result.</p>
+            </div>
+            <div className='popular-tools-grid'>
+              {topPopularTools.map((tool) => {
+                const theme = getCategoryTheme(tool.category)
+                return (
+                  <Link
+                    key={tool.slug}
+                    to={`/tools/${tool.slug}`}
+                    className='popular-tool-card'
+                    style={{ '--card-accent': theme.accent } as CSSProperties}
+                  >
+                    <div className='popular-tool-icon'><TrendingUp size={16} /></div>
+                    <strong>{tool.title}</strong>
+                    <small>{tool.description?.slice(0, 70) || 'Free online tool'}{tool.description && tool.description.length > 70 ? '…' : ''}</small>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         <section id='tool-directory' className='directory-stack'>
           {loading && (
