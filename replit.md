@@ -1,6 +1,23 @@
 # ISHU TOOLS
 
 ## Latest Update (2026-04-22)
+**Universal power-user features — every one of 1247 tools just got 3 huge UX upgrades.**
+- **⌨️ Keyboard shortcuts** (work on every tool):
+  - `Ctrl/Cmd + Enter` → Run the tool (works even while typing in textarea — no need to reach for the mouse)
+  - `Esc` → Reset / clear current result and start fresh
+- **📋 Universal clipboard paste** (every file-based tool):
+  - Copy any image (screenshot, screen-grab, image from web) and just hit `Ctrl/Cmd + V` anywhere on a tool page → it lands in the dropzone instantly
+  - Works for any file in clipboard (multi-paste also handled)
+  - Toast confirms: "Pasted X files from clipboard"
+  - No need to save → switch app → upload — one keystroke
+- **💾 Auto-save text inputs** (every tool with form fields):
+  - Every text/number input you type into a tool is auto-saved to localStorage per-tool (debounced 400ms)
+  - Come back to the same tool tomorrow → your inputs are exactly as you left them
+  - Per-slug isolated keys (`tool-input:${slug}`) — no cross-pollution
+  - Empty values not persisted (storage stays small)
+  - Quota-safe (silently skips if localStorage full)
+
+## Previous Update (2026-04-22)
 **Buttery-smooth full directory — ALL 1247 tools shown, zero "show more", silky on every device.**
 - **No more caps anywhere**: search results now show ALL matched tools (was top-200), every category section already shows every tool. No "show more / load more" anywhere on the site.
 - **`content-visibility: auto`** virtualization (`.cv-grid`): the browser **natively skips painting + layout for off-screen tool cards**. With 1247 cards on screen, only ~20 visible cards actually render at any moment. Massive scroll perf on every device — including 3-year-old budget Android phones.

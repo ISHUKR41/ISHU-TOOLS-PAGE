@@ -571,6 +571,95 @@ export default function ToolPage() {
     }
   }
 
+  // ─── Universal keyboard shortcuts (works on every tool) ───
+  // Ctrl/Cmd+Enter = Run  |  Esc = Reset/Clear
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement
+      const isTextarea = target?.tagName === 'TEXTAREA'
+      // Cmd/Ctrl+Enter to submit (works even when typing in textarea)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (!running && tool) {
+          const form = document.querySelector('.tool-form') as HTMLFormElement | null
+          form?.requestSubmit()
+        }
+      }
+      // Esc to reset (only when not typing in inputs)
+      if (e.key === 'Escape' && !isTextarea && target?.tagName !== 'INPUT') {
+        if (downloadUrl || jsonResult || runError) {
+          handleReset()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [running, tool, downloadUrl, jsonResult, runError])
+
+  // ─── Universal clipboard paste — paste image/file directly into the dropzone ───
+  useEffect(() => {
+    if (!tool || tool.input_kind !== 'files') return
+    function handlePaste(e: ClipboardEvent) {
+      const target = e.target as HTMLElement
+      // Don't intercept paste in text inputs
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return
+      const items = e.clipboardData?.items
+      if (!items) return
+      const files: File[] = []
+      for (const item of Array.from(items)) {
+        if (item.kind === 'file') {
+          const file = item.getAsFile()
+          if (file) files.push(file)
+        }
+      }
+      if (files.length > 0) {
+        e.preventDefault()
+        onDrop(files)
+        toast.show(`Pasted ${files.length} file${files.length > 1 ? 's' : ''} from clipboard`, 'success')
+      }
+    }
+    window.addEventListener('paste', handlePaste)
+    return () => window.removeEventListener('paste', handlePaste)
+  }, [tool, onDrop, toast])
+
+  // ─── Auto-save text payload inputs to localStorage per tool ───
+  // Restore on revisit so the user never loses their work
+  useEffect(() => {
+    if (!slug || !fields.length) return
+    try {
+      const saved = localStorage.getItem(`tool-input:${slug}`)
+      if (saved) {
+        const parsed = JSON.parse(saved) as Record<string, string>
+        if (parsed && typeof parsed === 'object') {
+          setPayloadState((prev) => ({ ...parsed, ...prev }))
+        }
+      }
+    } catch {
+      /* ignore parse errors */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, fields.length])
+
+  useEffect(() => {
+    if (!slug || !fields.length) return
+    // debounce write
+    const t = setTimeout(() => {
+      try {
+        // Only persist non-empty values to keep storage small
+        const filtered: Record<string, string> = {}
+        for (const k in payloadState) {
+          if (payloadState[k] !== undefined && payloadState[k] !== '') filtered[k] = payloadState[k]
+        }
+        if (Object.keys(filtered).length) {
+          localStorage.setItem(`tool-input:${slug}`, JSON.stringify(filtered))
+        }
+      } catch {
+        /* quota exceeded — ignore */
+      }
+    }, 400)
+    return () => clearTimeout(t)
+  }, [payloadState, slug, fields.length])
+
   if (toolLoading) {
     return (
       <SiteShell>
