@@ -24,6 +24,39 @@ const booleanOptions = [
 ]
 
 export const TOOL_FIELDS: Record<string, ToolField[]> = {
+  'merge-pdf': [
+    {
+      name: 'order',
+      label: 'Merge Order',
+      type: 'select',
+      defaultValue: 'upload',
+      options: [
+        { label: 'Upload order (default)', value: 'upload' },
+        { label: 'File name (A → Z)', value: 'name' },
+        { label: 'File name (Z → A)', value: 'name_desc' },
+        { label: 'Reverse upload order', value: 'reverse' },
+      ],
+    },
+    {
+      name: 'bookmark_mode',
+      label: 'Bookmarks',
+      type: 'select',
+      defaultValue: 'preserve',
+      options: [
+        { label: 'Preserve bookmarks from each PDF', value: 'preserve' },
+        { label: 'One bookmark per file', value: 'per_file' },
+        { label: 'No bookmarks', value: 'none' },
+      ],
+    },
+    {
+      name: 'blank_between',
+      label: 'Insert blank page between files?',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
+    { name: 'title', label: 'PDF Title (optional)', type: 'text', placeholder: 'My Combined PDF' },
+  ],
   'compress-pdf': [
     {
       name: 'quality',
@@ -37,15 +70,50 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: 'Prepress (maximum quality)', value: 'prepress' },
       ],
     },
+    { name: 'image_dpi', label: 'Image DPI cap', type: 'number', defaultValue: '150', placeholder: '72-600' },
+    {
+      name: 'grayscale',
+      label: 'Convert to grayscale?',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
+    {
+      name: 'strip_metadata',
+      label: 'Strip metadata?',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
+    {
+      name: 'fast_web',
+      label: 'Optimize for fast web view?',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
   ],
   'split-pdf': [
     {
+      name: 'mode',
+      label: 'Split Mode',
+      type: 'select',
+      defaultValue: 'each_page',
+      options: [
+        { label: 'One PDF per page', value: 'each_page' },
+        { label: 'Single range → one PDF', value: 'single_range' },
+        { label: 'Multiple ranges (use ;)', value: 'ranges' },
+        { label: 'Every N pages', value: 'every_n' },
+      ],
+    },
+    {
       name: 'pages',
-      label: 'Pages',
+      label: 'Pages / Range',
       type: 'text',
-      placeholder: 'all or 1,3,5',
+      placeholder: 'e.g. all  •  1,3,5  •  1-5  •  1-3;4-7',
       defaultValue: 'all',
     },
+    { name: 'every_n', label: 'Every N pages (for "Every N" mode)', type: 'number', defaultValue: '1' },
   ],
   'extract-pages': [
     {
@@ -65,7 +133,24 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     },
   ],
   'rotate-pdf': [
-    { name: 'angle', label: 'Angle', type: 'number', defaultValue: '90' },
+    {
+      name: 'angle',
+      label: 'Rotation Angle',
+      type: 'select',
+      defaultValue: '90',
+      options: [
+        { label: '90° clockwise', value: '90' },
+        { label: '180° (upside down)', value: '180' },
+        { label: '270° / 90° counter-clockwise', value: '270' },
+      ],
+    },
+    {
+      name: 'pages',
+      label: 'Pages to rotate',
+      type: 'text',
+      placeholder: 'all  •  1,3,5  •  2-6',
+      defaultValue: 'all',
+    },
   ],
   'organize-pdf': [
     {
@@ -94,7 +179,233 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
   'watermark-pdf': [
     { name: 'text', label: 'Watermark Text', type: 'text', defaultValue: 'ISHU TOOLS' },
-    { name: 'font_size', label: 'Font Size', type: 'number', defaultValue: '18' },
+    {
+      name: 'position',
+      label: 'Position',
+      type: 'select',
+      defaultValue: 'diagonal',
+      options: [
+        { label: 'Diagonal (centered, 45°)', value: 'diagonal' },
+        { label: 'Center (horizontal)', value: 'center' },
+        { label: 'Tile (repeat across page)', value: 'tile' },
+        { label: 'Header (top)', value: 'header' },
+        { label: 'Footer (bottom)', value: 'footer' },
+      ],
+    },
+    { name: 'font_size', label: 'Font Size (pt)', type: 'number', defaultValue: '50' },
+    { name: 'opacity', label: 'Opacity (0.05 - 1.0)', type: 'number', defaultValue: '0.3' },
+    { name: 'color', label: 'Color (hex)', type: 'text', defaultValue: '#888888', placeholder: '#888888' },
+    {
+      name: 'pages',
+      label: 'Apply to pages',
+      type: 'text',
+      placeholder: 'all  •  1,3,5  •  2-6',
+      defaultValue: 'all',
+    },
+  ],
+  'pdf-to-jpg': [
+    { name: 'dpi', label: 'Render DPI', type: 'number', defaultValue: '200', placeholder: '72-600' },
+    { name: 'quality', label: 'JPG Quality (10-100)', type: 'number', defaultValue: '92' },
+    {
+      name: 'color_mode',
+      label: 'Color Mode',
+      type: 'select',
+      defaultValue: 'rgb',
+      options: [
+        { label: 'Full Color (RGB)', value: 'rgb' },
+        { label: 'Grayscale', value: 'grayscale' },
+      ],
+    },
+    {
+      name: 'pages',
+      label: 'Pages',
+      type: 'text',
+      placeholder: 'all  •  1,3,5  •  2-6',
+      defaultValue: 'all',
+    },
+  ],
+  'pdf-to-png': [
+    { name: 'dpi', label: 'Render DPI', type: 'number', defaultValue: '200', placeholder: '72-600' },
+    {
+      name: 'color_mode',
+      label: 'Color Mode',
+      type: 'select',
+      defaultValue: 'rgb',
+      options: [
+        { label: 'Full Color (RGB)', value: 'rgb' },
+        { label: 'Grayscale', value: 'grayscale' },
+      ],
+    },
+    {
+      name: 'transparent_bg',
+      label: 'Transparent background?',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
+    {
+      name: 'pages',
+      label: 'Pages',
+      type: 'text',
+      placeholder: 'all  •  1,3,5  •  2-6',
+      defaultValue: 'all',
+    },
+  ],
+  'jpg-to-pdf': [
+    {
+      name: 'page_size',
+      label: 'Page Size',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto (match image)', value: 'auto' },
+        { label: 'A4', value: 'a4' },
+        { label: 'A3', value: 'a3' },
+        { label: 'A5', value: 'a5' },
+        { label: 'Letter', value: 'letter' },
+        { label: 'Legal', value: 'legal' },
+      ],
+    },
+    {
+      name: 'orientation',
+      label: 'Orientation',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto', value: 'auto' },
+        { label: 'Portrait', value: 'portrait' },
+        { label: 'Landscape', value: 'landscape' },
+      ],
+    },
+    { name: 'margin_mm', label: 'Margin (mm)', type: 'number', defaultValue: '0' },
+    {
+      name: 'fit',
+      label: 'Image Fit',
+      type: 'select',
+      defaultValue: 'fit',
+      options: [
+        { label: 'Fit (no crop)', value: 'fit' },
+        { label: 'Fill (crop to page)', value: 'fill' },
+        { label: 'Stretch (ignore ratio)', value: 'stretch' },
+      ],
+    },
+    {
+      name: 'order',
+      label: 'Image Order',
+      type: 'select',
+      defaultValue: 'name',
+      options: [
+        { label: 'File name (A → Z)', value: 'name' },
+        { label: 'File name (Z → A)', value: 'name_desc' },
+        { label: 'Upload order', value: 'upload' },
+      ],
+    },
+  ],
+  'image-to-pdf': [
+    {
+      name: 'page_size',
+      label: 'Page Size',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto (match image)', value: 'auto' },
+        { label: 'A4', value: 'a4' },
+        { label: 'A3', value: 'a3' },
+        { label: 'A5', value: 'a5' },
+        { label: 'Letter', value: 'letter' },
+        { label: 'Legal', value: 'legal' },
+      ],
+    },
+    {
+      name: 'orientation',
+      label: 'Orientation',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto', value: 'auto' },
+        { label: 'Portrait', value: 'portrait' },
+        { label: 'Landscape', value: 'landscape' },
+      ],
+    },
+    { name: 'margin_mm', label: 'Margin (mm)', type: 'number', defaultValue: '0' },
+    {
+      name: 'fit',
+      label: 'Image Fit',
+      type: 'select',
+      defaultValue: 'fit',
+      options: [
+        { label: 'Fit (no crop)', value: 'fit' },
+        { label: 'Fill (crop to page)', value: 'fill' },
+        { label: 'Stretch (ignore ratio)', value: 'stretch' },
+      ],
+    },
+  ],
+  'scan-to-pdf': [
+    {
+      name: 'enhance',
+      label: 'Scan Enhancement',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto (grayscale + sharpen)', value: 'auto' },
+        { label: 'Grayscale only', value: 'grayscale' },
+        { label: 'B&W (high contrast)', value: 'bw' },
+        { label: 'None (preserve original)', value: 'none' },
+      ],
+    },
+    {
+      name: 'page_size',
+      label: 'Page Size',
+      type: 'select',
+      defaultValue: 'a4',
+      options: [
+        { label: 'A4', value: 'a4' },
+        { label: 'A3', value: 'a3' },
+        { label: 'A5', value: 'a5' },
+        { label: 'Letter', value: 'letter' },
+        { label: 'Legal', value: 'legal' },
+        { label: 'Auto (match image)', value: 'auto' },
+      ],
+    },
+    {
+      name: 'orientation',
+      label: 'Orientation',
+      type: 'select',
+      defaultValue: 'auto',
+      options: [
+        { label: 'Auto', value: 'auto' },
+        { label: 'Portrait', value: 'portrait' },
+        { label: 'Landscape', value: 'landscape' },
+      ],
+    },
+    { name: 'margin_mm', label: 'Margin (mm)', type: 'number', defaultValue: '5' },
+  ],
+  'optimize-pdf': [
+    {
+      name: 'level',
+      label: 'Optimization Level',
+      type: 'select',
+      defaultValue: 'standard',
+      options: [
+        { label: 'Light (lossless, quick)', value: 'light' },
+        { label: 'Standard (recommended)', value: 'standard' },
+        { label: 'Aggressive (recompress images)', value: 'aggressive' },
+      ],
+    },
+    {
+      name: 'linearize',
+      label: 'Linearize for fast web view?',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+    {
+      name: 'strip_metadata',
+      label: 'Strip metadata?',
+      type: 'select',
+      defaultValue: 'false',
+      options: booleanOptions,
+    },
   ],
   'add-text-pdf': [
     { name: 'text', label: 'Text', type: 'text', defaultValue: 'ISHU TOOLS' },

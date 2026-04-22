@@ -6577,6 +6577,15 @@ try:
 except Exception as e:
     print(f"[handlers] WARNING: Could not load fresh_text_handlers: {e}")
 
+# Override PDF Core handlers with feature-rich enhanced versions (Apr 2026)
+# This MUST be registered last so it wins over baseline merge/split/compress/etc.
+try:
+    from .pdf_core_enhanced import PDF_CORE_ENHANCED_HANDLERS
+    HANDLERS.update(PDF_CORE_ENHANCED_HANDLERS)
+    print(f"[handlers] Loaded {len(PDF_CORE_ENHANCED_HANDLERS)} ENHANCED PDF Core handlers (overrides merge/split/compress/rotate/watermark/render/optimize)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load pdf_core_enhanced: {e}")
+
 print(f"[handlers] EXTRA-MEDIA TOTAL registered handlers: {len(HANDLERS)}")
 
 # Merge office tools (CSV ↔ Excel, PDF page extractor)
