@@ -6591,6 +6591,16 @@ except Exception as e:
 
 print(f"[handlers] MEDIA-V2 TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge A/V Studio handlers (video reverser/cropper/resizer/watermark/thumbnail + audio reverser/volume/pitch/convert/trim)
+try:
+    from .av_studio_handlers import AV_STUDIO_HANDLERS
+    HANDLERS.update(AV_STUDIO_HANDLERS)
+    print(f"[handlers] Loaded {len(AV_STUDIO_HANDLERS)} av-studio handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load av_studio_handlers: {e}")
+
+print(f"[handlers] AV-STUDIO TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):

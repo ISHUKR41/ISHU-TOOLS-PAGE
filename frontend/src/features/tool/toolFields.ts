@@ -2560,6 +2560,144 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
 
+  // ── 2026 Batch #5: A/V Studio (10 tools) ──────────────────────────────────
+  'video-reverser': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'audio',
+      label: 'Audio Track',
+      type: 'select',
+      defaultValue: 'reverse',
+      options: [
+        { label: 'Reverse audio along with video', value: 'reverse' },
+        { label: 'Mute audio (silent reversed video)', value: 'mute' },
+      ],
+    },
+  ],
+  'video-cropper': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'aspect',
+      label: 'Crop to Aspect Ratio',
+      type: 'select',
+      defaultValue: '1:1',
+      options: [
+        { label: '1:1 — Square (Instagram post)', value: '1:1' },
+        { label: '9:16 — Vertical (Reels / Shorts / TikTok)', value: '9:16' },
+        { label: '16:9 — Horizontal (YouTube widescreen)', value: '16:9' },
+        { label: '4:5 — Portrait (Instagram feed)', value: '4:5' },
+        { label: '4:3 — Classic TV', value: '4:3' },
+      ],
+    },
+  ],
+  'video-resizer': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'resolution',
+      label: 'Output Resolution',
+      type: 'select',
+      defaultValue: '720p',
+      options: [
+        { label: '240p — Tiny file (≈3 MB/min)', value: '240p' },
+        { label: '360p — Small file', value: '360p' },
+        { label: '480p — SD (DVD quality)', value: '480p' },
+        { label: '720p — HD (recommended)', value: '720p' },
+        { label: '1080p — Full HD', value: '1080p' },
+        { label: '1440p — 2K QHD', value: '1440p' },
+        { label: '2160p — 4K Ultra HD', value: '2160p' },
+      ],
+    },
+  ],
+  'video-watermark': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    { name: 'text', label: 'Watermark Text', type: 'text', placeholder: 'e.g. © Your Name 2026' },
+    {
+      name: 'position',
+      label: 'Watermark Position',
+      type: 'select',
+      defaultValue: 'bottom-right',
+      options: [
+        { label: 'Bottom Right (default)', value: 'bottom-right' },
+        { label: 'Bottom Left', value: 'bottom-left' },
+        { label: 'Top Right', value: 'top-right' },
+        { label: 'Top Left', value: 'top-left' },
+        { label: 'Center', value: 'center' },
+      ],
+    },
+  ],
+  'video-thumbnail': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    { name: 'time', label: 'Timestamp', type: 'text', placeholder: 'e.g. 5 (seconds), 1:30, 01:02:30', defaultValue: '0' },
+  ],
+  'audio-reverser': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+  ],
+  'audio-volume-changer': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    {
+      name: 'db',
+      label: 'Volume Change (dB)',
+      type: 'select',
+      defaultValue: '6',
+      options: [
+        { label: '+15 dB — Very loud (boost a lot)', value: '15' },
+        { label: '+10 dB — Loud', value: '10' },
+        { label: '+6 dB — Double perceived loudness', value: '6' },
+        { label: '+3 dB — Slight boost', value: '3' },
+        { label: '-3 dB — Slight reduction', value: '-3' },
+        { label: '-6 dB — Half perceived loudness', value: '-6' },
+        { label: '-10 dB — Quieter', value: '-10' },
+        { label: '-15 dB — Very quiet', value: '-15' },
+      ],
+    },
+  ],
+  'audio-pitch-changer': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    {
+      name: 'semitones',
+      label: 'Pitch Shift (semitones)',
+      type: 'select',
+      defaultValue: '2',
+      options: [
+        { label: '+12 — Up 1 octave (chipmunk)', value: '12' },
+        { label: '+7 — Up a perfect 5th', value: '7' },
+        { label: '+5 — Up a 4th', value: '5' },
+        { label: '+3 — Up a minor 3rd', value: '3' },
+        { label: '+2 — Up a whole step', value: '2' },
+        { label: '+1 — Up a semitone', value: '1' },
+        { label: '-1 — Down a semitone', value: '-1' },
+        { label: '-2 — Down a whole step', value: '-2' },
+        { label: '-3 — Down a minor 3rd', value: '-3' },
+        { label: '-5 — Down a 4th', value: '-5' },
+        { label: '-7 — Down a perfect 5th', value: '-7' },
+        { label: '-12 — Down 1 octave (deep voice)', value: '-12' },
+      ],
+    },
+  ],
+  'audio-converter': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    {
+      name: 'format',
+      label: 'Output Format',
+      type: 'select',
+      defaultValue: 'mp3',
+      options: [
+        { label: 'MP3 — Most universal (192 kbps)', value: 'mp3' },
+        { label: 'WAV — Lossless uncompressed', value: 'wav' },
+        { label: 'M4A — Apple AAC (192 kbps)', value: 'm4a' },
+        { label: 'FLAC — Lossless compressed', value: 'flac' },
+        { label: 'OGG Vorbis — Open source (192 kbps)', value: 'ogg' },
+        { label: 'AAC — Modern lossy (192 kbps)', value: 'aac' },
+        { label: 'OPUS — Best for voice (128 kbps)', value: 'opus' },
+      ],
+    },
+  ],
+  'audio-trimmer': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    { name: 'start', label: 'Start Time', type: 'text', placeholder: 'e.g. 0, 0:30, 1:30', defaultValue: '0' },
+    { name: 'end', label: 'End Time (optional, blank = until end)', type: 'text', placeholder: 'e.g. 1:45, 2:30' },
+  ],
+
   // ── 2026 Batch #4: Video Rotate/Mute/Speed / Audio Speed / GIF→Video ─────
   'video-rotator': [
     { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
