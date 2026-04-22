@@ -1,0 +1,581 @@
+thoda modern look do bro bus tools page ko kuch bhe mat karna that is request okay 
+
+
+
+modern look and fill doo 
+
+
+
+[https://www.vengenceui.com/docs/components-overview](https://www.vengenceui.com/docs/components-overview)
+
+ISKA BHE USE KARNA PLS
+
+Subframe
+
+Relume
+
+ChakraUI
+
+Ariakit
+
+Reshaped
+
+Carbon Design
+
+Park UI
+
+Blueprint
+
+Tetrisly
+
+AntBlocks UI
+
+Fluent UI
+
+React
+
+Tailwind CSS
+
+NextJS
+
+Vite
+
+Figma
+
+Vue
+
+Solid
+
+TypeScript
+
+TailGrids
+
+DaisyUI
+
+TW Elements
+
+HeroUI
+
+Flowbite
+
+Preline UI
+
+Float UI
+
+Tremor
+
+Kometa UI Kit
+
+Meraki UI
+
+Material Tailwind
+
+Headless UI
+
+Aceternity UI
+
+Eldora UI
+
+Magic UI
+
+DotUI
+
+Gluestack UI
+
+Shadcn UI
+
+React
+
+Next.js
+
+Tailwind CSS
+
+Radix UI
+
+Framer Motion
+
+Vue
+
+Solid
+
+Svelte
+
+Laravel
+
+TypeScript
+
+HTML
+
+ISKE LIYE JITNA BHE LIBRAIES AND TOOLS KA NEED HO YE REPO KA SAB INSTALL KAR LENA PLS
+
+ISKE LIYE JITNA BHE LIBRAIES AND TOOLS KA NEED HO YE REPO KA SAB INSTALL KAR LENA PLS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ISKA BHE USE KARNA PLS
+
+Subframe
+
+Relume
+
+ChakraUI
+
+Ariakit
+
+Reshaped
+
+Carbon Design
+
+Park UI
+
+Blueprint
+
+Tetrisly
+
+AntBlocks UI
+
+Fluent UI
+
+React
+
+Tailwind CSS
+
+NextJS
+
+Vite
+
+Figma
+
+Vue
+
+Solid
+
+TypeScript
+
+TailGrids
+
+DaisyUI
+
+TW Elements
+
+HeroUI
+
+Flowbite
+
+Preline UI
+
+Float UI
+
+Tremor
+
+Kometa UI Kit
+
+Meraki UI
+
+Material Tailwind
+
+Headless UI
+
+Aceternity UI
+
+Eldora UI
+
+Magic UI
+
+DotUI
+
+Gluestack UI
+
+Shadcn UI
+
+React
+
+Next.js
+
+Tailwind CSS
+
+Radix UI
+
+Framer Motion
+
+Vue
+
+Solid
+
+Svelte
+
+Laravel
+
+TypeScript
+
+HTML
+
+[https://www.linkedin.com/in/ishu-kumar-5a0940281/](https://www.linkedin.com/in/ishu-kumar-5a0940281/)
+
+[https://www.instagram.com/ishukr10?igsh=OTNoaTJ2bm1ndWlp](https://www.instagram.com/ishukr10?igsh=OTNoaTJ2bm1ndWlp)
+
+[https://www.youtube.com/@ishu-fun](https://www.youtube.com/@ishu-fun)
+
+[https://x.com/ISHU_IITP](https://x.com/ISHU_IITP)
+
+ISKE LIYE JITNA BHE LIBRAIES AND TOOLS KA NEED HO YE REPO KA SAB INSTALL KAR LENA PLS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Apple
+
+Stripe
+
+Awwwards
+
+Nike
+
+Tesla
+
+Spotify
+
+Airbnb
+
+Dropbox
+
+Webflow
+
+Figma
+
+Slack
+
+Notion
+
+Google
+
+Microsoft
+
+Amazon
+
+Adobe
+
+Framer
+
+Three.js
+
+Lusion
+
+Active Theory
+
+Cuberto
+
+Resn
+
+Locomotive
+
+Bruno Simon Portfolio
+
+Denis Novik Portfolio
+
+Obys Agency
+
+Dogstudio
+
+Fantasy ([Fantasy.co](http://fantasy.co/))
+
+Instrument
+
+Basic Agency
+
+Hello Monday
+
+Ueno
+
+Giant Ant
+
+Buck
+
+Media.Monks
+
+Rally Interactive
+
+Parallax Studio
+
+Stink Studios
+
+AKQA
+
+B-Reel
+
+North Kingdom
+
+Made Thought
+
+Zweinull
+
+Unseen Studio
+
+Velvet Spectrum
+
+Immersive Garden
+
+The Mill
+
+Wonderlabs
+
+Humaan
+
+Epicurrence
+
+HTML5
+
+CSS3
+
+JavaScript (ES6+)
+
+TypeScript
+
+React.js
+
+Next.js
+
+Vue.js
+
+Nuxt.js
+
+Svelte
+
+SvelteKit
+
+Angular
+
+SolidJS
+
+Qwik
+
+Astro
+
+Remix
+
+Three.js
+
+WebGL
+
+WebGPU
+
+Babylon.js
+
+PlayCanvas
+
+PixiJS
+
+OGL (WebGL Library)
+
+Regl
+
+Zdog
+
+GSAP (GreenSock)
+
+ScrollTrigger (GSAP)
+
+Framer Motion
+
+Anime.js
+
+Lottie
+
+Mo.js
+
+Popmotion
+
+Velocity.js
+
+Typed.js
+
+Splitting.js
+
+Barba.js
+
+Swup
+
+Highway.js
+
+Locomotive Scroll
+
+Lenis
+
+Smooth Scrollbar
+
+React Three Fiber
+
+Drei
+
+React Spring
+
+React Use Gesture
+
+Theatre.js
+
+Motion One
+
+D3.js
+
+Chart.js
+
+ECharts
+
+Highcharts
+
+Tailwind CSS
+
+Bootstrap
+
+Material UI (MUI)
+
+Chakra UI
+
+Ant Design
+
+Sass (SCSS)
+
+Less
+
+PostCSS
+
+Styled Components
+
+Emotion
+
+Webpack
+
+Vite
+
+Parcel
+
+Rollup
+
+ESBuild
+
+Babel
+
+SWC
+
+npm
+
+Yarn
+
+PNPM
+
+Git
+
+GitHub
+
+GitLab
+
+Bitbucket
+
+Figma
+
+Adobe XD
+
+Sketch
+
+InVision
+
+Blender
+
+Cinema 4D
+
+Autodesk Maya
+
+Houdini
+
+ZBrush
+
+Webflow
+
+Framer
+
+WordPress (Headless)
+
+Contentful (CMS)
+
+Sanity (CMS)
+
+Strapi (CMS)
+
+Firebase
+
+Supabase
+
+Node.js
+
+Express.js
+
+Deno
+
+GraphQL
+
+Apollo
+
+Prisma
+
+Netlify
+
+Vercel
+
+Cloudflare
+
+ye sare websites se inspiration le lena pls aacha se deep research karke pls okay
+
+
+
+
+look and fill text buttons sab cheez imporve karo and fully responsive beh hona chaiye haaar ek device ke liye chote se chote deivce se lekar bade se bade device ke liye 
+
+
+
+
+
+
+
+
+
+
+and vercel par deploy karna mai koi bhe error nhi aana chaiye
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+and main tools par koi impact nhi aana chiaye isko yaad rakhna
