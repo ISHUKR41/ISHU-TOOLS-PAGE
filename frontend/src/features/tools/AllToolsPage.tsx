@@ -1,4 +1,4 @@
-import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react'
 import type { CSSProperties } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -397,7 +397,7 @@ function SkeletonSection() {
 
 /* ─── Tool Card ──────────────────────────────────────────── */
 
-function ToolCardCompact({
+const ToolCardCompact = memo(function ToolCardCompact({
   tool, theme, favorites, onToggleFav, viewMode,
 }: {
   tool: { slug: string; title: string; description: string }
@@ -440,11 +440,11 @@ function ToolCardCompact({
       </button>
     </div>
   )
-}
+})
 
 /* ─── Category Section ───────────────────────────────────── */
 
-function AnimatedSection({
+const AnimatedSection = memo(function AnimatedSection({
   category, catTools, theme, favorites, onToggleFav, viewMode,
 }: {
   category: { id: string; label: string; description: string }
@@ -455,7 +455,7 @@ function AnimatedSection({
   viewMode: 'grid' | 'list'
 }) {
   const ref = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px 0px' })
+  const inView = useInView(ref, { once: true, margin: '-80px 0px' })
   const [collapsed, setCollapsed] = useState(false)
 
   return (
@@ -463,9 +463,9 @@ function AnimatedSection({
       ref={ref}
       className='category-section modern-section'
       style={{ '--cat-accent': theme.accent } as CSSProperties}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.38, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.32, ease: 'easeOut' }}
     >
       <div className='category-section-header modern-section-header'>
         <button
@@ -474,13 +474,15 @@ function AnimatedSection({
           onClick={() => setCollapsed(c => !c)}
           aria-label={collapsed ? 'Expand section' : 'Collapse section'}
         >
-          <motion.span
-            animate={{ rotate: collapsed ? -90 : 0 }}
-            transition={{ duration: 0.2 }}
-            style={{ display: 'flex' }}
+          <span
+            style={{
+              display: 'flex',
+              transition: 'transform 0.2s ease',
+              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+            }}
           >
             <ChevronDown size={16} style={{ color: theme.accent }} />
-          </motion.span>
+          </span>
         </button>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -511,19 +513,19 @@ function AnimatedSection({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
             style={{ overflow: 'hidden' }}
           >
             <div className={`tools-grid compact${viewMode === 'list' ? ' list-view' : ''}`} style={{ paddingTop: '0.75rem' }}>
-              {catTools.map((tool, idx) => (
-                <motion.div
+              {catTools.map((tool) => (
+                <ToolCardCompact
                   key={tool.slug}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.22, delay: Math.min(idx * 0.025, 0.2), ease: 'easeOut' }}
-                >
-                  <ToolCardCompact tool={tool} theme={theme} favorites={favorites} onToggleFav={onToggleFav} viewMode={viewMode} />
-                </motion.div>
+                  tool={tool}
+                  theme={theme}
+                  favorites={favorites}
+                  onToggleFav={onToggleFav}
+                  viewMode={viewMode}
+                />
               ))}
             </div>
           </motion.div>
@@ -531,7 +533,7 @@ function AnimatedSection({
       </AnimatePresence>
     </motion.article>
   )
-}
+})
 
 /* ─── Popular Strip ──────────────────────────────────────── */
 
