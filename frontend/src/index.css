@@ -2657,7 +2657,11 @@ h3 {
   border-radius: 14px;
   border: 1px solid rgba(156, 190, 255, 0.1);
   background: rgba(255, 255, 255, 0.018);
-  transition: border-color 200ms ease, background 200ms ease, transform 160ms ease;
+  /* --card-accent is now a typed @property <color>, so it animates smoothly */
+  transition: --card-accent 300ms ease,
+              border-color 200ms ease,
+              background 200ms ease,
+              transform 160ms ease;
 }
 
 .tool-card-compact:hover {
@@ -3054,6 +3058,71 @@ h3 {
   .popular-strip-sub {
     display: none;
   }
+}
+
+/* ═══ CSS @property — Typed Custom Properties ═══════════════
+   Without @property, browsers treat custom props as opaque
+   strings and CANNOT interpolate/animate them. With @property
+   we register a type (<color>, <angle>, <number>) so the browser
+   knows HOW to tween the value, enabling GPU-smooth transitions
+   that were impossible before.  Chrome 85+, Safari 15.4+.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Card accent color — enables smooth color crossfade on hover */
+@property --card-accent {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #3bd0ff;
+}
+
+/* Category accent — smooth color on category section headers */
+@property --cat-accent {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #3bd0ff;
+}
+
+/* Category browser card accent */
+@property --cb-accent {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #3bd0ff;
+}
+
+/* Gradient angle for animated conic gradients */
+@property --gradient-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Show-more button accent */
+@property --sm-accent {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #3bd0ff;
+}
+
+/* ─── Low Data Mode ─────────────────────────────────────────
+   Applied by main.tsx when navigator.connection detects a
+   slow (2G/slow-2g) or data-saving (saveData) connection.
+   Collapses all heavy animations to keep the page usable.
+   ─────────────────────────────────────────────────────────── */
+.low-data-mode .bg-orb {
+  animation: none;
+  opacity: 0.18;
+}
+
+.low-data-mode .bg-grid {
+  display: none;
+}
+
+.low-data-mode *,
+.low-data-mode *::before,
+.low-data-mode *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* ─── Search Autocomplete ────────────────────────────── */

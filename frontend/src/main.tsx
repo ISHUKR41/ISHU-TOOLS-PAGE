@@ -56,6 +56,43 @@ window.addEventListener('resize', () => {
   scheduleResizeEnd()
 }, { passive: true })
 
+// ── Adaptive Quality: Slow Network / Data-Saver Detection ─────────────────────
+// If the user is on 2G / slow-2g / metered (saveData) connection, add a CSS
+// class that collapses all heavy animations — same pattern used by Pinterest.
+function applyAdaptiveQuality() {
+  const conn = (navigator as unknown as { connection?: {
+    effectiveType?: string; saveData?: boolean
+  } }).connection
+  if (!conn) return
+  const isSlowOrSaving =
+    conn.saveData ||
+    conn.effectiveType === '2g' ||
+    conn.effectiveType === 'slow-2g'
+  if (isSlowOrSaving) {
+    document.documentElement.classList.add('low-data-mode')
+  }
+}
+applyAdaptiveQuality()
+
+// ── PerformanceObserver: track real user CLS so we know if layout shifts ───────
+// (data only — nothing surfaced to the user; used for future optimization)
+if ('PerformanceObserver' in window) {
+  try {
+    const clsObserver = new PerformanceObserver((list) => {
+      let clsTotal = 0
+      for (const entry of list.getEntries()) {
+        const e = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number }
+        if (!e.hadRecentInput && e.value) clsTotal += e.value
+      }
+      if (clsTotal > 0.1) {
+        // CLS > 0.1 is "needs improvement" — log silently for dev awareness
+        if (import.meta.env.DEV) console.warn('[Perf] CLS:', clsTotal.toFixed(3))
+      }
+    })
+    clsObserver.observe({ type: 'layout-shift', buffered: true })
+  } catch { /* unsupported browser */ }
+}
+
 // ── Register Service Worker for PWA support ───────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

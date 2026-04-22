@@ -398,6 +398,25 @@ function SkeletonSection() {
 
 /* ─── Tool Card ──────────────────────────────────────────── */
 
+/* ─── Hover Prefetch ─────────────────────────────────────────
+   On mouseenter we inject a <link rel="prefetch"> for the tool's
+   API endpoint. The browser fetches it silently using spare
+   bandwidth so that when ToolPage mounts the response is already
+   in the prefetch cache — navigation feels instant.
+   ──────────────────────────────────────────────────────────── */
+const prefetched = new Set<string>()
+function prefetchTool(slug: string) {
+  if (prefetched.has(slug)) return
+  prefetched.add(slug)
+  // Prefetch the tool API JSON
+  const link = document.createElement('link')
+  link.rel  = 'prefetch'
+  link.as   = 'fetch'
+  link.crossOrigin = 'anonymous'
+  link.href = `/api/tools/${slug}`
+  document.head.appendChild(link)
+}
+
 const ToolCardCompact = memo(function ToolCardCompact({
   tool, theme, favorites, onToggleFav, viewMode,
 }: {
@@ -417,6 +436,7 @@ const ToolCardCompact = memo(function ToolCardCompact({
         to={`/tools/${tool.slug}`}
         className='tool-card-compact'
         style={{ '--card-accent': theme.accent } as CSSProperties}
+        onMouseEnter={() => prefetchTool(tool.slug)}
       >
         <span className='tool-card-icon' style={{ color: theme.accent }}>
           <ToolIcon slug={tool.slug} className='tool-icon' />
