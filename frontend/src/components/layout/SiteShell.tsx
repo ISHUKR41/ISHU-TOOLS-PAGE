@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp } from 'lucide-react'
@@ -176,11 +176,23 @@ export default function SiteShell({ children }: PropsWithChildren) {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 400)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+  /* Throttled scroll — avoids re-render spam during fast scroll */
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const onScroll = useCallback(() => {
+    if (scrollTimerRef.current) return
+    scrollTimerRef.current = setTimeout(() => {
+      setShowBackToTop(window.scrollY > 400)
+      scrollTimerRef.current = null
+    }, 80)
   }, [])
+
+  useEffect(() => {
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current)
+    }
+  }, [onScroll])
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' })

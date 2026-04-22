@@ -9,6 +9,7 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
+import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolIcon from '../../components/tools/ToolIcon'
 
@@ -792,7 +793,9 @@ export default function AllToolsPage() {
   const searchRef                   = useRef<HTMLInputElement>(null)
   const searchWrapRef               = useRef<HTMLDivElement>(null)
 
-  const deferredQuery = useDeferredValue(query)
+  /* Debounce the raw query so filtering only runs after 180ms pause */
+  const debouncedQuery = useDebounce(query, 180)
+  const deferredQuery  = useDeferredValue(debouncedQuery)
 
   /* Keyboard shortcut: press "/" to focus search */
   useEffect(() => {

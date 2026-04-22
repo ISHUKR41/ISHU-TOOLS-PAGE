@@ -242,6 +242,10 @@ select {
   border-radius: 999px;
   filter: blur(54px);
   opacity: 0.38;
+  /* GPU compositing layer — blur is computed once, animation stays on GPU */
+  will-change: transform;
+  transform: translateZ(0);
+  contain: strict;
 }
 
 .bg-orb-a {
@@ -9793,3 +9797,64 @@ table { max-width: 100%; }
 .category-row-skeleton { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .hero-title-line { display: inline; }
 .hero-status-wrap { min-width: 0; flex-shrink: 1; }
+
+/* ═══ SITE-WIDE PERFORMANCE LAYER ══════════════════════════
+   GPU acceleration, compositing layer hints, and paint isolation
+   so every interaction feels instant (< 16ms frame budget).
+   ═══════════════════════════════════════════════════════════ */
+
+/* Navbar: has backdrop-filter so must live on its own GPU layer */
+.site-nav {
+  transform: translateZ(0);
+}
+
+/* Mega menu: isolate repaints from the rest of the page */
+.mega-menu {
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+/* Tool cards: promote GPU layer ONLY at hover time to save VRAM */
+.tool-card-compact:hover {
+  will-change: transform;
+}
+
+/* Release GPU hint once hover ends (browser will GC the layer) */
+.tool-card-compact:not(:hover) {
+  will-change: auto;
+}
+
+/* Category sections: isolate layout so one section expanding
+   doesn't force the browser to recalculate all sibling sections */
+.category-section {
+  contain: layout style;
+}
+
+/* Popular strip + featured bento: own paint layer */
+.popular-strip-section,
+.featured-bento-section {
+  transform: translateZ(0);
+}
+
+/* Search autocomplete: isolate so it never triggers page reflows */
+.search-autocomplete {
+  contain: layout style paint;
+}
+
+/* Favorites / recently-used card rows */
+.recent-tools-row,
+.fav-tools-grid {
+  contain: layout;
+}
+
+/* Skeleton screens: isolate shimmer animation layers */
+.skeleton-shimmer,
+[class*="skeleton"] {
+  transform: translateZ(0);
+}
+
+/* Back-to-top button: own compositing layer for smooth opacity fade */
+.back-to-top {
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
