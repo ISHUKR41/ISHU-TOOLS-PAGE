@@ -87,7 +87,6 @@ body {
   margin: 0;
   color: var(--text);
   font-family: var(--font-body);
-  overscroll-behavior: none;
   overflow-x: hidden;
   min-width: 320px;
   background:
@@ -7904,4 +7903,164 @@ img {
   .btn-secondary-hero:hover {
     transform: none;
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   FINAL RESPONSIVE + SCROLL OVERRIDE LAYER  (highest specificity, last in file)
+   Goals: (1) scrolling never breaks on any device,
+          (2) no element ever overflows the viewport horizontally,
+          (3) hero never forces a giant initial scroll on mobile.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Scroll container correctness ────────────────────────────────────────── */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  height: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto;
+}
+body {
+  height: auto !important;
+  min-height: 100%;
+  overflow-y: visible;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+#root {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Kill any residual horizontal overflow on every container ────────────── */
+.site-shell, .site-content, .page-wrap,
+main, section, header, footer, article, aside {
+  max-width: 100%;
+  min-width: 0;
+}
+.site-shell { overflow-x: clip; }
+
+/* ── Width math that respects scrollbars (no 100vw overflow on desktop) ─── */
+@media (min-width: 1281px) {
+  .page-wrap { width: min(1280px, 100% - 3rem); }
+  .site-nav-inner { width: min(1280px, 100% - 3rem); }
+  .mobile-nav-panel { width: min(1280px, 100% - 3rem); }
+}
+@media (max-width: 1280px) {
+  .page-wrap { width: calc(100% - 2.5rem); margin-left: auto; margin-right: auto; }
+  .site-nav-inner { width: calc(100% - 2.5rem); }
+}
+@media (max-width: 768px) {
+  .page-wrap { width: calc(100% - 1.5rem); padding-left: 0; padding-right: 0; }
+  .site-nav-inner { width: calc(100% - 1.5rem); padding: 0.55rem 0.85rem; }
+  .mobile-nav-panel { width: calc(100% - 1.5rem); }
+}
+@media (max-width: 480px) {
+  .page-wrap { width: calc(100% - 1rem); }
+  .site-nav-inner { width: calc(100% - 1rem); padding: 0.5rem 0.7rem; border-radius: 14px; }
+  .mobile-nav-panel { width: calc(100% - 1rem); }
+}
+
+/* ── Hero: no giant viewport-locked height on mobile (was the scroll trap) ─ */
+@media (max-width: 900px) {
+  .hero-v2 { min-height: auto !important; contain: none !important; }
+  .hero-v2-inner { min-height: auto !important; padding: 1.25rem 1rem 1rem; }
+  .hero-v2-heading { min-height: auto !important; }
+  .hero-v2-stats { min-height: auto !important; }
+  .hero-v2-quick { min-height: auto !important; }
+  .trust-row { min-height: auto !important; }
+}
+
+/* ── Universal flex/grid child overflow guard ────────────────────────────── */
+.field-grid > *, .tool-grid > *, .bento-grid > *, .footer-links > *,
+.hero-v2-stats > *, .quick-grid > *, .trust-row > *, .hero-v2-actions > *,
+.tools-grid > *, .category-tools-grid > *, .nav-links > *,
+.tool-page-hero > *, .tool-main-panel > *, .result-card > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ── Long content wrapping (URLs, base64, hashes, JSON, file names) ─────── */
+.result-card, .json-result-block, .download-link, .tool-result,
+.code-output, .copy-output, .seo-keyword, .breadcrumb,
+input, textarea, .tool-message, .tool-error {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+pre, code, kbd, samp {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+table { max-width: 100%; }
+.table-scroll, .comparison-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ── Images / video / iframe never break layout ──────────────────────────── */
+img, video, iframe, canvas, svg, picture {
+  max-width: 100%;
+  height: auto;
+}
+iframe { width: 100%; }
+
+/* ── Sticky nav cannot trap scroll (rare iOS bug fix) ────────────────────── */
+.site-nav { will-change: auto; transform: translateZ(0); }
+
+/* ── Fixed background overlay must never block touch ─────────────────────── */
+body::before, .bg-layer, .hero-v2-grid, .hero-v2-orb {
+  pointer-events: none !important;
+  touch-action: none;
+}
+
+/* ── Consolidate scrollbar styling (avoid double-defined html rules side fx)─ */
+html, body { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html, body { scroll-behavior: auto; }
+}
+
+/* ── Tablet specific (601px–1024px) — fix mid-size cutoffs ──────────────── */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .tool-grid, .tools-grid, .category-tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)) !important;
+  }
+  .hero-v2-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  .footer-links { grid-template-columns: repeat(2, 1fr) !important; }
+  .bento-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── Small phones (≤380px) — tighten everything so nothing clips ────────── */
+@media (max-width: 380px) {
+  html { font-size: 15px; }
+  .hero-v2-title { font-size: clamp(1.7rem, 9.5vw, 2.6rem) !important; }
+  .hero-v2-subtitle { font-size: 0.86rem !important; line-height: 1.55 !important; }
+  .hero-v2-actions { flex-direction: column !important; gap: 0.5rem !important; }
+  .btn-primary-hero, .btn-secondary-hero { width: 100% !important; }
+  .hero-v2-stats { grid-template-columns: repeat(2, 1fr) !important; gap: 0.5rem !important; }
+  .stat-number { font-size: 1.1rem !important; }
+  .stat-label { font-size: 0.68rem !important; }
+}
+
+/* ── Safe-area insets for notch/home-indicator devices ──────────────────── */
+@supports (padding: max(0px)) {
+  .site-nav { padding-top: max(0.6rem, env(safe-area-inset-top)); }
+  .site-footer { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  .back-to-top {
+    bottom: max(2rem, env(safe-area-inset-bottom));
+    right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* ── Modals/overlays must not lock body scroll permanently ──────────────── */
+body.modal-open { overflow: hidden; }
+body:not(.modal-open) { overflow-y: visible !important; }
+
+/* ── Tool form fields full width on mobile ─────────────────────────────── */
+@media (max-width: 768px) {
+  .field-row, .field-grid, .form-row { grid-template-columns: 1fr !important; }
+  .field input, .field textarea, .field select { width: 100% !important; min-width: 0 !important; }
 }
