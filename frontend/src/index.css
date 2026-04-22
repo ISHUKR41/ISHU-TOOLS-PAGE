@@ -10064,3 +10064,153 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PERFORMANCE POLISH — Buttery-smooth scrolling, GPU acceleration,
+   reduced-motion + low-power adaptive paths. Loaded last so it wins.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Smooth, jank-free scrolling on every surface ── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;          /* avoid header overlap on anchor jumps */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  /* Prevent rubber-band overscroll bouncing the page (chained-scroll jank) */
+  overscroll-behavior-y: none;
+  /* Fast subpixel font rendering on macOS / iOS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Promote known-animated surfaces to their own GPU layer ──
+   This isolates them from main-thread paint, eliminating jank
+   when other content scrolls or repaints around them. */
+.tool-card,
+.cat-browser-card,
+.bento-card,
+.pop-tool-pill,
+.app-loader-orb,
+.autocomplete-item,
+.tool-card-link,
+.tool-card-link::before,
+.tool-card-link::after {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ── content-visibility for offscreen sections ──
+   Skips render+layout for sections currently outside the viewport.
+   Massive scroll-perf win on the 1300-tool grid. */
+.tools-section,
+.cat-section,
+.related-tools-section,
+.bento-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;   /* placeholder size to prevent CLS */
+}
+
+/* ── Hover-only effects: skip on touch devices (no hover state, just lag) ── */
+@media (hover: none) {
+  .tool-card:hover,
+  .cat-browser-card:hover,
+  .bento-card:hover,
+  .pop-tool-pill:hover {
+    transform: none !important;
+  }
+}
+
+/* ── prefers-reduced-motion: flatten ALL animations + transitions ──
+   Triggered by OS toggle OR our .reduced-motion JS hook. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ── Low-power devices (≤2GB RAM or ≤2 cores) ──
+   Disable expensive blur, gradients, and orb animations. */
+.low-power .app-loader-orb,
+.low-power .background-orb,
+.low-power .glow-orb {
+  display: none !important;
+}
+.low-power *,
+.low-power *::before,
+.low-power *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+.low-power .tool-card,
+.low-power .cat-browser-card,
+.low-power .bento-card {
+  box-shadow: none !important;
+}
+
+/* ── Slow-network / data-saver — hide animations + lazy-decode all images ── */
+.low-data-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+.low-data-mode img {
+  loading: lazy;
+}
+
+/* ── Resizing class (set during window resize) — kill ALL transitions instantly ── */
+html.resizing *,
+html.resizing *::before,
+html.resizing *::after {
+  transition: none !important;
+  animation-play-state: paused !important;
+}
+
+/* ── First-paint protection (set during initial load) ── */
+html.js-loading *,
+html.js-loading *::before,
+html.js-loading *::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ── Image defaults — async decode, lazy load, contain layout ── */
+img {
+  decoding: async;
+  content-visibility: auto;
+}
+
+/* ── Form inputs — touch-optimized, no zoom on iOS ── */
+input, textarea, select {
+  font-size: max(16px, 1rem);          /* iOS won't zoom if ≥ 16px */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── Eliminate tap delay on touch (already in reset, reinforce here) ── */
+a, button, [role="button"], input, label, select, textarea {
+  touch-action: manipulation;
+}
+
+/* ── Smooth scroll for inner scrollable lists too ── */
+.scroll-container,
+.tool-grid,
+.results-list,
+.autocomplete-list {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}

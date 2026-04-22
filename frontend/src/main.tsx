@@ -56,6 +56,45 @@ window.addEventListener('resize', () => {
   scheduleResizeEnd()
 }, { passive: true })
 
+// ── Idle-time route prefetch — warm next-likely chunks BEFORE the user clicks ──
+// Strategy: after first paint settles, use requestIdleCallback to fetch the
+// ToolPage + AllToolsPage chunks. By the time the user clicks anywhere, the JS
+// is already in cache → navigation feels instant (zero loading flash).
+function idlePrefetchRoutes() {
+  const idle =
+    (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number })
+      .requestIdleCallback || ((cb: () => void) => setTimeout(cb, 1500))
+  idle(() => {
+    // Dynamic imports the bundler turns into <link rel="modulepreload"> automatically.
+    import('./features/tool/ToolPage.tsx').catch(() => {})
+    import('./features/tools/AllToolsPage.tsx').catch(() => {})
+    import('./features/category/CategoryPage.tsx').catch(() => {})
+  }, { timeout: 3000 })
+}
+if (document.readyState === 'complete') idlePrefetchRoutes()
+else window.addEventListener('load', idlePrefetchRoutes, { once: true, passive: true })
+
+// ── Reduced-motion preference — respect OS-level "reduce motion" toggle ───────
+// When enabled, all framer-motion + CSS animations are flattened to instant
+// transitions globally via the `.reduced-motion` class hook in index.css.
+const motionMQ = window.matchMedia('(prefers-reduced-motion: reduce)')
+function applyReducedMotion() {
+  document.documentElement.classList.toggle('reduced-motion', motionMQ.matches)
+}
+applyReducedMotion()
+motionMQ.addEventListener?.('change', applyReducedMotion)
+
+// ── Hardware-class detection — flag low-end devices to disable heavy effects ──
+// Uses navigator.deviceMemory + hardwareConcurrency. Low-end devices skip
+// blur, complex gradients, and orb animations via .low-power class.
+function detectLowPower() {
+  const nav = navigator as Navigator & { deviceMemory?: number; hardwareConcurrency?: number }
+  const lowMem = (nav.deviceMemory ?? 8) <= 2
+  const lowCpu = (nav.hardwareConcurrency ?? 8) <= 2
+  if (lowMem || lowCpu) document.documentElement.classList.add('low-power')
+}
+detectLowPower()
+
 // ── Adaptive Quality: Slow Network / Data-Saver Detection ─────────────────────
 // If the user is on 2G / slow-2g / metered (saveData) connection, add a CSS
 // class that collapses all heavy animations — same pattern used by Pinterest.

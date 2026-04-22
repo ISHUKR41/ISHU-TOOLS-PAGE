@@ -43,6 +43,29 @@ export default defineConfig({
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons'
           }
+          // ── Three.js + R3F: ONLY needed for game/3D tools, isolate to its own chunk ──
+          if (
+            id.includes('node_modules/three/') ||
+            id.includes('node_modules/@react-three/')
+          ) {
+            return 'vendor-three'
+          }
+          // ── GSAP: heavy animation lib — own chunk so it doesn't block first paint ──
+          if (id.includes('node_modules/gsap')) {
+            return 'vendor-gsap'
+          }
+          // ── Axios + dropzone + file-saver: only needed on tool execution pages ──
+          if (
+            id.includes('node_modules/axios') ||
+            id.includes('node_modules/react-dropzone') ||
+            id.includes('node_modules/file-saver')
+          ) {
+            return 'vendor-tool-runtime'
+          }
+          // ── SEO data (7.5K-line file, ~140KB) — only needed on /tools/:slug ──
+          if (id.includes('lib/seoData')) {
+            return 'seo-data'
+          }
           // ── Tool field definitions (201KB source / ~151KB minified) ──
           // Only needed on /tools/:slug pages, never on homepage.
           if (id.includes('features/tool/toolFields')) {

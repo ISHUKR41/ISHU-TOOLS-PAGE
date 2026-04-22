@@ -1,6 +1,24 @@
 # ISHU TOOLS
 
 ## Latest Update (2026-04-22)
+**Performance — buttery-smooth, lag-free across the entire site.**
+- **Idle-time route prefetch** (`main.tsx`): `requestIdleCallback` warms the ToolPage + AllToolsPage + CategoryPage chunks **after** first paint, so navigation to any page feels instant (zero loading flash).
+- **Smarter chunk splitting** (`vite.config.ts`): Three.js + R3F → `vendor-three`; GSAP → `vendor-gsap`; axios + dropzone + file-saver → `vendor-tool-runtime`; SEO data (140KB) → `seo-data`. Smaller initial bundle, faster homepage TTI.
+- **Adaptive performance classes** auto-applied at boot:
+  - `.reduced-motion` — respects OS-level "reduce motion"; flattens all animations to 0.001ms.
+  - `.low-power` — devices with ≤ 2GB RAM or ≤ 2 CPU cores; disables blur, backdrop-filter, orbs, shadows.
+  - `.low-data-mode` — 2G/saveData connection; kills animations, lazy-decodes images.
+- **Performance polish CSS block** appended to `index.css`:
+  - GPU-layer promotion (`transform: translateZ(0)`, `backface-visibility: hidden`) on every animated surface — tool cards, category cards, bento, pop pills, autocomplete.
+  - `content-visibility: auto` + `contain-intrinsic-size` on all big sections — skip rendering of off-screen tool grids (huge scroll-perf win on 1247-tool list).
+  - `overscroll-behavior-y: none` — no rubber-band jank on iOS/macOS.
+  - Hover effects disabled on touch devices (`@media (hover: none)`) — no phantom tap lag.
+  - Inputs forced to 16px font — prevents iOS auto-zoom on focus.
+  - Inner scrollers get `overscroll-behavior: contain` + `-webkit-overflow-scrolling: touch`.
+- **API preconnect** in `index.html` — DNS+TCP+TLS pre-warmed for `api.ishutools.com`.
+- **Resize-time transition kill switch** + **first-paint protection** already in place; reinforced in CSS.
+
+## Previous Update (2026-04-22)
 **AI Search / GEO (Generative Engine Optimization) — full coverage for every tool.**
 - **`/llms.txt`** and **`/llms-full.txt`** added (https://llmstxt.org standard) — backend-served LLM-friendly site overview + full machine-readable tool index. Helps ChatGPT, Claude, Perplexity, Gemini cite ISHU TOOLS in answers.
 - **`robots.txt`** updated (both backend route + `frontend/public/robots.txt`) to explicitly welcome AI crawlers: GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, anthropic-ai, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, Bytespider, cohere-ai, Diffbot, Meta-ExternalAgent, MistralAI-User, YouBot, Amazonbot.
