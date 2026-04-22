@@ -1,0 +1,147 @@
+1) Video converter tools
+FFmpeg
+HandBrake
+VLC Media Player
+Shutter Encoder
+Any Video Converter
+Wondershare UniConverter
+Movavi Video Converter
+XMedia Recode
+Format Factory
+MediaCoder
+Prism Video Converter
+WinX HD Video Converter
+Avidemux
+VirtualDub2
+StaxRip
+MEncoder
+Xilisoft Video Converter
+Cisdem Video Converter
+FreeConvert
+CloudConvert
+Clideo
+VEED
+Shotcut
+VidCoder
+2) Audio converter tools
+FFmpeg
+VLC Media Player
+Audacity
+fre:ac
+MediaHuman Audio Converter
+dBpoweramp Music Converter
+Switch Audio Converter
+XLD
+Foobar2000
+EZ CD Audio Converter
+XRECODE 3
+Format Factory
+MediaCoder
+Prism Audio Converter
+Helium Converter
+File Converter
+FairStars Audio Converter
+Adapter
+GoldWave
+iTunes / Apple Music based converter workflows
+3) Video compressor tools
+HandBrake
+FFmpeg
+VLC Media Player
+Shutter Encoder
+Movavi Video Converter
+Wondershare UniConverter
+VidCoder
+Shotcut
+Avidemux
+VirtualDub2
+FreeConvert
+Clideo
+CloudConvert
+VEED
+Clipchamp
+Compress video modules inside Format Factory
+MediaCoder
+WinX HD Video Converter
+Any Video Converter
+StaxRip
+4) Audio compressor tools
+FFmpeg
+Audacity
+VLC Media Player
+fre:ac
+dBpoweramp Music Converter
+MediaHuman Audio Converter
+Switch Audio Converter
+Foobar2000
+XRECODE 3
+EZ CD Audio Converter
+Format Factory
+MediaCoder
+GoldWave
+File Converter
+Online Audio Converter
+CloudConvert
+FreeConvert
+Zamzar
+Convertio
+Adapter
+5) Audio enhancer tools
+Audacity
+Adobe Podcast
+Krisp
+iZotope RX
+Auphonic
+Descript
+Dolby On
+Waves Clarity Vx
+Steinberg WaveLab
+Sound Forge
+RX Voice De-noise tools
+Reaper
+Ocenaudio
+Riverside audio enhancement workflows
+Podcastle
+6) Video enhancer / 1080p convert / upscale tools
+
+Ye woh tools hain jo video ko 1080p me convert, upscale, ya visual quality improve karne ke kaam me use hote hain:
+
+FFmpeg
+HandBrake
+Shutter Encoder
+Wondershare UniConverter
+Movavi Video Converter
+WinX HD Video Converter
+Topaz Video AI
+AVCLabs Video Enhancer AI
+HitPaw Video Enhancer
+DVDFab Video Enhancer AI
+CapCut
+Adobe Premiere Pro
+DaVinci Resolve
+VLC Media Player
+Avidemux
+Shotcut
+VEED
+Clideo
+MediaCoder
+Format Factory
+7) All-in-one tools
+
+Ye tools ek se zyada kaam karte hain: convert + compress + basic enhance:
+
+FFmpeg
+HandBrake
+VLC Media Player
+Shutter Encoder
+Wondershare UniConverter
+Movavi Video Converter
+Format Factory
+MediaCoder
+Any Video Converter
+WinX HD Video Converter
+Shotcut
+Avidemux
+CloudConvert
+FreeConvert
+VEED
