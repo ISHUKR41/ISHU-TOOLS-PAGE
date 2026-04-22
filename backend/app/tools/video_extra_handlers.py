@@ -54,19 +54,55 @@ _YDL_COMMON_OPTS = {
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     },
-    # Limit filesize to 200 MB to prevent huge downloads
-    "max_filesize": 200 * 1024 * 1024,
+    # Limit filesize to 2 GB to allow 4K downloads while preventing absurd sizes
+    "max_filesize": 2 * 1024 * 1024 * 1024,
 }
 
-# Quality cap: default to 720p to keep files manageable
+# Allowed quality steps (height in px). 'best' = no cap.
+_ALLOWED_HEIGHTS = {"144", "240", "360", "480", "720", "1080", "1440", "2160", "4320"}
+
+# Quality cap: default to 1080p for a good balance of quality and file size.
 _DEFAULT_FORMAT = (
-    "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]"
-    "/bestvideo[height<=720]+bestaudio"
-    "/best[height<=720]"
+    "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]"
+    "/bestvideo[height<=1080]+bestaudio"
+    "/best[height<=1080]"
     "/best"
 )
 
 _AUDIO_FORMAT = "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best"
+
+
+def _format_for_quality(quality: str | int | None) -> str:
+    """Build a yt-dlp format selector for a requested max height (e.g. '720', '2160', 'best')."""
+    if quality is None:
+        return _DEFAULT_FORMAT
+    q = str(quality).strip().lower().replace("p", "").replace("k", "")
+    # Friendly aliases
+    alias = {"4": "2160", "2": "1440", "8": "4320", "hd": "720", "fullhd": "1080", "fhd": "1080", "uhd": "2160", "qhd": "1440"}
+    q = alias.get(q, q)
+    if q in ("best", "max", "highest", ""):
+        return (
+            "bestvideo[ext=mp4]+bestaudio[ext=m4a]"
+            "/bestvideo+bestaudio"
+            "/best[ext=mp4]/best"
+        )
+    if q in _ALLOWED_HEIGHTS:
+        return (
+            f"bestvideo[height<={q}][ext=mp4]+bestaudio[ext=m4a]"
+            f"/bestvideo[height<={q}]+bestaudio"
+            f"/best[height<={q}][ext=mp4]"
+            f"/best[height<={q}]/best"
+        )
+    return _DEFAULT_FORMAT
+
+
+def _audio_quality_kbps(quality: str | int | None) -> str:
+    """Return MP3 kbps string for requested audio quality."""
+    if quality is None:
+        return "192"
+    q = str(quality).strip().lower().replace("kbps", "").replace("k", "")
+    allowed = {"64", "96", "128", "160", "192", "256", "320"}
+    return q if q in allowed else "192"
 
 
 def _safe_title(title: str, max_len: int = 60) -> str:
@@ -102,7 +138,9 @@ def _classify_ytdlp_error(err: str) -> str:
     if "unsupported url" in el or "unable to extract" in el:
         return "This URL is not supported. Please check the link and try again."
     if "max filesize" in el or "too large" in el:
-        return "Video file is too large to download (>200 MB). Try a shorter or lower-quality video."
+        return "Video file is too large to download (>2 GB). Try a shorter video or a lower quality (e.g. 1080p instead of 4K)."
+    if "requested format" in el or "format is not available" in el or "no video formats" in el:
+        return "The requested quality is not available for this video. Try a lower quality (e.g. 720p) or 'Best Available'."
     if "network" in el or "connection" in el or "timeout" in el:
         return "Network error. Please check your connection and try again."
     if "ffmpeg" in el:
@@ -115,6 +153,7 @@ def _yt_dlp_download(
     job_dir: Path,
     fmt: str = _DEFAULT_FORMAT,
     audio_only: bool = False,
+    audio_kbps: str = "192",
     extra_opts: dict | None = None,
 ) -> ExecutionResult:
     """
@@ -140,7 +179,7 @@ def _yt_dlp_download(
         opts["postprocessors"] = [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
-            "preferredquality": "192",
+            "preferredquality": str(audio_kbps or "192"),
         }]
     else:
         opts["merge_output_format"] = "mp4"
@@ -219,15 +258,7 @@ def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir
         return ExecutionResult(kind="json", message="Please paste a video URL to download.", data={"error": "No URL"})
     if not url.startswith(("http://", "https://")):
         return ExecutionResult(kind="json", message="Invalid URL. Must start with http:// or https://", data={"error": "Invalid URL"})
-    quality = str(payload.get("quality", "720")).replace("p", "")
-    if quality.isdigit():
-        fmt = (
-            f"bestvideo[height<={quality}][ext=mp4]+bestaudio[ext=m4a]"
-            f"/bestvideo[height<={quality}]+bestaudio"
-            f"/best[height<={quality}]/best"
-        )
-    else:
-        fmt = _DEFAULT_FORMAT
+    fmt = _format_for_quality(payload.get("quality"))
     return _yt_dlp_download(url, job_dir, fmt=fmt)
 
 
@@ -269,7 +300,8 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL to extract audio.", data={"error": "No URL"})
-    return _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True)
+    kbps = _audio_quality_kbps(payload.get("audio_quality") or payload.get("bitrate") or payload.get("quality"))
+    return _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True, audio_kbps=kbps)
 
 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
@@ -280,7 +312,7 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
         return ExecutionResult(kind="json", message="Please paste an Instagram URL.", data={"error": "No URL"})
     if "instagram.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Instagram URL (instagram.com/...).", data={"error": "Not Instagram"})
-    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
 
 
 def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -289,7 +321,7 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a TikTok video URL.", data={"error": "No URL"})
     if "tiktok.com" not in url and "vm.tiktok" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid TikTok URL.", data={"error": "Not TikTok"})
-    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best", extra_opts={"noplaylist": True})
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), extra_opts={"noplaylist": True})
 
 
 def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -298,7 +330,7 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
         return ExecutionResult(kind="json", message="Please paste a Twitter/X video URL.", data={"error": "No URL"})
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
-    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
 
 
 def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -307,7 +339,7 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
     if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
-    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
 
 
 def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -316,7 +348,7 @@ def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir
         return ExecutionResult(kind="json", message="Please paste a Vimeo video URL.", data={"error": "No URL"})
     if "vimeo.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Vimeo URL.", data={"error": "Not Vimeo"})
-    return _yt_dlp_download(url, job_dir, fmt=_DEFAULT_FORMAT)
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
 
 
 def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -325,7 +357,7 @@ def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], j
         return ExecutionResult(kind="json", message="Please paste a Dailymotion video URL.", data={"error": "No URL"})
     if "dailymotion.com" not in url and "dai.ly" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Dailymotion URL.", data={"error": "Not Dailymotion"})
-    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
 
 
 # ─── Playlist Downloader ──────────────────────────────────────────────────────
@@ -341,12 +373,14 @@ def _handle_playlist_downloader(files: list[Path], payload: dict[str, Any], job_
     try:
         import yt_dlp, zipfile as _zipfile
 
-        max_videos = min(int(payload.get("max_videos", 3)), 5)
+        max_videos = min(max(int(payload.get("max_videos", 5) or 5), 1), 10)
+        # Default to 720p for playlists (multiple files); user can override
+        quality = payload.get("quality") or "720"
         out_tmpl = str(job_dir / "%(playlist_index)02d_%(title).60s.%(ext)s")
         opts = dict(_YDL_COMMON_OPTS)
         opts.update({
             "outtmpl": out_tmpl,
-            "format": "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]/best",
+            "format": _format_for_quality(quality),
             "merge_output_format": "mp4",
             "playlist_items": f"1:{max_videos}",
             "noplaylist": False,

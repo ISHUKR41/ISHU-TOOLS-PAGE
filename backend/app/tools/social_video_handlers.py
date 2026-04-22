@@ -48,6 +48,28 @@ from .handlers import ExecutionResult, HANDLERS
 
 # ─── Utility: yt-dlp based downloader ────────────────────────────────────────
 
+_SOCIAL_ALLOWED_HEIGHTS = {"144", "240", "360", "480", "720", "1080", "1440", "2160", "4320"}
+
+
+def _social_format_for_quality(quality: str | int | None) -> str:
+    """Build a yt-dlp format selector capped at requested height (up to 4K/8K)."""
+    if quality is None:
+        return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
+    q = str(quality).strip().lower().replace("p", "").replace("k", "")
+    alias = {"4": "2160", "2": "1440", "8": "4320", "hd": "720", "fullhd": "1080", "fhd": "1080", "uhd": "2160", "qhd": "1440"}
+    q = alias.get(q, q)
+    if q in ("best", "max", "highest", ""):
+        return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
+    if q in _SOCIAL_ALLOWED_HEIGHTS:
+        return (
+            f"bestvideo[height<={q}][ext=mp4]+bestaudio[ext=m4a]"
+            f"/bestvideo[height<={q}]+bestaudio"
+            f"/best[height<={q}][ext=mp4]"
+            f"/best[height<={q}]/best"
+        )
+    return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
+
+
 def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) -> ExecutionResult:
     """Generic yt-dlp downloader used by all social platforms."""
     try:
@@ -59,6 +81,7 @@ def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) ->
             "outtmpl": str(job_dir / "%(title)s.%(ext)s"),
             "merge_output_format": "mp4",
             "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best",
+            "max_filesize": 2 * 1024 * 1024 * 1024,  # 2 GB cap (4K-friendly)
             "http_headers": {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             },
@@ -117,7 +140,7 @@ def _handle_pinterest_downloader(files: list[Path], payload: dict[str, Any], job
         return ExecutionResult(kind="json", message="Please paste a Pinterest URL.", data={"error": "No URL"})
     if "pinterest.com" not in url and "pin.it" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Pinterest URL (pinterest.com or pin.it).", data={"error": "Not Pinterest"})
-    return _yt_dlp_download(url, job_dir, {"format": "best"})
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Reddit Downloader ────────────────────────────────────────────────────────
@@ -128,7 +151,7 @@ def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Reddit post URL.", data={"error": "No URL"})
     if "reddit.com" not in url and "redd.it" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Reddit URL.", data={"error": "Not Reddit"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Twitch Clip Downloader ───────────────────────────────────────────────────
@@ -139,7 +162,7 @@ def _handle_twitch_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Twitch clip or VOD URL.", data={"error": "No URL"})
     if "twitch.tv" not in url and "clips.twitch.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitch URL.", data={"error": "Not Twitch"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── LinkedIn Video Downloader ────────────────────────────────────────────────
@@ -151,7 +174,7 @@ def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_
     if "linkedin.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid LinkedIn URL.", data={"error": "Not LinkedIn"})
     # LinkedIn requires auth for most videos - return friendly message
-    result = _yt_dlp_download(url, job_dir)
+    result = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
     if result.kind == "json" and "error" in (result.data or {}):
         return ExecutionResult(kind="json", message="LinkedIn requires login for most videos. For public videos, paste the direct share URL.", data=result.data)
     return result
@@ -165,7 +188,7 @@ def _handle_bilibili_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Bilibili video URL.", data={"error": "No URL"})
     if "bilibili.com" not in url and "b23.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Bilibili URL.", data={"error": "Not Bilibili"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Rumble Downloader ────────────────────────────────────────────────────────
@@ -176,7 +199,7 @@ def _handle_rumble_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Rumble video URL.", data={"error": "No URL"})
     if "rumble.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Rumble URL.", data={"error": "Not Rumble"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── SoundCloud Downloader ────────────────────────────────────────────────────
@@ -240,7 +263,7 @@ def _handle_odysee_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste an Odysee video URL.", data={"error": "No URL"})
     if "odysee.com" not in url and "lbry.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Odysee URL.", data={"error": "Not Odysee"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Streamable Downloader ────────────────────────────────────────────────────
@@ -251,7 +274,7 @@ def _handle_streamable_downloader(files: list[Path], payload: dict[str, Any], jo
         return ExecutionResult(kind="json", message="Please paste a Streamable video URL.", data={"error": "No URL"})
     if "streamable.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Streamable URL.", data={"error": "Not Streamable"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Kick Downloader ──────────────────────────────────────────────────────────
@@ -262,7 +285,7 @@ def _handle_kick_downloader(files: list[Path], payload: dict[str, Any], job_dir:
         return ExecutionResult(kind="json", message="Please paste a Kick clip URL.", data={"error": "No URL"})
     if "kick.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Kick.com URL.", data={"error": "Not Kick"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── Imgur Downloader ─────────────────────────────────────────────────────────
@@ -273,7 +296,7 @@ def _handle_imgur_downloader(files: list[Path], payload: dict[str, Any], job_dir
         return ExecutionResult(kind="json", message="Please paste an Imgur URL.", data={"error": "No URL"})
     if "imgur.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Imgur URL.", data={"error": "Not Imgur"})
-    return _yt_dlp_download(url, job_dir)
+    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
 # ─── YouTube Thumbnail Downloader ─────────────────────────────────────────────

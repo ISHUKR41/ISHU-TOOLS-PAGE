@@ -1,5 +1,14 @@
 # ISHU TOOLS
 
+## Latest Update (2026-04-22)
+**Video Downloaders — 4K/8K quality option added across the board.**
+- Added Best/8K/4K/2K/1080p/720p/480p/360p/240p quality dropdown to: video-downloader, youtube-downloader, youtube-video-downloader, youtube-to-mp4, youtube-shorts-downloader, tiktok-downloader, twitter-video-downloader, x-video-downloader, facebook-video-downloader, vimeo-downloader, dailymotion-downloader, instagram-downloader, instagram-reel-downloader, pinterest-downloader, reddit-downloader, reddit-video-downloader, twitch-downloader, twitch-clip-downloader, linkedin-video-downloader, bilibili-downloader, rumble-downloader, stream-downloader, youtube-playlist-downloader, playlist-downloader.
+- Audio quality dropdown (64/96/128/160/192/256/320 kbps) added to youtube-to-mp3.
+- Backend `_format_for_quality()` and `_social_format_for_quality()` helpers in `video_extra_handlers.py` and `social_video_handlers.py` build proper yt-dlp format selectors with height caps and friendly aliases (4k→2160, 8k→4320, fhd→1080, qhd→1440, uhd→2160).
+- File size cap raised from 200 MB → 2 GB to accommodate 4K downloads.
+- Default quality moved from 720p → 1080p; better error message when requested quality unavailable.
+- Playlist downloaders now accept a per-video quality cap (defaults to 720p, max-videos clamp 1–10).
+
 ## Overview
 ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online toolkit with **977 handlers** across **53 categories** and **1040+ live catalog tools** (2026 — added Enhance Pack: noise-reducer, audio-normalizer, voice-enhancer, silence-remover, audio-fade, audio-equalizer, video-stabilizer, video-upscaler 720p→4K, video-to-1080p, video-fade — all ffmpeg-backed; plus mobile responsive safety net layer in index.css covering tablet/phone/foldable/landscape with no-edge-cutoff guarantees) including: PDF, Image, Developer, Math, Text, AI, Color, Security, Conversion, Social Media, Student Tools, **Health & Fitness**, **Finance & Tax** (India-specific: PPF, NPS, EPF, HRA, Gratuity, Net Salary), **Network & Domain**, **Video Tools** (YouTube, TikTok, Twitter/X, Facebook, Vimeo, Dailymotion, Playlist downloader, Pinterest, Reddit, Twitch, LinkedIn, Bilibili, Rumble), **Productivity**, **Validator Tools**, **AI Writing Tools** (headlines, blog outlines, email subjects, social captions), **Crypto/Web3** (profit calculator, ETH gas, DCA, NFT royalties, mining), **HR/Jobs** (salary hike, notice period, job comparator, interview Q&A, resignation letter, negotiation), **Legal Tools** (NDA, freelance contract, privacy policy), **Travel Tools** (cost estimator, visa checklist, packing list), and **Finance V2** (FD, SIP, advanced EMI calculator). Dark-themed, performance-optimized, SEO-first, modern React frontend (Vite + TypeScript) and FastAPI Python backend. PWA-installable with offline support. 766 handlers registered.
 
