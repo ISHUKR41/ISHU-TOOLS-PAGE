@@ -3041,6 +3041,64 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'video-to-aac':  [{ name: 'file', label: 'Upload Video File', type: 'file', accept: 'video/*' }],
   'video-to-ogg':  [{ name: 'file', label: 'Upload Video File', type: 'file', accept: 'video/*' }],
 
+  // ── 2026 Image Format Converter Pack ──
+  // To PNG
+  'jpg-to-png':   [{ name: 'file', label: 'Upload JPG/JPEG File',  type: 'file', accept: 'image/jpeg,image/*' }],
+  'jpeg-to-png':  [{ name: 'file', label: 'Upload JPEG File',      type: 'file', accept: 'image/jpeg,image/*' }],
+  'webp-to-png':  [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
+  'bmp-to-png':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  'gif-to-png':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
+  'tiff-to-png':  [{ name: 'file', label: 'Upload TIFF/TIF File',  type: 'file', accept: 'image/tiff,image/*' }],
+  'tif-to-png':   [{ name: 'file', label: 'Upload TIF File',       type: 'file', accept: 'image/tiff,image/*' }],
+  'ico-to-png':   [{ name: 'file', label: 'Upload ICO File',       type: 'file', accept: 'image/x-icon,image/*' }],
+  'heic-to-png':  [{ name: 'file', label: 'Upload HEIC File',      type: 'file', accept: 'image/heic,image/heif,image/*' }],
+  // To JPG
+  'png-to-jpg':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'png-to-jpeg':  [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'bmp-to-jpg':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  'gif-to-jpg':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
+  'tiff-to-jpg':  [{ name: 'file', label: 'Upload TIFF File',      type: 'file', accept: 'image/tiff,image/*' }],
+  'tif-to-jpg':   [{ name: 'file', label: 'Upload TIF File',       type: 'file', accept: 'image/tiff,image/*' }],
+  'ico-to-jpg':   [{ name: 'file', label: 'Upload ICO File',       type: 'file', accept: 'image/x-icon,image/*' }],
+  'svg-to-jpg':   [{ name: 'file', label: 'Upload SVG File',       type: 'file', accept: 'image/svg+xml,image/*' }],
+  // To WebP
+  'bmp-to-webp':  [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  'gif-to-webp':  [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
+  'tiff-to-webp': [{ name: 'file', label: 'Upload TIFF File',      type: 'file', accept: 'image/tiff,image/*' }],
+  'heic-to-webp': [{ name: 'file', label: 'Upload HEIC File',      type: 'file', accept: 'image/heic,image/heif,image/*' }],
+  // To BMP
+  'png-to-bmp':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'jpg-to-bmp':   [{ name: 'file', label: 'Upload JPG File',       type: 'file', accept: 'image/jpeg,image/*' }],
+  'webp-to-bmp':  [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
+  'gif-to-bmp':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
+  // To GIF
+  'png-to-gif':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'jpg-to-gif':   [{ name: 'file', label: 'Upload JPG File',       type: 'file', accept: 'image/jpeg,image/*' }],
+  'webp-to-gif':  [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
+  'bmp-to-gif':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  // To TIFF
+  'png-to-tiff':  [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'jpg-to-tiff':  [{ name: 'file', label: 'Upload JPG File',       type: 'file', accept: 'image/jpeg,image/*' }],
+  'webp-to-tiff': [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
+  'bmp-to-tiff':  [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  // To ICO (favicon)
+  'png-to-ico':   [{ name: 'file', label: 'Upload PNG (square)',   type: 'file', accept: 'image/png,image/*' }],
+  'jpg-to-ico':   [{ name: 'file', label: 'Upload JPG (square)',   type: 'file', accept: 'image/jpeg,image/*' }],
+  'webp-to-ico':  [{ name: 'file', label: 'Upload WebP (square)',  type: 'file', accept: 'image/webp,image/*' }],
+  'bmp-to-ico':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  'favicon-generator': [{ name: 'file', label: 'Upload Image (square recommended)', type: 'file', accept: 'image/*' }],
+  // To PDF
+  'png-to-pdf':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'webp-to-pdf':  [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
+  'bmp-to-pdf':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
+  'gif-to-pdf':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
+  'tiff-to-pdf':  [{ name: 'file', label: 'Upload TIFF File',      type: 'file', accept: 'image/tiff,image/*' }],
+  'heic-to-pdf':  [{ name: 'file', label: 'Upload HEIC File',      type: 'file', accept: 'image/heic,image/heif,image/*' }],
+  // To SVG
+  'png-to-svg':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
+  'jpg-to-svg':   [{ name: 'file', label: 'Upload JPG File',       type: 'file', accept: 'image/jpeg,image/*' }],
+  'image-to-svg': [{ name: 'file', label: 'Upload Image',          type: 'file', accept: 'image/*' }],
+
   // ── 2026 Batch: Spotify / Snapchat / Threads / Subtitles / Video→GIF / MP3 Cutter ──
   'spotify-downloader': [
     { name: 'url', label: 'Spotify URL', type: 'text', placeholder: 'Paste Spotify URL e.g. https://open.spotify.com/episode/...' },

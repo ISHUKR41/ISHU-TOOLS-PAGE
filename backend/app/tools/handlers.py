@@ -6621,6 +6621,16 @@ except Exception as e:
 
 print(f"[handlers] FORMAT-CONVERTER TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge Image Format Converter handlers (jpg-to-png, png-to-jpg, webp-to-png, etc.)
+try:
+    from .image_format_converters import IMAGE_FORMAT_HANDLERS
+    HANDLERS.update(IMAGE_FORMAT_HANDLERS)
+    print(f"[handlers] Loaded {len(IMAGE_FORMAT_HANDLERS)} image format converter handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load image_format_converters: {e}")
+
+print(f"[handlers] IMAGE-FORMAT TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):

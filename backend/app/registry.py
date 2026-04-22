@@ -7516,6 +7516,76 @@ for _slug, _title, _desc, _cat, _kind, _tags in _FORMAT_CONVERTER_DEFS:
         category=_cat, tags=_tags, input_kind=_kind,
     ))
 
+# ─── 2026 Image Format Converter Pack — Auto-generated ToolDefinitions ──────
+_IMAGE_FORMAT_DEFS: list[tuple[str, str, str, list[str]]] = [
+    # (slug, title, short-desc, tags)
+    # To PNG
+    ("jpg-to-png",  "JPG to PNG Converter — Free Online",  "Convert JPG/JPEG photos to lossless transparent PNG. Free, no signup, no watermark.",  ["jpg to png", "jpeg to png", "convert jpg to png", "jpg to png free"]),
+    ("jpeg-to-png", "JPEG to PNG Converter — Free Online", "Convert JPEG to lossless PNG instantly. Free.", ["jpeg to png", "convert jpeg to png"]),
+    ("webp-to-png", "WebP to PNG Converter — Free Online", "Convert WebP images to PNG with transparency preserved. Free.", ["webp to png", "convert webp to png", "webp to png free"]),
+    ("bmp-to-png",  "BMP to PNG Converter — Free Online",  "Convert old Bitmap BMP images to compressed PNG. Free.", ["bmp to png", "convert bmp to png"]),
+    ("gif-to-png",  "GIF to PNG Converter — Free Online",  "Extract first frame of GIF as PNG. Free.", ["gif to png", "convert gif to png"]),
+    ("tiff-to-png", "TIFF to PNG Converter — Free Online", "Convert TIFF/TIF scans to PNG. Free.", ["tiff to png", "tif to png", "convert tiff to png"]),
+    ("tif-to-png",  "TIF to PNG Converter — Free Online",  "Convert TIF to PNG. Free.", ["tif to png", "convert tif to png"]),
+    ("ico-to-png",  "ICO to PNG Converter — Free Online",  "Extract favicon ICO frames as PNG. Free.", ["ico to png", "convert ico to png", "favicon to png"]),
+    ("heic-to-png", "HEIC to PNG Converter — Free Online", "Convert iPhone HEIC photos to PNG. Free.", ["heic to png", "iphone heic to png", "convert heic to png"]),
+    # To JPG
+    ("png-to-jpg",  "PNG to JPG Converter — Free Online",  "Convert transparent PNG to JPG with white background. Free, no signup.", ["png to jpg", "convert png to jpg", "png to jpeg", "png to jpg free"]),
+    ("png-to-jpeg", "PNG to JPEG Converter — Free Online", "Convert PNG to JPEG with quality control. Free.", ["png to jpeg", "convert png to jpeg"]),
+    ("bmp-to-jpg",  "BMP to JPG Converter — Free Online",  "Convert legacy BMP to compressed JPG. Free.", ["bmp to jpg", "convert bmp to jpg"]),
+    ("gif-to-jpg",  "GIF to JPG Converter — Free Online",  "Convert first frame of GIF to JPG. Free.", ["gif to jpg", "convert gif to jpg"]),
+    ("tiff-to-jpg", "TIFF to JPG Converter — Free Online", "Convert TIFF scans to JPG. Free.", ["tiff to jpg", "convert tiff to jpg"]),
+    ("tif-to-jpg",  "TIF to JPG Converter — Free Online",  "Convert TIF to JPG. Free.", ["tif to jpg", "convert tif to jpg"]),
+    ("ico-to-jpg",  "ICO to JPG Converter — Free Online",  "Convert favicon ICO to JPG. Free.", ["ico to jpg", "convert ico to jpg"]),
+    ("svg-to-jpg",  "SVG to JPG Converter — Free Online",  "Convert vector SVG to raster JPG. Free.", ["svg to jpg", "convert svg to jpg"]),
+    # To WebP
+    ("bmp-to-webp", "BMP to WebP Converter — Free Online", "Convert BMP to modern WebP for fast websites. Free.", ["bmp to webp", "convert bmp to webp"]),
+    ("gif-to-webp", "GIF to WebP Converter — Free Online", "Convert GIF first frame to WebP. Free.", ["gif to webp", "convert gif to webp"]),
+    ("tiff-to-webp","TIFF to WebP Converter — Free Online","Convert TIFF to compact WebP. Free.", ["tiff to webp", "convert tiff to webp"]),
+    ("heic-to-webp","HEIC to WebP Converter — Free Online","Convert iPhone HEIC to WebP. Free.", ["heic to webp", "iphone heic to webp"]),
+    # To BMP
+    ("png-to-bmp",  "PNG to BMP Converter — Free Online",  "Convert PNG to legacy BMP. Free.", ["png to bmp", "convert png to bmp"]),
+    ("jpg-to-bmp",  "JPG to BMP Converter — Free Online",  "Convert JPG to BMP. Free.", ["jpg to bmp", "convert jpg to bmp"]),
+    ("webp-to-bmp", "WebP to BMP Converter — Free Online", "Convert WebP to BMP. Free.", ["webp to bmp", "convert webp to bmp"]),
+    ("gif-to-bmp",  "GIF to BMP Converter — Free Online",  "Convert GIF first frame to BMP. Free.", ["gif to bmp", "convert gif to bmp"]),
+    # To GIF
+    ("png-to-gif",  "PNG to GIF Converter — Free Online",  "Convert PNG to single-frame GIF. Free.", ["png to gif", "convert png to gif"]),
+    ("jpg-to-gif",  "JPG to GIF Converter — Free Online",  "Convert JPG to single-frame GIF. Free.", ["jpg to gif", "convert jpg to gif"]),
+    ("webp-to-gif", "WebP to GIF Converter — Free Online", "Convert WebP to GIF. Free.", ["webp to gif", "convert webp to gif"]),
+    ("bmp-to-gif",  "BMP to GIF Converter — Free Online",  "Convert BMP to GIF. Free.", ["bmp to gif", "convert bmp to gif"]),
+    # To TIFF
+    ("png-to-tiff", "PNG to TIFF Converter — Free Online", "Convert PNG to lossless TIFF for print. Free.", ["png to tiff", "convert png to tiff"]),
+    ("jpg-to-tiff", "JPG to TIFF Converter — Free Online", "Convert JPG to TIFF. Free.", ["jpg to tiff", "convert jpg to tiff"]),
+    ("webp-to-tiff","WebP to TIFF Converter — Free Online","Convert WebP to TIFF. Free.", ["webp to tiff", "convert webp to tiff"]),
+    ("bmp-to-tiff", "BMP to TIFF Converter — Free Online", "Convert BMP to TIFF. Free.", ["bmp to tiff", "convert bmp to tiff"]),
+    # To ICO
+    ("png-to-ico",  "PNG to ICO Converter — Favicon Generator",  "Convert PNG to multi-size ICO favicon (16/32/48/64/128/256). Free.", ["png to ico", "favicon generator", "convert png to ico", "make favicon"]),
+    ("jpg-to-ico",  "JPG to ICO Converter — Favicon Generator",  "Convert JPG to ICO favicon. Free.", ["jpg to ico", "convert jpg to ico", "favicon from jpg"]),
+    ("webp-to-ico", "WebP to ICO Converter — Free Online",       "Convert WebP to ICO favicon. Free.", ["webp to ico", "convert webp to ico"]),
+    ("bmp-to-ico",  "BMP to ICO Converter — Free Online",        "Convert BMP to ICO. Free.", ["bmp to ico", "convert bmp to ico"]),
+    ("favicon-generator", "Favicon Generator — PNG/JPG to ICO Free", "Make a multi-size favicon ICO from any image (PNG/JPG/WebP). Free, instant.", ["favicon generator", "make favicon", "favicon maker", "ico generator", "browser tab icon"]),
+    # To PDF
+    ("png-to-pdf",  "PNG to PDF Converter — Free Online",  "Convert PNG to single-page PDF. Free.", ["png to pdf", "convert png to pdf"]),
+    ("webp-to-pdf", "WebP to PDF Converter — Free Online", "Convert WebP image to PDF. Free.", ["webp to pdf", "convert webp to pdf"]),
+    ("bmp-to-pdf",  "BMP to PDF Converter — Free Online",  "Convert BMP to PDF. Free.", ["bmp to pdf", "convert bmp to pdf"]),
+    ("gif-to-pdf",  "GIF to PDF Converter — Free Online",  "Convert GIF first frame to PDF. Free.", ["gif to pdf", "convert gif to pdf"]),
+    ("tiff-to-pdf", "TIFF to PDF Converter — Free Online", "Convert TIFF scan to PDF. Free.", ["tiff to pdf", "convert tiff to pdf", "scan to pdf"]),
+    ("heic-to-pdf", "HEIC to PDF Converter — Free Online", "Convert iPhone HEIC photo to PDF. Free.", ["heic to pdf", "iphone heic to pdf", "convert heic to pdf"]),
+    # To SVG (raster wrapped)
+    ("png-to-svg",  "PNG to SVG Converter — Free Online",  "Wrap PNG inside an SVG container. Free.", ["png to svg", "convert png to svg"]),
+    ("jpg-to-svg",  "JPG to SVG Converter — Free Online",  "Wrap JPG inside an SVG container. Free.", ["jpg to svg", "convert jpg to svg"]),
+    ("image-to-svg","Image to SVG Converter — Free Online","Convert any raster image (PNG/JPG/WebP) into an SVG container. Free.", ["image to svg", "convert image to svg"]),
+]
+
+for _slug, _title, _desc, _tags in _IMAGE_FORMAT_DEFS:
+    if _slug in _existing_slugs:
+        continue
+    TOOLS.append(ToolDefinition(
+        slug=_slug, title=_title, description=_desc,
+        category="image-tools", tags=_tags, input_kind="files",
+    ))
+    _existing_slugs.add(_slug)
+
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
 
 # ── Assign popularity ranks — higher = more popular (shown first) ─────────────
@@ -7708,6 +7778,56 @@ _POPULARITY: dict[str, int] = {
     "mkv-to-mp3":   164,
     "wmv-to-mp4":   144,
     "flv-to-mp4":   142,
+    # 2026 Image Format Pack — extreme search volume
+    "jpg-to-png":   232,
+    "png-to-jpg":   230,
+    "webp-to-png":  222,
+    "webp-to-jpg":  220,
+    "heic-to-png":  218,
+    "heic-to-jpg":  225,
+    "png-to-pdf":   210,
+    "jpg-to-pdf":   240,
+    "favicon-generator": 195,
+    "png-to-ico":   190,
+    "jpg-to-ico":   175,
+    "tiff-to-jpg":  165,
+    "tiff-to-png":  160,
+    "tiff-to-pdf":  158,
+    "bmp-to-jpg":   150,
+    "bmp-to-png":   148,
+    "gif-to-png":   145,
+    "gif-to-jpg":   143,
+    "ico-to-png":   138,
+    "ico-to-jpg":   135,
+    "svg-to-jpg":   140,
+    "heic-to-pdf":  175,
+    "heic-to-webp": 158,
+    "jpg-to-tiff":  120,
+    "png-to-tiff":  118,
+    "png-to-bmp":   115,
+    "jpg-to-bmp":   112,
+    "webp-to-pdf":  140,
+    "webp-to-bmp":  108,
+    "bmp-to-webp":  105,
+    "gif-to-webp":  110,
+    "tiff-to-webp": 106,
+    "png-to-svg":   125,
+    "jpg-to-svg":   122,
+    "image-to-svg": 120,
+    "png-to-gif":   100,
+    "jpg-to-gif":   98,
+    "webp-to-gif":  95,
+    "bmp-to-gif":   90,
+    "webp-to-tiff": 92,
+    "bmp-to-tiff":  88,
+    "bmp-to-pdf":   95,
+    "gif-to-pdf":   100,
+    "webp-to-ico":  102,
+    "bmp-to-ico":   95,
+    "tif-to-jpg":   145,
+    "tif-to-png":   142,
+    "jpeg-to-png":  226,
+    "png-to-jpeg":  224,
     "snapchat-downloader": 192,
     "threads-downloader": 175,
     "youtube-subtitle-downloader": 188,
