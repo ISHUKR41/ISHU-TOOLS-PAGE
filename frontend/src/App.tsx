@@ -10,8 +10,18 @@ import InstallPWA from './components/ui/InstallPWA'
 function AppLoader() {
   return (
     <div className='app-loader'>
-      <div className='app-loader-spinner' />
-      <span className='app-loader-text'>ISHU TOOLS</span>
+      <div className='app-loader-orb orb-1' />
+      <div className='app-loader-orb orb-2' />
+      <div className='app-loader-orb orb-3' />
+      <div className='app-loader-stack'>
+        <div className='app-loader-ring'>
+          <div className='app-loader-ring-spin' />
+          <div className='app-loader-ring-core' />
+        </div>
+        <span className='app-loader-text'>ISHU TOOLS</span>
+        <span className='app-loader-sub'>Loading 1,200+ free tools…</span>
+        <div className='app-loader-bar'><span /></div>
+      </div>
     </div>
   )
 }
