@@ -1,9 +1,9 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import type { CSSProperties } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Search, ArrowRight, Star, Clock, TrendingUp, Grid3X3, List, X,
-  Flame, Bookmark, SlidersHorizontal, Zap, ChevronDown, Hash
+  Flame, Bookmark, SlidersHorizontal, Zap, ChevronDown, Hash, LayoutGrid
 } from 'lucide-react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 
@@ -196,6 +196,171 @@ function FeaturedSection() {
             </Link>
           </motion.div>
         ))}
+      </div>
+    </motion.section>
+  )
+}
+
+/* ─── Search Autocomplete ────────────────────────────────── */
+
+function SearchAutocomplete({
+  query,
+  tools,
+  onSelect,
+  onClose,
+}: {
+  query: string
+  tools: { slug: string; title: string; description: string; category: string }[]
+  onSelect: () => void
+  onClose: () => void
+}) {
+  const navigate = useNavigate()
+  const q = query.trim().toLowerCase()
+  const [activeIdx, setActiveIdx] = useState(0)
+
+  const matches = useMemo(() => {
+    if (q.length < 1) return []
+    return tools
+      .filter(t => [t.title, t.description, t.category].join(' ').toLowerCase().includes(q))
+      .slice(0, 8)
+  }, [q, tools])
+
+  useEffect(() => { setActiveIdx(0) }, [q])
+
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if (!matches.length) return
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => Math.min(i + 1, matches.length - 1)) }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); setActiveIdx(i => Math.max(i - 1, 0)) }
+      if (e.key === 'Enter' && matches[activeIdx]) {
+        navigate(`/tools/${matches[activeIdx].slug}`)
+        onSelect()
+      }
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [matches, activeIdx, navigate, onSelect, onClose])
+
+  if (!matches.length) return null
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className='search-autocomplete'
+        initial={{ opacity: 0, y: -8, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -8, scale: 0.97 }}
+        transition={{ duration: 0.15 }}
+      >
+        <div className='autocomplete-header'>
+          <Search size={11} /> {matches.length} result{matches.length !== 1 ? 's' : ''}
+        </div>
+        {matches.map((t, idx) => {
+          const theme = getCategoryTheme(t.category)
+          return (
+            <Link
+              key={t.slug}
+              to={`/tools/${t.slug}`}
+              className={`autocomplete-item${idx === activeIdx ? ' active' : ''}`}
+              style={{ '--ac-accent': theme.accent } as CSSProperties}
+              onClick={onSelect}
+              onMouseEnter={() => setActiveIdx(idx)}
+            >
+              <span className='ac-icon' style={{ color: theme.accent }}>
+                <ToolIcon slug={t.slug} className='tool-icon' />
+              </span>
+              <div className='ac-body'>
+                <span className='ac-title'>{t.title}</span>
+                <span className='ac-desc'>{t.description.split('—')[0].trim()}</span>
+              </div>
+              <ArrowRight size={12} className='ac-arrow' />
+            </Link>
+          )
+        })}
+        <div className='autocomplete-footer'>
+          ↑↓ navigate · Enter to open · Esc to close
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+/* ─── Category Browser ───────────────────────────────────── */
+
+const CATEGORY_EMOJIS: Record<string, string> = {
+  'pdf-core': '📄', 'image-core': '🖼️', 'developer-tools': '⌨️',
+  'unit-converter': '📏', 'conversion-tools': '🔄', 'student-tools': '🎓',
+  'video-tools': '🎥', 'finance-tools': '💰', 'finance-tax': '🧾',
+  'text-ops': '📝', 'text-operations': '✏️', 'image-layout': '🎨',
+  'productivity': '⚡', 'health-tools': '❤️', 'health-fitness': '🏋️',
+  'math-tools': '🔢', 'math-calculators': '🧮', 'image-enhance': '✨',
+  'utility': '🛠️', 'ocr-vision': '👁️', 'format-lab': '🔧',
+  'network-tools': '🌐', 'seo-tools': '📊', 'security-tools': '🔒',
+  'image-effects': '🌈', 'office-suite': '📋', 'hash-crypto': '🔑',
+  'color-tools': '🎨', 'social-media': '📱', 'writing-tools': '✍️',
+  'ai-writing': '🤖', 'business-tools': '💼', 'hr-jobs': '👔',
+  'travel-tools': '✈️', 'pdf-advanced': '📑', 'pdf-security': '🔐',
+  'science-tools': '🔬', 'geography-tools': '🌍', 'cooking-tools': '🍳',
+  'crypto-web3': '₿', 'legal-tools': '⚖️',
+}
+
+function CategoryBrowser({
+  categories,
+  toolCountByCategory,
+  onCategorySelect,
+}: {
+  categories: { id: string; label: string; description: string }[]
+  toolCountByCategory: Map<string, number>
+  onCategorySelect: (id: string) => void
+}) {
+  const sortedCats = useMemo(() =>
+    [...categories]
+      .filter(c => (toolCountByCategory.get(c.id) ?? 0) > 0)
+      .sort((a, b) => {
+        const ai = CATEGORY_PRIORITY.indexOf(a.id), bi = CATEGORY_PRIORITY.indexOf(b.id)
+        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+      }),
+    [categories, toolCountByCategory],
+  )
+
+  return (
+    <motion.section
+      className='category-browser-section'
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.45 }}
+    >
+      <div className='cat-browser-header'>
+        <LayoutGrid size={14} />
+        <span>Browse by Category</span>
+        <span className='cat-browser-count'>{sortedCats.length} categories</span>
+      </div>
+      <div className='cat-browser-grid'>
+        {sortedCats.map((cat, idx) => {
+          const theme = getCategoryTheme(cat.id)
+          const count = toolCountByCategory.get(cat.id) ?? 0
+          const emoji = CATEGORY_EMOJIS[cat.id] ?? '🔧'
+          return (
+            <motion.button
+              key={cat.id}
+              type='button'
+              className='cat-browser-card'
+              style={{ '--cb-accent': theme.accent } as CSSProperties}
+              onClick={() => onCategorySelect(cat.id)}
+              initial={{ opacity: 0, scale: 0.94 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: Math.min(idx * 0.015, 0.3), duration: 0.25 }}
+              whileHover={{ y: -2, transition: { duration: 0.15 } }}
+            >
+              <span className='cb-emoji'>{emoji}</span>
+              <span className='cb-label'>{cat.label}</span>
+              <span className='cb-count'>{count}</span>
+            </motion.button>
+          )
+        })}
       </div>
     </motion.section>
   )
@@ -615,6 +780,7 @@ function QuickSearches({ onSelect }: { onSelect: (q: string) => void }) {
 export default function AllToolsPage() {
   const { categories, tools, loading, error } = useCatalogData()
   const [query, setQuery]           = useState('')
+  const [searchFocused, setSearchFocused] = useState(false)
   const [activeCategory, setActiveCat] = useState('all')
   const [viewMode, setViewMode]     = useState<'grid' | 'list'>('grid')
   const [activeTab, setActiveTab]   = useState<'all' | 'favorites'>('all')
@@ -622,6 +788,7 @@ export default function AllToolsPage() {
   const [favorites, setFavorites]   = useState<Set<string>>(() => loadFavorites())
   const [recentSlugs]               = useState<string[]>(() => loadRecent())
   const searchRef                   = useRef<HTMLInputElement>(null)
+  const searchWrapRef               = useRef<HTMLDivElement>(null)
 
   const deferredQuery = useDeferredValue(query)
 
@@ -631,11 +798,23 @@ export default function AllToolsPage() {
       if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) && !['INPUT','TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
         e.preventDefault()
         searchRef.current?.focus()
+        setSearchFocused(true)
       }
-      if (e.key === 'Escape') searchRef.current?.blur()
+      if (e.key === 'Escape') { searchRef.current?.blur(); setSearchFocused(false) }
     }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
+  }, [])
+
+  /* Click outside to close autocomplete */
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
+        setSearchFocused(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
   }, [])
 
   useEffect(() => {
@@ -730,17 +909,19 @@ export default function AllToolsPage() {
 
           {/* ── Controls ── */}
           <div className='tools-page-controls'>
-            <div className='search-control' style={{ flex: 1 }}>
-              <label className='search-input'>
+            <div className='search-control' style={{ flex: 1, position: 'relative' }} ref={searchWrapRef}>
+              <label className={`search-input${searchFocused && query ? ' search-active' : ''}`}>
                 <Search size={18} />
                 <input
                   ref={searchRef}
                   value={query}
-                  onChange={e => setQuery(e.target.value)}
+                  onChange={e => { setQuery(e.target.value); setSearchFocused(true) }}
+                  onFocus={() => setSearchFocused(true)}
                   placeholder='Search 1,200+ tools... or press / to focus'
                   aria-label='Search all tools'
+                  autoComplete='off'
                 />
-                <span className='search-kbd' title='Press / to search'>/</span>
+                {!query && <span className='search-kbd' title='Press / to search'>/</span>}
                 <AnimatePresence>
                   {query && (
                     <motion.button type='button' className='search-clear-btn' onClick={clearSearch}
@@ -751,6 +932,14 @@ export default function AllToolsPage() {
                   )}
                 </AnimatePresence>
               </label>
+              {searchFocused && query.length >= 1 && (
+                <SearchAutocomplete
+                  query={query}
+                  tools={tools}
+                  onSelect={() => { setSearchFocused(false); setQuery('') }}
+                  onClose={() => setSearchFocused(false)}
+                />
+              )}
             </div>
 
             <SortDropdown sort={sortBy} onChange={setSortBy} />
@@ -857,6 +1046,17 @@ export default function AllToolsPage() {
                   viewMode={viewMode}
                 />
               ))}
+
+              {!isSearching && groupedSections.length > 0 && (
+                <CategoryBrowser
+                  categories={categories}
+                  toolCountByCategory={toolCountByCategory}
+                  onCategorySelect={id => {
+                    startTransition(() => setActiveCat(id))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                />
+              )}
             </>
           )}
         </section>
