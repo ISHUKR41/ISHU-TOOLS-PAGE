@@ -123,8 +123,8 @@ CATEGORIES: list[ToolCategory] = [
     ),
     ToolCategory(
         id="video-tools",
-        label="Video Downloader",
-        description="Download videos from YouTube, Instagram, Twitter/X, TikTok, and 1000+ sites.",
+        label="Video & Media Tools",
+        description="Download, convert, trim, and process videos from YouTube, Instagram, TikTok, and 1000+ sites.",
     ),
     ToolCategory(
         id="network-tools",
@@ -160,6 +160,158 @@ CATEGORIES: list[ToolCategory] = [
         id="cooking-tools",
         label="Cooking & Food",
         description="Recipe scaler, cooking measurement converter, food calorie lookup, and kitchen tools.",
+    ),
+    # ── Previously orphan categories (tools existed but category was unregistered) ──
+    ToolCategory(
+        id="audio-tools",
+        label="Audio Tools",
+        description="Convert, trim, merge, extract, and enhance audio files in MP3, WAV, FLAC, and more.",
+    ),
+    ToolCategory(
+        id="audio",
+        label="Audio Utilities",
+        description="Extra audio processing tools — speed change, pitch shift, noise reduction, and audio info.",
+    ),
+    ToolCategory(
+        id="developer",
+        label="Developer Essentials",
+        description="Regex tester, JWT decoder, cron parser, UUID generator, and core dev utilities.",
+    ),
+    ToolCategory(
+        id="image-tools",
+        label="Image Tools Pro",
+        description="Advanced image processing — palette extract, metadata strip, collage, annotation, and more.",
+    ),
+    ToolCategory(
+        id="video",
+        label="Video Utilities",
+        description="Video info, thumbnail extractor, gif maker, video to audio, and clip tools.",
+    ),
+    ToolCategory(
+        id="health-calculators",
+        label="Health Calculators",
+        description="Macro calculator, ideal weight, body fat percentage, and advanced health metrics.",
+    ),
+    ToolCategory(
+        id="productivity-tools",
+        label="Productivity Extras",
+        description="Extra productivity helpers — habit streaks, focus timers, and team planning tools.",
+    ),
+    ToolCategory(
+        id="pdf-tools",
+        label="PDF Utilities",
+        description="Additional PDF processing tools for advanced document workflows.",
+    ),
+    # ── Duplicate-ID categories (distinct IDs, need distinct labels) ──────────
+    ToolCategory(
+        id="unit-converter",
+        label="Unit Converters",
+        description="Length, weight, temperature, speed, area, volume, pressure, and 50+ unit conversions.",
+    ),
+    ToolCategory(
+        id="conversion-tools",
+        label="Format Converters",
+        description="Convert between file formats, number bases, and data encodings.",
+    ),
+    ToolCategory(
+        id="developer-tools",
+        label="Developer Tools",
+        description="JSON formatter, regex tester, base64, diff checker, and 120+ dev utilities.",
+    ),
+    ToolCategory(
+        id="developer-generators",
+        label="Dev Generators",
+        description="UUID, password, Lorem Ipsum, color palette, mock data, and code snippet generators.",
+    ),
+    ToolCategory(
+        id="code-tools",
+        label="Code Tools",
+        description="Beautify, minify, and analyze code in multiple languages.",
+    ),
+    ToolCategory(
+        id="hash-crypto",
+        label="Hash & Crypto",
+        description="MD5, SHA-256, bcrypt hash generators and cryptographic encoding tools.",
+    ),
+    ToolCategory(
+        id="security-tools",
+        label="Security Tools",
+        description="Password strength checker, SSL analyzer, CORS tester, and security audit utilities.",
+    ),
+    ToolCategory(
+        id="color-tools",
+        label="Color Tools",
+        description="HEX ↔ RGB converter, color picker, palette generator, and contrast checker.",
+    ),
+    ToolCategory(
+        id="social-media",
+        label="Social Media Tools",
+        description="Hashtag generator, bio optimizer, post scheduler, and engagement calculators.",
+    ),
+    ToolCategory(
+        id="seo-tools",
+        label="SEO Tools",
+        description="Meta tag generator, keyword density, readability score, and on-page SEO checkers.",
+    ),
+    ToolCategory(
+        id="ai-writing",
+        label="AI Writing Tools",
+        description="AI-powered content generator, paraphraser, grammar checker, and writing assistant.",
+    ),
+    ToolCategory(
+        id="writing-tools",
+        label="Writing Tools",
+        description="Essay outline, cover letter, report generator, and academic writing utilities.",
+    ),
+    ToolCategory(
+        id="business-tools",
+        label="Business Tools",
+        description="Invoice generator, profit calculator, break-even analysis, and business utilities.",
+    ),
+    ToolCategory(
+        id="hr-jobs",
+        label="HR & Jobs",
+        description="Resume builder, cover letter generator, salary calculator, and job tools.",
+    ),
+    ToolCategory(
+        id="travel-tools",
+        label="Travel Tools",
+        description="Currency converter, time zone converter, packing list, and travel planning tools.",
+    ),
+    ToolCategory(
+        id="legal-tools",
+        label="Legal Tools",
+        description="NDA generator, privacy policy builder, contract templates, and legal utilities.",
+    ),
+    ToolCategory(
+        id="crypto-web3",
+        label="Crypto & Web3",
+        description="Crypto price converter, gas fee calculator, wallet validator, and blockchain tools.",
+    ),
+    ToolCategory(
+        id="finance-tax",
+        label="Tax Calculators",
+        description="Income tax estimator, GST calculator, TDS calculator, and Indian tax utilities.",
+    ),
+    ToolCategory(
+        id="health-fitness",
+        label="Fitness Tracker",
+        description="Workout planner, fitness goal tracker, rep calculator, and sports performance tools.",
+    ),
+    ToolCategory(
+        id="math-calculators",
+        label="Advanced Math",
+        description="Statistics, probability, matrix operations, and higher-level math calculators.",
+    ),
+    ToolCategory(
+        id="text-operations",
+        label="Text Transformers",
+        description="Reverse text, ROT13, pig latin, morse code, and advanced text transformation tools.",
+    ),
+    ToolCategory(
+        id="text-ai",
+        label="Text & AI Utilities",
+        description="AI summarizer, text translator, sentiment analyzer, and NLP-powered utilities.",
     ),
 ]
 
@@ -3884,8 +4036,8 @@ CATEGORIES.extend([
     ),
     ToolCategory(
         id="conversion-tools",
-        label="Unit Converters",
-        description="Temperature, length, weight, speed, data storage, area, volume, and more unit conversions.",
+        label="Format Converters",
+        description="Convert between file formats, number bases, data encodings, and extended unit conversions.",
     ),
     ToolCategory(
         id="social-media",
@@ -6438,12 +6590,12 @@ TOOLS.extend([
 CATEGORIES.extend([
     ToolCategory(id="ai-writing", label="AI Writing Tools", description="Headline, outline, email, product, and social copy generators."),
     ToolCategory(id="crypto-web3", label="Crypto & Web3", description="Crypto profit, gas fee, DCA, NFT royalty, and mining calculators."),
-    ToolCategory(id="finance-tax", label="Finance & Tax", description="India-focused tax, GST, salary, and investment calculators."),
-    ToolCategory(id="health-fitness", label="Health & Fitness", description="Daily calories, water, sleep, heart-rate, steps, and activity calculators."),
+    ToolCategory(id="finance-tax", label="Tax Calculators", description="India-focused income tax, GST, EMI, salary, and investment calculators."),
+    ToolCategory(id="health-fitness", label="Fitness Tools", description="Daily calories, water intake, sleep, heart-rate, steps, and activity calculators."),
     ToolCategory(id="hr-jobs", label="HR & Jobs", description="Salary hike, offer comparison, interview prep, resignation, and negotiation helpers."),
     ToolCategory(id="legal-tools", label="Legal Tools", description="NDA, freelance contract, privacy policy, and business document generators."),
-    ToolCategory(id="math-calculators", label="Math Calculators", description="Percentage, fractions, equations, matrices, and everyday math tools."),
-    ToolCategory(id="text-operations", label="Text Operations", description="Sort, deduplicate, compare, encode, analyze, and transform text."),
+    ToolCategory(id="math-calculators", label="Advanced Math", description="Fractions, equations, matrices, statistics, probability, and higher-level math tools."),
+    ToolCategory(id="text-operations", label="Text Transformers", description="Sort, deduplicate, encode, reverse, rot13, and advanced text transformation tools."),
     ToolCategory(id="travel-tools", label="Travel Tools", description="Trip budget, visa checklist, currency, and packing-list helpers."),
 ])
 
@@ -8506,4 +8658,11 @@ _POPULARITY: dict[str, int] = {
 for _t in TOOLS:
     if _t.slug in _POPULARITY:
         _t.popularity_rank = _POPULARITY[_t.slug]
+
+# ── Final deduplication pass (removes duplicates from all CATEGORIES.extend calls) ──
+_final_cats: dict = {}
+for _cat in CATEGORIES:
+    _final_cats[_cat.id] = _cat
+CATEGORIES.clear()
+CATEGORIES.extend(_final_cats.values())
 

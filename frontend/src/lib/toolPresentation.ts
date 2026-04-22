@@ -333,6 +333,54 @@ const CATEGORY_THEME_MAP: Record<string, CategoryTheme> = {
     glow: 'rgba(52, 211, 153, 0.22)',
     label: 'Travel',
   },
+  'audio-tools': {
+    accent: '#a78bfa',
+    surface: 'rgba(20, 12, 36, 0.86)',
+    glow: 'rgba(167, 139, 250, 0.24)',
+    label: 'Audio Tools',
+  },
+  'audio': {
+    accent: '#c4b5fd',
+    surface: 'rgba(24, 14, 40, 0.86)',
+    glow: 'rgba(196, 181, 253, 0.22)',
+    label: 'Audio',
+  },
+  'developer': {
+    accent: '#06b6d4',
+    surface: 'rgba(6, 20, 28, 0.86)',
+    glow: 'rgba(6, 182, 212, 0.24)',
+    label: 'Developer',
+  },
+  'image-tools': {
+    accent: '#22d3ee',
+    surface: 'rgba(6, 24, 32, 0.86)',
+    glow: 'rgba(34, 211, 238, 0.22)',
+    label: 'Image Tools',
+  },
+  'video': {
+    accent: '#f87171',
+    surface: 'rgba(30, 12, 12, 0.86)',
+    glow: 'rgba(248, 113, 113, 0.20)',
+    label: 'Video',
+  },
+  'health-calculators': {
+    accent: '#4ade80',
+    surface: 'rgba(8, 26, 16, 0.86)',
+    glow: 'rgba(74, 222, 128, 0.20)',
+    label: 'Health Calc',
+  },
+  'productivity-tools': {
+    accent: '#34d399',
+    surface: 'rgba(8, 24, 18, 0.86)',
+    glow: 'rgba(52, 211, 153, 0.20)',
+    label: 'Productivity+',
+  },
+  'pdf-tools': {
+    accent: '#f87171',
+    surface: 'rgba(28, 10, 10, 0.86)',
+    glow: 'rgba(248, 113, 113, 0.20)',
+    label: 'PDF Utilities',
+  },
 }
 
 const PDF_INPUT_SLUGS = new Set([

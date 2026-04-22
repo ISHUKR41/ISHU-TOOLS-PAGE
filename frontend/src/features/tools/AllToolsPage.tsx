@@ -49,17 +49,70 @@ const NEW_SLUGS = new Set([
 ])
 
 const CATEGORY_PRIORITY: string[] = [
-  'pdf-core', 'image-core', 'developer-tools', 'unit-converter', 'conversion-tools',
-  'student-tools', 'video-tools', 'finance-tools', 'finance-tax', 'text-ops',
-  'text-operations', 'image-layout', 'productivity', 'health-tools', 'health-fitness',
-  'math-tools', 'math-calculators', 'image-enhance', 'utility', 'ocr-vision',
-  'format-lab', 'network-tools', 'seo-tools', 'security-tools', 'image-effects',
-  'office-suite', 'hash-crypto', 'color-tools', 'social-media', 'writing-tools',
-  'ai-writing', 'business-tools', 'hr-jobs', 'travel-tools', 'pdf-advanced',
-  'pdf-security', 'page-ops', 'data-tools', 'text-ai', 'document-convert',
-  'ebook-convert', 'vector-lab', 'text-cleanup', 'archive-lab', 'batch-automation',
-  'pdf-insights', 'code-tools', 'science-tools', 'geography-tools', 'cooking-tools',
-  'crypto-web3', 'legal-tools', 'developer-generators',
+  // Highest traffic — core tool categories
+  'unit-converter',       // 156 tools
+  'developer-tools',      // 129 tools
+  'video-tools',          // 83 tools
+  'student-tools',        // 70 tools
+  'finance-tools',        // 63 tools
+  'image-core',           // 62 tools
+  'text-ops',             // 51 tools
+  'audio-tools',          // 47 tools
+  'image-layout',         // 48 tools
+  'format-lab',           // 35 tools
+  'image-tools',          // 34 tools
+  'productivity',         // 33 tools
+  'health-tools',         // 26 tools
+  'image-enhance',        // 24 tools
+  'utility',              // 24 tools
+  // Mid-tier
+  'developer',            // 14 tools
+  'seo-tools',            // 15 tools
+  'network-tools',        // 13 tools
+  'text-operations',      // 12 tools
+  'pdf-advanced',         // 15 tools
+  'pdf-core',             // 11 tools
+  'office-suite',         // 16 tools
+  'math-tools',           // 28 tools
+  'security-tools',       // 10 tools
+  'color-tools',          // 10 tools
+  'audio',                // 10 tools
+  'ocr-vision',           // 9 tools
+  'writing-tools',        // 8 tools
+  'text-ai',              // 8 tools
+  'video',                // 8 tools
+  'social-media',         // 7 tools
+  'document-convert',     // 7 tools
+  'developer-generators', // 6 tools
+  'hr-jobs',              // 6 tools
+  'text-cleanup',         // 6 tools
+  'batch-automation',     // 6 tools
+  'crypto-web3',          // 5 tools
+  'math-calculators',     // 5 tools
+  // Niche / specialty
+  'pdf-security',         // 7 tools
+  'image-effects',        // 12 tools
+  'ai-writing',           // 4 tools
+  'business-tools',       // 6 tools
+  'travel-tools',         // 4 tools
+  'health-fitness',       // 4 tools
+  'page-ops',             // 15 tools
+  'data-tools',           // 11 tools
+  'ebook-convert',        // 11 tools
+  'vector-lab',           // 6 tools
+  'archive-lab',          // 4 tools
+  'pdf-insights',         // 5 tools
+  'code-tools',           // 4 tools
+  'hash-crypto',          // 4 tools
+  'conversion-tools',     // 10 tools
+  'finance-tax',          // 2 tools
+  'science-tools',        // 3 tools
+  'geography-tools',      // 3 tools
+  'cooking-tools',        // 3 tools
+  'legal-tools',          // 3 tools
+  'health-calculators',   // 3 tools
+  'productivity-tools',   // 2 tools
+  'pdf-tools',            // 1 tool
 ]
 
 const SORT_OPTIONS = [
@@ -290,20 +343,43 @@ function SearchAutocomplete({
 /* ─── Category Browser ───────────────────────────────────── */
 
 const CATEGORY_EMOJIS: Record<string, string> = {
-  'pdf-core': '📄', 'image-core': '🖼️', 'developer-tools': '⌨️',
-  'unit-converter': '📏', 'conversion-tools': '🔄', 'student-tools': '🎓',
-  'video-tools': '🎥', 'finance-tools': '💰', 'finance-tax': '🧾',
-  'text-ops': '📝', 'text-operations': '✏️', 'image-layout': '🎨',
-  'productivity': '⚡', 'health-tools': '❤️', 'health-fitness': '🏋️',
-  'math-tools': '🔢', 'math-calculators': '🧮', 'image-enhance': '✨',
-  'utility': '🛠️', 'ocr-vision': '👁️', 'format-lab': '🔧',
+  // PDF
+  'pdf-core': '📄', 'pdf-advanced': '📑', 'pdf-security': '🔐',
+  'pdf-insights': '🔍', 'pdf-tools': '📋',
+  // Image
+  'image-core': '🖼️', 'image-layout': '🎨', 'image-enhance': '✨',
+  'image-effects': '🌈', 'image-tools': '🖌️',
+  // Developer
+  'developer-tools': '⌨️', 'developer': '💻', 'developer-generators': '⚙️',
+  'code-tools': '{ }', 'hash-crypto': '🔑',
+  // Unit / Format
+  'unit-converter': '📏', 'conversion-tools': '🔄',
+  // Student / Math
+  'student-tools': '🎓', 'math-tools': '🔢', 'math-calculators': '🧮',
+  'science-tools': '🔬',
+  // Video / Audio
+  'video-tools': '🎥', 'video': '🎞️', 'audio-tools': '🎵', 'audio': '🎶',
+  // Finance / Tax / Business
+  'finance-tools': '💰', 'finance-tax': '🧾', 'business-tools': '💼',
+  'crypto-web3': '₿',
+  // Text
+  'text-ops': '📝', 'text-operations': '✏️', 'text-cleanup': '🧹',
+  'text-ai': '🤖', 'writing-tools': '✍️', 'ai-writing': '🪄',
+  // Health / Fitness
+  'health-tools': '❤️', 'health-fitness': '🏋️', 'health-calculators': '🩺',
+  // Productivity
+  'productivity': '⚡', 'productivity-tools': '📅',
+  // Network / SEO / Security
   'network-tools': '🌐', 'seo-tools': '📊', 'security-tools': '🔒',
-  'image-effects': '🌈', 'office-suite': '📋', 'hash-crypto': '🔑',
-  'color-tools': '🎨', 'social-media': '📱', 'writing-tools': '✍️',
-  'ai-writing': '🤖', 'business-tools': '💼', 'hr-jobs': '👔',
-  'travel-tools': '✈️', 'pdf-advanced': '📑', 'pdf-security': '🔐',
-  'science-tools': '🔬', 'geography-tools': '🌍', 'cooking-tools': '🍳',
-  'crypto-web3': '₿', 'legal-tools': '⚖️',
+  // Office / Document
+  'office-suite': '📋', 'document-convert': '📂', 'format-lab': '🔧',
+  'ocr-vision': '👁️', 'data-tools': '📈', 'archive-lab': '📦',
+  'ebook-convert': '📚', 'vector-lab': '✒️', 'batch-automation': '🔁',
+  'page-ops': '📐', 'utility': '🛠️',
+  // Other
+  'color-tools': '🎨', 'social-media': '📱',
+  'hr-jobs': '👔', 'travel-tools': '✈️', 'legal-tools': '⚖️',
+  'geography-tools': '🌍', 'cooking-tools': '🍳',
 }
 
 function CategoryBrowser({
