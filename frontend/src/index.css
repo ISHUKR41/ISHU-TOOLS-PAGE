@@ -7912,21 +7912,20 @@ img {
           (3) hero never forces a giant initial scroll on mobile.
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ── Scroll container correctness ────────────────────────────────────────── */
+/* ── Scroll container correctness ────────────────────────────────────────────
+   CRITICAL: html and body must use NATURAL defaults so the *viewport* is the
+   scroll container. Setting html { overflow-y: auto } makes html itself the
+   scroll container — this breaks position:sticky AND iOS momentum scroll.
+   ─────────────────────────────────────────────────────────────────────────── */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  height: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: auto;
+  /* DO NOT set height or overflow here — let the viewport scroll naturally. */
 }
 body {
-  height: auto !important;
-  min-height: 100%;
-  overflow-y: visible;
+  /* min-height already set in base block — do NOT lock height here. */
+  /* overflow-x: hidden already set — do NOT touch overflow-y. */
   overscroll-behavior-y: auto;
-  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 #root {
@@ -8012,9 +8011,11 @@ iframe { width: 100%; }
 .site-nav { will-change: auto; transform: translateZ(0); }
 
 /* ── Fixed background overlay must never block touch ─────────────────────── */
+/* IMPORTANT: only pointer-events:none. Do NOT use touch-action:none here —
+   even on pointer-events:none elements, some Safari versions still let
+   touch-action:none of an ancestor cancel scroll gestures. */
 body::before, .bg-layer, .hero-v2-grid, .hero-v2-orb {
   pointer-events: none !important;
-  touch-action: none;
 }
 
 /* ── Consolidate scrollbar styling (avoid double-defined html rules side fx)─ */
@@ -8057,7 +8058,10 @@ html, body { scroll-behavior: smooth; }
 
 /* ── Modals/overlays must not lock body scroll permanently ──────────────── */
 body.modal-open { overflow: hidden; }
-body:not(.modal-open) { overflow-y: visible !important; }
+/* NOTE: We deliberately do NOT force overflow-y on body when no modal is open.
+   Letting it be the default (visible, computed to auto due to overflow-x:hidden)
+   keeps the *viewport* as the scroll container — critical for iOS momentum
+   scroll and for position:sticky on .site-nav. */
 
 /* ── Tool form fields full width on mobile ─────────────────────────────── */
 @media (max-width: 768px) {
