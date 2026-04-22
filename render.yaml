@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ishu-tools-backend
+    runtime: docker
+    plan: starter
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: WEB_CONCURRENCY
+        value: "1"

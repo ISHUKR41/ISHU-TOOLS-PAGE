@@ -1,35 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build && python scripts/generate_seo_pages.py",
-  "installCommand": "npm --prefix frontend install && pip install -r requirements.txt",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "installCommand": "echo 'install handled in buildCommand'",
   "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 60,
-      "memory": 3008
-    }
-  },
+  "framework": null,
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/health",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/((?!api|health).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/((?!assets|.*\\.).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/assets/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {
@@ -37,14 +19,7 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
     {

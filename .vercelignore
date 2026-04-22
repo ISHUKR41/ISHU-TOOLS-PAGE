@@ -1,0 +1,9 @@
+backend/
+.vercel-disabled/
+*.py
+requirements.txt
+backend/storage/
+attached_assets/
+docs/
+scripts/
+.pythonlibs/
