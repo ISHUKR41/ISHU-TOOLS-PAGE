@@ -33,6 +33,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `frontend/public/sw.js` — service worker with cache-first/network-first strategies for offline use
 - `frontend/public/manifest.json` — installable PWA manifest with shortcuts for high-value tools
 - `frontend/src/features/tool/components/ToolSidebar.tsx` — tool sidebar with "How to use" steps
+- `frontend/src/features/tools/AllToolsPage.tsx` — enhanced tools directory: Most Popular pinned strip, Recently Used (localStorage), Favorites system (star/bookmark, localStorage), Grid/List view toggle, smart category priority ordering (popular categories first), category tool count badges, animated clear search button
 - `frontend/src/features/home/HomePage.tsx` — homepage with search + tool grid + competitor comparison table + creator section + interactive accordion FAQ (Hindi/Hinglish) + SEO keyword cloud
 - `frontend/src/features/home/components/HeroSection.tsx` — hero-v2 redesign with animated stats
 - `frontend/src/lib/seoData.ts` — per-tool SEO data (715 handcrafted entries, 200 keywords/tool, smart auto-generator v3 fallback with AI/Ishu/Hinglish patterns)
