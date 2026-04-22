@@ -98,7 +98,7 @@ export default function HeroSection({
   apiReady,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 770
+  const toolLabel = toolCount > 0 ? toolCount : 1200
 
   return (
     <section className='hero-v2'>
