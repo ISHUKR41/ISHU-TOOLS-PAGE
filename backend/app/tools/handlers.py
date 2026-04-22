@@ -6636,6 +6636,10 @@ try:
     from .data_format_converters import DATA_FORMAT_HANDLERS
     HANDLERS.update(DATA_FORMAT_HANDLERS)
     print(f"[handlers] Loaded {len(DATA_FORMAT_HANDLERS)} data format converter handlers")
+
+    from .unit_converters import UNIT_CONVERTER_HANDLERS
+    HANDLERS.update(UNIT_CONVERTER_HANDLERS)
+    print(f"[handlers] Loaded {len(UNIT_CONVERTER_HANDLERS)} unit converter handlers")
 except Exception as e:
     print(f"[handlers] WARNING: Could not load data_format_converters: {e}")
 

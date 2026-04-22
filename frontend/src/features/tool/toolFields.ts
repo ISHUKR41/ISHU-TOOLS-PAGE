@@ -4532,6 +4532,60 @@ Object.assign(TOOL_FIELDS, {
   'seo-meta-generator': TOOL_FIELDS['meta-description-generator'],
 })
 
+// ── 2026 Unit Converter Pack — single shared "value" field for all 150+ converters ──
+const UNIT_CONVERTER_SLUGS = [
+  'celsius-to-fahrenheit','fahrenheit-to-celsius','celsius-to-kelvin','kelvin-to-celsius',
+  'fahrenheit-to-kelvin','kelvin-to-fahrenheit','rankine-to-celsius','celsius-to-rankine',
+  'cm-to-inches','inches-to-cm','mm-to-inches','inches-to-mm','m-to-feet','feet-to-m',
+  'feet-to-meters','meters-to-feet','km-to-miles','miles-to-km','yards-to-meters','meters-to-yards',
+  'feet-to-inches','inches-to-feet','cm-to-mm','mm-to-cm','m-to-cm','cm-to-m','km-to-m','m-to-km',
+  'miles-to-feet','feet-to-miles','nautical-miles-to-km','km-to-nautical-miles',
+  'kg-to-lbs','lbs-to-kg','kg-to-pounds','pounds-to-kg','g-to-oz','oz-to-g',
+  'grams-to-ounces','ounces-to-grams','kg-to-g','g-to-kg','lbs-to-oz','oz-to-lbs',
+  'mg-to-g','g-to-mg','tons-to-kg','kg-to-tons','stones-to-kg','kg-to-stones',
+  'stones-to-pounds','pounds-to-stones',
+  'liters-to-gallons','gallons-to-liters','ml-to-oz','oz-to-ml','cups-to-ml','ml-to-cups',
+  'liters-to-ml','ml-to-liters','tablespoons-to-ml','teaspoons-to-ml','ml-to-tablespoons',
+  'ml-to-teaspoons','pints-to-liters','liters-to-pints','quarts-to-liters','liters-to-quarts',
+  'kmh-to-mph','mph-to-kmh','ms-to-kmh','kmh-to-ms','ms-to-mph','mph-to-ms',
+  'knots-to-mph','mph-to-knots','knots-to-kmh','kmh-to-knots',
+  'seconds-to-minutes','minutes-to-seconds','minutes-to-hours','hours-to-minutes',
+  'hours-to-seconds','seconds-to-hours','hours-to-days','days-to-hours',
+  'days-to-weeks','weeks-to-days','days-to-months','months-to-days','days-to-years','years-to-days',
+  'weeks-to-months','months-to-weeks','milliseconds-to-seconds','seconds-to-milliseconds',
+  'bytes-to-kb','kb-to-bytes','kb-to-mb','mb-to-kb','mb-to-gb','gb-to-mb','gb-to-tb','tb-to-gb',
+  'tb-to-pb','pb-to-tb','bits-to-bytes','bytes-to-bits','mb-to-bytes','gb-to-bytes',
+  'kbps-to-mbps','mbps-to-kbps','mbps-to-gbps','gbps-to-mbps',
+  'sqft-to-sqm','sqm-to-sqft','acres-to-hectares','hectares-to-acres',
+  'acres-to-sqft','sqft-to-acres','sqm-to-acres','sqkm-to-sqmiles','sqmiles-to-sqkm',
+  'psi-to-bar','bar-to-psi','atm-to-psi','psi-to-atm','pa-to-psi','psi-to-pa',
+  'kpa-to-psi','psi-to-kpa','bar-to-kpa','kpa-to-bar',
+  'joules-to-calories','calories-to-joules','kj-to-kcal','kcal-to-kj',
+  'kwh-to-joules','joules-to-kwh','btu-to-joules','joules-to-btu',
+  'watts-to-hp','hp-to-watts','kw-to-hp','hp-to-kw',
+  'degrees-to-radians','radians-to-degrees',
+  'hz-to-khz','khz-to-hz','khz-to-mhz','mhz-to-khz','mhz-to-ghz','ghz-to-mhz',
+  'mpg-to-kmpl','kmpl-to-mpg',
+] as const;
+
+const UNIT_PLACEHOLDER: Record<string, string> = {
+  'celsius-to-fahrenheit': '37', 'fahrenheit-to-celsius': '98.6',
+  'cm-to-inches': '170', 'inches-to-cm': '6', 'kg-to-lbs': '70', 'lbs-to-kg': '154',
+  'mb-to-gb': '1024', 'gb-to-mb': '1', 'kmh-to-mph': '100', 'mph-to-kmh': '60',
+  'ml-to-oz': '500', 'liters-to-gallons': '10', 'g-to-oz': '100',
+};
+
+for (const slug of UNIT_CONVERTER_SLUGS) {
+  const [from] = slug.split('-to-');
+  TOOL_FIELDS[slug] = [{
+    name: 'value',
+    label: `Enter value (${from.replace(/-/g, ' ')})`,
+    type: 'text',
+    placeholder: UNIT_PLACEHOLDER[slug] ?? 'e.g. 100',
+    defaultValue: UNIT_PLACEHOLDER[slug] ?? '',
+  }];
+}
+
 // ── New tools added from tools.txt ──────────────────────────────────────────
 
 TOOL_FIELDS['readability-analyzer'] = [
