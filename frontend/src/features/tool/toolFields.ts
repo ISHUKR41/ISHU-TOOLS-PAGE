@@ -1,4 +1,4 @@
-﻿export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select'
+export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select'
 
 export interface ToolField {
   name: string
@@ -1001,7 +1001,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text...' },
   ],
 
-  // â”€â”€ SEO Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── SEO Tools ───────────────────────────────────────────────
   'meta-tag-generator': [
     { name: 'text', label: 'Website Title', type: 'text', placeholder: 'My Amazing Website' },
     { name: 'description', label: 'Description', type: 'textarea', placeholder: 'A great website...' },
@@ -1024,7 +1024,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'image', label: 'Image URL', type: 'text', placeholder: 'https://example.com/image.png' },
   ],
 
-  // â”€â”€ Code Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Code Tools ──────────────────────────────────────────────
   'minify-css': [
     { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body { margin: 0; }' },
   ],
@@ -1038,7 +1038,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'CSS Code', type: 'textarea', placeholder: 'body{margin:0;padding:0}' },
   ],
 
-  // â”€â”€ Math & Calculator Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Math & Calculator Tools ─────────────────────────────────
   'percentage-calculator': [
     { name: 'value', label: 'Value', type: 'number', defaultValue: '25' },
     { name: 'total', label: 'Total / Base', type: 'number', defaultValue: '200' },
@@ -1047,7 +1047,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       options: [
         { label: 'What % is Value of Total', value: 'percentage' },
         { label: 'Value% of Total', value: 'of' },
-        { label: 'Percentage Change (old â†’ new)', value: 'change' },
+        { label: 'Percentage Change (old → new)', value: 'change' },
       ],
     },
   ],
@@ -1068,20 +1068,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'age-calculator': [
     { name: 'text', label: 'Date of Birth', type: 'text', placeholder: '2000-01-15' },
   ],
-  'discount-calculator': [
-    { name: 'value', label: 'Original Price', type: 'number', defaultValue: '1000' },
-    { name: 'total', label: 'Discount %', type: 'number', defaultValue: '20' },
-  ],
-  'loan-emi-calculator': [
-    { name: 'value', label: 'Principal (â‚¹)', type: 'number', defaultValue: '500000' },
-    { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5' },
-    { name: 'months', label: 'Tenure (months)', type: 'number', defaultValue: '60' },
-  ],
-  'tip-calculator': [
-    { name: 'value', label: 'Bill Amount', type: 'number', defaultValue: '100' },
-    { name: 'total', label: 'Tip %', type: 'number', defaultValue: '15' },
-    { name: 'count', label: 'Number of People', type: 'number', defaultValue: '1' },
-  ],
   'gpa-calculator': [
     {
       name: 'text', label: 'Grades & Credits (one per line)',
@@ -1089,7 +1075,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     },
   ],
 
-  // â”€â”€ Student & Everyday Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Student & Everyday Tools ────────────────────────────────
   'number-base-converter': [
     { name: 'text', label: 'Number', type: 'text', placeholder: '255' },
     {
@@ -1114,15 +1100,10 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     {
       name: 'mode', label: 'Mode', type: 'select', defaultValue: 'encode',
       options: [
-        { label: 'Encode (Text â†’ Morse)', value: 'encode' },
-        { label: 'Decode (Morse â†’ Text)', value: 'decode' },
+        { label: 'Encode (Text → Morse)', value: 'encode' },
+        { label: 'Decode (Morse → Text)', value: 'decode' },
       ],
     },
-  ],
-  'random-number-generator': [
-    { name: 'value', label: 'Min', type: 'number', defaultValue: '1' },
-    { name: 'total', label: 'Max', type: 'number', defaultValue: '100' },
-    { name: 'count', label: 'Count', type: 'number', defaultValue: '1' },
   ],
   'text-to-ascii': [
     { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'ABC' },
@@ -1133,36 +1114,24 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'word-frequency': [
     { name: 'text', label: 'Text Content', type: 'textarea', placeholder: 'Paste text to analyze...' },
   ],
-  'roman-numeral-converter': [
-    { name: 'text', label: 'Number or Roman Numeral', type: 'text', placeholder: '2024 or MMXXIV' },
-  ],
   'countdown-calculator': [
     { name: 'text', label: 'Target Date', type: 'text', placeholder: '2025-12-31' },
   ],
 
-  // â”€â”€ Student & Everyday Extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Student & Everyday Extended ─────────────────────────────
   'compound-interest-calculator': [
-    { name: 'value', label: 'Principal Amount (â‚¹)', type: 'number', defaultValue: '100000' },
+    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '100000' },
     { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '10' },
     { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '5' },
     { name: 'compound_per_year', label: 'Compounds Per Year', type: 'number', defaultValue: '12' },
   ],
   'simple-interest-calculator': [
-    { name: 'value', label: 'Principal Amount (â‚¹)', type: 'number', defaultValue: '50000' },
+    { name: 'value', label: 'Principal Amount (₹)', type: 'number', defaultValue: '50000' },
     { name: 'total', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8' },
     { name: 'years', label: 'Time (years)', type: 'number', defaultValue: '3' },
   ],
   'salary-calculator': [
-    { name: 'value', label: 'Annual Salary (â‚¹)', type: 'number', defaultValue: '1200000' },
-  ],
-  'fuel-cost-calculator': [
-    { name: 'value', label: 'Distance (km)', type: 'number', defaultValue: '500' },
-    { name: 'total', label: 'Mileage (km/L)', type: 'number', defaultValue: '15' },
-    { name: 'price', label: 'Fuel Price (â‚¹/L)', type: 'number', defaultValue: '100' },
-  ],
-  'electricity-bill-calculator': [
-    { name: 'value', label: 'Units Consumed', type: 'number', defaultValue: '300' },
-    { name: 'total', label: 'Rate Per Unit (â‚¹)', type: 'number', defaultValue: '7' },
+    { name: 'value', label: 'Annual Salary (₹)', type: 'number', defaultValue: '1200000' },
   ],
   'speed-distance-time': [
     { name: 'value', label: 'Value 1', type: 'number', defaultValue: '100' },
@@ -1170,23 +1139,23 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     {
       name: 'mode', label: 'Calculate', type: 'select', defaultValue: 'speed',
       options: [
-        { label: 'Speed (Distance Ã· Time)', value: 'speed' },
-        { label: 'Distance (Speed Ã— Time)', value: 'distance' },
-        { label: 'Time (Distance Ã· Speed)', value: 'time' },
+        { label: 'Speed (Distance ÷ Time)', value: 'speed' },
+        { label: 'Distance (Speed × Time)', value: 'distance' },
+        { label: 'Time (Distance ÷ Speed)', value: 'time' },
       ],
     },
   ],
   'profit-loss-calculator': [
-    { name: 'value', label: 'Cost Price (â‚¹)', type: 'number', defaultValue: '100' },
-    { name: 'total', label: 'Selling Price (â‚¹)', type: 'number', defaultValue: '150' },
+    { name: 'value', label: 'Cost Price (₹)', type: 'number', defaultValue: '100' },
+    { name: 'total', label: 'Selling Price (₹)', type: 'number', defaultValue: '150' },
   ],
   'cgpa-to-percentage': [
     { name: 'value', label: 'CGPA / Percentage Value', type: 'number', defaultValue: '8.5' },
     {
       name: 'mode', label: 'Conversion Mode', type: 'select', defaultValue: 'cgpa_to_pct',
       options: [
-        { label: 'CGPA â†’ Percentage', value: 'cgpa_to_pct' },
-        { label: 'Percentage â†’ CGPA', value: 'pct_to_cgpa' },
+        { label: 'CGPA → Percentage', value: 'cgpa_to_pct' },
+        { label: 'Percentage → CGPA', value: 'pct_to_cgpa' },
       ],
     },
   ],
@@ -1195,9 +1164,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text2', label: 'Date 2 (YYYY-MM-DD, optional)', type: 'text', placeholder: '2025-01-15' },
   ],
 
-  'password-strength-checker': [
-    { name: 'text', label: 'Password to Check', type: 'password', placeholder: 'Enter password...' },
-  ],
   'text-to-hex': [
     { name: 'text', label: 'Text Input', type: 'textarea', placeholder: 'Hello World' },
   ],
@@ -1246,36 +1212,9 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'scientific-calculator': [
     { name: 'text', label: 'Math Expression', type: 'textarea', placeholder: 'sqrt(144) + 2^3 + sin(pi/2)' },
   ],
-  'unit-price-calculator': [
-    { name: 'value', label: 'Total Price (â‚¹)', type: 'number', defaultValue: '250' },
-    { name: 'total', label: 'Quantity', type: 'number', defaultValue: '5' },
-    { name: 'unit', label: 'Unit Label', type: 'text', defaultValue: 'kg' },
-  ],
-  'number-to-words': [
-    { name: 'text', label: 'Number', type: 'text', placeholder: '123456' },
-  ],
-
-  // â”€â”€â”€ Developer Tools â”€â”€â”€
-  'lorem-ipsum-generator': [
-    { name: 'count', label: 'Count', type: 'number', defaultValue: '5' },
-    { name: 'unit', label: 'Unit', type: 'select', defaultValue: 'paragraphs', options: [
-      { label: 'Paragraphs', value: 'paragraphs' },
-      { label: 'Sentences', value: 'sentences' },
-      { label: 'Words', value: 'words' },
-    ]},
-  ],
-  'regex-tester': [
-    { name: 'pattern', label: 'Regex Pattern', type: 'text', placeholder: '\\b\\w+@\\w+\\.\\w+\\b' },
-    { name: 'text', label: 'Test Text', type: 'textarea', placeholder: 'Enter text to test against...' },
-    { name: 'flags', label: 'Flags (i, m, s)', type: 'text', defaultValue: 'i' },
-  ],
   'diff-checker': [
     { name: 'text1', label: 'Text 1 (Original)', type: 'textarea', placeholder: 'Paste original text...' },
     { name: 'text2', label: 'Text 2 (Modified)', type: 'textarea', placeholder: 'Paste modified text...' },
-  ],
-  'json-formatter': [
-    { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: '{"name":"ishu","tools":["pdf","image"]}' },
-    { name: 'indent', label: 'Indent Spaces', type: 'number', defaultValue: '2' },
   ],
   'json-minifier': [
     { name: 'text', label: 'JSON Input', type: 'textarea', placeholder: 'Paste formatted JSON...' },
@@ -1298,21 +1237,15 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'base64-decode': [
     { name: 'text', label: 'Base64 Text', type: 'textarea', placeholder: 'Enter Base64 encoded text...' },
   ],
-  'uuid-generator': [
-    { name: 'count', label: 'Number of UUIDs', type: 'number', defaultValue: '5' },
-  ],
   'hash-generator': [
     { name: 'text', label: 'Text to Hash', type: 'textarea', placeholder: 'Enter text to generate hashes...' },
-  ],
-  'jwt-decoder': [
-    { name: 'text', label: 'JWT Token', type: 'textarea', placeholder: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
   ],
   'unix-timestamp-converter': [
     { name: 'text', label: 'Timestamp or Date', type: 'text', placeholder: '1713168000 or 2024-04-15 or now' },
     { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'auto', options: [
       { label: 'Auto Detect', value: 'auto' },
-      { label: 'Timestamp â†’ Date', value: 'to_date' },
-      { label: 'Date â†’ Timestamp', value: 'to_timestamp' },
+      { label: 'Timestamp → Date', value: 'to_date' },
+      { label: 'Date → Timestamp', value: 'to_timestamp' },
     ]},
   ],
   'css-minifier': [
@@ -1336,14 +1269,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'csv-to-json-text': [
     { name: 'text', label: 'CSV Data', type: 'textarea', placeholder: 'name,age\nIshu,22\nTool,1' },
   ],
-  'cron-expression-parser': [
-    { name: 'text', label: 'Cron Expression', type: 'text', placeholder: '*/5 * * * *' },
-  ],
   'sql-formatter': [
     { name: 'text', label: 'SQL Query', type: 'textarea', placeholder: 'SELECT * FROM users WHERE age > 18 ORDER BY name' },
-  ],
-  'xml-formatter': [
-    { name: 'text', label: 'XML Data', type: 'textarea', placeholder: '<root><item>value</item></root>' },
   ],
   'yaml-to-json': [
     { name: 'text', label: 'YAML Text', type: 'textarea', placeholder: 'name: Ishu\nage: 22\ntools:\n  - pdf\n  - image' },
@@ -1364,12 +1291,12 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'char-code-converter': [
     { name: 'text', label: 'Characters or Code Points', type: 'textarea', placeholder: 'ABC or 65 66 67' },
     { name: 'mode', label: 'Mode', type: 'select', defaultValue: 'to_codes', options: [
-      { label: 'Characters â†’ Codes', value: 'to_codes' },
-      { label: 'Codes â†’ Characters', value: 'from_codes' },
+      { label: 'Characters → Codes', value: 'to_codes' },
+      { label: 'Codes → Characters', value: 'from_codes' },
     ]},
   ],
 
-  // â”€â”€â”€ Color Tools â”€â”€â”€
+  // ─── Color Tools ───
   'color-picker': [
     { name: 'text', label: 'HEX Color', type: 'text', defaultValue: '#3b82f6' },
   ],
@@ -1381,17 +1308,10 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'g', label: 'Green (0-255)', type: 'number', defaultValue: '130' },
     { name: 'b', label: 'Blue (0-255)', type: 'number', defaultValue: '246' },
   ],
-  'color-palette-generator': [
-    { name: 'text', label: 'Base Color (HEX)', type: 'text', defaultValue: '#3b82f6' },
-  ],
   'rgb-to-hsl': [
     { name: 'r', label: 'Red (0-255)', type: 'number', defaultValue: '59' },
     { name: 'g', label: 'Green (0-255)', type: 'number', defaultValue: '130' },
     { name: 'b', label: 'Blue (0-255)', type: 'number', defaultValue: '246' },
-  ],
-  'color-contrast-checker': [
-    { name: 'foreground', label: 'Foreground Color (HEX)', type: 'text', defaultValue: '#000000' },
-    { name: 'background', label: 'Background Color (HEX)', type: 'text', defaultValue: '#ffffff' },
   ],
   'gradient-generator': [
     { name: 'color1', label: 'Color 1', type: 'text', defaultValue: '#667eea' },
@@ -1406,7 +1326,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     ]},
   ],
 
-  // â”€â”€â”€ Security Tools â”€â”€â”€
+  // ─── Security Tools ───
   'password-generator': [
     { name: 'length', label: 'Password Length', type: 'number', defaultValue: '16' },
     { name: 'count', label: 'Number of Passwords', type: 'number', defaultValue: '5' },
@@ -1426,7 +1346,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Password to Hash', type: 'password', placeholder: 'Enter password...' },
   ],
 
-  // â”€â”€â”€ Unit Converters â”€â”€â”€
+  // ─── Unit Converters ───
   'temperature-converter': [
     { name: 'value', label: 'Temperature Value', type: 'number', defaultValue: '100' },
     { name: 'from_unit', label: 'From Unit', type: 'select', defaultValue: 'celsius', options: [
@@ -1551,7 +1471,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     ]},
   ],
 
-  // â”€â”€â”€ Social Media Tools â”€â”€â”€
+  // ─── Social Media Tools ───
   'instagram-post-resizer': [
     { name: 'aspect', label: 'Aspect Ratio', type: 'select', defaultValue: 'square', options: [
       { label: 'Square (1:1) - 1080x1080', value: 'square' },
@@ -1564,25 +1484,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'facebook-cover-maker': [],
   'linkedin-banner-maker': [],
   'whatsapp-dp-maker': [],
-  'citation-generator': [
-    { name: 'title', label: 'Source Title', type: 'text', placeholder: 'Article, book, or webpage title' },
-    { name: 'author', label: 'Author', type: 'text', placeholder: 'Author name' },
-    { name: 'year', label: 'Year', type: 'text', placeholder: '2026' },
-    { name: 'publisher', label: 'Publisher / Website', type: 'text', placeholder: 'Journal, publisher, or website' },
-    { name: 'url', label: 'URL', type: 'text', placeholder: 'https://example.com/source' },
-    { name: 'accessed', label: 'Accessed Date', type: 'text', placeholder: '16 Apr 2026' },
-    { name: 'source_type', label: 'Source Type', type: 'select', defaultValue: 'website', options: [
-      { label: 'Website', value: 'website' },
-      { label: 'Book', value: 'book' },
-      { label: 'Journal Article', value: 'article' },
-      { label: 'Report', value: 'report' },
-    ]},
-    { name: 'style', label: 'Citation Style', type: 'select', defaultValue: 'apa', options: [
-      { label: 'APA', value: 'apa' },
-      { label: 'MLA', value: 'mla' },
-      { label: 'Chicago', value: 'chicago' },
-    ]},
-  ],
   'flashcard-generator': [
     { name: 'text', label: 'Study Notes', type: 'textarea', placeholder: 'Paste notes, chapter summary, or lecture points...' },
     { name: 'count', label: 'Number of Flashcards', type: 'number', defaultValue: '10' },
@@ -1594,11 +1495,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
   'grade-calculator': [
     { name: 'scores', label: 'Scores', type: 'textarea', placeholder: '90/100, 45/50, 18/20' },
-  ],
-  'attendance-calculator': [
-    { name: 'attended', label: 'Classes Attended', type: 'number', defaultValue: '45' },
-    { name: 'total', label: 'Total Classes', type: 'number', defaultValue: '60' },
-    { name: 'target', label: 'Target %', type: 'number', defaultValue: '75' },
   ],
   'reading-time-calculator': [
     { name: 'text', label: 'Text', type: 'textarea', placeholder: 'Paste article, essay, speech, or notes...' },
@@ -1613,7 +1509,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'metric', label: 'Metric / Result', type: 'text', placeholder: 'reduced manual work by 40%' },
   ],
 
-  // â”€â”€â”€ Image Plus Tools â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Image Plus Tools ────────────────────────────────────────────────────────
   'png-to-webp': [
     { name: 'quality', label: 'Quality (1-100)', type: 'number', defaultValue: '85' },
   ],
@@ -1678,7 +1574,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: 'Bottom Right', value: 'bottom-right' },
       ],
     },
-    { name: 'opacity', label: 'Opacity (0.0â€“1.0)', type: 'number', defaultValue: '0.9' },
+    { name: 'opacity', label: 'Opacity (0.0–1.0)', type: 'number', defaultValue: '0.9' },
   ],
   'compress-image-to-kb': [
     { name: 'target_kb', label: 'Target Size (KB)', type: 'number', defaultValue: '100' },
@@ -1701,7 +1597,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
   'view-image-metadata': [],
 
-  // â”€â”€â”€ Text / Utility tools (newly added to registry) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Text / Utility tools (newly added to registry) ─────────────────────────
   'epoch-converter': [
     {
       name: 'mode',
@@ -1709,8 +1605,8 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       type: 'select',
       defaultValue: 'to_human',
       options: [
-        { label: 'Epoch â†’ Human Date', value: 'to_human' },
-        { label: 'Human Date â†’ Epoch', value: 'to_epoch' },
+        { label: 'Epoch → Human Date', value: 'to_human' },
+        { label: 'Human Date → Epoch', value: 'to_epoch' },
       ],
     },
     { name: 'value', label: 'Value', type: 'text', placeholder: '1700000000 or 2024-11-14T22:13:20' },
@@ -1728,14 +1624,11 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'morse-to-text': [
     { name: 'morse', label: 'Morse Code', type: 'textarea', placeholder: '.... . .-.. .-.. ---   .-- --- .-. .-.. -..' },
   ],
-  'text-to-morse': [
-    { name: 'text', label: 'Text', type: 'text', placeholder: 'HELLO WORLD' },
-  ],
   'nato-alphabet': [
     { name: 'text', label: 'Text', type: 'text', placeholder: 'Type letters...' },
   ],
   'number-to-roman': [
-    { name: 'number', label: 'Number (1â€“3999)', type: 'number', defaultValue: '2024' },
+    { name: 'number', label: 'Number (1–3999)', type: 'number', defaultValue: '2024' },
   ],
   'roman-to-number': [
     { name: 'roman', label: 'Roman Numeral', type: 'text', placeholder: 'MMXXIV' },
@@ -1807,34 +1700,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
 
   // ── HEALTH & FITNESS TOOLS ───────────────────────────────────────────
-  'calorie-calculator': [
-    { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
-    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
-    { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
-    {
-      name: 'gender',
-      label: 'Gender',
-      type: 'select',
-      defaultValue: 'male',
-      options: [
-        { label: 'Male', value: 'male' },
-        { label: 'Female', value: 'female' },
-      ],
-    },
-    {
-      name: 'activity_level',
-      label: 'Activity Level',
-      type: 'select',
-      defaultValue: 'moderate',
-      options: [
-        { label: 'Sedentary (desk job, no exercise)', value: 'sedentary' },
-        { label: 'Light (1–3 days/week exercise)', value: 'light' },
-        { label: 'Moderate (3–5 days/week exercise)', value: 'moderate' },
-        { label: 'Active (6–7 days/week exercise)', value: 'active' },
-        { label: 'Very Active (athlete / physical job)', value: 'very_active' },
-      ],
-    },
-  ],
   'bmr-calculator': [
     { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
     { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
@@ -1865,53 +1730,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'neck', label: 'Neck (cm)', type: 'number', defaultValue: '37', placeholder: '37' },
     { name: 'hip', label: 'Hip (cm) — females only', type: 'number', defaultValue: '95', placeholder: '95' },
     { name: 'height', label: 'Height (cm)', type: 'number', defaultValue: '170', placeholder: '170' },
-  ],
-  'water-intake-calculator': [
-    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: '70' },
-    {
-      name: 'activity_level',
-      label: 'Activity Level',
-      type: 'select',
-      defaultValue: 'moderate',
-      options: [
-        { label: 'Sedentary (little or no exercise)', value: 'sedentary' },
-        { label: 'Light (light exercise 1–3 days/week)', value: 'light' },
-        { label: 'Moderate (exercise 3–5 days/week)', value: 'moderate' },
-        { label: 'Active (hard exercise 6–7 days/week)', value: 'active' },
-        { label: 'Very Active (athlete / physical job)', value: 'very_active' },
-      ],
-    },
-    {
-      name: 'climate',
-      label: 'Climate',
-      type: 'select',
-      defaultValue: 'temperate',
-      options: [
-        { label: 'Cool / Air-conditioned', value: 'cool' },
-        { label: 'Temperate (most of India)', value: 'temperate' },
-        { label: 'Hot & Humid (coastal/summer)', value: 'hot_humid' },
-        { label: 'Very Hot (desert / peak summer)', value: 'very_hot' },
-      ],
-    },
-  ],
-  'sleep-calculator': [
-    {
-      name: 'bedtime',
-      label: 'Bedtime (HH:MM, 24-hr)',
-      type: 'text',
-      defaultValue: '22:30',
-      placeholder: '22:30',
-    },
-    {
-      name: 'mode',
-      label: 'Calculate',
-      type: 'select',
-      defaultValue: 'wake_up',
-      options: [
-        { label: 'Best wake-up times from bedtime', value: 'wake_up' },
-        { label: 'Best bedtimes to wake at a set time', value: 'bedtime' },
-      ],
-    },
   ],
   'heart-rate-zones': [
     { name: 'age', label: 'Age (years)', type: 'number', defaultValue: '25', placeholder: '25' },
@@ -1973,11 +1791,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
-  'sip-calculator': [
-    { name: 'monthly_sip', label: 'Monthly SIP (₹)', type: 'number', defaultValue: '5000', placeholder: '5000' },
-    { name: 'expected_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '12', placeholder: '12' },
-    { name: 'tenure', label: 'Investment Period (years)', type: 'number', defaultValue: '10', placeholder: '10' },
-  ],
   'roi-calculator': [
     { name: 'initial_investment', label: 'Initial Investment (₹)', type: 'number', defaultValue: '100000', placeholder: '100000' },
     { name: 'final_value', label: 'Final Value (₹)', type: 'number', defaultValue: '150000', placeholder: '150000' },
@@ -2021,39 +1834,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'loan_amount', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
     { name: 'interest_rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: '8.5' },
     { name: 'tenure', label: 'Loan Tenure (years)', type: 'number', defaultValue: '5', placeholder: '5' },
-  ],
-  'loan-emi-calculator': [
-    { name: 'loan_amount', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: '500000' },
-    { name: 'interest_rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: '8.5' },
-    { name: 'tenure', label: 'Loan Tenure (years)', type: 'number', defaultValue: '5', placeholder: '5' },
-  ],
-
-  // ── EVERYDAY UTILITY TOOLS ────────────────────────────────────────────
-  'number-to-words': [
-    { name: 'number', label: 'Number', type: 'number', defaultValue: '1000000', placeholder: '1000000' },
-    {
-      name: 'system',
-      label: 'Number System',
-      type: 'select',
-      defaultValue: 'indian',
-      options: [
-        { label: 'Indian (Lakh, Crore)', value: 'indian' },
-        { label: 'International (Million, Billion)', value: 'international' },
-      ],
-    },
-  ],
-  'roman-numeral-converter': [
-    { name: 'value', label: 'Number or Roman Numeral', type: 'text', defaultValue: '2024', placeholder: '2024 or MMXXIV' },
-    {
-      name: 'direction',
-      label: 'Convert',
-      type: 'select',
-      defaultValue: 'to_roman',
-      options: [
-        { label: 'Arabic → Roman (e.g. 2024 → MMXXIV)', value: 'to_roman' },
-        { label: 'Roman → Arabic (e.g. MMXXIV → 2024)', value: 'to_arabic' },
-      ],
-    },
   ],
   'love-calculator': [
     { name: 'name1', label: 'Your Name', type: 'text', defaultValue: '', placeholder: 'e.g. Rahul' },
@@ -2169,9 +1949,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'youtube-to-mp3': [
     { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL to extract audio as MP3...' },
   ],
-  'instagram-downloader': [
-    { name: 'url', label: 'Instagram URL', type: 'text', placeholder: 'Paste Instagram reel, post, or story URL here...' },
-  ],
   'youtube-downloader': [
     { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL... e.g. https://youtube.com/watch?v=...' },
     {
@@ -2252,37 +2029,9 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
 
   // ─── Math Tools ──────────────────────────────────────────────────────
-  'fibonacci-generator': [
-    { name: 'text', label: 'Number of Terms', type: 'number', defaultValue: '10', placeholder: 'How many Fibonacci numbers? (max 100)' },
-  ],
   'prime-number-checker': [
     { name: 'text', label: 'Number', type: 'number', placeholder: 'Enter a number to check if it is prime...' },
   ],
-  'statistics-calculator': [
-    { name: 'text', label: 'Dataset (numbers)', type: 'textarea', placeholder: 'Enter numbers separated by commas or spaces... e.g. 4, 8, 15, 16, 23, 42' },
-  ],
-  'matrix-calculator': [
-    { name: 'matrix1', label: 'Matrix A (rows separated by ;, columns by ,)', type: 'textarea', placeholder: 'e.g. 1,2;3,4 for a 2x2 matrix', defaultValue: '1,2;3,4' },
-    {
-      name: 'operation',
-      label: 'Operation',
-      type: 'select',
-      defaultValue: 'multiply',
-      options: [
-        { label: 'Multiply A × B', value: 'multiply' },
-        { label: 'Add A + B', value: 'add' },
-        { label: 'Subtract A - B', value: 'subtract' },
-        { label: 'Transpose A', value: 'transpose' },
-        { label: 'Determinant of A', value: 'determinant' },
-      ],
-    },
-    { name: 'matrix2', label: 'Matrix B (optional, for multiply/add/subtract)', type: 'textarea', placeholder: 'e.g. 5,6;7,8', defaultValue: '5,6;7,8' },
-  ],
-  'equation-solver': [
-    { name: 'text', label: 'Equation', type: 'text', placeholder: 'e.g. x^2 + 5x + 6 = 0 or 2x + 4 = 10' },
-  ],
-
-  // ─── Finance Tools ───────────────────────────────────────────────────
   'currency-converter': [
     { name: 'amount', label: 'Amount', type: 'number', defaultValue: '1', placeholder: 'Enter amount...' },
     {
@@ -2350,16 +2099,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
-  'fuel-cost-calculator': [
-    { name: 'distance', label: 'Distance (km)', type: 'number', defaultValue: '100', placeholder: 'Distance in kilometers...' },
-    { name: 'fuel_price', label: 'Fuel Price (₹/litre)', type: 'number', defaultValue: '103', placeholder: 'Current fuel price per litre...' },
-    { name: 'mileage', label: 'Mileage (km/litre)', type: 'number', defaultValue: '15', placeholder: 'Your car mileage...' },
-  ],
-  'emi-calculator-advanced': [
-    { name: 'principal', label: 'Loan Amount (₹)', type: 'number', defaultValue: '500000', placeholder: 'Enter loan amount...' },
-    { name: 'rate', label: 'Annual Interest Rate (%)', type: 'number', defaultValue: '8.5', placeholder: 'e.g. 8.5' },
-    { name: 'tenure', label: 'Loan Tenure (months)', type: 'number', defaultValue: '60', placeholder: 'e.g. 60 for 5 years' },
-  ],
   'sip-calculator-india': [
     { name: 'monthly_investment', label: 'Monthly SIP (₹)', type: 'number', defaultValue: '5000', placeholder: 'Monthly investment amount...' },
     { name: 'annual_return', label: 'Expected Annual Return (%)', type: 'number', defaultValue: '12', placeholder: 'e.g. 12' },
@@ -2378,11 +2117,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: 'Old Regime', value: 'old' },
       ],
     },
-  ],
-  'salary-hike-calculator': [
-    { name: 'current_salary', label: 'Current Annual Salary (₹)', type: 'number', defaultValue: '300000', placeholder: 'Current CTC or salary...' },
-    { name: 'hike_percent', label: 'Hike (%)', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
-    { name: 'bonus', label: 'Bonus / Fixed Addition (₹)', type: 'number', defaultValue: '0', placeholder: 'Optional bonus amount...' },
   ],
   'discount-calculator': [
     { name: 'price', label: 'Original Price (₹)', type: 'number', defaultValue: '1000', placeholder: 'Enter price...' },
@@ -2477,9 +2211,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'ifsc-code-finder': [
     { name: 'text', label: 'IFSC Code', type: 'text', placeholder: 'Enter 11-character IFSC code... e.g. SBIN0000001' },
   ],
-  'number-to-words': [
-    { name: 'text', label: 'Number', type: 'number', placeholder: 'Enter a number to convert to words... e.g. 12345' },
-  ],
   'marks-percentage-calculator': [
     { name: 'obtained_marks', label: 'Obtained Marks', type: 'number', defaultValue: '450', placeholder: 'Marks scored...' },
     { name: 'total_marks', label: 'Total Marks', type: 'number', defaultValue: '500', placeholder: 'Maximum marks...' },
@@ -2542,42 +2273,9 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       ],
     },
   ],
-  'water-intake-calculator': [
-    { name: 'weight', label: 'Weight (kg)', type: 'number', defaultValue: '70', placeholder: 'Your weight in kg...' },
-    {
-      name: 'activity',
-      label: 'Activity Level',
-      type: 'select',
-      defaultValue: 'moderate',
-      options: [
-        { label: 'Low (sedentary)', value: 'low' },
-        { label: 'Moderate (light exercise)', value: 'moderate' },
-        { label: 'High (regular exercise)', value: 'high' },
-        { label: 'Very High (intense exercise)', value: 'very_high' },
-      ],
-    },
-    {
-      name: 'climate',
-      label: 'Climate',
-      type: 'select',
-      defaultValue: 'normal',
-      options: [
-        { label: 'Cold', value: 'cold' },
-        { label: 'Normal / Moderate', value: 'normal' },
-        { label: 'Hot', value: 'hot' },
-        { label: 'Very Hot (tropical/summer)', value: 'very_hot' },
-      ],
-    },
-  ],
   'sleep-calculator': [
     { name: 'wake_time', label: 'Wake Up Time', type: 'text', defaultValue: '06:30', placeholder: 'When do you want to wake up? e.g. 06:30' },
     { name: 'sleep_time', label: 'Bedtime (optional)', type: 'text', placeholder: 'When are you going to sleep? e.g. 22:00 — leave empty to calculate bedtime' },
-  ],
-  'roman-numeral-converter': [
-    { name: 'text', label: 'Number or Roman Numeral', type: 'text', placeholder: 'Enter a number (e.g. 2024) or Roman numeral (e.g. MMXXIV)...' },
-  ],
-  'color-palette-generator': [
-    { name: 'color', label: 'Base Color (HEX)', type: 'text', defaultValue: '#3bd0ff', placeholder: 'Enter base color HEX code... e.g. #3bd0ff' },
   ],
   'bulk-image-compressor': [
     { name: 'quality', label: 'Compression Quality', type: 'number', defaultValue: '75', placeholder: '1-95 (75 = good balance)' },
@@ -2586,9 +2284,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   // ── Ultra Tools v3 ──────────────────────────────────────────────────────
   'text-readability-score': [
     { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here to get readability score, Flesch-Kincaid grade, word count, and more...' },
-  ],
-  'text-readability': [
-    { name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here to analyze readability...' },
   ],
   'cron-builder': [
     { name: 'expression', label: 'Cron Expression', type: 'text', defaultValue: '0 9 * * 1-5', placeholder: 'Enter cron expression, e.g. 0 9 * * 1-5 (weekdays at 9 AM)...' },
@@ -2943,12 +2638,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   // ── More Video Downloaders ────────────────────────────────────────────────
   'instagram-downloader': [{ name: 'url', label: 'Instagram Post URL', type: 'text', placeholder: 'Paste Instagram post/video URL e.g. https://www.instagram.com/p/...' }],
   'instagram-reel-downloader': [{ name: 'url', label: 'Instagram Reel URL', type: 'text', placeholder: 'Paste Instagram Reel URL e.g. https://www.instagram.com/reel/...' }],
-  'rumble-downloader': [{ name: 'url', label: 'Rumble Video URL', type: 'text', placeholder: 'Paste Rumble video URL e.g. https://rumble.com/v...' }],
-  'twitch-clip-downloader': [{ name: 'url', label: 'Twitch Clip URL', type: 'text', placeholder: 'Paste Twitch clip URL e.g. https://clips.twitch.tv/...' }],
-  'bilibili-downloader': [{ name: 'url', label: 'Bilibili Video URL', type: 'text', placeholder: 'Paste Bilibili video URL e.g. https://www.bilibili.com/video/...' }],
-  'pinterest-downloader': [{ name: 'url', label: 'Pinterest Pin URL', type: 'text', placeholder: 'Paste Pinterest pin URL e.g. https://www.pinterest.com/pin/...' }],
-  'reddit-video-downloader': [{ name: 'url', label: 'Reddit Post URL', type: 'text', placeholder: 'Paste Reddit post URL containing a video e.g. https://www.reddit.com/r/...' }],
-  'linkedin-video-downloader': [{ name: 'url', label: 'LinkedIn Video Post URL', type: 'text', placeholder: 'Paste LinkedIn video post URL...' }],
   'stream-downloader': [{ name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste any video URL from 1000+ supported platforms...' }],
   'video-thumbnail-downloader': [{ name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste YouTube, Vimeo, or other video URL to download its thumbnail...' }],
   // ── Science Tools ──────────────────────────────────────────────────────────
@@ -3107,40 +2796,11 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'mileage_kmpl', label: 'Vehicle Mileage (km/L)', type: 'number', defaultValue: '15', placeholder: 'e.g. 15' },
     { name: 'fuel_price_per_liter', label: 'Fuel Price (₹/L)', type: 'number', defaultValue: '105', placeholder: 'e.g. 105' },
   ],
-  'electricity-bill-calculator': [
-    { name: 'units_consumed', label: 'Units Consumed (kWh)', type: 'number', defaultValue: '200', placeholder: 'e.g. 200' },
-    { name: 'rate_per_unit', label: 'Rate per Unit (₹)', type: 'number', defaultValue: '6', placeholder: 'e.g. 6' },
-    { name: 'fixed_charge', label: 'Fixed Charge (₹)', type: 'number', defaultValue: '50', placeholder: 'e.g. 50' },
-    { name: 'tax_percent', label: 'Tax / GST (%)', type: 'number', defaultValue: '18', placeholder: 'e.g. 18' },
-  ],
-  'unit-price-calculator': [
-    { name: 'price1', label: 'Product 1 Price (₹)', type: 'number', defaultValue: '100', placeholder: 'e.g. 100' },
-    { name: 'quantity1', label: 'Product 1 Quantity', type: 'number', defaultValue: '500', placeholder: 'e.g. 500' },
-    { name: 'price2', label: 'Product 2 Price (₹)', type: 'number', defaultValue: '180', placeholder: 'e.g. 180' },
-    { name: 'quantity2', label: 'Product 2 Quantity', type: 'number', defaultValue: '1000', placeholder: 'e.g. 1000' },
-    { name: 'unit1', label: 'Unit', type: 'select', defaultValue: 'g',
-      options: [{ label: 'Grams (g)', value: 'g' }, { label: 'ML (ml)', value: 'ml' }, { label: 'Units', value: 'unit' }, { label: 'Liters (L)', value: 'L' }]},
-  ],
-  'tip-calculator': [
-    { name: 'bill_amount', label: 'Bill Amount (₹)', type: 'number', defaultValue: '500', placeholder: 'e.g. 500' },
-    { name: 'tip_percent', label: 'Tip Percentage (%)', type: 'number', defaultValue: '10', placeholder: 'e.g. 10' },
-    { name: 'num_people', label: 'Number of People', type: 'number', defaultValue: '2', placeholder: 'e.g. 2' },
-  ],
-  // ── Text / Developer Tools ──────────────────────────────────────────────────
-  'text-readability': [{ name: 'text', label: 'Text to Analyze', type: 'textarea', placeholder: 'Paste your text here to analyze readability, word count, reading time...' }],
   'number-to-words': [{ name: 'number', label: 'Number', type: 'text', defaultValue: '12345', placeholder: 'e.g. 12345 or 1234567 (up to crores)' }],
   'roman-numeral-converter': [
     { name: 'value', label: 'Number or Roman Numeral', type: 'text', defaultValue: '2024', placeholder: 'e.g. 2024 or MMXXIV' },
     { name: 'direction', label: 'Direction', type: 'select', defaultValue: 'to_roman',
       options: [{ label: 'Arabic → Roman', value: 'to_roman' }, { label: 'Roman → Arabic', value: 'from_roman' }]},
-  ],
-  'days-between-dates': [
-    { name: 'date1', label: 'Start Date', type: 'text', defaultValue: '2024-01-01', placeholder: 'YYYY-MM-DD' },
-    { name: 'date2', label: 'End Date', type: 'text', defaultValue: '2024-12-31', placeholder: 'YYYY-MM-DD' },
-  ],
-  'age-calculator-detailed': [
-    { name: 'dob', label: 'Date of Birth', type: 'text', placeholder: 'YYYY-MM-DD e.g. 2000-01-15' },
-    { name: 'reference_date', label: 'Reference Date (optional, default today)', type: 'text', placeholder: 'YYYY-MM-DD' },
   ],
   'fibonacci-generator': [{ name: 'n', label: 'How many Fibonacci numbers?', type: 'number', defaultValue: '15', placeholder: 'e.g. 10 (max 100)' }],
   'prime-checker': [{ name: 'number', label: 'Number to Check', type: 'number', defaultValue: '97', placeholder: 'e.g. 97' }],
@@ -3177,19 +2837,6 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'use_digits', label: 'Digits (0-9)', type: 'select', defaultValue: 'true', options: booleanOptions },
     { name: 'use_symbols', label: 'Symbols (!@#$...)', type: 'select', defaultValue: 'true', options: booleanOptions },
   ],
-  'color-palette-generator': [
-    { name: 'base_color', label: 'Base Color (hex)', type: 'text', defaultValue: '#007aff', placeholder: 'e.g. #007aff or #ff6b6b' },
-    { name: 'palette_type', label: 'Palette Type', type: 'select', defaultValue: 'complementary',
-      options: [
-        { label: 'Complementary (2 colors)', value: 'complementary' },
-        { label: 'Triadic (3 colors)', value: 'triadic' },
-        { label: 'Analogous (3 colors)', value: 'analogous' },
-        { label: 'Split Complementary (3 colors)', value: 'split_complementary' },
-        { label: 'Shades (7 shades)', value: 'shades' },
-      ]},
-  ],
-
-  // ── Social Media Video Downloaders ────────────────────────────────────────
   'pinterest-downloader': [{ name: 'url', label: 'Pinterest URL', type: 'text', placeholder: 'https://www.pinterest.com/pin/...' }],
   'reddit-downloader': [{ name: 'url', label: 'Reddit Post URL', type: 'text', placeholder: 'https://www.reddit.com/r/...' }],
   'reddit-video-downloader': [{ name: 'url', label: 'Reddit Post URL', type: 'text', placeholder: 'https://www.reddit.com/r/...' }],

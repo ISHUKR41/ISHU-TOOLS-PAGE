@@ -23,7 +23,7 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
 - `backend/app/registry.py` — tool definitions (slug, title, category, tags, input_kind)
 - `backend/app/tools/handlers.py` — main handler functions
 - `backend/app/main.py` — FastAPI app with /sitemap.xml + /robots.txt dynamic endpoints
-- `frontend/src/index.css` — all CSS (dark theme, hero-v2, mega-menu, animations, responsive, bento-grid, shimmer skeleton) ~4880 lines
+- `frontend/src/index.css` — all CSS (dark theme, hero-v2, mega-menu, animations, responsive, bento-grid, shimmer skeleton) ~7700 lines (with comprehensive mobile-first improvements)
 - `frontend/src/components/layout/SiteShell.tsx` — mega-menu nav + expanded footer (9 links/col)
 - `frontend/src/features/tool/toolFields.ts` — per-tool form field configs
 - `frontend/src/features/tool/ToolPage.tsx` — generic tool runner with FAQ/SEO sections

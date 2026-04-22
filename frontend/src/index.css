@@ -7514,3 +7514,381 @@ img:not([width]):not([height]) {
 .js-ready * {
   /* Animations are now safe to run — layout is fully stabilized */
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE RESPONSIVENESS IMPROVEMENTS
+   Fixes: nav overflow, tool grid overflow, safe areas, typography
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Prevent ALL horizontal overflow at root level ── */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* ── Safe area support for notched devices ── */
+.site-nav {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.page-wrap {
+  padding-left: max(0px, env(safe-area-inset-left));
+  padding-right: max(0px, env(safe-area-inset-right));
+}
+
+/* ── Pre/code elements must never overflow ── */
+pre, code {
+  max-width: 100%;
+  overflow-x: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+pre.json-preview {
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ── Download link full-width on mobile ── */
+.download-link {
+  min-width: 0;
+  word-break: break-all;
+}
+
+/* ── Fix tool grid for very small screens ── */
+.tools-grid.compact {
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+}
+
+.category-tools-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+}
+
+/* ── 880px: Hide brand tagline when mobile nav is shown ── */
+@media (max-width: 880px) {
+  .brand-lockup small {
+    display: none;
+  }
+
+  .brand-lockup strong {
+    font-size: 1rem;
+  }
+}
+
+/* ── 768px: Responsive improvements ── */
+@media (max-width: 768px) {
+  .field-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tool-page-hero {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tool-page-hero h1 {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+
+  .run-button-row {
+    flex-direction: column;
+  }
+
+  .run-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .reset-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .result-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .dropzone {
+    min-height: 120px;
+  }
+
+  .tool-seo-chip-row {
+    gap: 0.35rem;
+  }
+
+  .download-link.prominent {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── 600px: Deeper mobile improvements ── */
+@media (max-width: 600px) {
+  .tool-main-panel {
+    border-radius: 16px;
+    padding: 1rem !important;
+  }
+
+  .tool-faq-section {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .json-result-block {
+    font-size: 0.85rem;
+  }
+
+  .json-details pre {
+    font-size: 0.72rem;
+  }
+
+  .category-section {
+    padding: 0.9rem;
+    border-radius: 16px;
+  }
+
+  .all-tools-hero {
+    padding: 1.5rem 1rem;
+    border-radius: 18px;
+  }
+
+  .all-tools-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .creator-inner {
+    padding: 1.2rem;
+    gap: 1.2rem;
+  }
+
+  .creator-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .creator-avatar-text {
+    font-size: 1.3rem;
+  }
+}
+
+/* ── 480px: Small phone improvements ── */
+@media (max-width: 480px) {
+  .hero-v2-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .hero-stat-card {
+    padding: 0.7rem 0.5rem;
+  }
+
+  .stat-number {
+    font-size: 1.2rem;
+  }
+
+  .quick-chip {
+    font-size: 0.73rem;
+    padding: 0.4rem 0.65rem;
+  }
+
+  .trust-badge {
+    font-size: 0.66rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .tool-badge-row {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tool-badge {
+    font-size: 0.7rem;
+    padding: 0.22rem 0.55rem;
+  }
+
+  .category-section-header {
+    gap: 0.4rem;
+  }
+
+  .category-section-header h2 {
+    font-size: 1rem;
+  }
+
+  .view-all-link {
+    font-size: 0.75rem;
+  }
+
+  .tool-card-compact strong {
+    font-size: 0.82rem;
+  }
+
+  .tool-card-compact small {
+    font-size: 0.72rem;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+/* ── 380px: Extra-small device improvements ── */
+@media (max-width: 380px) {
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+  }
+
+  .hero-v2-actions {
+    gap: 0.55rem;
+  }
+
+  .btn-primary-hero,
+  .btn-secondary-hero {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.84rem;
+  }
+
+  .quick-chip {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .site-nav-inner {
+    padding: 0.45rem 0.55rem;
+  }
+
+  .home-faq-section {
+    padding: 1rem 0.75rem;
+  }
+}
+
+/* ── Comparison table: always scrollable on mobile ── */
+@media (max-width: 768px) {
+  .comparison-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .comparison-table {
+    min-width: 480px;
+  }
+
+  .comparison-section {
+    padding: 2rem 0;
+    overflow: hidden;
+  }
+}
+
+/* ── Footer: better mobile layout ── */
+@media (max-width: 640px) {
+  .site-footer-inner {
+    padding: 1.5rem 0 1rem;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .footer-brand {
+    gap: 0.6rem;
+  }
+}
+
+/* ── Tool page: fix sidebar content on mobile ── */
+@media (max-width: 1100px) {
+  .tool-sidebar {
+    order: 2;
+  }
+
+  .tool-main-column {
+    order: 1;
+  }
+}
+
+/* ── Ticker improvements for mobile ── */
+@media (max-width: 600px) {
+  .ticker-item {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.58rem;
+  }
+}
+
+/* ── Bento grid improvements ── */
+@media (max-width: 640px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bento-card.span-2 {
+    grid-column: span 1;
+  }
+
+  .bento-card {
+    padding: 1rem;
+  }
+}
+
+/* ── Steps section on mobile ── */
+@media (max-width: 640px) {
+  .steps-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .step-card {
+    padding: 1rem 0.85rem;
+  }
+}
+
+/* ── General responsive image safety ── */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Navigation: fix intermediate sizes ── */
+@media (max-width: 880px) {
+  .site-nav-inner {
+    gap: 0.6rem;
+  }
+
+  .mobile-menu-btn {
+    flex-shrink: 0;
+  }
+}
+
+/* ── Mobile nav panel improvements ── */
+@media (max-width: 480px) {
+  .mobile-nav-panel {
+    width: calc(100vw - 0.75rem);
+    padding: 0.85rem;
+    border-radius: 16px;
+  }
+
+  .mobile-nav-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* ── Smooth touch interactions ── */
+@media (hover: none) {
+  .tool-card-compact:hover,
+  .quick-chip:hover,
+  .hero-stat-card:hover,
+  .btn-primary-hero:hover,
+  .btn-secondary-hero:hover {
+    transform: none;
+  }
+}

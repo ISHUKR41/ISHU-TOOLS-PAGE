@@ -1513,7 +1513,7 @@ MEGA_NEW_HANDLERS["statistics-calculator"] = _handle_statistics_calculator
 
 def _handle_json_formatter(files, payload):
     """Format, minify and validate JSON."""
-    json_str = str(payload.get("json", "")).strip()
+    json_str = str(payload.get("json", "") or payload.get("text", "")).strip()
     action = str(payload.get("action", "format")).lower()
     if not json_str:
         return _err("Enter JSON text to format or validate")
