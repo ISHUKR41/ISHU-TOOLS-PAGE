@@ -388,9 +388,16 @@ export default function HomePage() {
       .slice(0, 18)
   }, [tools, activeCategory, debouncedQuery])
 
+  const inspiredBrands = [
+    'Apple', 'Stripe', 'Linear', 'Vercel', 'Framer', 'Notion', 'Figma', 'Spotify',
+    'Airbnb', 'Awwwards', 'Webflow', 'Shadcn', 'Aceternity', 'Magic UI', 'Radix',
+    'Tailwind', 'Three.js', 'GSAP', 'Lenis', 'Locomotive',
+  ]
+
   return (
     <SiteShell>
       <div className='page-wrap home-wrap'>
+        <div className='hm-scroll-progress' aria-hidden='true' />
         <HeroSection
           toolCount={tools.length}
           categoryCount={categories.length}
@@ -399,6 +406,14 @@ export default function HomePage() {
           apiReady={apiReady}
           socialLinks={socialLinks}
         />
+
+        <div className='inspired-marquee' aria-hidden='true'>
+          <div className='inspired-track'>
+            {[...inspiredBrands, ...inspiredBrands].map((b, i) => (
+              <span key={i}>{b}</span>
+            ))}
+          </div>
+        </div>
 
         <section className='surface-panel search-panel'>
           <div className='toolbar-meta'>
