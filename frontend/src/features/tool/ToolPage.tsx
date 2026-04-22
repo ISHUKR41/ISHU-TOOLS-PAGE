@@ -29,6 +29,7 @@ import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
+import { trackToolVisit } from '../tools/AllToolsPage'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -113,6 +114,7 @@ export default function ToolPage() {
 
   // ─── Scroll to top + reset state on slug change ───
   useEffect(() => {
+    if (slug) trackToolVisit(slug)
     const fallback = findFallbackTool(slug)
     setTool(fallback)
     setRelatedTools(findFallbackRelatedTools(fallback))

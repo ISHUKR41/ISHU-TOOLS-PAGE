@@ -93,6 +93,114 @@ export function trackToolVisit(slug: string) {
   } catch {}
 }
 
+/* ─── Featured Bento Tools ───────────────────────────────── */
+
+const FEATURED_TOOLS = [
+  {
+    slug: 'merge-pdf',
+    label: 'Merge PDF',
+    desc: 'Combine multiple PDFs into one file instantly — drag, drop, reorder & merge.',
+    emoji: '📄',
+    cat: 'pdf-core',
+    gradient: 'linear-gradient(135deg, rgba(59,208,255,0.18) 0%, rgba(59,208,255,0.04) 100%)',
+    accent: '#3bd0ff',
+    size: 'large',
+    stat: '10M+ merges',
+  },
+  {
+    slug: 'compress-image',
+    label: 'Compress Image',
+    desc: 'Shrink JPG, PNG & WebP without losing quality. Up to 90% size reduction.',
+    emoji: '🖼️',
+    cat: 'image-core',
+    gradient: 'linear-gradient(135deg, rgba(77,240,181,0.18) 0%, rgba(77,240,181,0.04) 100%)',
+    accent: '#4df0b5',
+    size: 'medium',
+    stat: '5M+ images',
+  },
+  {
+    slug: 'remove-background',
+    label: 'Remove Background',
+    desc: 'AI-powered background removal. Get a clean transparent PNG in seconds.',
+    emoji: '✂️',
+    cat: 'image-core',
+    gradient: 'linear-gradient(135deg, rgba(167,139,250,0.18) 0%, rgba(167,139,250,0.04) 100%)',
+    accent: '#a78bfa',
+    size: 'medium',
+    stat: 'AI-Powered',
+  },
+  {
+    slug: 'json-formatter',
+    label: 'JSON Formatter',
+    desc: 'Beautify & validate JSON with syntax highlighting and error detection.',
+    emoji: '{ }',
+    cat: 'developer-tools',
+    gradient: 'linear-gradient(135deg, rgba(251,191,36,0.16) 0%, rgba(251,191,36,0.04) 100%)',
+    accent: '#fbbf24',
+    size: 'small',
+    stat: 'Instant',
+  },
+  {
+    slug: 'bmi-calculator',
+    label: 'BMI Calculator',
+    desc: 'Calculate your Body Mass Index and get health insights.',
+    emoji: '⚖️',
+    cat: 'health-tools',
+    gradient: 'linear-gradient(135deg, rgba(248,113,113,0.16) 0%, rgba(248,113,113,0.04) 100%)',
+    accent: '#f87171',
+    size: 'small',
+    stat: 'Health Tool',
+  },
+] as const
+
+function FeaturedSection() {
+  return (
+    <motion.section
+      className='featured-bento-section'
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+    >
+      <div className='featured-bento-header'>
+        <span className='featured-bento-label'>
+          <Zap size={13} /> Featured Tools
+        </span>
+        <span className='featured-bento-sub'>Handpicked for you</span>
+      </div>
+      <div className='featured-bento-grid'>
+        {FEATURED_TOOLS.map((tool, idx) => (
+          <motion.div
+            key={tool.slug}
+            className={`featured-bento-card featured-bento-${tool.size}`}
+            style={{
+              '--feat-accent': tool.accent,
+              '--feat-gradient': tool.gradient,
+            } as CSSProperties}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + idx * 0.06, duration: 0.35 }}
+            whileHover={{ y: -3, transition: { duration: 0.18 } }}
+          >
+            <Link to={`/tools/${tool.slug}`} className='featured-bento-link'>
+              <div className='feat-card-top'>
+                <span className='feat-emoji'>{tool.emoji}</span>
+                <span className='feat-stat'>{tool.stat}</span>
+              </div>
+              <div className='feat-card-body'>
+                <h3>{tool.label}</h3>
+                <p>{tool.desc}</p>
+              </div>
+              <div className='feat-card-cta'>
+                Open tool <ArrowRight size={13} />
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </motion.section>
+  )
+}
+
 /* ─── Skeleton ───────────────────────────────────────────── */
 
 function SkeletonToolCard() {
@@ -715,6 +823,8 @@ export default function AllToolsPage() {
 
           {!loading && !error && !showFavorites && (
             <>
+              {showPopular && <FeaturedSection />}
+
               {showPopular && (
                 <PopularStrip tools={POPULAR_TOOLS} allTools={tools} favorites={favorites} onToggleFav={onToggleFav} />
               )}
