@@ -4109,6 +4109,47 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   ],
 }
 
+// ── AV Studio v2 — payload fields ────────────────────────────────────────
+TOOL_FIELDS['bass-booster'] = [
+  { name: 'gain', label: 'Bass boost (dB)', type: 'number', placeholder: '8', help: '0–20 dB. Default 8 dB.' },
+]
+TOOL_FIELDS['treble-booster'] = [
+  { name: 'gain', label: 'Treble boost (dB)', type: 'number', placeholder: '6', help: '0–20 dB. Default 6 dB.' },
+]
+TOOL_FIELDS['audio-pitch-shifter'] = [
+  { name: 'semitones', label: 'Semitones', type: 'number', placeholder: '2', help: '-12 to +12. Negative = lower pitch.' },
+]
+TOOL_FIELDS['audio-speed-changer'] = [
+  { name: 'speed', label: 'Speed multiplier', type: 'number', placeholder: '1.5', help: '0.5×–4×. 1.0 = original, 2.0 = double speed.' },
+]
+TOOL_FIELDS['audio-fader'] = [
+  { name: 'duration', label: 'Fade duration (seconds)', type: 'number', placeholder: '3', help: '0.5–15 sec. Applied to both fade-in and fade-out.' },
+]
+TOOL_FIELDS['audio-volume-booster'] = [
+  { name: 'gain', label: 'Volume change (dB)', type: 'number', placeholder: '6', help: '-30 to +30 dB. Positive = louder.' },
+]
+TOOL_FIELDS['video-color-grader'] = [
+  { name: 'brightness', label: 'Brightness', type: 'number', placeholder: '0.1', help: '-0.5 to +0.5' },
+  { name: 'contrast',   label: 'Contrast',   type: 'number', placeholder: '1.1', help: '0.5 to 2.0 (1.0 = unchanged)' },
+  { name: 'saturation', label: 'Saturation', type: 'number', placeholder: '1.15', help: '0 (B&W) to 2.0' },
+]
+TOOL_FIELDS['video-speed-changer'] = [
+  { name: 'speed', label: 'Speed multiplier', type: 'number', placeholder: '2.0', help: '0.25× (slow-mo) to 4× (timelapse).' },
+]
+
+// Aliases share the same field configs
+Object.assign(TOOL_FIELDS, {
+  'bass-boost': TOOL_FIELDS['bass-booster'],
+  'treble-boost': TOOL_FIELDS['treble-booster'],
+  'pitch-shifter': TOOL_FIELDS['audio-pitch-shifter'],
+  'audio-speed-modifier': TOOL_FIELDS['audio-speed-changer'],
+  'audio-fade-in-out': TOOL_FIELDS['audio-fader'],
+  'volume-booster': TOOL_FIELDS['audio-volume-booster'],
+  'audio-louder': TOOL_FIELDS['audio-volume-booster'],
+  'video-brightness-contrast': TOOL_FIELDS['video-color-grader'],
+  'video-speed-modifier': TOOL_FIELDS['video-speed-changer'],
+})
+
 Object.assign(TOOL_FIELDS, {
   'attendance-tracker': TOOL_FIELDS['attendance-calculator'],
   'marks-calculator': TOOL_FIELDS['marks-percentage-calculator'],

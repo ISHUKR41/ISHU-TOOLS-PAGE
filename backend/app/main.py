@@ -345,10 +345,31 @@ def run_tool(
 
     # ── Validate dangerous filenames ──
     ALLOWED_EXTENSIONS = {
-        ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif",
-        ".svg", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt", ".odt", ".rtf",
-        ".txt", ".md", ".html", ".htm", ".csv", ".json", ".xml", ".epub",
-        ".zip", ".heic", ".heif", ".yaml", ".yml", ".mobi",
+        # Documents
+        ".pdf", ".docx", ".doc", ".xlsx", ".xls", ".pptx", ".ppt", ".odt", ".ods",
+        ".odp", ".rtf", ".txt", ".md", ".markdown", ".html", ".htm", ".csv", ".tsv",
+        ".json", ".xml", ".epub", ".mobi", ".azw3", ".fb2", ".tex", ".log",
+        # Images
+        ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".tiff", ".tif", ".svg",
+        ".heic", ".heif", ".ico", ".avif", ".jfif", ".jp2", ".raw", ".cr2", ".nef",
+        ".dng", ".arw", ".psd", ".eps", ".ai",
+        # Audio
+        ".mp3", ".wav", ".m4a", ".aac", ".ogg", ".oga", ".opus", ".flac", ".wma",
+        ".aiff", ".aif", ".alac", ".ac3", ".amr", ".ape", ".au", ".caf", ".dts",
+        ".mid", ".midi", ".mka", ".voc", ".weba",
+        # Video
+        ".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv", ".mpeg", ".mpg",
+        ".m4v", ".3gp", ".3g2", ".ts", ".mts", ".m2ts", ".vob", ".ogv", ".f4v",
+        ".asf", ".rm", ".rmvb", ".divx", ".xvid", ".mxf", ".y4m",
+        # Subtitles / metadata
+        ".srt", ".vtt", ".ass", ".ssa", ".sub", ".sbv",
+        # Archives & code (occasionally needed)
+        ".zip", ".tar", ".gz", ".7z", ".rar", ".yaml", ".yml", ".toml", ".ini",
+        ".sql", ".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".sass", ".less",
+        ".py", ".rb", ".java", ".c", ".cpp", ".h", ".hpp", ".go", ".rs", ".swift",
+        ".kt", ".php", ".sh", ".bat", ".env",
+        # Fonts
+        ".ttf", ".otf", ".woff", ".woff2",
     }
     for f in files:
         if f.filename:

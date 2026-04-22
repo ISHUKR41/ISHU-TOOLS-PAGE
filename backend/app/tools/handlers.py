@@ -6644,6 +6644,10 @@ try:
     from .number_base_converters import NUMBER_BASE_HANDLERS
     HANDLERS.update(NUMBER_BASE_HANDLERS)
     print(f"[handlers] Loaded {len(NUMBER_BASE_HANDLERS)} number base converter handlers")
+
+    from .av_studio_v2 import AV_STUDIO_V2_HANDLERS
+    HANDLERS.update(AV_STUDIO_V2_HANDLERS)
+    print(f"[handlers] Loaded {len(AV_STUDIO_V2_HANDLERS)} AV studio v2 handlers")
 except Exception as e:
     print(f"[handlers] WARNING: Could not load data_format_converters: {e}")
 
