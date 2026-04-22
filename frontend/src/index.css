@@ -1862,7 +1862,10 @@ h3 {
   .nav-links {
     width: 100%;
     overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .nav-links::-webkit-scrollbar { display: none; }
 
   .page-wrap {
     padding-top: 1rem;
@@ -6710,7 +6713,7 @@ img.lazy-img.loaded {
 
 /* ── Status badge — fixed width to prevent layout shift ──────── */
 .hero-status-wrap {
-  min-width: 220px;
+  min-width: min(220px, 100%);
 }
 
 .status-badge-text {
@@ -7006,7 +7009,7 @@ html {
 .tool-card-link {
   /* Stable, deterministic min-height for CLS score improvement */
   min-height: 260px;
-  max-height: 400px;
+  max-height: none; /* Removed fixed max-height — causes content clipping on narrow screens */
   contain: layout style paint;
 }
 
@@ -7114,7 +7117,7 @@ img[loading="lazy"] {
 
 /* ── Comparison Table Section ────────────────────────────────────────── */
 .comparison-section {
-  padding: 4rem 1.5rem;
+  padding: 4rem 0;
   text-align: center;
   max-width: 900px;
   margin: 0 auto;
@@ -7154,11 +7157,11 @@ img[loading="lazy"] {
 }
 
 .comparison-table th {
-  padding: 0.85rem 1.1rem;
+  padding: 0.85rem 0.75rem;
   color: var(--muted-strong);
   font-weight: 600;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal; /* Allow text wrapping on narrow screens */
 }
 
 .comparison-table th.cmp-feature-col {
@@ -7167,7 +7170,7 @@ img[loading="lazy"] {
 }
 
 .comparison-table td {
-  padding: 0.7rem 1.1rem;
+  padding: 0.7rem 0.75rem;
   border-bottom: 1px solid var(--line);
   text-align: center;
   color: var(--muted);
@@ -7475,7 +7478,7 @@ th.cmp-ishu {
   background: transparent;
   border-radius: 4px;
   padding: 0.1rem 0.25rem;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Responsive: comparison table */
@@ -8327,3 +8330,139 @@ table { max-width: 100%; }
   body { background: #fff !important; color: #000 !important; }
   .site-nav, footer, .back-to-top, .toast, .modal { display: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SURGICAL MOBILE FIXES — 2026 Final Layer
+   Targets specific components that clip or overflow on phones.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Category pill row: hide scrollbar on all browsers */
+.category-row {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.category-row::-webkit-scrollbar { display: none; }
+
+/* Comparison table: scroll horizontally instead of breaking layout */
+@media (max-width: 640px) {
+  .comparison-section {
+    padding: 2rem 0;
+  }
+  .comparison-wrap {
+    margin: 0 -0.5rem;
+    border-radius: 12px;
+  }
+  .comparison-table {
+    font-size: 0.76rem;
+    min-width: 460px;
+  }
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.55rem 0.45rem;
+  }
+  .cmp-best-badge {
+    font-size: 0.55rem;
+    padding: 0.05rem 0.3rem;
+  }
+}
+
+/* Steps grid — stack on tablet/mobile */
+@media (max-width: 768px) {
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+  }
+}
+@media (max-width: 480px) {
+  .steps-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.6rem;
+  }
+  .step-card {
+    padding: 1rem 0.85rem;
+  }
+}
+
+/* SEO content section — prevent content blowout on mobile */
+@media (max-width: 600px) {
+  .seo-content-section {
+    padding: 1.2rem 0.9rem;
+    border-radius: 14px;
+  }
+  .seo-content-section h2 {
+    font-size: 1rem;
+  }
+  .seo-content-section h3 {
+    font-size: 0.9rem;
+  }
+  .seo-content-section ol,
+  .seo-content-section ul {
+    padding-left: 1.1rem;
+  }
+  .seo-keyword-cloud {
+    gap: 0.35rem;
+  }
+  .seo-keyword-cloud a {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Home footer: prevent text overflow */
+.home-footer p {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Mobile nav panel: ensure full-width within viewport */
+@media (max-width: 480px) {
+  .mobile-nav-panel {
+    width: calc(100vw - 1.2rem);
+    margin: 0.4rem auto 0;
+    padding: 0.85rem;
+    border-radius: 16px;
+  }
+  .mobile-nav-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.4rem;
+  }
+  .mobile-nav-link {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+
+/* Download link: prevent filename overflow */
+.download-link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* JSON preview: horizontal scroll, not page overflow */
+.json-preview {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 0.78rem;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* Output image preview: constrain within container */
+.output-image-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Tool sidebar: prevent overflow on mobile */
+@media (max-width: 768px) {
+  .tool-sidebar {
+    overflow-x: hidden;
+  }
+  .tool-sidebar .related-tools-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
