@@ -81,7 +81,7 @@ def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) ->
             out = sorted(video_files, key=lambda f: f.stat().st_size, reverse=True)[0]
             return ExecutionResult(
                 kind="file",
-                file_path=out,
+                output_path=out,
                 filename=f"{title}.mp4",
                 message=f"Downloaded: {title} | Duration: {duration}s | By: {uploader} | Views: {view_count:,}",
             )
@@ -204,7 +204,7 @@ def _handle_soundcloud_downloader(files: list[Path], payload: dict[str, Any], jo
         mp3_files = list(job_dir.glob("*.mp3"))
         if mp3_files:
             out = sorted(mp3_files, key=lambda f: f.stat().st_size, reverse=True)[0]
-            return ExecutionResult(kind="file", file_path=out, filename=f"{title}.mp3", message=f"Downloaded: {title}")
+            return ExecutionResult(kind="file", output_path=out, filename=f"{title}.mp3", message=f"Downloaded: {title}")
         return ExecutionResult(kind="json", message="Download failed.", data={"error": "No MP3 output"})
     except Exception as e:
         return ExecutionResult(kind="json", message=f"SoundCloud download error: {str(e)[:200]}", data={"error": str(e)[:200]})
@@ -313,7 +313,7 @@ def _handle_youtube_thumbnail(files: list[Path], payload: dict[str, Any], job_di
         if resp.status_code == 200 and len(resp.content) > 1000:
             out = job_dir / f"thumbnail_{vid_id}_{quality}.jpg"
             out.write_bytes(resp.content)
-            return ExecutionResult(kind="file", file_path=out, filename=f"youtube_thumb_{vid_id}.jpg", message=f"Thumbnail downloaded ({quality}) for video ID: {vid_id}")
+            return ExecutionResult(kind="file", output_path=out, filename=f"youtube_thumb_{vid_id}.jpg", message=f"Thumbnail downloaded ({quality}) for video ID: {vid_id}")
 
         # Fallback to hqdefault
         for qual, turl in qualities:
@@ -321,7 +321,7 @@ def _handle_youtube_thumbnail(files: list[Path], payload: dict[str, Any], job_di
             if resp2.status_code == 200 and len(resp2.content) > 1000:
                 out = job_dir / f"thumbnail_{vid_id}_{qual}.jpg"
                 out.write_bytes(resp2.content)
-                return ExecutionResult(kind="file", file_path=out, filename=f"youtube_thumb_{vid_id}.jpg", message=f"Thumbnail downloaded ({qual})")
+                return ExecutionResult(kind="file", output_path=out, filename=f"youtube_thumb_{vid_id}.jpg", message=f"Thumbnail downloaded ({qual})")
     except Exception as e:
         return ExecutionResult(kind="json", message=f"Could not download thumbnail: {str(e)[:200]}", data={"error": str(e)[:200]})
 
@@ -422,7 +422,7 @@ def _handle_universal_playlist_downloader(files: list[Path], payload: dict[str, 
 
         return ExecutionResult(
             kind="file",
-            file_path=zip_path,
+            output_path=zip_path,
             filename=f"{playlist_title}.zip",
             message=f"Downloaded {len(video_files)} videos from playlist: {playlist_title}",
         )

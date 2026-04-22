@@ -31,7 +31,7 @@ def _j(data: dict, message: str = "Done") -> ExecutionResult:
 def _txt(text: str, message: str = "Done", filename: str = "output.txt") -> ExecutionResult:
     out = Path("/tmp") / f"ishu_{filename}"
     out.write_text(text, encoding="utf-8")
-    return ExecutionResult(kind="file", file_path=out, filename=filename, message=message)
+    return ExecutionResult(kind="file", output_path=out, filename=filename, message=message)
 
 def _get(payload: dict, *keys: str, default: str = "") -> str:
     for k in keys:

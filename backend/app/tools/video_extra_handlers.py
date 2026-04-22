@@ -32,131 +32,235 @@ from typing import Any
 import httpx
 from PIL import Image
 
-from .handlers import ExecutionResult, HANDLERS
+from .handlers import ExecutionResult
 
 
 # ─── Video Downloader (yt-dlp based) ─────────────────────────────────────────
 
-def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
-    if not url:
-        return ExecutionResult(kind="json", message="Please paste a video URL to download.", data={"error": "No URL provided"})
+# ─── Shared yt-dlp options ────────────────────────────────────────────────────
 
-    # Validate URL
-    if not url.startswith(("http://", "https://")):
-        return ExecutionResult(kind="json", message="Invalid URL. Please enter a valid video URL starting with http:// or https://", data={"error": "Invalid URL"})
+_YDL_COMMON_OPTS = {
+    "quiet": True,
+    "no_warnings": True,
+    "noplaylist": True,
+    "socket_timeout": 30,
+    "retries": 3,
+    "http_headers": {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    },
+    # Limit filesize to 200 MB to prevent huge downloads
+    "max_filesize": 200 * 1024 * 1024,
+}
 
+# Quality cap: default to 720p to keep files manageable
+_DEFAULT_FORMAT = (
+    "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]"
+    "/bestvideo[height<=720]+bestaudio"
+    "/best[height<=720]"
+    "/best"
+)
+
+_AUDIO_FORMAT = "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best"
+
+
+def _safe_title(title: str, max_len: int = 60) -> str:
+    """Clean title for use as a filename."""
+    title = re.sub(r'[^\w\s\-.]', '', title)
+    return title.strip()[:max_len].replace(' ', '_') or "video"
+
+
+def _find_output_file(job_dir: Path, preferred_ext: str = "mp4") -> Path | None:
+    """Find the largest downloaded file in job_dir."""
+    all_files = [f for f in job_dir.glob("*") if f.is_file() and f.stat().st_size > 1000]
+    if not all_files:
+        return None
+    # Prefer preferred extension
+    ext_files = [f for f in all_files if f.suffix.lower() == f".{preferred_ext}"]
+    pool = ext_files or all_files
+    return max(pool, key=lambda f: f.stat().st_size)
+
+
+def _classify_ytdlp_error(err: str) -> str:
+    """Return a user-friendly message based on yt-dlp error text."""
+    el = err.lower()
+    if "private video" in el or "private" in el:
+        return "This video is private and cannot be downloaded."
+    if "sign in" in el or "login" in el or "age" in el:
+        return "This video requires sign-in or is age-restricted and cannot be downloaded automatically."
+    if "unavailable" in el or "not available" in el or "removed" in el:
+        return "This video is unavailable or has been removed."
+    if "copyright" in el or "blocked" in el:
+        return "This video is blocked due to copyright restrictions."
+    if "rate limit" in el or "429" in el or "too many" in el:
+        return "Too many requests. Please wait a minute and try again."
+    if "unsupported url" in el or "unable to extract" in el:
+        return "This URL is not supported. Please check the link and try again."
+    if "max filesize" in el or "too large" in el:
+        return "Video file is too large to download (>200 MB). Try a shorter or lower-quality video."
+    if "network" in el or "connection" in el or "timeout" in el:
+        return "Network error. Please check your connection and try again."
+    if "ffmpeg" in el:
+        return "Video processing error. The video may be in an unsupported format."
+    return f"Download failed: {err[:250]}"
+
+
+def _yt_dlp_download(
+    url: str,
+    job_dir: Path,
+    fmt: str = _DEFAULT_FORMAT,
+    audio_only: bool = False,
+    extra_opts: dict | None = None,
+) -> ExecutionResult:
+    """
+    Core yt-dlp download function used by all video/audio downloader handlers.
+    Returns ExecutionResult with kind='file' on success or kind='json' on error.
+    """
     try:
         import yt_dlp
-
-        # First, extract info without downloading
-        ydl_opts_info = {
-            "quiet": True,
-            "no_warnings": True,
-            "extract_flat": False,
-            "skip_download": True,
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts_info) as ydl:
-            info = ydl.extract_info(url, download=False)
-
-        if not info:
-            return ExecutionResult(kind="json", message="Could not extract video information from the URL.", data={"error": "No info"})
-
-        title = info.get("title", "video")
-        duration = info.get("duration", 0)
-        uploader = info.get("uploader", "Unknown")
-        view_count = info.get("view_count", 0)
-        thumbnail = info.get("thumbnail", "")
-
-        # Get available formats
-        formats = info.get("formats", [])
-        format_list = []
-        for fmt in formats:
-            if fmt.get("vcodec") != "none" and fmt.get("height"):
-                format_list.append({
-                    "format_id": fmt.get("format_id", ""),
-                    "resolution": f"{fmt.get('height', '?')}p",
-                    "ext": fmt.get("ext", ""),
-                    "filesize": fmt.get("filesize", 0),
-                    "vcodec": fmt.get("vcodec", ""),
-                })
-
-        # Sort by resolution
-        format_list.sort(key=lambda x: int(x["resolution"].replace("p", "") or 0), reverse=True)
-        unique_resolutions = []
-        seen_res = set()
-        for f in format_list:
-            if f["resolution"] not in seen_res:
-                seen_res.add(f["resolution"])
-                unique_resolutions.append(f)
-
-        # Download the best quality
-        quality = payload.get("quality", "best")
-        format_selector = "bestvideo+bestaudio/best" if quality == "best" else f"bestvideo[height<={quality}]+bestaudio/best[height<={quality}]"
-
-        out_template = str(job_dir / "%(title)s.%(ext)s")
-        ydl_opts_dl = {
-            "format": format_selector,
-            "outtmpl": out_template,
-            "quiet": True,
-            "no_warnings": True,
-            "merge_output_format": "mp4",
-            "postprocessors": [{
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4",
-            }],
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts_dl) as ydl:
-            ydl.download([url])
-
-        # Find the downloaded file
-        downloaded = list(job_dir.glob("*.mp4"))
-        if not downloaded:
-            downloaded = list(job_dir.glob("*.*"))
-
-        if not downloaded:
-            return ExecutionResult(kind="json", message="Download failed. The video might be private or unavailable.", data={"error": "No file downloaded"})
-
-        out_path = downloaded[0]
-        safe_title = re.sub(r'[^\w\s-]', '', title)[:50].strip().replace(' ', '_')
-
-        return ExecutionResult(
-            kind="file",
-            message=f"✅ Downloaded: {title}",
-            output_path=out_path,
-            filename=f"{safe_title}.mp4",
-            content_type="video/mp4",
-        )
-
     except ImportError:
         return ExecutionResult(
             kind="json",
-            message="Video downloader is being set up. Please try again.",
-            data={"error": "yt-dlp not installed", "url": url},
+            message="Video downloader library is not installed. Please contact support.",
+            data={"error": "yt-dlp not installed"},
         )
+
+    out_tmpl = str(job_dir / "%(title).80s.%(ext)s")
+
+    opts: dict = dict(_YDL_COMMON_OPTS)
+    opts["outtmpl"] = out_tmpl
+    opts["format"] = fmt
+
+    if audio_only:
+        opts["postprocessors"] = [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }]
+    else:
+        opts["merge_output_format"] = "mp4"
+
+    if extra_opts:
+        opts.update(extra_opts)
+
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+
+        title = (info or {}).get("title", "video")
+        duration = (info or {}).get("duration", 0)
+        uploader = (info or {}).get("uploader", "")
+
+        if audio_only:
+            out = _find_output_file(job_dir, "mp3")
+            if not out:
+                # Sometimes yt-dlp names the file .mp3 without extension change yet
+                out = _find_output_file(job_dir)
+            if not out:
+                return ExecutionResult(
+                    kind="json",
+                    message="Audio extraction failed. The track may be unavailable or DRM-protected.",
+                    data={"error": "No audio file produced"},
+                )
+            fname = f"{_safe_title(title)}.mp3"
+            return ExecutionResult(
+                kind="file",
+                message=f"Downloaded: {title}" + (f" ({int(duration//60)}:{int(duration%60):02d})" if duration else ""),
+                output_path=out,
+                filename=fname,
+                content_type="audio/mpeg",
+            )
+        else:
+            out = _find_output_file(job_dir, "mp4")
+            if not out:
+                out = _find_output_file(job_dir)
+            if not out:
+                return ExecutionResult(
+                    kind="json",
+                    message="Download failed. The video may be unavailable, private, or DRM-protected.",
+                    data={"error": "No video file produced"},
+                )
+            ext = out.suffix.lstrip(".")
+            fname = f"{_safe_title(title)}.{ext}"
+            detail = []
+            if duration:
+                detail.append(f"{int(duration//60)}:{int(duration%60):02d}")
+            if uploader:
+                detail.append(f"by {uploader}")
+            size_mb = round(out.stat().st_size / 1024 / 1024, 1)
+            detail.append(f"{size_mb} MB")
+            return ExecutionResult(
+                kind="file",
+                message=f"Downloaded: {title}" + (f" ({', '.join(detail)})" if detail else ""),
+                output_path=out,
+                filename=fname,
+                content_type="video/mp4",
+            )
+
     except Exception as e:
         err = str(e)
-        if "Private video" in err:
-            msg = "This video is private and cannot be downloaded."
-        elif "not available" in err.lower():
-            msg = "This video is not available in your region or has been deleted."
-        elif "Sign in" in err:
-            msg = "This video requires authentication and cannot be downloaded."
-        else:
-            msg = f"Download failed: {err[:200]}"
-        return ExecutionResult(kind="json", message=msg, data={"error": err[:500]})
+        return ExecutionResult(
+            kind="json",
+            message=_classify_ytdlp_error(err),
+            data={"error": err[:500], "url": url},
+        )
 
+
+# ─── Universal Video Downloader ───────────────────────────────────────────────
+
+def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a video URL to download.", data={"error": "No URL"})
+    if not url.startswith(("http://", "https://")):
+        return ExecutionResult(kind="json", message="Invalid URL. Must start with http:// or https://", data={"error": "Invalid URL"})
+    quality = str(payload.get("quality", "720")).replace("p", "")
+    if quality.isdigit():
+        fmt = (
+            f"bestvideo[height<={quality}][ext=mp4]+bestaudio[ext=m4a]"
+            f"/bestvideo[height<={quality}]+bestaudio"
+            f"/best[height<={quality}]/best"
+        )
+    else:
+        fmt = _DEFAULT_FORMAT
+    return _yt_dlp_download(url, job_dir, fmt=fmt)
+
+
+# ─── YouTube Downloaders ──────────────────────────────────────────────────────
 
 def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
     if "youtube.com" not in url and "youtu.be" not in url:
-        url_check = url
-        if not ("youtube.com" in url_check or "youtu.be" in url_check):
-            return ExecutionResult(kind="json", message="Please enter a valid YouTube URL.", data={"error": "Not a YouTube URL"})
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube URL (youtube.com or youtu.be).", data={"error": "Not YouTube"})
+    payload["url"] = url
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
+    if "youtube.com" not in url and "youtu.be" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube URL.", data={"error": "Not YouTube"})
+    payload["url"] = url
+    quality = str(payload.get("quality", "720"))
+    payload["quality"] = quality
+    return _handle_video_downloader(files, payload, job_dir)
+
+
+def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
+    url = payload.get("url", "").strip()
+    if not url:
+        return ExecutionResult(kind="json", message="Please paste a YouTube Shorts URL.", data={"error": "No URL"})
+    if "youtube.com" not in url and "youtu.be" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube or Shorts URL.", data={"error": "Not YouTube"})
     payload["url"] = url
     return _handle_video_downloader(files, payload, job_dir)
 
@@ -165,52 +269,18 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL to extract audio.", data={"error": "No URL"})
+    return _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True)
 
-    try:
-        import yt_dlp
 
-        out_template = str(job_dir / "%(title)s.%(ext)s")
-        ydl_opts = {
-            "format": "bestaudio/best",
-            "outtmpl": out_template,
-            "quiet": True,
-            "no_warnings": True,
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "192",
-            }],
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            title = info.get("title", "audio") if info else "audio"
-
-        mp3_files = list(job_dir.glob("*.mp3"))
-        if not mp3_files:
-            return ExecutionResult(kind="json", message="Audio extraction failed. Please check the URL.", data={"error": "No MP3 generated"})
-
-        safe_title = re.sub(r'[^\w\s-]', '', title)[:50].strip().replace(' ', '_')
-        return ExecutionResult(
-            kind="file",
-            message=f"✅ Audio extracted: {title}",
-            output_path=mp3_files[0],
-            filename=f"{safe_title}.mp3",
-            content_type="audio/mpeg",
-        )
-
-    except Exception as e:
-        return ExecutionResult(kind="json", message=f"Audio extraction failed: {str(e)[:200]}", data={"error": str(e)[:500]})
-
+# ─── Platform-Specific Downloaders ───────────────────────────────────────────
 
 def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste an Instagram URL.", data={"error": "No URL"})
     if "instagram.com" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid Instagram URL.", data={"error": "Not Instagram"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+        return ExecutionResult(kind="json", message="Please enter a valid Instagram URL (instagram.com/...).", data={"error": "Not Instagram"})
+    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
 
 
 def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -218,9 +288,8 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
     if not url:
         return ExecutionResult(kind="json", message="Please paste a TikTok video URL.", data={"error": "No URL"})
     if "tiktok.com" not in url and "vm.tiktok" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid TikTok URL (tiktok.com/...).", data={"error": "Not TikTok"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+        return ExecutionResult(kind="json", message="Please enter a valid TikTok URL.", data={"error": "Not TikTok"})
+    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best", extra_opts={"noplaylist": True})
 
 
 def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -229,8 +298,7 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
         return ExecutionResult(kind="json", message="Please paste a Twitter/X video URL.", data={"error": "No URL"})
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
 
 
 def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -239,8 +307,7 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
     if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
 
 
 def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -248,9 +315,8 @@ def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Vimeo video URL.", data={"error": "No URL"})
     if "vimeo.com" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid Vimeo URL (vimeo.com/...).", data={"error": "Not Vimeo"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+        return ExecutionResult(kind="json", message="Please enter a valid Vimeo URL.", data={"error": "Not Vimeo"})
+    return _yt_dlp_download(url, job_dir, fmt=_DEFAULT_FORMAT)
 
 
 def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -259,108 +325,72 @@ def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], j
         return ExecutionResult(kind="json", message="Please paste a Dailymotion video URL.", data={"error": "No URL"})
     if "dailymotion.com" not in url and "dai.ly" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Dailymotion URL.", data={"error": "Not Dailymotion"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+    return _yt_dlp_download(url, job_dir, fmt="best[ext=mp4]/best")
 
+
+# ─── Playlist Downloader ──────────────────────────────────────────────────────
 
 def _handle_playlist_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    """Download entire YouTube playlist as a ZIP of MP4 files (up to 10 videos)."""
+    """Download YouTube playlist (up to 5 videos) as ZIP."""
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube playlist URL.", data={"error": "No URL"})
-
-    if "playlist" not in url.lower() and "list=" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid YouTube playlist URL (must contain 'list=...').", data={"error": "Not a playlist URL"})
+    if "list=" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid YouTube playlist URL containing 'list=...'.", data={"error": "Not a playlist"})
 
     try:
-        import yt_dlp
-        import zipfile
+        import yt_dlp, zipfile as _zipfile
 
-        out_template = str(job_dir / "%(playlist_index)02d_%(title)s.%(ext)s")
-        max_videos = int(payload.get("max_videos", 5))
-        max_videos = min(max(1, max_videos), 10)
-
-        ydl_opts = {
-            "format": "bestvideo[height<=720]+bestaudio/best[height<=720]",
-            "outtmpl": out_template,
-            "quiet": True,
-            "no_warnings": True,
+        max_videos = min(int(payload.get("max_videos", 3)), 5)
+        out_tmpl = str(job_dir / "%(playlist_index)02d_%(title).60s.%(ext)s")
+        opts = dict(_YDL_COMMON_OPTS)
+        opts.update({
+            "outtmpl": out_tmpl,
+            "format": "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]/best",
             "merge_output_format": "mp4",
             "playlist_items": f"1:{max_videos}",
-            "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
-        }
+            "noplaylist": False,
+        })
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)
 
-        playlist_title = info.get("title", "playlist") if info else "playlist"
-        downloaded = sorted(job_dir.glob("*.mp4"))
+        playlist_title = (info or {}).get("title", "playlist")
+        downloaded = sorted(f for f in job_dir.glob("*") if f.suffix.lower() in (".mp4", ".webm", ".mkv") and f.stat().st_size > 1000)
 
         if not downloaded:
-            return ExecutionResult(kind="json", message="No videos could be downloaded. The playlist may be private or empty.", data={"error": "No videos"})
+            return ExecutionResult(kind="json", message="No videos could be downloaded. The playlist may be private or empty.", data={"error": "No files"})
 
         if len(downloaded) == 1:
-            safe_name = re.sub(r'[^\w\s-]', '', downloaded[0].stem)[:50].strip().replace(' ', '_')
-            return ExecutionResult(kind="file", message=f"✅ Downloaded 1 video from playlist", output_path=downloaded[0], filename=f"{safe_name}.mp4", content_type="video/mp4")
+            f = downloaded[0]
+            return ExecutionResult(kind="file", message="Downloaded 1 video from playlist", output_path=f, filename=f.name, content_type="video/mp4")
 
-        zip_path = job_dir / "playlist_videos.zip"
-        with zipfile.ZipFile(str(zip_path), "w", zipfile.ZIP_DEFLATED) as zf:
-            for mp4 in downloaded:
-                zf.write(mp4, mp4.name)
+        zip_path = job_dir / "playlist.zip"
+        with _zipfile.ZipFile(str(zip_path), "w", _zipfile.ZIP_STORED) as zf:
+            for f in downloaded:
+                zf.write(f, f.name)
 
-        safe_playlist = re.sub(r'[^\w\s-]', '', playlist_title)[:40].strip().replace(' ', '_')
+        safe = _safe_title(playlist_title, 40)
         return ExecutionResult(
             kind="file",
-            message=f"✅ Downloaded {len(downloaded)} videos from playlist",
+            message=f"Downloaded {len(downloaded)} videos from playlist",
             output_path=zip_path,
-            filename=f"{safe_playlist}_playlist.zip",
+            filename=f"{safe}_playlist.zip",
             content_type="application/zip",
         )
-
     except Exception as e:
-        err = str(e)
-        if "Private" in err or "private" in err:
-            msg = "This playlist is private and cannot be downloaded."
-        elif "not available" in err.lower():
-            msg = "This playlist is not available in your region."
-        else:
-            msg = f"Playlist download failed: {err[:200]}"
-        return ExecutionResult(kind="json", message=msg, data={"error": err[:500]})
+        return ExecutionResult(kind="json", message=_classify_ytdlp_error(str(e)), data={"error": str(e)[:400]})
 
 
-def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    """Download YouTube video specifically as MP4 at chosen quality."""
-    url = payload.get("url", "").strip()
-    if not url:
-        return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
-    if "youtube.com" not in url and "youtu.be" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid YouTube URL.", data={"error": "Not YouTube"})
-    quality = payload.get("quality", "720")
-    payload["url"] = url
-    payload["quality"] = quality
-    return _handle_video_downloader(files, payload, job_dir)
-
-
-def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    """Download YouTube Shorts videos."""
-    url = payload.get("url", "").strip()
-    if not url:
-        return ExecutionResult(kind="json", message="Please paste a YouTube Shorts URL.", data={"error": "No URL"})
-    if "shorts" not in url.lower() and "youtube.com" not in url and "youtu.be" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid YouTube Shorts URL.", data={"error": "Not YouTube Shorts"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
-
+# ─── Audio Extractor (any URL) ────────────────────────────────────────────────
 
 def _handle_audio_extractor(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    """Extract audio from any video URL as MP3."""
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a video URL to extract audio.", data={"error": "No URL"})
     if not url.startswith(("http://", "https://")):
-        return ExecutionResult(kind="json", message="Please enter a valid video URL.", data={"error": "Invalid URL"})
-    payload["url"] = url
-    return _handle_youtube_to_mp3(files, payload, job_dir)
+        return ExecutionResult(kind="json", message="Please enter a valid URL starting with http:// or https://", data={"error": "Invalid URL"})
+    return _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True)
 
 
 # ─── Image to Base64 ──────────────────────────────────────────────────────────
@@ -2319,9 +2349,10 @@ for _slug in FRONTEND_TOOL_SLUGS:
 
 def register_video_extra_handlers() -> int:
     """Register all video and extra tool handlers into the main HANDLERS dict."""
+    from .handlers import HANDLERS as _HANDLERS
     registered = 0
     for slug, handler in VIDEO_EXTRA_HANDLERS.items():
-        if slug not in HANDLERS:
-            HANDLERS[slug] = handler
+        if slug not in _HANDLERS:
+            _HANDLERS[slug] = handler
             registered += 1
     return registered
