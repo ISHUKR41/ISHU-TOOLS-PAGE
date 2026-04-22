@@ -33,6 +33,7 @@ class ToolDefinition(BaseModel):
     tags: list[str]
     input_kind: Literal["files", "text", "url", "mixed"]
     accepts_multiple: bool = False
+    popularity_rank: int = 0
 
 
 class ToolRunResult(BaseModel):

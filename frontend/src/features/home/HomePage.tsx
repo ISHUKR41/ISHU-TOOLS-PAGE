@@ -342,13 +342,15 @@ export default function HomePage() {
   const filteredTools = useMemo(() => {
     const normalizedQuery = debouncedQuery.trim().toLowerCase()
 
-    return tools.filter((tool) => {
-      if (activeCategory !== 'all' && tool.category !== activeCategory) return false
-      if (!normalizedQuery) return true
+    return tools
+      .filter((tool) => {
+        if (activeCategory !== 'all' && tool.category !== activeCategory) return false
+        if (!normalizedQuery) return true
 
-      const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
-      return haystack.includes(normalizedQuery)
-    })
+        const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
+        return haystack.includes(normalizedQuery)
+      })
+      .sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
   }, [activeCategory, debouncedQuery, tools])
 
   const groupedSections = useMemo(() => {
@@ -363,11 +365,13 @@ export default function HomePage() {
     }
 
     return categories
-      .map((category) => ({
-        category,
-        tools: grouped.get(category.id) || [],
-      }))
+      .map((category) => {
+        const categoryTools = grouped.get(category.id) || []
+        const maxRank = categoryTools.reduce((m, t) => Math.max(m, t.popularity_rank ?? 0), 0)
+        return { category, tools: categoryTools, maxRank }
+      })
       .filter((entry) => entry.tools.length > 0)
+      .sort((a, b) => b.maxRank - a.maxRank)
   }, [categories, filteredTools])
 
   const totalVisibleTools = filteredTools.length

@@ -984,9 +984,23 @@ MEGA_NEW_HANDLERS["color-palette-generator"] = _handle_color_palette_generator
 def _handle_loan_emi_calculator(files, payload):
     """Detailed loan EMI with amortization."""
     try:
-        principal = float(payload.get("principal", 100000))
-        annual_rate = float(payload.get("annual_rate", 10))
-        tenure_months = int(payload.get("tenure_months", 12))
+        principal = float(
+            payload.get("principal") or payload.get("loan_amount") or
+            payload.get("amount") or 100000
+        )
+        annual_rate = float(
+            payload.get("annual_rate") or payload.get("rate") or
+            payload.get("interest_rate") or 10
+        )
+        # Accept tenure_months directly, or tenure/years in years (convert to months)
+        if payload.get("tenure_months"):
+            tenure_months = int(payload["tenure_months"])
+        elif payload.get("tenure"):
+            tenure_months = int(float(payload["tenure"]) * 12)
+        elif payload.get("years"):
+            tenure_months = int(float(payload["years"]) * 12)
+        else:
+            tenure_months = 12
         if annual_rate < 0 or tenure_months <= 0 or principal <= 0:
             return _err("Principal, rate, and tenure must all be positive")
         monthly_rate = annual_rate / (12 * 100)
@@ -1586,6 +1600,296 @@ def _handle_base64_tool(files, payload):
         return _err(f"Base64 error: {e}")
 
 MEGA_NEW_HANDLERS["base64-tool"] = _handle_base64_tool
+
+
+def _handle_fitness_goal_calculator(files, payload):
+    """Calculate time to reach a fitness goal based on current stats."""
+    try:
+        current_weight = float(payload.get("current_weight", 0))
+        goal_weight = float(payload.get("goal_weight", 0))
+        weekly_loss = float(payload.get("weekly_loss_rate", 0.5))
+        unit = str(payload.get("unit", "kg")).strip().lower()
+
+        if current_weight <= 0 or goal_weight <= 0:
+            return _err("Enter valid current and goal weights")
+        if weekly_loss <= 0:
+            weekly_loss = 0.5
+
+        diff = abs(current_weight - goal_weight)
+        weeks = diff / weekly_loss
+        months = weeks / 4.33
+        days = weeks * 7
+        direction = "lose" if current_weight > goal_weight else "gain"
+
+        unit_label = "kg" if unit == "kg" else "lbs"
+        daily_calorie_change = round(weekly_loss * (7700 if unit == "kg" else 3500) / 7)
+
+        return _json({
+            "current_weight": f"{current_weight} {unit_label}",
+            "goal_weight": f"{goal_weight} {unit_label}",
+            f"weight_to_{direction}": f"{diff:.1f} {unit_label}",
+            "weekly_rate": f"{weekly_loss} {unit_label}/week",
+            "estimated_weeks": round(weeks, 1),
+            "estimated_months": round(months, 1),
+            "estimated_days": round(days),
+            "daily_calorie_change": f"~{daily_calorie_change} kcal/day",
+            "direction": direction.capitalize(),
+            "message": f"At {weekly_loss} {unit_label}/week, you'll {direction} {diff:.1f} {unit_label} in about {round(weeks, 1)} weeks ({round(months, 1)} months).",
+            "tips": [
+                "Stay consistent with your diet and exercise plan",
+                "Track progress weekly, not daily",
+                "Adjust plan if results plateau for 2+ weeks",
+                "Aim for sustainable changes over quick results",
+            ],
+        })
+    except Exception as e:
+        return _err(f"Calculation error: {e}")
+
+MEGA_NEW_HANDLERS["fitness-goal-calculator"] = _handle_fitness_goal_calculator
+
+
+def _handle_formal_letter_generator(files, payload):
+    """Generate a professional formal letter."""
+    sender_name = str(payload.get("sender_name", "")).strip()
+    sender_address = str(payload.get("sender_address", "")).strip()
+    recipient_name = str(payload.get("recipient_name", "")).strip()
+    recipient_designation = str(payload.get("recipient_designation", "")).strip()
+    recipient_organization = str(payload.get("recipient_organization", "")).strip()
+    subject = str(payload.get("subject", "")).strip()
+    body = str(payload.get("body", "")).strip()
+    letter_type = str(payload.get("letter_type", "general")).strip().lower()
+    date_str = str(payload.get("date", "")).strip()
+
+    if not sender_name:
+        return _err("Please enter your name")
+    if not subject:
+        return _err("Please enter the letter subject")
+    if not body:
+        return _err("Please enter the letter body/content")
+
+    from datetime import date
+    today = date.today().strftime("%d %B %Y") if not date_str else date_str
+
+    salutation = f"Dear {recipient_name}," if recipient_name else "Dear Sir/Madam,"
+    recipient_block = ""
+    if recipient_name:
+        recipient_block = recipient_name
+        if recipient_designation:
+            recipient_block += f"\n{recipient_designation}"
+        if recipient_organization:
+            recipient_block += f"\n{recipient_organization}"
+
+    letter = f"""{sender_name}
+{sender_address if sender_address else '[Your Address]'}
+
+{today}
+
+{recipient_block if recipient_block else '[Recipient Name]'}
+
+{salutation}
+
+Subject: {subject}
+
+{body}
+
+Yours sincerely,
+
+{sender_name}"""
+
+    return _json({
+        "letter": letter,
+        "subject": subject,
+        "letter_type": letter_type.replace("-", " ").title(),
+        "character_count": len(letter),
+        "word_count": len(letter.split()),
+        "message": "Formal letter generated successfully",
+        "tips": [
+            "Review and customize the letter before sending",
+            "Print on official letterhead if available",
+            "Keep a copy for your records",
+            "Use a professional font like Times New Roman or Arial",
+        ],
+    })
+
+MEGA_NEW_HANDLERS["formal-letter-generator"] = _handle_formal_letter_generator
+
+
+def _handle_readability_analyzer(files, payload):
+    """Analyze text readability using Flesch-Kincaid and other metrics."""
+    text = str(payload.get("text", payload.get("content", ""))).strip()
+    if not text:
+        return _err("Please enter text to analyze")
+
+    import re
+    sentences = [s.strip() for s in re.split(r'[.!?]+', text) if s.strip()]
+    words = text.split()
+    sentence_count = max(len(sentences), 1)
+    word_count = len(words)
+
+    if word_count < 3:
+        return _err("Please enter at least a few sentences to analyze readability")
+
+    syllable_count = 0
+    for word in words:
+        word = word.lower().strip(".,;:!?\"'")
+        vowels = "aeiouy"
+        count = 0
+        prev_vowel = False
+        for ch in word:
+            is_vowel = ch in vowels
+            if is_vowel and not prev_vowel:
+                count += 1
+            prev_vowel = is_vowel
+        syllable_count += max(1, count)
+
+    avg_sentence_length = word_count / sentence_count
+    avg_syllables_per_word = syllable_count / max(word_count, 1)
+
+    flesch = 206.835 - (1.015 * avg_sentence_length) - (84.6 * avg_syllables_per_word)
+    flesch = round(max(0, min(100, flesch)), 1)
+
+    fk_grade = 0.39 * avg_sentence_length + 11.8 * avg_syllables_per_word - 15.59
+    fk_grade = round(max(1, min(18, fk_grade)), 1)
+
+    if flesch >= 90:
+        level = "Very Easy"
+        audience = "5th grade / Elementary school"
+    elif flesch >= 80:
+        level = "Easy"
+        audience = "6th grade / Middle school"
+    elif flesch >= 70:
+        level = "Fairly Easy"
+        audience = "7th grade"
+    elif flesch >= 60:
+        level = "Standard"
+        audience = "8th–9th grade / High school"
+    elif flesch >= 50:
+        level = "Fairly Difficult"
+        audience = "10th–12th grade / High school seniors"
+    elif flesch >= 30:
+        level = "Difficult"
+        audience = "College level"
+    else:
+        level = "Very Confusing"
+        audience = "Professional / Expert level"
+
+    long_words = [w for w in words if len(w) > 6]
+    long_sentences = [s for s in sentences if len(s.split()) > 25]
+
+    return _json({
+        "flesch_reading_ease": flesch,
+        "flesch_kincaid_grade": fk_grade,
+        "readability_level": level,
+        "target_audience": audience,
+        "word_count": word_count,
+        "sentence_count": sentence_count,
+        "syllable_count": syllable_count,
+        "avg_words_per_sentence": round(avg_sentence_length, 1),
+        "avg_syllables_per_word": round(avg_syllables_per_word, 2),
+        "long_words_count": len(long_words),
+        "long_sentences_count": len(long_sentences),
+        "message": f"Readability: {level} (Flesch score: {flesch}/100, Grade level: {fk_grade})",
+        "suggestions": [
+            "Use shorter sentences (aim for 15–20 words each)" if avg_sentence_length > 20 else "Sentence length is good",
+            "Simplify complex words where possible" if len(long_words) > word_count * 0.2 else "Vocabulary complexity is appropriate",
+            "Break long paragraphs into smaller chunks for better readability",
+        ],
+    })
+
+MEGA_NEW_HANDLERS["readability-analyzer"] = _handle_readability_analyzer
+MEGA_NEW_HANDLERS["text-readability-analyzer"] = _handle_readability_analyzer
+
+
+def _handle_ideal_weight_alias(files, payload):
+    """Alias for ideal-weight handler."""
+    return _handle_ideal_weight(files, payload)
+
+MEGA_NEW_HANDLERS["ideal-weight-calculator"] = _handle_ideal_weight_alias
+
+
+def _handle_exercise_calories_alias(files, payload):
+    """Alias for exercise-calories handler — delegates to health_finance_handlers."""
+    try:
+        weight = float(payload.get("weight", payload.get("body_weight", 70)))
+        duration = float(payload.get("duration", payload.get("minutes", 30)))
+        activity = str(payload.get("activity", payload.get("exercise_type", "walking"))).lower().strip()
+
+        met_values = {
+            "walking": 3.5, "running": 8.0, "jogging": 7.0,
+            "cycling": 6.0, "swimming": 6.0, "yoga": 2.5,
+            "weightlifting": 3.5, "weight training": 3.5, "gym": 4.5,
+            "aerobics": 6.0, "dancing": 4.5, "football": 8.0,
+            "basketball": 6.5, "badminton": 5.5, "cricket": 4.0,
+            "skipping": 8.0, "jump rope": 8.0, "pilates": 3.0,
+            "hiking": 5.3, "stair climbing": 8.0, "rowing": 7.0,
+            "zumba": 6.5, "crossfit": 9.0, "elliptical": 5.0,
+        }
+        met = met_values.get(activity, 4.0)
+        calories = round((met * weight * duration) / 60)
+
+        return _json({
+            "activity": activity.title(),
+            "duration_minutes": duration,
+            "body_weight_kg": weight,
+            "calories_burned": calories,
+            "met_value": met,
+            "calories_per_minute": round(calories / max(duration, 1), 1),
+            "message": f"{calories} calories burned during {int(duration)} min of {activity.title()}",
+            "equivalent_to": f"~{round(calories/500, 1)} large samosas or {round(calories/75, 1)} glasses of juice",
+        })
+    except Exception as e:
+        return _err(f"Calculation error: {e}")
+
+MEGA_NEW_HANDLERS["exercise-calories-calculator"] = _handle_exercise_calories_alias
+
+
+def _handle_email_validator_tool(files, payload):
+    """Validate email address format."""
+    import re
+    email = str(payload.get("email", payload.get("text", ""))).strip()
+    if not email:
+        return _err("Please enter an email address to validate")
+
+    pattern = r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$'
+    is_valid = bool(re.match(pattern, email))
+
+    parts = email.split("@") if "@" in email else [email, ""]
+    local = parts[0]
+    domain = parts[1] if len(parts) > 1 else ""
+
+    issues = []
+    if not "@" in email:
+        issues.append("Missing @ symbol")
+    elif email.count("@") > 1:
+        issues.append("Multiple @ symbols found")
+    if domain and "." not in domain:
+        issues.append("Domain has no TLD (e.g., .com, .in)")
+    if local and (local.startswith(".") or local.endswith(".")):
+        issues.append("Local part cannot start or end with a dot")
+    if len(email) > 254:
+        issues.append("Email address too long (max 254 characters)")
+    if " " in email:
+        issues.append("Email cannot contain spaces")
+
+    common_domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com", "rediffmail.com"]
+    suggestion = None
+    if domain and not is_valid:
+        for d in common_domains:
+            if domain.replace(".", "").startswith(d.replace(".", "")[:4]):
+                suggestion = f"{local}@{d}"
+                break
+
+    return _json({
+        "email": email,
+        "is_valid": is_valid,
+        "local_part": local,
+        "domain": domain,
+        "issues": issues if issues else ["No issues found"],
+        "suggestion": suggestion,
+        "message": f"✓ Valid email address" if is_valid else f"✗ Invalid email: {', '.join(issues) if issues else 'format error'}",
+    })
+
+MEGA_NEW_HANDLERS["email-validator-tool"] = _handle_email_validator_tool
 
 
 def register_mega_new_handlers() -> int:

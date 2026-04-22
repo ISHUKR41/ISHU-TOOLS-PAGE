@@ -7002,6 +7002,74 @@ TOOLS.extend([
         tags=["png compress", "image size", "kb", "resize", "form upload"]),
 ])
 
+# ── New tools (missing from earlier registrations) ──────────────────────────
+TOOLS.extend([
+    ToolDefinition(
+        slug="compress-image-to-10kb",
+        title="Compress Image to 10KB",
+        description="Compress any image to a 10KB target size online free. Perfect for government exam forms, SSC, UPSC, RRB portals.",
+        category="image-core",
+        tags=["compress", "10kb", "image", "ssc", "upsc", "exam"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="compress-image-to-500kb",
+        title="Compress Image to 500KB",
+        description="Compress image to 500KB target size online free. Ideal for college forms, job applications, and email attachments.",
+        category="image-core",
+        tags=["compress", "500kb", "image", "college", "form"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="readability-analyzer",
+        title="Readability Analyzer",
+        description="Analyze text readability using Flesch-Kincaid score, grade level, and reading ease metrics. Great for students and writers.",
+        category="text-ops",
+        tags=["readability", "flesch", "grade level", "text analysis", "writing"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="fitness-goal-calculator",
+        title="Fitness Goal Calculator",
+        description="Calculate how long it will take to reach your weight loss or gain goal based on your current weight and weekly rate.",
+        category="health-calculators",
+        tags=["fitness", "weight loss", "weight gain", "goal", "health"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="formal-letter-generator",
+        title="Formal Letter Generator",
+        description="Generate professional formal letters for job applications, complaints, requests, and official correspondence instantly.",
+        category="text-ops",
+        tags=["formal letter", "letter generator", "professional", "template", "writing"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="ideal-weight-calculator",
+        title="Ideal Weight Calculator",
+        description="Calculate your ideal body weight based on height and gender using Devine, Robinson, and Hamwi formulas.",
+        category="health-calculators",
+        tags=["ideal weight", "body weight", "health", "bmi", "fitness"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="exercise-calories-calculator",
+        title="Exercise Calories Calculator",
+        description="Calculate calories burned during exercise based on activity type, duration, and body weight.",
+        category="health-calculators",
+        tags=["exercise", "calories", "burned", "fitness", "health"],
+        input_kind="text",
+    ),
+    ToolDefinition(
+        slug="email-validator-tool",
+        title="Email Validator Tool",
+        description="Validate email addresses instantly. Check format, domain structure, and common mistakes in email addresses.",
+        category="developer-tools",
+        tags=["email", "validator", "verify", "format", "check"],
+        input_kind="text",
+    ),
+])
+
 # Deduplicate tools — keep last definition (most recently added = most complete)
 _seen_tools: dict = {}
 for _tool in TOOLS:
@@ -7010,4 +7078,78 @@ TOOLS.clear()
 TOOLS.extend(_seen_tools.values())
 
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
+
+# ── Assign popularity ranks — higher = more popular (shown first) ─────────────
+_POPULARITY: dict[str, int] = {
+    # Image compression — most searched by Indian students for exam forms
+    "compress-image": 100,
+    "compress-image-to-50kb": 99,
+    "compress-image-to-100kb": 98,
+    "compress-image-to-20kb": 97,
+    "compress-image-to-200kb": 96,
+    "compress-image-to-5kb": 95,
+    "compress-image-to-10kb": 94,
+    "compress-image-to-500kb": 93,
+    "resize-image": 92,
+    "resize-image-in-kb": 91,
+    "passport-photo-maker": 90,
+    "remove-background": 89,
+    "crop-image": 88,
+    "jpg-to-pdf": 87,
+    "image-to-text": 86,
+    # PDF — always top priority
+    "merge-pdf": 99,
+    "compress-pdf": 98,
+    "pdf-to-word": 97,
+    "pdf-to-jpg": 96,
+    "split-pdf": 95,
+    "word-to-pdf": 94,
+    "pdf-to-excel": 93,
+    "jpg-to-pdf": 92,
+    "ocr-pdf": 91,
+    "rotate-pdf": 88,
+    "unlock-pdf": 87,
+    "protect-pdf": 86,
+    "watermark-pdf": 85,
+    # Calculator — extremely popular
+    "bmi-calculator": 95,
+    "age-calculator": 94,
+    "percentage-calculator": 93,
+    "loan-emi-calculator": 92,
+    "sip-calculator-india": 91,
+    "income-tax-calculator-india": 90,
+    "cgpa-percentage-converter": 89,
+    "attendance-required-calculator": 88,
+    "scientific-calculator": 87,
+    "fixed-deposit-calculator-india": 86,
+    "gst-calculator-india": 85,
+    "simple-interest-calculator": 84,
+    "compound-interest-calculator": 83,
+    # Developer tools
+    "json-formatter": 95,
+    "qr-code-generator": 94,
+    "password-generator": 93,
+    "base64-encode": 92,
+    "base64-decode": 91,
+    "uuid-generator": 90,
+    "url-encode": 89,
+    "md5-generator": 88,
+    "regex-tester": 87,
+    "sha256-generator": 86,
+    "upi-qr-generator": 85,
+    # Text tools
+    "word-counter": 90,
+    "case-converter": 88,
+    "character-counter": 85,
+    "text-to-pdf": 82,
+    # Health
+    "readability-analyzer": 75,
+    "ideal-weight-calculator": 74,
+    "exercise-calories-calculator": 73,
+    "fitness-goal-calculator": 72,
+}
+
+for _t in TOOLS:
+    if _t.slug in _POPULARITY:
+        _t.popularity_rank = _POPULARITY[_t.slug]
 

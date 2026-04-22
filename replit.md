@@ -15,7 +15,8 @@ ISHU TOOLS (Indian Student Hub University Tools) — a full-stack free online to
   - Entry: `backend/run.py`
   - Tool registry: `backend/app/registry.py`
   - Tool handlers: `backend/app/tools/handlers.py` + `developer_handlers.py` + `everyday_handlers.py` + `production_handlers.py` + `new_tools_handlers.py` + `extra_tools_handlers.py` + `image_plus_handlers.py` + `health_finance_handlers.py` + `video_extra_handlers.py` + **`ultra_tools_handlers.py`** (99 handlers) + **`social_video_handlers.py`** (55 handlers: Pinterest/Reddit/Twitch/LinkedIn/JWT/regex) + **`mega_tools_v2.py`** (34 handlers: AI writing/crypto/HR/legal/travel/dev v2/finance v2/productivity v2) + **`worldwide_tools_handlers.py`** (59 handlers: paraphraser/essay-outline/flashcard/email-template/cover-letter/hashtag/SQL-formatter/license/README/GitHub-Actions/nginx-config/Dockerfile/invoice/expense-splitter/meeting-agenda/world-meeting-planner/slogan/social-bio/resume-bullet/compound-interest/tip-calc/number-to-words/string-case-converter/study-schedule/blog-outline)
-- **810 registered handlers** (most recent count after worldwide_tools_handlers.py)
+- **892 registered handlers** (total after all handler packs including mega_new_handlers + worldwide_tools_handlers)
+- **CRITICAL BUG FIX**: `_coerce_execution_result` in `handlers.py` now uses duck-typing to handle `ExecutionResult`-like objects from `mega_tools_v2.py` and other modules that define their own local `ExecutionResult` dataclass (previously caused 500 errors for ALL mega_tools_v2 handlers like SIP calculator, AI headline generator, EMI advanced, etc.)
   - Rate limiting: 60 req/min per IP on the execute endpoint
   - Workspace cleanup: auto-removed via BackgroundTasks after every request
 

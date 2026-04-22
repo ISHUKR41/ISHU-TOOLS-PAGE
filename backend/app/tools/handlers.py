@@ -6376,6 +6376,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "compress-to-5kb": handle_compress_specific_kb(5),
     "compress-image-to-5kb": handle_compress_specific_kb(5),
     "compress-to-10kb": handle_compress_specific_kb(10),
+    "compress-image-to-10kb": handle_compress_specific_kb(10),
     "compress-jpeg-to-10kb": handle_compress_specific_kb(10),
     "compress-to-15kb": handle_compress_specific_kb(15),
     "compress-image-to-15kb": handle_compress_specific_kb(15),
@@ -6398,6 +6399,7 @@ HANDLERS: dict[str, ToolHandler] = {
     "compress-to-300kb": handle_compress_specific_kb(300),
     "compress-jpeg-to-300kb": handle_compress_specific_kb(300),
     "compress-to-500kb": handle_compress_specific_kb(500),
+    "compress-image-to-500kb": handle_compress_specific_kb(500),
     "compress-jpeg-to-500kb": handle_compress_specific_kb(500),
     "compress-to-1mb": handle_compress_specific_kb(1024),
     "compress-image-to-1mb": handle_compress_specific_kb(1024),
@@ -6570,6 +6572,34 @@ def _coerce_execution_result(raw_result: Any, output_dir: Path) -> ExecutionResu
     """
     if isinstance(raw_result, ExecutionResult):
         return raw_result
+
+    # Duck-typing: handle ExecutionResult-like objects from other modules
+    # (e.g. mega_tools_v2.ExecutionResult, mega_tools_v3.ExecutionResult)
+    if (
+        not isinstance(raw_result, dict)
+        and hasattr(raw_result, "kind")
+        and hasattr(raw_result, "message")
+    ):
+        kind = str(raw_result.kind or "json").lower()
+        if kind == "file":
+            op = getattr(raw_result, "output_path", None)
+            output_path = Path(op) if op else None
+            if output_path and output_path.exists():
+                return ExecutionResult(
+                    kind="file",
+                    message=str(raw_result.message or "Done"),
+                    output_path=output_path,
+                    filename=getattr(raw_result, "filename", None) or output_path.name,
+                    content_type=getattr(raw_result, "content_type", None) or "application/octet-stream",
+                )
+        data = getattr(raw_result, "data", None)
+        if not isinstance(data, dict):
+            data = {"result": str(data)} if data is not None else {}
+        return ExecutionResult(
+            kind="json",
+            message=str(raw_result.message or "Done"),
+            data=data,
+        )
 
     if isinstance(raw_result, dict):
         result_type = str(raw_result.get("kind") or raw_result.get("type") or "json").lower()

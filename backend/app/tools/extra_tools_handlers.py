@@ -588,53 +588,63 @@ def handle_text_to_ascii_art(files, payload, output_dir):
 # ═══════════════════════════════════════════════════════════
 
 def handle_percentage_calculator_improved(files, payload, output_dir):
-    """More accurate percentage calculator with multiple modes"""
-    mode = str(payload.get("mode", "basic")).lower()
-    
+    """Comprehensive percentage calculator — modes match toolFields exactly."""
+    mode = str(payload.get("mode", "percentage")).lower()
+
     try:
-        if mode == "what_percent":
-            # What % is X of Y?
-            x = float(payload.get("value", 0))
-            y = float(payload.get("total", 100))
-            if y == 0:
-                return ExecutionResult(kind="json", message="Cannot divide by zero", data={"error": "Total cannot be zero"})
-            pct = (x / y) * 100
-            return ExecutionResult(kind="json", message=f"{x} is {pct:.2f}% of {y}", data={
-                "text": f"{x} is {pct:.4f}% of {y}",
-                "result": round(pct, 4),
+        value = float(payload.get("value", 0))
+        total = float(payload.get("total", 100))
+
+        if mode == "percentage":
+            # What % is value of total?
+            if total == 0:
+                return ExecutionResult(kind="json", message="Total cannot be zero", data={"error": "Total cannot be zero"})
+            pct = (value / total) * 100
+            return ExecutionResult(kind="json", message=f"{value} is {pct:.2f}% of {total}", data={
+                "result": f"{pct:.2f}%",
+                "value": value,
+                "total": total,
+                "percentage": round(pct, 4),
+                "text": f"{value} is {pct:.4f}% of {total}",
             })
-        
-        elif mode == "increase":
-            # X increased by Y%
-            x = float(payload.get("value", 100))
-            pct = float(payload.get("percentage", 10))
-            result = x * (1 + pct / 100)
-            increase = result - x
-            return ExecutionResult(kind="json", message=f"{x} + {pct}% = {result:.2f}", data={
-                "text": f"Original: {x}\nIncrease: {pct}%\nIncrease amount: {increase:.4f}\nResult: {result:.4f}",
+
+        elif mode == "of":
+            # value% of total
+            result = (value / 100) * total
+            return ExecutionResult(kind="json", message=f"{value}% of {total} = {result:.4f}", data={
                 "result": round(result, 4),
+                "percentage": value,
+                "of_value": total,
+                "calculated": round(result, 4),
+                "text": f"{value}% of {total} = {round(result, 4)}",
             })
-        
-        elif mode == "decrease":
-            x = float(payload.get("value", 100))
-            pct = float(payload.get("percentage", 10))
-            result = x * (1 - pct / 100)
-            decrease = x - result
-            return ExecutionResult(kind="json", message=f"{x} - {pct}% = {result:.2f}", data={
-                "text": f"Original: {x}\nDecrease: {pct}%\nDecrease amount: {decrease:.4f}\nResult: {result:.4f}",
-                "result": round(result, 4),
+
+        elif mode == "change":
+            # Percentage change: old = total, new = value
+            if total == 0:
+                return ExecutionResult(kind="json", message="Old value cannot be zero", data={"error": "Old value cannot be zero"})
+            change = ((value - total) / abs(total)) * 100
+            direction = "increase" if change > 0 else "decrease" if change < 0 else "no change"
+            return ExecutionResult(kind="json", message=f"Percentage change: {change:.2f}%", data={
+                "result": f"{change:.2f}%",
+                "old_value": total,
+                "new_value": value,
+                "change_percent": round(change, 4),
+                "direction": direction.title(),
+                "text": f"From {total} to {value}: {change:.4f}% {direction}",
             })
-        
+
         else:
-            # Basic: Y% of X
-            x = float(payload.get("value", 100))
-            pct = float(payload.get("percentage", 10))
-            result = x * pct / 100
-            return ExecutionResult(kind="json", message=f"{pct}% of {x} = {result:.2f}", data={
-                "text": f"{pct}% of {x} = {result:.4f}",
-                "result": round(result, 4),
+            # Fallback to percentage mode
+            if total == 0:
+                return ExecutionResult(kind="json", message="Total cannot be zero", data={"error": "Total cannot be zero"})
+            pct = (value / total) * 100
+            return ExecutionResult(kind="json", message=f"{value} is {pct:.2f}% of {total}", data={
+                "result": f"{pct:.2f}%",
+                "percentage": round(pct, 4),
+                "text": f"{value} is {pct:.4f}% of {total}",
             })
-    
+
     except (ValueError, TypeError) as e:
         return ExecutionResult(kind="json", message=f"Calculation error: {e}", data={"error": str(e)})
 

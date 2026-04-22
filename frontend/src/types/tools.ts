@@ -12,6 +12,7 @@ export interface ToolDefinition {
   tags: string[]
   input_kind: 'files' | 'text' | 'url' | 'mixed'
   accepts_multiple: boolean
+  popularity_rank?: number
 }
 
 export interface ToolRunJsonResult {

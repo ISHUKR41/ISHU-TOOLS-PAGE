@@ -3874,6 +3874,198 @@ Object.assign(TOOL_FIELDS, {
   'seo-meta-generator': TOOL_FIELDS['meta-description-generator'],
 })
 
+// ── New tools added from tools.txt ──────────────────────────────────────────
+
+TOOL_FIELDS['readability-analyzer'] = [
+  {
+    name: 'text',
+    label: 'Text to Analyze',
+    type: 'textarea',
+    placeholder: 'Paste your article, essay, blog post, or any text here to check readability...',
+    required: true,
+    rows: 10,
+  },
+]
+
+TOOL_FIELDS['fitness-goal-calculator'] = [
+  {
+    name: 'current_weight',
+    label: 'Current Weight',
+    type: 'number',
+    placeholder: '70',
+    required: true,
+    hint: 'Enter your current weight',
+  },
+  {
+    name: 'goal_weight',
+    label: 'Goal Weight',
+    type: 'number',
+    placeholder: '65',
+    required: true,
+    hint: 'Enter your target weight',
+  },
+  {
+    name: 'weekly_loss_rate',
+    label: 'Weekly Rate (kg/week)',
+    type: 'number',
+    placeholder: '0.5',
+    hint: 'Recommended: 0.25–0.75 kg/week for healthy progress',
+  },
+  {
+    name: 'unit',
+    label: 'Unit',
+    type: 'select',
+    options: [
+      { label: 'Kilograms (kg)', value: 'kg' },
+      { label: 'Pounds (lbs)', value: 'lbs' },
+    ],
+  },
+]
+
+TOOL_FIELDS['formal-letter-generator'] = [
+  {
+    name: 'letter_type',
+    label: 'Letter Type',
+    type: 'select',
+    options: [
+      { label: 'General Formal Letter', value: 'general' },
+      { label: 'Job Application Letter', value: 'job-application' },
+      { label: 'Complaint Letter', value: 'complaint' },
+      { label: 'Request Letter', value: 'request' },
+      { label: 'Leave Application', value: 'leave' },
+      { label: 'Resignation Letter', value: 'resignation' },
+      { label: 'Recommendation Letter', value: 'recommendation' },
+      { label: 'Internship Application', value: 'internship' },
+    ],
+  },
+  {
+    name: 'sender_name',
+    label: 'Your Name',
+    type: 'text',
+    placeholder: 'Rahul Kumar',
+    required: true,
+  },
+  {
+    name: 'sender_address',
+    label: 'Your Address',
+    type: 'text',
+    placeholder: '123, MG Road, Delhi – 110001',
+  },
+  {
+    name: 'recipient_name',
+    label: 'Recipient Name',
+    type: 'text',
+    placeholder: 'The Principal / HR Manager / Sir',
+  },
+  {
+    name: 'recipient_designation',
+    label: 'Recipient Designation',
+    type: 'text',
+    placeholder: 'Principal / HR Manager',
+  },
+  {
+    name: 'recipient_organization',
+    label: 'Organization / School / Company',
+    type: 'text',
+    placeholder: 'ABC College / XYZ Company',
+  },
+  {
+    name: 'subject',
+    label: 'Subject of Letter',
+    type: 'text',
+    placeholder: 'Application for Leave / Job Application for Software Engineer',
+    required: true,
+  },
+  {
+    name: 'body',
+    label: 'Letter Body / Main Content',
+    type: 'textarea',
+    placeholder: 'Write the main content of your letter here. Explain your purpose, request, or message clearly...',
+    required: true,
+    rows: 8,
+  },
+]
+
+TOOL_FIELDS['ideal-weight-calculator'] = TOOL_FIELDS['ideal-weight'] || [
+  {
+    name: 'height_cm',
+    label: 'Height (cm)',
+    type: 'number',
+    placeholder: '170',
+    required: true,
+  },
+  {
+    name: 'gender',
+    label: 'Gender',
+    type: 'select',
+    options: [
+      { label: 'Male', value: 'male' },
+      { label: 'Female', value: 'female' },
+    ],
+  },
+]
+
+TOOL_FIELDS['exercise-calories-calculator'] = [
+  {
+    name: 'activity',
+    label: 'Exercise / Activity',
+    type: 'select',
+    options: [
+      { label: 'Walking', value: 'walking' },
+      { label: 'Running', value: 'running' },
+      { label: 'Jogging', value: 'jogging' },
+      { label: 'Cycling', value: 'cycling' },
+      { label: 'Swimming', value: 'swimming' },
+      { label: 'Yoga', value: 'yoga' },
+      { label: 'Weight Training / Gym', value: 'gym' },
+      { label: 'Aerobics', value: 'aerobics' },
+      { label: 'Dancing', value: 'dancing' },
+      { label: 'Football', value: 'football' },
+      { label: 'Basketball', value: 'basketball' },
+      { label: 'Badminton', value: 'badminton' },
+      { label: 'Cricket', value: 'cricket' },
+      { label: 'Skipping / Jump Rope', value: 'skipping' },
+      { label: 'Stair Climbing', value: 'stair climbing' },
+      { label: 'Zumba', value: 'zumba' },
+      { label: 'CrossFit', value: 'crossfit' },
+      { label: 'Elliptical', value: 'elliptical' },
+    ],
+  },
+  {
+    name: 'duration',
+    label: 'Duration (minutes)',
+    type: 'number',
+    placeholder: '30',
+    required: true,
+  },
+  {
+    name: 'weight',
+    label: 'Body Weight (kg)',
+    type: 'number',
+    placeholder: '70',
+    required: true,
+  },
+]
+
+TOOL_FIELDS['email-validator-tool'] = [
+  {
+    name: 'email',
+    label: 'Email Address to Validate',
+    type: 'text',
+    placeholder: 'example@gmail.com',
+    required: true,
+    hint: 'Enter one or more email addresses to check validity',
+  },
+]
+
+// Aliases for compress-image tools
+TOOL_FIELDS['compress-image-to-10kb'] = TOOL_FIELDS['compress-image-to-5kb'] || [
+  { name: 'file', label: 'Upload Image', type: 'file', required: true, accept: 'image/*' },
+]
+TOOL_FIELDS['compress-image-to-500kb'] = TOOL_FIELDS['compress-image-to-200kb'] || [
+  { name: 'file', label: 'Upload Image', type: 'file', required: true, accept: 'image/*' },
+]
+
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }

@@ -3377,12 +3377,19 @@ h3 {
 
 @media (max-width: 600px) {
   .page-wrap {
-    width: calc(100vw - 1rem);
+    width: calc(100vw - 2rem);
     padding: 0.8rem 0 2rem;
+    margin: 0 auto;
+  }
+
+  .site-nav {
+    padding: 0.5rem 0.75rem 0;
   }
 
   .site-nav-inner {
-    width: calc(100vw - 1rem);
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px;
   }
 
   .hero-v2 {
@@ -3579,13 +3586,19 @@ h3 {
    ═══════════════════════════════════════════════════ */
 @media (max-width: 380px) {
   .page-wrap {
-    width: calc(100vw - 0.75rem);
+    width: calc(100vw - 1.5rem);
+    margin: 0 auto;
+  }
+
+  .site-nav {
+    padding: 0.4rem 0.5rem 0;
   }
 
   .site-nav-inner {
-    width: calc(100vw - 0.75rem);
-    padding: 0.5rem 0.6rem;
-    border-radius: 16px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.5rem 0.65rem;
+    border-radius: 14px;
   }
 
   .hero-v2 {

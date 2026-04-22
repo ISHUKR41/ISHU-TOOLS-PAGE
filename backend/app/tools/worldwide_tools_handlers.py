@@ -1673,9 +1673,15 @@ def handle_world_meeting_planner(files, payload, output_dir) -> ExecutionResult:
 # ═════════════════════════════════════════════════════════════════════════════
 
 def handle_tip_calculator(files, payload, output_dir) -> ExecutionResult:
-    bill = float(payload.get("bill", 0))
-    tip_percent = float(payload.get("tip_percent", 15))
-    split = max(int(payload.get("split", 1)), 1)
+    bill = float(
+        payload.get("bill_amount") or payload.get("bill") or
+        payload.get("amount") or payload.get("value") or 0
+    )
+    tip_percent = float(payload.get("tip_percent") or payload.get("tip_pct") or 15)
+    split = max(int(
+        payload.get("num_people") or payload.get("people") or
+        payload.get("split") or 1
+    ), 1)
     currency = _get(payload, "currency", default="INR")
 
     if bill <= 0:
