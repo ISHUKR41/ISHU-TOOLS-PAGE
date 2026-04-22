@@ -2560,6 +2560,91 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
 
+  // ── 2026 Batch: Spotify / Snapchat / Threads / Subtitles / Video→GIF / MP3 Cutter ──
+  'spotify-downloader': [
+    { name: 'url', label: 'Spotify URL', type: 'text', placeholder: 'Paste Spotify URL e.g. https://open.spotify.com/episode/...' },
+  ],
+  'snapchat-downloader': [
+    { name: 'url', label: 'Snapchat URL', type: 'text', placeholder: 'Paste Snapchat Spotlight or Story URL...' },
+  ],
+  'threads-downloader': [
+    { name: 'url', label: 'Threads Post URL', type: 'text', placeholder: 'Paste Threads URL e.g. https://www.threads.net/@user/post/...' },
+  ],
+  'youtube-subtitle-downloader': [
+    { name: 'url', label: 'YouTube Video URL', type: 'text', placeholder: 'Paste YouTube URL e.g. https://youtu.be/...' },
+    {
+      name: 'lang',
+      label: 'Language Code',
+      type: 'select',
+      defaultValue: 'en',
+      options: [
+        { label: 'English (en)', value: 'en' },
+        { label: 'Hindi (hi)', value: 'hi' },
+        { label: 'Tamil (ta)', value: 'ta' },
+        { label: 'Telugu (te)', value: 'te' },
+        { label: 'Bengali (bn)', value: 'bn' },
+        { label: 'Marathi (mr)', value: 'mr' },
+        { label: 'Gujarati (gu)', value: 'gu' },
+        { label: 'Spanish (es)', value: 'es' },
+        { label: 'French (fr)', value: 'fr' },
+        { label: 'German (de)', value: 'de' },
+        { label: 'Japanese (ja)', value: 'ja' },
+        { label: 'Korean (ko)', value: 'ko' },
+        { label: 'Arabic (ar)', value: 'ar' },
+        { label: 'Portuguese (pt)', value: 'pt' },
+        { label: 'Russian (ru)', value: 'ru' },
+        { label: 'Chinese (zh)', value: 'zh' },
+      ],
+    },
+    {
+      name: 'format',
+      label: 'Subtitle Format',
+      type: 'select',
+      defaultValue: 'srt',
+      options: [
+        { label: 'SRT (most compatible)', value: 'srt' },
+        { label: 'VTT (web video)', value: 'vtt' },
+      ],
+    },
+  ],
+  'video-to-gif': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    { name: 'start', label: 'Start Time (seconds)', type: 'number', defaultValue: '0', placeholder: '0' },
+    { name: 'duration', label: 'GIF Duration (seconds, max 15)', type: 'number', defaultValue: '5', placeholder: '5' },
+    {
+      name: 'width',
+      label: 'Width (pixels)',
+      type: 'select',
+      defaultValue: '480',
+      options: [
+        { label: '240px (small)', value: '240' },
+        { label: '360px', value: '360' },
+        { label: '480px (recommended)', value: '480' },
+        { label: '600px', value: '600' },
+        { label: '720px (large)', value: '720' },
+      ],
+    },
+    {
+      name: 'fps',
+      label: 'Frames Per Second',
+      type: 'select',
+      defaultValue: '12',
+      options: [
+        { label: '8 fps (smaller file)', value: '8' },
+        { label: '12 fps (recommended)', value: '12' },
+        { label: '15 fps', value: '15' },
+        { label: '20 fps (smoother)', value: '20' },
+        { label: '24 fps (smoothest)', value: '24' },
+      ],
+    },
+  ],
+  'mp3-cutter': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    { name: 'start', label: 'Start Time (seconds or mm:ss)', type: 'text', defaultValue: '0', placeholder: 'e.g. 30 or 0:30' },
+    { name: 'duration', label: 'Clip Length (seconds)', type: 'number', defaultValue: '30', placeholder: '30' },
+    { name: 'end', label: 'OR End Time (seconds, optional)', type: 'text', placeholder: 'leave blank to use duration' },
+  ],
+
   // ── New Video Downloader Tools ──────────────────────────────────────────
   'tiktok-downloader': [
     { name: 'url', label: 'TikTok Video URL', type: 'text', placeholder: 'Paste TikTok URL, e.g. https://www.tiktok.com/@user/video/123...' },

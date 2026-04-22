@@ -6551,6 +6551,16 @@ except Exception as e:
 
 print(f"[handlers] WORLDWIDE GRAND TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge new extra tools (Spotify, Snapchat, Threads, YT subtitles, video→GIF, MP3 cutter)
+try:
+    from .new_extra_tools_handlers import NEW_EXTRA_HANDLERS
+    HANDLERS.update(NEW_EXTRA_HANDLERS)
+    print(f"[handlers] Loaded {len(NEW_EXTRA_HANDLERS)} new-extra handlers (spotify/snapchat/threads/subtitles/gif/mp3-cutter)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load new_extra_tools_handlers: {e}")
+
+print(f"[handlers] NEW-EXTRAS TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):
