@@ -14,6 +14,7 @@ import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
+import './home-modern.css'
 
 const BENTO_FEATURES = [
   {
