@@ -3099,6 +3099,40 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'jpg-to-svg':   [{ name: 'file', label: 'Upload JPG File',       type: 'file', accept: 'image/jpeg,image/*' }],
   'image-to-svg': [{ name: 'file', label: 'Upload Image',          type: 'file', accept: 'image/*' }],
 
+  // ── 2026 Data Format Converter Pack — JSON / YAML / XML / TOML / CSV / HTML / SQL / Markdown ──
+  'json-to-xml':      [{ name: 'text', label: 'Paste JSON', type: 'textarea', placeholder: '{"name":"Ishu","tools":["pdf","image"]}', rows: 10 }],
+  'xml-to-json':      [{ name: 'text', label: 'Paste XML',  type: 'textarea', placeholder: '<root><name>Ishu</name></root>', rows: 10 }],
+  'json-to-toml':     [{ name: 'text', label: 'Paste JSON', type: 'textarea', placeholder: '{"server":{"port":8080}}', rows: 10 }],
+  'toml-to-json':     [{ name: 'text', label: 'Paste TOML', type: 'textarea', placeholder: '[server]\nport = 8080', rows: 10 }],
+  'json-to-markdown': [{ name: 'text', label: 'Paste JSON (array of objects works best)', type: 'textarea', placeholder: '[{"name":"A","price":10},{"name":"B","price":20}]', rows: 10 }],
+  'json-to-md':       [{ name: 'text', label: 'Paste JSON', type: 'textarea', rows: 10 }],
+  'json-to-sql': [
+    { name: 'text', label: 'Paste JSON (array of objects)', type: 'textarea', placeholder: '[{"id":1,"name":"A"}]', rows: 10 },
+    { name: 'table', label: 'Table name', type: 'text', defaultValue: 'data', placeholder: 'data' },
+  ],
+  'json-to-html':     [{ name: 'text', label: 'Paste JSON', type: 'textarea', rows: 10 }],
+  'html-to-json':     [{ name: 'text', label: 'Paste HTML containing a <table>', type: 'textarea', rows: 10 }],
+  'yaml-to-xml':      [{ name: 'text', label: 'Paste YAML', type: 'textarea', placeholder: 'name: Ishu\ntools:\n  - pdf\n  - image', rows: 10 }],
+  'xml-to-yaml':      [{ name: 'text', label: 'Paste XML',  type: 'textarea', rows: 10 }],
+  'yaml-to-toml':     [{ name: 'text', label: 'Paste YAML', type: 'textarea', rows: 10 }],
+  'toml-to-yaml':     [{ name: 'text', label: 'Paste TOML', type: 'textarea', rows: 10 }],
+  'yaml-to-csv':      [{ name: 'text', label: 'Paste YAML (list of objects)', type: 'textarea', rows: 10 }],
+  'csv-to-yaml':      [{ name: 'text', label: 'Paste CSV',  type: 'textarea', placeholder: 'name,price\nA,10\nB,20', rows: 10 }],
+  'csv-to-tsv':       [{ name: 'text', label: 'Paste CSV',  type: 'textarea', rows: 10 }],
+  'tsv-to-csv':       [{ name: 'text', label: 'Paste TSV (tab-separated)', type: 'textarea', rows: 10 }],
+  'csv-to-xml':       [{ name: 'text', label: 'Paste CSV',  type: 'textarea', rows: 10 }],
+  'xml-to-csv':       [{ name: 'text', label: 'Paste XML',  type: 'textarea', rows: 10 }],
+  'csv-to-html':      [{ name: 'text', label: 'Paste CSV',  type: 'textarea', rows: 10 }],
+  'html-to-csv':      [{ name: 'text', label: 'Paste HTML containing a <table>', type: 'textarea', rows: 10 }],
+  'csv-to-sql': [
+    { name: 'text', label: 'Paste CSV', type: 'textarea', placeholder: 'name,price\nA,10\nB,20', rows: 10 },
+    { name: 'table', label: 'Table name', type: 'text', defaultValue: 'data', placeholder: 'data' },
+  ],
+  'csv-to-markdown':  [{ name: 'text', label: 'Paste CSV',  type: 'textarea', rows: 10 }],
+  'csv-to-md':        [{ name: 'text', label: 'Paste CSV',  type: 'textarea', rows: 10 }],
+  'markdown-to-csv':  [{ name: 'text', label: 'Paste Markdown table', type: 'textarea', placeholder: '| name | price |\n| --- | --- |\n| A | 10 |', rows: 10 }],
+  'md-to-csv':        [{ name: 'text', label: 'Paste Markdown table', type: 'textarea', rows: 10 }],
+
   // ── 2026 Batch: Spotify / Snapchat / Threads / Subtitles / Video→GIF / MP3 Cutter ──
   'spotify-downloader': [
     { name: 'url', label: 'Spotify URL', type: 'text', placeholder: 'Paste Spotify URL e.g. https://open.spotify.com/episode/...' },

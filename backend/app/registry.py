@@ -7586,6 +7586,45 @@ for _slug, _title, _desc, _tags in _IMAGE_FORMAT_DEFS:
     ))
     _existing_slugs.add(_slug)
 
+# ─── 2026 Data Format Converter Pack — JSON/YAML/XML/TOML/CSV/HTML/SQL/MD ──
+_DATA_FORMAT_DEFS: list[tuple[str, str, str, list[str]]] = [
+    ("json-to-xml",      "JSON to XML Converter — Free Online",      "Convert JSON to clean indented XML instantly. Free, no signup, validates input.", ["json to xml", "convert json to xml", "json xml converter"]),
+    ("xml-to-json",      "XML to JSON Converter — Free Online",      "Convert XML to JSON with auto-detected lists. Free.", ["xml to json", "convert xml to json", "xml json converter"]),
+    ("json-to-toml",     "JSON to TOML Converter — Free Online",     "Convert JSON to TOML config format. Free.", ["json to toml", "convert json to toml"]),
+    ("toml-to-json",     "TOML to JSON Converter — Free Online",     "Convert TOML config to JSON. Free.", ["toml to json", "convert toml to json"]),
+    ("json-to-markdown", "JSON to Markdown Table — Free Online",     "Convert JSON array of objects to a Markdown table. Free.", ["json to markdown", "json to md", "json markdown table"]),
+    ("json-to-md",       "JSON to MD Converter — Free Online",       "Alias for JSON to Markdown table. Free.", ["json to md", "json to markdown"]),
+    ("json-to-sql",      "JSON to SQL Insert Statements — Free",     "Generate CREATE TABLE + INSERT statements from JSON. Free.", ["json to sql", "json to insert", "json to sqlite"]),
+    ("json-to-html",     "JSON to HTML Table — Free Online",         "Render JSON as a styled HTML <table>. Free.", ["json to html", "json to table"]),
+    ("html-to-json",     "HTML Table to JSON — Free Online",         "Extract first <table> from HTML and convert rows to JSON array. Free.", ["html to json", "html table to json"]),
+    ("yaml-to-xml",      "YAML to XML Converter — Free Online",      "Convert YAML config to indented XML. Free.", ["yaml to xml", "convert yaml to xml"]),
+    ("xml-to-yaml",      "XML to YAML Converter — Free Online",      "Convert XML to YAML. Free.", ["xml to yaml", "convert xml to yaml"]),
+    ("yaml-to-toml",     "YAML to TOML Converter — Free Online",     "Convert YAML to TOML config. Free.", ["yaml to toml", "convert yaml to toml"]),
+    ("toml-to-yaml",     "TOML to YAML Converter — Free Online",     "Convert TOML to YAML. Free.", ["toml to yaml", "convert toml to yaml"]),
+    ("yaml-to-csv",      "YAML to CSV Converter — Free Online",      "Convert YAML list-of-objects to CSV. Free.", ["yaml to csv", "convert yaml to csv"]),
+    ("csv-to-yaml",      "CSV to YAML Converter — Free Online",      "Convert CSV rows to YAML list-of-objects. Free.", ["csv to yaml", "convert csv to yaml"]),
+    ("csv-to-tsv",       "CSV to TSV Converter — Free Online",       "Swap commas for tabs. Convert CSV to TSV (tab-separated values). Free.", ["csv to tsv", "convert csv to tsv"]),
+    ("tsv-to-csv",       "TSV to CSV Converter — Free Online",       "Convert tab-separated TSV to standard CSV. Free.", ["tsv to csv", "convert tsv to csv"]),
+    ("csv-to-xml",       "CSV to XML Converter — Free Online",       "Convert CSV rows to indented XML. Free.", ["csv to xml", "convert csv to xml"]),
+    ("xml-to-csv",       "XML to CSV Converter — Free Online",       "Flatten XML repeated elements to CSV rows. Free.", ["xml to csv", "convert xml to csv"]),
+    ("csv-to-html",      "CSV to HTML Table — Free Online",          "Render CSV data as a styled HTML <table>. Free.", ["csv to html", "csv to table", "csv to html table"]),
+    ("html-to-csv",      "HTML Table to CSV — Free Online",          "Scrape first <table> from HTML to CSV. Free.", ["html to csv", "html table to csv"]),
+    ("csv-to-sql",       "CSV to SQL Insert Statements — Free",      "Generate CREATE TABLE + INSERT statements from CSV. Free.", ["csv to sql", "csv to insert", "csv to sqlite"]),
+    ("csv-to-markdown",  "CSV to Markdown Table — Free Online",      "Convert CSV to GitHub-flavored Markdown table. Free.", ["csv to markdown", "csv to md", "csv markdown table"]),
+    ("csv-to-md",        "CSV to MD Converter — Free Online",        "Alias for CSV to Markdown table. Free.", ["csv to md", "csv to markdown"]),
+    ("markdown-to-csv",  "Markdown Table to CSV — Free Online",      "Parse a Markdown table into CSV. Free.", ["markdown to csv", "md to csv", "markdown table to csv"]),
+    ("md-to-csv",        "MD to CSV Converter — Free Online",        "Alias for Markdown table to CSV. Free.", ["md to csv", "markdown to csv"]),
+]
+
+for _slug, _title, _desc, _tags in _DATA_FORMAT_DEFS:
+    if _slug in _existing_slugs:
+        continue
+    TOOLS.append(ToolDefinition(
+        slug=_slug, title=_title, description=_desc,
+        category="developer-tools", tags=_tags, input_kind="text",
+    ))
+    _existing_slugs.add(_slug)
+
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
 
 # ── Assign popularity ranks — higher = more popular (shown first) ─────────────
@@ -7828,6 +7867,33 @@ _POPULARITY: dict[str, int] = {
     "tif-to-png":   142,
     "jpeg-to-png":  226,
     "png-to-jpeg":  224,
+    # 2026 Data Format Pack — developer search volume
+    "json-to-xml":      195,
+    "xml-to-json":      198,
+    "json-to-toml":     150,
+    "toml-to-json":     152,
+    "json-to-markdown": 165,
+    "json-to-md":       162,
+    "json-to-sql":      170,
+    "json-to-html":     158,
+    "html-to-json":     145,
+    "yaml-to-xml":      138,
+    "xml-to-yaml":      140,
+    "yaml-to-toml":     132,
+    "toml-to-yaml":     130,
+    "yaml-to-csv":      125,
+    "csv-to-yaml":      128,
+    "csv-to-tsv":       155,
+    "tsv-to-csv":       152,
+    "csv-to-xml":       148,
+    "xml-to-csv":       150,
+    "csv-to-html":      160,
+    "html-to-csv":      155,
+    "csv-to-sql":       175,
+    "csv-to-markdown":  168,
+    "csv-to-md":        165,
+    "markdown-to-csv":  142,
+    "md-to-csv":        140,
     "snapchat-downloader": 192,
     "threads-downloader": 175,
     "youtube-subtitle-downloader": 188,

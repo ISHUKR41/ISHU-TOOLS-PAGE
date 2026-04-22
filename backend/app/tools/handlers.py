@@ -6631,6 +6631,16 @@ except Exception as e:
 
 print(f"[handlers] IMAGE-FORMAT TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge Data Format Converters (JSON/YAML/XML/TOML/CSV/TSV/HTML/SQL/Markdown)
+try:
+    from .data_format_converters import DATA_FORMAT_HANDLERS
+    HANDLERS.update(DATA_FORMAT_HANDLERS)
+    print(f"[handlers] Loaded {len(DATA_FORMAT_HANDLERS)} data format converter handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load data_format_converters: {e}")
+
+print(f"[handlers] DATA-FORMAT TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):
