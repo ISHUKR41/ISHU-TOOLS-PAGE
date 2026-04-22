@@ -251,31 +251,24 @@ export default function CategoryPage() {
           </div>
         </motion.section>
 
-        {/* Tools Grid */}
-        <section className='category-tools-grid'>
-          {categoryTools.map((tool, index) => (
-            <motion.div
+        {/* Tools Grid — ALL tools shown, no pagination, no stagger animation (smooth even with 200+ tools) */}
+        <section className='category-tools-grid cv-grid'>
+          {categoryTools.map((tool) => (
+            <Link
               key={tool.slug}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px 0px' }}
-              transition={{ duration: 0.28, delay: Math.min(index * 0.025, 0.3), ease: 'easeOut' }}
+              to={`/tools/${tool.slug}`}
+              className='category-tool-card'
+              style={{ '--card-accent': theme.accent } as CSSProperties}
             >
-              <Link
-                to={`/tools/${tool.slug}`}
-                className='category-tool-card'
-                style={{ '--card-accent': theme.accent } as CSSProperties}
-              >
-                <span className='tool-card-icon' style={{ color: theme.accent }}>
-                  <ToolIcon slug={tool.slug} className='tool-icon' />
-                </span>
-                <div className='category-tool-info'>
-                  <strong>{tool.title}</strong>
-                  <small>{tool.description}</small>
-                </div>
-                <span className='category-tool-arrow' style={{ color: theme.accent }}>→</span>
-              </Link>
-            </motion.div>
+              <span className='tool-card-icon' style={{ color: theme.accent }}>
+                <ToolIcon slug={tool.slug} className='tool-icon' />
+              </span>
+              <div className='category-tool-info'>
+                <strong>{tool.title}</strong>
+                <small>{tool.description}</small>
+              </div>
+              <span className='category-tool-arrow' style={{ color: theme.accent }}>→</span>
+            </Link>
           ))}
         </section>
 

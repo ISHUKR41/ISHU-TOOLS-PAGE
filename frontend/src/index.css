@@ -10214,3 +10214,62 @@ a, button, [role="button"], input, label, select, textarea {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ULTRA-SMOOTH GRID — content-visibility virtualization for 1000+ tools
+   Native browser-level skipping of off-screen cards. Works on all devices.
+   ═══════════════════════════════════════════════════════════════════ */
+.cv-grid > * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 88px;
+  contain: layout paint style;
+}
+.cv-grid {
+  contain: layout style;
+}
+.category-tools-grid.cv-grid > * {
+  contain-intrinsic-size: auto 96px;
+}
+
+/* Smoother scroll on every device */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cv-grid > * { content-visibility: visible; }
+}
+
+/* Mobile/tablet — kill expensive hover effects, snappier touches */
+@media (hover: none), (pointer: coarse) {
+  .tool-card-compact:hover,
+  .category-tool-card:hover,
+  .category-pill:hover { transform: none !important; }
+  .tool-card-compact, .category-tool-card { transition: background-color 0.12s ease; }
+  /* lighter shadows on mobile = faster paints */
+  .modern-section, .category-section { box-shadow: none !important; }
+}
+
+/* Tablet — tighten grid for better density */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tool-grid, .category-tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    gap: 0.6rem !important;
+  }
+}
+
+/* Mobile — single-column tight list, max info density, zero jank */
+@media (max-width: 640px) {
+  .tool-grid, .category-tools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.45rem !important;
+  }
+  .tool-card-compact, .category-tool-card {
+    padding: 0.6rem 0.75rem !important;
+  }
+  /* Disable backdrop-filter on mobile (massive perf killer) */
+  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  /* Disable section-level box-shadows on mobile */
+  .category-section, .modern-section { box-shadow: none !important; border-radius: 12px; }
+}
+
+/* Force GPU compositing on the big scrollable grid */
+.directory-stack { will-change: scroll-position; transform: translateZ(0); }

@@ -613,7 +613,7 @@ const AnimatedSection = memo(function AnimatedSection({
             transition={{ duration: 0.22, ease: 'easeInOut' }}
             style={{ overflow: 'hidden' }}
           >
-            <div className={`tools-grid compact${viewMode === 'list' ? ' list-view' : ''}`} style={{ paddingTop: '0.75rem' }}>
+            <div className={`tools-grid compact cv-grid${viewMode === 'list' ? ' list-view' : ''}`} style={{ paddingTop: '0.75rem' }}>
               {catTools.map((tool) => (
                 <ToolCardCompact
                   key={tool.slug}
@@ -1197,11 +1197,11 @@ export default function AllToolsPage() {
                 </p>
               )}
 
-              {/* ── Flat ranked search results — replaces grouped sections during search ── */}
+              {/* ── Flat ranked search results — ALL matches, no cap, virtualized via content-visibility ── */}
               {isSearching && filteredTools.length > 0 && (
                 <section className='category-section search-results-section'>
-                  <div className={`tool-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
-                    {filteredTools.slice(0, 200).map(tool => (
+                  <div className={`tool-grid cv-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
+                    {filteredTools.map(tool => (
                       <ToolCardCompact
                         key={tool.slug}
                         tool={tool}
@@ -1212,11 +1212,6 @@ export default function AllToolsPage() {
                       />
                     ))}
                   </div>
-                  {filteredTools.length > 200 && (
-                    <p className='search-result-count' style={{ marginTop: '0.75rem', opacity: 0.8 }}>
-                      Showing top 200 of {filteredTools.length}. Refine your search to narrow down further.
-                    </p>
-                  )}
                 </section>
               )}
 

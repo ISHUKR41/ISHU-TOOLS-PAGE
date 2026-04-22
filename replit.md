@@ -1,6 +1,22 @@
 # ISHU TOOLS
 
 ## Latest Update (2026-04-22)
+**Buttery-smooth full directory — ALL 1247 tools shown, zero "show more", silky on every device.**
+- **No more caps anywhere**: search results now show ALL matched tools (was top-200), every category section already shows every tool. No "show more / load more" anywhere on the site.
+- **`content-visibility: auto`** virtualization (`.cv-grid`): the browser **natively skips painting + layout for off-screen tool cards**. With 1247 cards on screen, only ~20 visible cards actually render at any moment. Massive scroll perf on every device — including 3-year-old budget Android phones.
+  - `contain: layout paint style` per card → isolates each card's render work
+  - `contain-intrinsic-size: auto 88px` → reserves space without rendering, zero layout shift
+- **CategoryPage**: removed framer-motion stagger from per-tool cards (was animating 200+ DOM nodes on scroll = jank). Pure CSS transitions only.
+- **Mobile/tablet polish**:
+  - All `backdrop-filter` disabled on mobile (#1 mobile perf killer — Safari especially)
+  - Hover transforms killed on touch devices (no phantom hover-stuck states)
+  - Box-shadows flattened on mobile sections (cheaper paints)
+  - Single-column tight grid on phones (max info density)
+  - Tablet gets 260px-min auto-fill grid for perfect density
+- **GPU acceleration**: directory stack forced to its own compositing layer with `transform: translateZ(0)`.
+- **Reduced-motion**: respects OS setting — turns off virtualization (always-visible), turns off scroll-behavior smooth.
+
+## Previous Update (2026-04-22)
 **Smart search — relevance-ranked results, distractions hidden during search.**
 - **Relevance scoring** (`AllToolsPage.tsx` `filteredTools`): replaced naive substring match with a weighted-score algorithm.
   - Title exact: +1000  |  Title startsWith: +500  |  Title word-prefix: +300  |  Title contains: +150
