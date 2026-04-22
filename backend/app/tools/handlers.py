@@ -6571,6 +6571,16 @@ except Exception as e:
 
 print(f"[handlers] EXTRA-MEDIA TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge office tools (CSV ↔ Excel, PDF page extractor)
+try:
+    from .office_handlers import OFFICE_HANDLERS
+    HANDLERS.update(OFFICE_HANDLERS)
+    print(f"[handlers] Loaded {len(OFFICE_HANDLERS)} office handlers (csv-excel/pdf-page-extract)")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load office_handlers: {e}")
+
+print(f"[handlers] OFFICE TOTAL registered handlers: {len(HANDLERS)}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):

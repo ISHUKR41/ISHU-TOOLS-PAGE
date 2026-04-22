@@ -2560,6 +2560,31 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
 
+  // ── 2026 Batch #3: CSV ↔ Excel / PDF Page Extractor ──────────────────────
+  'csv-to-excel': [
+    { name: 'file', label: 'Upload CSV File', type: 'file', accept: '.csv,text/csv' },
+    {
+      name: 'delimiter',
+      label: 'CSV Delimiter',
+      type: 'select',
+      defaultValue: ',',
+      options: [
+        { label: 'Comma (,) — most common', value: ',' },
+        { label: 'Tab (TSV)', value: 'tab' },
+        { label: 'Semicolon (;)', value: 'semicolon' },
+        { label: 'Pipe (|)', value: 'pipe' },
+      ],
+    },
+  ],
+  'excel-to-csv': [
+    { name: 'file', label: 'Upload Excel File (.xlsx)', type: 'file', accept: '.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+    { name: 'sheet', label: 'Sheet Name (optional, blank = first sheet)', type: 'text', placeholder: 'e.g. Sheet1' },
+  ],
+  'pdf-page-extractor': [
+    { name: 'file', label: 'Upload PDF File', type: 'file', accept: '.pdf,application/pdf' },
+    { name: 'pages', label: 'Pages to Extract', type: 'text', placeholder: 'e.g. 1,3-5,8 (extracts pages 1, 3, 4, 5 and 8)' },
+  ],
+
   // ── 2026 Batch #2: TTS / Video Trim / Video Compress / Audio Merger ───────
   'text-to-speech': [
     { name: 'text', label: 'Text to Speak', type: 'textarea', placeholder: 'Type or paste text here (max 5000 characters)...' },

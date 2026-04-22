@@ -5540,6 +5540,31 @@ TOOLS.extend([
         tags=["random name picker", "random name generator", "pick random name", "name randomizer", "classroom name picker", "random winner picker", "lucky draw picker", "random student picker", "name chooser online", "random name selector free"],
         input_kind="text",
     ),
+    # ─── 2026 Batch #3: CSV ↔ Excel, PDF Page Extractor ─────────────────────
+    ToolDefinition(
+        slug="csv-to-excel",
+        title="CSV to Excel Converter — Convert CSV to XLSX Free",
+        description="Convert any CSV file (comma, tab, semicolon or pipe separated) into a clean Microsoft Excel .xlsx workbook with auto-sized columns. Free online, no signup required.",
+        category="productivity-tools",
+        tags=["csv to excel", "csv to xlsx", "convert csv to excel", "csv to excel converter free", "csv to spreadsheet", "tsv to excel", "open csv in excel", "csv excel online"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="excel-to-csv",
+        title="Excel to CSV Converter — Convert XLSX to CSV Free",
+        description="Convert any Excel (.xlsx) file to a clean comma-separated CSV. Pick a specific sheet by name, preserve all values — perfect for data analysis, imports and SQL loads.",
+        category="productivity-tools",
+        tags=["excel to csv", "xlsx to csv", "convert excel to csv", "excel to csv converter free", "spreadsheet to csv", "xls to csv", "excel csv online", "extract excel sheet to csv"],
+        input_kind="files",
+    ),
+    ToolDefinition(
+        slug="pdf-page-extractor",
+        title="PDF Page Extractor — Extract Pages from PDF Free",
+        description="Extract specific pages or page ranges from any PDF as a new PDF file. Use formats like '1,3-5,8' to get the exact pages you need — perfect for sharing only relevant sections.",
+        category="pdf-tools",
+        tags=["pdf page extractor", "extract pdf pages", "split pdf pages", "pick pages from pdf", "pdf page picker", "extract specific pages pdf", "pdf page selector", "save pdf pages free"],
+        input_kind="files",
+    ),
     # ─── 2026 Batch #2: TTS, Video Trim/Compress, Audio Merger ──────────────
     ToolDefinition(
         slug="text-to-speech",
@@ -7267,6 +7292,9 @@ _POPULARITY: dict[str, int] = {
     "youtube-downloader": 200,
     "youtube-shorts-downloader": 198,
     # 2026 batch — high demand
+    "csv-to-excel": 165,
+    "excel-to-csv": 168,
+    "pdf-page-extractor": 187,
     "text-to-speech": 210,
     "video-trimmer": 200,
     "video-compressor": 199,
