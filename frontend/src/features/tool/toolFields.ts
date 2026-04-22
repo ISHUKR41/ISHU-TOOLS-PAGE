@@ -2560,6 +2560,68 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'text', label: 'Text to Check', type: 'textarea', placeholder: 'Enter text to check grammar quality...' },
   ],
 
+  // ── 2026 Batch #4: Video Rotate/Mute/Speed / Audio Speed / GIF→Video ─────
+  'video-rotator': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'angle',
+      label: 'Rotation',
+      type: 'select',
+      defaultValue: '90',
+      options: [
+        { label: '90° clockwise (right)', value: '90' },
+        { label: '180° (upside down)', value: '180' },
+        { label: '90° counter-clockwise (left)', value: '270' },
+        { label: 'Flip horizontal (mirror)', value: 'flip-horizontal' },
+        { label: 'Flip vertical', value: 'flip-vertical' },
+      ],
+    },
+  ],
+  'video-mute': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+  ],
+  'video-speed-changer': [
+    { name: 'file', label: 'Upload Video', type: 'file', accept: 'video/*' },
+    {
+      name: 'speed',
+      label: 'Playback Speed',
+      type: 'select',
+      defaultValue: '2.0',
+      options: [
+        { label: '0.25x (super slow motion)', value: '0.25' },
+        { label: '0.5x (slow motion)', value: '0.5' },
+        { label: '0.75x (slightly slow)', value: '0.75' },
+        { label: '1.25x (slightly fast)', value: '1.25' },
+        { label: '1.5x (1.5x speed)', value: '1.5' },
+        { label: '2.0x (double speed)', value: '2.0' },
+        { label: '3.0x (triple speed)', value: '3.0' },
+        { label: '4.0x (quadruple speed)', value: '4.0' },
+      ],
+    },
+  ],
+  'audio-speed-changer': [
+    { name: 'file', label: 'Upload Audio', type: 'file', accept: 'audio/*' },
+    {
+      name: 'speed',
+      label: 'Playback Speed',
+      type: 'select',
+      defaultValue: '1.5',
+      options: [
+        { label: '0.5x (half speed)', value: '0.5' },
+        { label: '0.75x (slightly slow)', value: '0.75' },
+        { label: '1.25x (slightly fast)', value: '1.25' },
+        { label: '1.5x (1.5x speed — popular for podcasts)', value: '1.5' },
+        { label: '1.75x', value: '1.75' },
+        { label: '2.0x (double speed)', value: '2.0' },
+        { label: '2.5x', value: '2.5' },
+        { label: '3.0x (triple speed)', value: '3.0' },
+      ],
+    },
+  ],
+  'gif-to-video': [
+    { name: 'file', label: 'Upload GIF', type: 'file', accept: 'image/gif' },
+  ],
+
   // ── 2026 Batch #3: CSV ↔ Excel / PDF Page Extractor ──────────────────────
   'csv-to-excel': [
     { name: 'file', label: 'Upload CSV File', type: 'file', accept: '.csv,text/csv' },
