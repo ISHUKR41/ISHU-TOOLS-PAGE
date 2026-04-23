@@ -235,6 +235,44 @@ def smart_payload(slug: str) -> dict:
         p.update({"value": 100, "amount": 100, "input": 100, "number": 100,
                   "from": "metric", "to": "imperial"})
 
+    # ─── Date-based tools (age, countdown, date diff, etc.) ───
+    if any(k in s for k in ("age-calc", "date-diff", "days-between", "countdown",
+                             "convert-time", "date-convert", "exam-countdown", "birthday",
+                             "anniversary", "date-add", "date-subtract", "weekday",
+                             "leap-year", "time-since", "time-until")):
+        p.update({
+            "text": "2000-01-15",
+            "date": "2000-01-15",
+            "dob": "2000-01-15",
+            "birth_date": "2000-01-15",
+            "date_of_birth": "2000-01-15",
+            "date1": "2000-01-15",
+            "date2": "2024-12-31",
+            "text2": "2024-12-31",
+            "from_date": "2000-01-15",
+            "to_date": "2024-12-31",
+            "exam_date": "2026-05-10",
+            "target_date": "2026-12-31",
+            "year": 2024,
+        })
+
+    # ─── Numeric calculators (BMI, EMI, budget, heart rate, fitness) ───
+    if any(k in s for k in ("bmi", "emi", "budget", "heart-rate", "calorie",
+                             "loan", "interest", "sip", "fd-calc", "rd-calc",
+                             "tax-calc", "salary", "tip-calc", "discount",
+                             "goal-calc", "fitness", "macro", "bmr", "tdee",
+                             "body-fat", "ideal-weight", "water-intake")):
+        p.update({
+            "weight": 70, "height": 170, "age": 25, "gender": "male",
+            "value": 50000, "amount": 50000, "principal": 100000,
+            "rate": 8.5, "tenure": 12, "months": 24, "years": 2,
+            "income": 50000, "expenses": 30000, "savings": 5000,
+            "current": 75, "goal": 70, "current_weight": 75, "goal_weight": 70,
+            "target": 65, "weeks": 12, "tip": 15, "bill": 1000, "people": 4,
+            "count": 4, "discount": 20, "price": 1000,
+            "from": "USD", "to": "INR",
+        })
+
     # ─── India-specific document validators ───
     if "pan-card" in s or "pan-validator" in s:
         p.update({"pan": "ABCDE1234F", "pan_number": "ABCDE1234F", "text": "ABCDE1234F"})
