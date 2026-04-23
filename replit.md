@@ -1,6 +1,25 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 6) — Six MORE silently-missing Python libs found and fixed
+## Latest Update (2026-04-23 — round 7) — Systematic 1247-tool scan + 4 real handler bugs fixed
+**Wrote a batch tester that POSTed every text-handler tool with a kitchen-sink payload in 20 seconds.** Out of 1247 tools, the scan found exactly **4 real handler bugs** (everything else was either fully working or correctly rejecting test inputs that didn't match its expected fields). Each was a surgical fix:
+
+1. **`nato-alphabet`** (`image_plus_handlers.py:610`) — `IndexError` when input contained a space character. The success-message builder did `r.split(" = ")[1]` over a list that included the literal string `"(space)"` (no `" = "` separator → `IndexError`). Refactored to track a parallel `spoken` list, so spaces and unknown chars are handled cleanly.
+
+2. **`text-to-ascii-art`** (`image_plus_handlers.py:751`) — passed user-supplied `style` straight to `pyfiglet.figlet_format(font=...)`. Unknown font names raise `pyfiglet.FontNotFound`, but only `ImportError` was caught → HTTP 500 ("Could not complete the task"). Added a font-alias map ("default"→"standard", etc.) and an inner `try/except` that falls back to the standard font instead of crashing.
+
+3. **`csv-to-json`** (`master_handlers.py:258`) — silently aliased to `handle_json_prettify`. So uploading CSV did **nothing useful** — it tried to parse the CSV string as JSON and crashed with `'list' object has no attribute 'get'`. Removed the bad alias so the real `handle_csv_to_json` (in `handlers.py`) wins.
+
+4. **`json-to-csv`** (`master_handlers.py:259`) — same wrong-handler pattern: aliased to `handle_json_prettify` instead of `handle_json_to_csv`. Tool was silently returning prettified JSON instead of converting to CSV. Caught only because I noticed the sister bug. Fixed identically.
+
+**End-to-end verified after backend restart:**
+- `nato-alphabet` with `"Hello World 123"` → returns `"Hotel Echo Lima Lima Oscar (space) Whiskey Oscar Romeo Lima"`
+- `text-to-ascii-art` with `style:"default"` → returns proper figlet output (alias resolved to "standard")
+- `csv-to-json` with `"name,age\nAlice,30\nBob,25"` → returns `[{"name":"Alice","age":"30"},{"name":"Bob","age":"25"}]`
+- `json-to-csv` with `[{...}, {...}]` → returns real CSV with `Content-Type: text/csv`
+
+**Methodology:** Generic kitchen-sink payload (text/json/csv/url/number/etc. all together), classify responses by HTTP status + JSON envelope status. False-positives (handlers that return binary file downloads instead of JSON envelopes — e.g. `word-count-text`, `reading-time-text`) re-tested individually and confirmed working.
+
+## Previous Update (2026-04-23 — round 6) — Six MORE silently-missing Python libs found and fixed
 **Same hunt that found yt-dlp, applied to the entire `app/tools/` directory.** Scanned every `try: import X` block across all 19 handler modules, then tested each library in a 10s subprocess. Result: 9 libraries silently missing from production, breaking handlers with cryptic "library not available" messages.
 
 **Installed + persisted to `backend/requirements.txt` (so Render's Docker rebuild picks them up):**

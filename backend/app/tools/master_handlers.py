@@ -255,8 +255,10 @@ HANDLERS: dict[str, Callable[[list[Path], dict[str, Any], Path], ExecutionResult
     "batch-convert-images": handle_batch_convert_images,
     "merge-text-files": handle_merge_text_files,
     "json-prettify": handle_json_prettify,
-    "csv-to-json": handle_json_prettify,  # Alias
-    "json-to-csv": handle_json_prettify,  # Alias
+    # csv-to-json is intentionally NOT aliased here; the real handle_csv_to_json
+    # in handlers.py is wired correctly and parses CSV input properly.
+    # json-to-csv is intentionally NOT aliased here; the real handle_json_to_csv
+    # in handlers.py converts JSON arrays of objects into proper CSV output.
     
     # Office Suite
     "pdf-to-docx": handle_pdf_to_word,

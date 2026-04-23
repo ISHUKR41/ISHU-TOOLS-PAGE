@@ -602,15 +602,21 @@ def handle_nato_alphabet(files: list[Path], payload: dict[str, Any], output_dir:
     if not text:
         raise HTTPException(status_code=400, detail="text is required")
     result = []
+    spoken = []
     for char in text:
         if char in NATO:
             result.append(f"{char} = {NATO[char]}")
+            spoken.append(NATO[char])
         elif char == " ":
             result.append("(space)")
-    return ExecutionResult(kind="json", message=" | ".join(r.split(" = ")[1] for r in result[:10]), data={
+            spoken.append("(space)")
+        else:
+            result.append(f"{char} = {char}")
+            spoken.append(char)
+    return ExecutionResult(kind="json", message=" ".join(spoken[:10]), data={
         "nato": result,
-        "phonetic": " ".join(NATO.get(c, c) for c in text),
-        "message": "NATO phonetic: " + " ".join(NATO.get(c, c) for c in text[:40]),
+        "phonetic": " ".join(spoken),
+        "message": "NATO phonetic: " + " ".join(spoken[:40]),
     })
 
 
@@ -747,9 +753,20 @@ def handle_text_to_ascii_art(files: list[Path], payload: dict[str, Any], output_
         raise HTTPException(status_code=400, detail="text is required")
     try:
         import pyfiglet
-        style = str(payload.get("style", "standard"))
-        art = pyfiglet.figlet_format(text, font=style)
-        return ExecutionResult(kind="json", message="ASCII art generated", data={"ascii_art": art, "text": text, "style": style, "message": f"ASCII art for: {text}"})
+        style = str(payload.get("style", "standard")).strip() or "standard"
+        # Map common UI choices to real pyfiglet font names
+        FONT_ALIASES = {"default": "standard", "normal": "standard", "block": "block",
+                        "big": "big", "small": "small", "mini": "mini", "slant": "slant",
+                        "shadow": "shadow", "banner": "banner", "bubble": "bubble",
+                        "digital": "digital", "ivrit": "ivrit", "lean": "lean"}
+        font = FONT_ALIASES.get(style.lower(), style)
+        try:
+            art = pyfiglet.figlet_format(text, font=font)
+        except Exception:
+            # Unknown font → fall back to standard rather than 500-ing
+            art = pyfiglet.figlet_format(text, font="standard")
+            font = "standard"
+        return ExecutionResult(kind="json", message="ASCII art generated", data={"ascii_art": art, "text": text, "style": font, "message": f"ASCII art for: {text}"})
     except ImportError:
         ASCII = {
             "A": [" _A_ "," /   \\"," \\___/"], "B": [" ___","| __ ","\\___/"], 
