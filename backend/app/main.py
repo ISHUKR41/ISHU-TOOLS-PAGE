@@ -30,7 +30,12 @@ _RATE_LIMIT_REQUESTS = 60
 _RATE_LIMIT_WINDOW   = 60   # seconds
 _rate_buckets: dict[str, list[float]] = defaultdict(list)
 
+_RATE_LIMIT_BYPASS_IPS = {"127.0.0.1", "::1", "localhost", "testclient"}
+
 def _check_rate_limit(ip: str) -> None:
+    # Bypass for same-machine internal calls (diagnostic, dev, health checks).
+    if ip in _RATE_LIMIT_BYPASS_IPS:
+        return
     now = time.time()
     window_start = now - _RATE_LIMIT_WINDOW
     bucket = _rate_buckets[ip]
