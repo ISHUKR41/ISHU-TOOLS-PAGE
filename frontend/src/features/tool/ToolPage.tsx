@@ -944,6 +944,51 @@ export default function ToolPage() {
                         {field.placeholder && field.type === 'textarea' && (
                           <small className='field-hint'>{field.placeholder}</small>
                         )}
+                        {field.name === 'cookies' && (
+                          <details className='cookies-help'>
+                            <summary>How do I get my cookies? (free, takes 30 seconds)</summary>
+                            <ol>
+                              <li>
+                                Install the free browser extension{' '}
+                                <a
+                                  href='https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc'
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                >
+                                  Get cookies.txt LOCALLY (Chrome / Edge)
+                                </a>{' '}
+                                or{' '}
+                                <a
+                                  href='https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/'
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                >
+                                  cookies.txt (Firefox)
+                                </a>
+                                .
+                              </li>
+                              <li>
+                                Open the site you want to download from
+                                {' '}(Instagram, TikTok, Twitter/X, Facebook, etc.) and{' '}
+                                <strong>log in</strong> in that same browser.
+                              </li>
+                              <li>
+                                Click the extension icon while on that site and choose{' '}
+                                <em>Export</em> (or <em>Current Site</em>). It saves a small{' '}
+                                <code>cookies.txt</code> file.
+                              </li>
+                              <li>
+                                Open the file in any text editor, copy everything, and paste it
+                                into this field. That's it — your cookies stay private and are
+                                only used for this single download.
+                              </li>
+                            </ol>
+                            <p className='cookies-help-note'>
+                              Tip: cookies expire after a few days. If a download stops working,
+                              just re-export and paste again.
+                            </p>
+                          </details>
+                        )}
                       </label>
                     ))}
                   </div>
