@@ -15803,2015 +15803,2480 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "celsius-to-fahrenheit",
-    "title": "Celsius to Fahrenheit Converter — Free Online",
-    "description": "Convert celsius to fahrenheit instantly. Free, accurate calculator, no signup.",
+    "title": "Celsius to Fahrenheit Converter (°C → °F)",
+    "description": "Convert celsius to fahrenheit instantly. Formula: °F = °C × 9/5 + 32. Example: 100°C = 212°F. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "celsius to fahrenheit",
       "celsius to fahrenheit",
-      "celsius fahrenheit converter"
+      "°C to °F",
+      "celsius fahrenheit converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "fahrenheit-to-celsius",
-    "title": "Fahrenheit to Celsius Converter — Free Online",
-    "description": "Convert fahrenheit to celsius instantly. Free, accurate calculator, no signup.",
+    "title": "Fahrenheit to Celsius Converter (°F → °C)",
+    "description": "Convert fahrenheit to celsius instantly. Formula: °C = (°F − 32) × 5/9. Example: 32°F = 0°C. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "fahrenheit to celsius",
       "fahrenheit to celsius",
-      "fahrenheit celsius converter"
+      "°F to °C",
+      "fahrenheit celsius converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "celsius-to-kelvin",
-    "title": "Celsius to Kelvin Converter — Free Online",
-    "description": "Convert celsius to kelvin instantly. Free, accurate calculator, no signup.",
+    "title": "Celsius to Kelvin Converter (°C → K)",
+    "description": "Convert celsius to kelvin instantly. Formula: K = °C + 273.15. Example: 0°C = 273.15 K. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "celsius to kelvin",
       "celsius to kelvin",
-      "celsius kelvin converter"
+      "°C to K",
+      "celsius kelvin converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kelvin-to-celsius",
-    "title": "Kelvin to Celsius Converter — Free Online",
-    "description": "Convert kelvin to celsius instantly. Free, accurate calculator, no signup.",
+    "title": "Kelvin to Celsius Converter (K → °C)",
+    "description": "Convert kelvin to celsius instantly. Formula: °C = K − 273.15. Example: 273.15 K = 0°C. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kelvin to celsius",
       "kelvin to celsius",
-      "kelvin celsius converter"
+      "K to °C",
+      "kelvin celsius converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "fahrenheit-to-kelvin",
-    "title": "Fahrenheit to Kelvin Converter — Free Online",
-    "description": "Convert fahrenheit to kelvin instantly. Free, accurate calculator, no signup.",
+    "title": "Fahrenheit to Kelvin Converter (°F → K)",
+    "description": "Convert fahrenheit to kelvin instantly. Formula: K = (°F − 32) × 5/9 + 273.15. Example: 32°F = 273.15 K. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "fahrenheit to kelvin",
       "fahrenheit to kelvin",
-      "fahrenheit kelvin converter"
+      "°F to K",
+      "fahrenheit kelvin converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kelvin-to-fahrenheit",
-    "title": "Kelvin to Fahrenheit Converter — Free Online",
-    "description": "Convert kelvin to fahrenheit instantly. Free, accurate calculator, no signup.",
+    "title": "Kelvin to Fahrenheit Converter (K → °F)",
+    "description": "Convert kelvin to fahrenheit instantly. Formula: °F = (K − 273.15) × 9/5 + 32. Example: 273.15 K = 32°F. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kelvin to fahrenheit",
       "kelvin to fahrenheit",
-      "kelvin fahrenheit converter"
+      "K to °F",
+      "kelvin fahrenheit converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "rankine-to-celsius",
-    "title": "Rankine to Celsius Converter — Free Online",
-    "description": "Convert rankine to celsius instantly. Free, accurate calculator, no signup.",
+    "title": "Rankine to Celsius Converter (°R → °C)",
+    "description": "Convert rankine to celsius instantly. Formula: °C = °R × 5/9 − 273.15. Example: 491.67°R = 0°C. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "rankine to celsius",
       "rankine to celsius",
-      "rankine celsius converter"
+      "°R to °C",
+      "rankine celsius converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "celsius-to-rankine",
-    "title": "Celsius to Rankine Converter — Free Online",
-    "description": "Convert celsius to rankine instantly. Free, accurate calculator, no signup.",
+    "title": "Celsius to Rankine Converter (°C → °R)",
+    "description": "Convert celsius to rankine instantly. Formula: °R = (°C + 273.15) × 9/5. Example: 0°C = 491.67°R. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "celsius to rankine",
       "celsius to rankine",
-      "celsius rankine converter"
+      "°C to °R",
+      "celsius rankine converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "cm-to-inches",
-    "title": "Centimeters to Inches Converter — Free Online",
-    "description": "Convert centimeters to inches instantly. Free, accurate calculator, no signup.",
+    "title": "Centimeters to Inches Converter (cm → in)",
+    "description": "Convert centimeters to inches instantly. Formula: in = cm × 0.393701. Example: 1 cm = 0.3937 in. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "cm to inches",
       "centimeters to inches",
-      "cm inches converter"
+      "cm to in",
+      "centimeters inches converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "inches-to-cm",
-    "title": "Inches to Centimeters Converter — Free Online",
-    "description": "Convert inches to centimeters instantly. Free, accurate calculator, no signup.",
+    "title": "Inches to Centimeters Converter (in → cm)",
+    "description": "Convert inches to centimeters instantly. Formula: cm = in × 2.54. Example: 1 in = 2.54 cm. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "inches to cm",
       "inches to centimeters",
-      "inches cm converter"
+      "in to cm",
+      "inches centimeters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mm-to-inches",
-    "title": "Millimeters to Inches Converter — Free Online",
-    "description": "Convert millimeters to inches instantly. Free, accurate calculator, no signup.",
+    "title": "Millimeters to Inches Converter (mm → in)",
+    "description": "Convert millimeters to inches instantly. Formula: in = mm × 0.0393701. Example: 1 mm = 0.0394 in. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mm to inches",
       "millimeters to inches",
-      "mm inches converter"
+      "mm to in",
+      "millimeters inches converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "inches-to-mm",
-    "title": "Inches to Millimeters Converter — Free Online",
-    "description": "Convert inches to millimeters instantly. Free, accurate calculator, no signup.",
+    "title": "Inches to Millimeters Converter (in → mm)",
+    "description": "Convert inches to millimeters instantly. Formula: mm = in × 25.4. Example: 1 in = 25.4 mm. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "inches to mm",
       "inches to millimeters",
-      "inches mm converter"
+      "in to mm",
+      "inches millimeters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "m-to-feet",
-    "title": "Meters to Feet Converter — Free Online",
-    "description": "Convert meters to feet instantly. Free, accurate calculator, no signup.",
+    "title": "Meters to Feet Converter (m → ft)",
+    "description": "Convert meters to feet instantly. Formula: ft = m × 3.28084. Example: 1 m = 3.2808 ft. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "m to feet",
       "meters to feet",
-      "m feet converter"
+      "m to ft",
+      "meters feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "feet-to-m",
-    "title": "Feet to Meters Converter — Free Online",
-    "description": "Convert feet to meters instantly. Free, accurate calculator, no signup.",
+    "title": "Feet to Meters Converter (ft → m)",
+    "description": "Convert feet to meters instantly. Formula: m = ft × 0.3048. Example: 1 ft = 0.3048 m. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "feet to m",
       "feet to meters",
-      "feet m converter"
+      "ft to m",
+      "feet meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "feet-to-meters",
-    "title": "Feet to Meters Converter — Free Online",
-    "description": "Convert feet to meters instantly. Free, accurate calculator, no signup.",
+    "title": "Feet to Meters Converter (ft → m)",
+    "description": "Convert feet to meters instantly. Formula: m = ft × 0.3048. Example: 1 ft = 0.3048 m. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "feet to meters",
       "feet to meters",
-      "feet meters converter"
+      "ft to m",
+      "feet meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "meters-to-feet",
-    "title": "Meters to Feet Converter — Free Online",
-    "description": "Convert meters to feet instantly. Free, accurate calculator, no signup.",
+    "title": "Meters to Feet Converter (m → ft)",
+    "description": "Convert meters to feet instantly. Formula: ft = m × 3.28084. Example: 1 m = 3.2808 ft. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "meters to feet",
       "meters to feet",
-      "meters feet converter"
+      "m to ft",
+      "meters feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "km-to-miles",
-    "title": "Kilometers to Miles Converter — Free Online",
-    "description": "Convert kilometers to miles instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers to Miles Converter (km → mi)",
+    "description": "Convert kilometers to miles instantly. Formula: mi = km × 0.621371. Example: 1 km = 0.6214 mi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "km to miles",
       "kilometers to miles",
-      "km miles converter"
+      "km to mi",
+      "kilometers miles converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "miles-to-km",
-    "title": "Miles to Kilometers Converter — Free Online",
-    "description": "Convert miles to kilometers instantly. Free, accurate calculator, no signup.",
+    "title": "Miles to Kilometers Converter (mi → km)",
+    "description": "Convert miles to kilometers instantly. Formula: km = mi × 1.60934. Example: 1 mi = 1.6093 km. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "miles to km",
       "miles to kilometers",
-      "miles km converter"
+      "mi to km",
+      "miles kilometers converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "yards-to-meters",
-    "title": "Yards to Meters Converter — Free Online",
-    "description": "Convert yards to meters instantly. Free, accurate calculator, no signup.",
+    "title": "Yards to Meters Converter (yd → m)",
+    "description": "Convert yards (yd) to meters (m) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "yards to meters",
       "yards to meters",
-      "yards meters converter"
+      "yd to m",
+      "yards meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "meters-to-yards",
-    "title": "Meters to Yards Converter — Free Online",
-    "description": "Convert meters to yards instantly. Free, accurate calculator, no signup.",
+    "title": "Meters to Yards Converter (m → yd)",
+    "description": "Convert meters (m) to yards (yd) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "meters to yards",
       "meters to yards",
-      "meters yards converter"
+      "m to yd",
+      "meters yards converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "feet-to-inches",
-    "title": "Feet to Inches Converter — Free Online",
-    "description": "Convert feet to inches instantly. Free, accurate calculator, no signup.",
+    "title": "Feet to Inches Converter (ft → in)",
+    "description": "Convert feet (ft) to inches (in) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "feet to inches",
       "feet to inches",
-      "feet inches converter"
+      "ft to in",
+      "feet inches converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "inches-to-feet",
-    "title": "Inches to Feet Converter — Free Online",
-    "description": "Convert inches to feet instantly. Free, accurate calculator, no signup.",
+    "title": "Inches to Feet Converter (in → ft)",
+    "description": "Convert inches (in) to feet (ft) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "inches to feet",
       "inches to feet",
-      "inches feet converter"
+      "in to ft",
+      "inches feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "cm-to-mm",
-    "title": "Centimeters to Millimeters Converter — Free Online",
-    "description": "Convert centimeters to millimeters instantly. Free, accurate calculator, no signup.",
+    "title": "Centimeters to Millimeters Converter (cm → mm)",
+    "description": "Convert centimeters to millimeters instantly. Formula: mm = cm × 10. Example: 1 cm = 10 mm. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "cm to mm",
       "centimeters to millimeters",
-      "cm mm converter"
+      "cm to mm",
+      "centimeters millimeters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mm-to-cm",
-    "title": "Millimeters to Centimeters Converter — Free Online",
-    "description": "Convert millimeters to centimeters instantly. Free, accurate calculator, no signup.",
+    "title": "Millimeters to Centimeters Converter (mm → cm)",
+    "description": "Convert millimeters to centimeters instantly. Formula: cm = mm × 0.1. Example: 1 mm = 0.1 cm. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mm to cm",
       "millimeters to centimeters",
-      "mm cm converter"
+      "mm to cm",
+      "millimeters centimeters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "m-to-cm",
-    "title": "Meters to Centimeters Converter — Free Online",
-    "description": "Convert meters to centimeters instantly. Free, accurate calculator, no signup.",
+    "title": "Meters to Centimeters Converter (m → cm)",
+    "description": "Convert meters to centimeters instantly. Formula: cm = m × 100. Example: 1 m = 100 cm. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "m to cm",
       "meters to centimeters",
-      "m cm converter"
+      "m to cm",
+      "meters centimeters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "cm-to-m",
-    "title": "Centimeters to Meters Converter — Free Online",
-    "description": "Convert centimeters to meters instantly. Free, accurate calculator, no signup.",
+    "title": "Centimeters to Meters Converter (cm → m)",
+    "description": "Convert centimeters to meters instantly. Formula: m = cm × 0.01. Example: 1 cm = 0.01 m. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "cm to m",
       "centimeters to meters",
-      "cm m converter"
+      "cm to m",
+      "centimeters meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "km-to-m",
-    "title": "Kilometers to Meters Converter — Free Online",
-    "description": "Convert kilometers to meters instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers to Meters Converter (km → m)",
+    "description": "Convert kilometers to meters instantly. Formula: m = km × 1000. Example: 1 km = 1000 m. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "km to m",
       "kilometers to meters",
-      "km m converter"
+      "km to m",
+      "kilometers meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "m-to-km",
-    "title": "Meters to Kilometers Converter — Free Online",
-    "description": "Convert meters to kilometers instantly. Free, accurate calculator, no signup.",
+    "title": "Meters to Kilometers Converter (m → km)",
+    "description": "Convert meters to kilometers instantly. Formula: km = m × 0.001. Example: 1 m = 0.001 km. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "m to km",
       "meters to kilometers",
-      "m km converter"
+      "m to km",
+      "meters kilometers converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "miles-to-feet",
-    "title": "Miles to Feet Converter — Free Online",
-    "description": "Convert miles to feet instantly. Free, accurate calculator, no signup.",
+    "title": "Miles to Feet Converter (mi → ft)",
+    "description": "Convert miles (mi) to feet (ft) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "miles to feet",
       "miles to feet",
-      "miles feet converter"
+      "mi to ft",
+      "miles feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "feet-to-miles",
-    "title": "Feet to Miles Converter — Free Online",
-    "description": "Convert feet to miles instantly. Free, accurate calculator, no signup.",
+    "title": "Feet to Miles Converter (ft → mi)",
+    "description": "Convert feet (ft) to miles (mi) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "feet to miles",
       "feet to miles",
-      "feet miles converter"
+      "ft to mi",
+      "feet miles converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "nautical-miles-to-km",
-    "title": "Nautical Miles to Kilometers Converter — Free Online",
-    "description": "Convert nautical miles to kilometers instantly. Free, accurate calculator, no signup.",
+    "title": "Nautical Miles to Kilometers Converter (nmi → km)",
+    "description": "Convert nautical miles to kilometers instantly. Formula: km = nmi × 1.852. Example: 1 nmi = 1.852 km. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
-      "nautical miles to km",
+      "nautical-miles to km",
       "nautical miles to kilometers",
-      "nautical-miles km converter"
+      "nmi to km",
+      "nautical miles kilometers converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "km-to-nautical-miles",
-    "title": "Kilometers to Nautical Miles Converter — Free Online",
-    "description": "Convert kilometers to nautical miles instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers to Nautical Miles Converter (km → nmi)",
+    "description": "Convert kilometers to nautical miles instantly. Formula: nmi = km × 0.539957. Example: 1 km = 0.54 nmi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
-      "km to nautical miles",
+      "km to nautical-miles",
       "kilometers to nautical miles",
-      "km nautical-miles converter"
+      "km to nmi",
+      "kilometers nautical miles converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kg-to-lbs",
-    "title": "Kilograms to Pounds Converter — Free Online",
-    "description": "Convert kilograms to pounds instantly. Free, accurate calculator, no signup.",
+    "title": "Kilograms to Pounds Converter (kg → lb)",
+    "description": "Convert kilograms to pounds instantly. Formula: lb = kg × 2.20462. Example: 1 kg = 2.2046 lb. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kg to lbs",
       "kilograms to pounds",
-      "kg lbs converter"
+      "kg to lb",
+      "kilograms pounds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "lbs-to-kg",
-    "title": "Pounds to Kilograms Converter — Free Online",
-    "description": "Convert pounds to kilograms instantly. Free, accurate calculator, no signup.",
+    "title": "Pounds to Kilograms Converter (lb → kg)",
+    "description": "Convert pounds to kilograms instantly. Formula: kg = lb × 0.453592. Example: 1 lb = 0.4536 kg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "lbs to kg",
       "pounds to kilograms",
-      "lbs kg converter"
+      "lb to kg",
+      "pounds kilograms converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kg-to-pounds",
-    "title": "Kilograms to Pounds Converter — Free Online",
-    "description": "Convert kilograms to pounds instantly. Free, accurate calculator, no signup.",
+    "title": "Kilograms to Pounds Converter (kg → lb)",
+    "description": "Convert kilograms to pounds instantly. Formula: lb = kg × 2.20462. Example: 1 kg = 2.2046 lb. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kg to pounds",
       "kilograms to pounds",
-      "kg pounds converter"
+      "kg to lb",
+      "kilograms pounds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "pounds-to-kg",
-    "title": "Pounds to Kilograms Converter — Free Online",
-    "description": "Convert pounds to kilograms instantly. Free, accurate calculator, no signup.",
+    "title": "Pounds to Kilograms Converter (lb → kg)",
+    "description": "Convert pounds to kilograms instantly. Formula: kg = lb × 0.453592. Example: 1 lb = 0.4536 kg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "pounds to kg",
       "pounds to kilograms",
-      "pounds kg converter"
+      "lb to kg",
+      "pounds kilograms converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "g-to-oz",
-    "title": "Grams to Ounces Converter — Free Online",
-    "description": "Convert grams to ounces instantly. Free, accurate calculator, no signup.",
+    "title": "Grams to Ounces Converter (g → oz)",
+    "description": "Convert grams to ounces instantly. Formula: oz = g × 0.035274. Example: 1 g = 0.0353 oz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "g to oz",
       "grams to ounces",
-      "g oz converter"
+      "g to oz",
+      "grams ounces converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "oz-to-g",
-    "title": "Ounces to Grams Converter — Free Online",
-    "description": "Convert ounces to grams instantly. Free, accurate calculator, no signup.",
+    "title": "Ounces to Grams Converter (oz → g)",
+    "description": "Convert ounces to grams instantly. Formula: g = oz × 28.3495. Example: 1 oz = 28.3495 g. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "oz to g",
       "ounces to grams",
-      "oz g converter"
+      "oz to g",
+      "ounces grams converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "grams-to-ounces",
-    "title": "Grams to Ounces Converter — Free Online",
-    "description": "Convert grams to ounces instantly. Free, accurate calculator, no signup.",
+    "title": "Grams to Ounces Converter (g → oz)",
+    "description": "Convert grams to ounces instantly. Formula: oz = g × 0.035274. Example: 1 g = 0.0353 oz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "grams to ounces",
       "grams to ounces",
-      "grams ounces converter"
+      "g to oz",
+      "grams ounces converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ounces-to-grams",
-    "title": "Ounces to Grams Converter — Free Online",
-    "description": "Convert ounces to grams instantly. Free, accurate calculator, no signup.",
+    "title": "Ounces to Grams Converter (oz → g)",
+    "description": "Convert ounces to grams instantly. Formula: g = oz × 28.3495. Example: 1 oz = 28.3495 g. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ounces to grams",
       "ounces to grams",
-      "ounces grams converter"
+      "oz to g",
+      "ounces grams converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kg-to-g",
-    "title": "Kilograms to Grams Converter — Free Online",
-    "description": "Convert kilograms to grams instantly. Free, accurate calculator, no signup.",
+    "title": "Kilograms to Grams Converter (kg → g)",
+    "description": "Convert kilograms to grams instantly. Formula: g = kg × 1000. Example: 1 kg = 1000 g. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kg to g",
       "kilograms to grams",
-      "kg g converter"
+      "kg to g",
+      "kilograms grams converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "g-to-kg",
-    "title": "Grams to Kilograms Converter — Free Online",
-    "description": "Convert grams to kilograms instantly. Free, accurate calculator, no signup.",
+    "title": "Grams to Kilograms Converter (g → kg)",
+    "description": "Convert grams to kilograms instantly. Formula: kg = g × 0.001. Example: 1 g = 0.001 kg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "g to kg",
       "grams to kilograms",
-      "g kg converter"
+      "g to kg",
+      "grams kilograms converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "lbs-to-oz",
-    "title": "Pounds to Ounces Converter — Free Online",
-    "description": "Convert pounds to ounces instantly. Free, accurate calculator, no signup.",
+    "title": "Pounds to Ounces Converter (lb → oz)",
+    "description": "Convert pounds (lb) to ounces (oz) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "lbs to oz",
       "pounds to ounces",
-      "lbs oz converter"
+      "lb to oz",
+      "pounds ounces converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "oz-to-lbs",
-    "title": "Ounces to Pounds Converter — Free Online",
-    "description": "Convert ounces to pounds instantly. Free, accurate calculator, no signup.",
+    "title": "Ounces to Pounds Converter (oz → lb)",
+    "description": "Convert ounces (oz) to pounds (lb) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "oz to lbs",
       "ounces to pounds",
-      "oz lbs converter"
+      "oz to lb",
+      "ounces pounds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mg-to-g",
-    "title": "Milligrams to Grams Converter — Free Online",
-    "description": "Convert milligrams to grams instantly. Free, accurate calculator, no signup.",
+    "title": "Milligrams to Grams Converter (mg → g)",
+    "description": "Convert milligrams to grams instantly. Formula: g = mg × 0.001. Example: 1 mg = 0.001 g. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mg to g",
       "milligrams to grams",
-      "mg g converter"
+      "mg to g",
+      "milligrams grams converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "g-to-mg",
-    "title": "Grams to Milligrams Converter — Free Online",
-    "description": "Convert grams to milligrams instantly. Free, accurate calculator, no signup.",
+    "title": "Grams to Milligrams Converter (g → mg)",
+    "description": "Convert grams to milligrams instantly. Formula: mg = g × 1000. Example: 1 g = 1000 mg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "g to mg",
       "grams to milligrams",
-      "g mg converter"
+      "g to mg",
+      "grams milligrams converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "tons-to-kg",
-    "title": "Tons to Kilograms Converter — Free Online",
-    "description": "Convert tons to kilograms instantly. Free, accurate calculator, no signup.",
+    "title": "Metric Tons to Kilograms Converter (t → kg)",
+    "description": "Convert metric tons to kilograms instantly. Formula: kg = t × 1000. Example: 1 t = 1000 kg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "tons to kg",
-      "tons to kilograms",
-      "tons kg converter"
+      "metric tons to kilograms",
+      "t to kg",
+      "metric tons kilograms converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kg-to-tons",
-    "title": "Kilograms to Tons Converter — Free Online",
-    "description": "Convert kilograms to tons instantly. Free, accurate calculator, no signup.",
+    "title": "Kilograms to Metric Tons Converter (kg → t)",
+    "description": "Convert kilograms to metric tons instantly. Formula: t = kg × 0.001. Example: 1 kg = 0.001 t. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kg to tons",
-      "kilograms to tons",
-      "kg tons converter"
+      "kilograms to metric tons",
+      "kg to t",
+      "kilograms metric tons converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "stones-to-kg",
-    "title": "Stones to Kilograms Converter — Free Online",
-    "description": "Convert stones to kilograms instantly. Free, accurate calculator, no signup.",
+    "title": "Stones to Kilograms Converter (st → kg)",
+    "description": "Convert stones to kilograms instantly. Formula: kg = st × 6.35029. Example: 1 st = 6.3503 kg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "stones to kg",
       "stones to kilograms",
-      "stones kg converter"
+      "st to kg",
+      "stones kilograms converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kg-to-stones",
-    "title": "Kilograms to Stones Converter — Free Online",
-    "description": "Convert kilograms to stones instantly. Free, accurate calculator, no signup.",
+    "title": "Kilograms to Stones Converter (kg → st)",
+    "description": "Convert kilograms to stones instantly. Formula: st = kg × 0.157473. Example: 1 kg = 0.1575 st. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kg to stones",
       "kilograms to stones",
-      "kg stones converter"
+      "kg to st",
+      "kilograms stones converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "stones-to-pounds",
-    "title": "Stones to Pounds Converter — Free Online",
-    "description": "Convert stones to pounds instantly. Free, accurate calculator, no signup.",
+    "title": "Stones to Pounds Converter (st → lb)",
+    "description": "Convert stones to pounds instantly. Formula: lb = st × 14. Example: 1 st = 14 lb. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "stones to pounds",
       "stones to pounds",
-      "stones pounds converter"
+      "st to lb",
+      "stones pounds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "pounds-to-stones",
-    "title": "Pounds to Stones Converter — Free Online",
-    "description": "Convert pounds to stones instantly. Free, accurate calculator, no signup.",
+    "title": "Pounds to Stones Converter (lb → st)",
+    "description": "Convert pounds to stones instantly. Formula: st = lb × 0.0714286. Example: 1 lb = 0.0714 st. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "pounds to stones",
       "pounds to stones",
-      "pounds stones converter"
+      "lb to st",
+      "pounds stones converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "liters-to-gallons",
-    "title": "Liters to Gallons Converter — Free Online",
-    "description": "Convert liters to gallons instantly. Free, accurate calculator, no signup.",
+    "title": "Liters to US Gallons Converter (L → gal)",
+    "description": "Convert liters to US gallons instantly. Formula: gal = L × 0.264172. Example: 1 L = 0.2642 gal. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "liters to gallons",
-      "liters to gallons",
-      "liters gallons converter"
+      "liters to US gallons",
+      "L to gal",
+      "liters US gallons converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "gallons-to-liters",
-    "title": "Gallons to Liters Converter — Free Online",
-    "description": "Convert gallons to liters instantly. Free, accurate calculator, no signup.",
+    "title": "US Gallons to Liters Converter (gal → L)",
+    "description": "Convert US gallons to liters instantly. Formula: L = gal × 3.78541. Example: 1 gal = 3.7854 L. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "gallons to liters",
-      "gallons to liters",
-      "gallons liters converter"
+      "US gallons to liters",
+      "gal to L",
+      "US gallons liters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ml-to-oz",
-    "title": "Milliliters to Ounces Converter — Free Online",
-    "description": "Convert milliliters to ounces instantly. Free, accurate calculator, no signup.",
+    "title": "Milliliters to Ounces Converter (mL → oz)",
+    "description": "Convert milliliters to ounces instantly. Formula: oz = mL × 0.033814. Example: 1 mL = 0.0338 oz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ml to oz",
       "milliliters to ounces",
-      "ml oz converter"
+      "mL to oz",
+      "milliliters ounces converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "oz-to-ml",
-    "title": "Ounces to Milliliters Converter — Free Online",
-    "description": "Convert ounces to milliliters instantly. Free, accurate calculator, no signup.",
+    "title": "Ounces to Milliliters Converter (oz → mL)",
+    "description": "Convert ounces to milliliters instantly. Formula: mL = oz × 29.5735. Example: 1 oz = 29.5735 mL. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "oz to ml",
       "ounces to milliliters",
-      "oz ml converter"
+      "oz to mL",
+      "ounces milliliters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "cups-to-ml",
-    "title": "Cups to Milliliters Converter — Free Online",
-    "description": "Convert cups to milliliters instantly. Free, accurate calculator, no signup.",
+    "title": "US Cups to Milliliters Converter (cup → mL)",
+    "description": "Convert US cups to milliliters instantly. Formula: mL = cup × 236.588. Example: 1 cup = 236.5882 mL. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "cups to ml",
-      "cups to milliliters",
-      "cups ml converter"
+      "US cups to milliliters",
+      "cup to mL",
+      "US cups milliliters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ml-to-cups",
-    "title": "Milliliters to Cups Converter — Free Online",
-    "description": "Convert milliliters to cups instantly. Free, accurate calculator, no signup.",
+    "title": "Milliliters to US Cups Converter (mL → cup)",
+    "description": "Convert milliliters to US cups instantly. Formula: cup = mL × 0.00422675. Example: 1 mL = 0.0042 cup. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ml to cups",
-      "milliliters to cups",
-      "ml cups converter"
+      "milliliters to US cups",
+      "mL to cup",
+      "milliliters US cups converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "liters-to-ml",
-    "title": "Liters to Milliliters Converter — Free Online",
-    "description": "Convert liters to milliliters instantly. Free, accurate calculator, no signup.",
+    "title": "Liters to Milliliters Converter (L → mL)",
+    "description": "Convert liters to milliliters instantly. Formula: mL = L × 1000. Example: 1 L = 1000 mL. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "liters to ml",
       "liters to milliliters",
-      "liters ml converter"
+      "L to mL",
+      "liters milliliters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ml-to-liters",
-    "title": "Milliliters to Liters Converter — Free Online",
-    "description": "Convert milliliters to liters instantly. Free, accurate calculator, no signup.",
+    "title": "Milliliters to Liters Converter (mL → L)",
+    "description": "Convert milliliters to liters instantly. Formula: L = mL × 0.001. Example: 1 mL = 0.001 L. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ml to liters",
       "milliliters to liters",
-      "ml liters converter"
+      "mL to L",
+      "milliliters liters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "tablespoons-to-ml",
-    "title": "Tablespoons to Milliliters Converter — Free Online",
-    "description": "Convert tablespoons to milliliters instantly. Free, accurate calculator, no signup.",
+    "title": "Tablespoons to Milliliters Converter (tbsp → mL)",
+    "description": "Convert tablespoons to milliliters instantly. Formula: mL = tbsp × 14.7868. Example: 1 tbsp = 14.7868 mL. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "tablespoons to ml",
       "tablespoons to milliliters",
-      "tablespoons ml converter"
+      "tbsp to mL",
+      "tablespoons milliliters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "teaspoons-to-ml",
-    "title": "Teaspoons to Milliliters Converter — Free Online",
-    "description": "Convert teaspoons to milliliters instantly. Free, accurate calculator, no signup.",
+    "title": "Teaspoons to Milliliters Converter (tsp → mL)",
+    "description": "Convert teaspoons to milliliters instantly. Formula: mL = tsp × 4.92892. Example: 1 tsp = 4.9289 mL. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "teaspoons to ml",
       "teaspoons to milliliters",
-      "teaspoons ml converter"
+      "tsp to mL",
+      "teaspoons milliliters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ml-to-tablespoons",
-    "title": "Milliliters to Tablespoons Converter — Free Online",
-    "description": "Convert milliliters to tablespoons instantly. Free, accurate calculator, no signup.",
+    "title": "Milliliters to Tablespoons Converter (mL → tbsp)",
+    "description": "Convert milliliters to tablespoons instantly. Formula: tbsp = mL × 0.067628. Example: 1 mL = 0.0676 tbsp. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ml to tablespoons",
       "milliliters to tablespoons",
-      "ml tablespoons converter"
+      "mL to tbsp",
+      "milliliters tablespoons converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ml-to-teaspoons",
-    "title": "Milliliters to Teaspoons Converter — Free Online",
-    "description": "Convert milliliters to teaspoons instantly. Free, accurate calculator, no signup.",
+    "title": "Milliliters to Teaspoons Converter (mL → tsp)",
+    "description": "Convert milliliters to teaspoons instantly. Formula: tsp = mL × 0.202884. Example: 1 mL = 0.2029 tsp. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ml to teaspoons",
       "milliliters to teaspoons",
-      "ml teaspoons converter"
+      "mL to tsp",
+      "milliliters teaspoons converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "pints-to-liters",
-    "title": "Pints to Liters Converter — Free Online",
-    "description": "Convert pints to liters instantly. Free, accurate calculator, no signup.",
+    "title": "US Pints to Liters Converter (pt → L)",
+    "description": "Convert US pints (pt) to liters (L) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "pints to liters",
-      "pints to liters",
-      "pints liters converter"
+      "US pints to liters",
+      "pt to L",
+      "US pints liters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "liters-to-pints",
-    "title": "Liters to Pints Converter — Free Online",
-    "description": "Convert liters to pints instantly. Free, accurate calculator, no signup.",
+    "title": "Liters to US Pints Converter (L → pt)",
+    "description": "Convert liters (L) to US pints (pt) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "liters to pints",
-      "liters to pints",
-      "liters pints converter"
+      "liters to US pints",
+      "L to pt",
+      "liters US pints converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "quarts-to-liters",
-    "title": "Quarts to Liters Converter — Free Online",
-    "description": "Convert quarts to liters instantly. Free, accurate calculator, no signup.",
+    "title": "US Quarts to Liters Converter (qt → L)",
+    "description": "Convert US quarts (qt) to liters (L) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "quarts to liters",
-      "quarts to liters",
-      "quarts liters converter"
+      "US quarts to liters",
+      "qt to L",
+      "US quarts liters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "liters-to-quarts",
-    "title": "Liters to Quarts Converter — Free Online",
-    "description": "Convert liters to quarts instantly. Free, accurate calculator, no signup.",
+    "title": "Liters to US Quarts Converter (L → qt)",
+    "description": "Convert liters (L) to US quarts (qt) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "liters to quarts",
-      "liters to quarts",
-      "liters quarts converter"
+      "liters to US quarts",
+      "L to qt",
+      "liters US quarts converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kmh-to-mph",
-    "title": "km/h to mph Converter — Free Online",
-    "description": "Convert km/h to mph instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers per Hour to Miles per Hour Converter (km/h → mph)",
+    "description": "Convert km/h to mph instantly. Formula: mph = km/h × 0.621371. Example: 1 km/h = 0.6214 mph. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kmh to mph",
       "km/h to mph",
-      "kmh mph converter"
+      "km/h to mph",
+      "km/h mph converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mph-to-kmh",
-    "title": "mph to km/h Converter — Free Online",
-    "description": "Convert mph to km/h instantly. Free, accurate calculator, no signup.",
+    "title": "Miles per Hour to Kilometers per Hour Converter (mph → km/h)",
+    "description": "Convert mph to km/h instantly. Formula: km/h = mph × 1.60934. Example: 1 mph = 1.6093 km/h. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mph to kmh",
       "mph to km/h",
-      "mph kmh converter"
+      "mph to km/h",
+      "mph km/h converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ms-to-kmh",
-    "title": "m/s to km/h Converter — Free Online",
-    "description": "Convert m/s to km/h instantly. Free, accurate calculator, no signup.",
+    "title": "Milliseconds to Kilometers per Hour Converter (ms → km/h)",
+    "description": "Convert milliseconds (ms) to km/h (km/h) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ms to kmh",
-      "m/s to km/h",
-      "ms kmh converter"
+      "milliseconds to km/h",
+      "ms to km/h",
+      "milliseconds km/h converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kmh-to-ms",
-    "title": "km/h to m/s Converter — Free Online",
-    "description": "Convert km/h to m/s instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers per Hour to Milliseconds Converter (km/h → ms)",
+    "description": "Convert km/h (km/h) to milliseconds (ms) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kmh to ms",
-      "km/h to m/s",
-      "kmh ms converter"
+      "km/h to milliseconds",
+      "km/h to ms",
+      "km/h milliseconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ms-to-mph",
-    "title": "m/s to mph Converter — Free Online",
-    "description": "Convert m/s to mph instantly. Free, accurate calculator, no signup.",
+    "title": "Milliseconds to Miles per Hour Converter (ms → mph)",
+    "description": "Convert milliseconds (ms) to mph (mph) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ms to mph",
-      "m/s to mph",
-      "ms mph converter"
+      "milliseconds to mph",
+      "ms to mph",
+      "milliseconds mph converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mph-to-ms",
-    "title": "mph to m/s Converter — Free Online",
-    "description": "Convert mph to m/s instantly. Free, accurate calculator, no signup.",
+    "title": "Miles per Hour to Milliseconds Converter (mph → ms)",
+    "description": "Convert mph (mph) to milliseconds (ms) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mph to ms",
-      "mph to m/s",
-      "mph ms converter"
+      "mph to milliseconds",
+      "mph to ms",
+      "mph milliseconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "knots-to-mph",
-    "title": "Knots to mph Converter — Free Online",
-    "description": "Convert knots to mph instantly. Free, accurate calculator, no signup.",
+    "title": "Knots to Miles per Hour Converter (kn → mph)",
+    "description": "Convert knots to mph instantly. Formula: mph = kn × 1.15078. Example: 1 kn = 1.1508 mph. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "knots to mph",
       "knots to mph",
-      "knots mph converter"
+      "kn to mph",
+      "knots mph converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mph-to-knots",
-    "title": "mph to Knots Converter — Free Online",
-    "description": "Convert mph to knots instantly. Free, accurate calculator, no signup.",
+    "title": "Miles per Hour to Knots Converter (mph → kn)",
+    "description": "Convert mph to knots instantly. Formula: kn = mph × 0.868977. Example: 1 mph = 0.869 kn. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mph to knots",
       "mph to knots",
-      "mph knots converter"
+      "mph to kn",
+      "mph knots converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "knots-to-kmh",
-    "title": "Knots to km/h Converter — Free Online",
-    "description": "Convert knots to km/h instantly. Free, accurate calculator, no signup.",
+    "title": "Knots to Kilometers per Hour Converter (kn → km/h)",
+    "description": "Convert knots to km/h instantly. Formula: km/h = kn × 1.852. Example: 1 kn = 1.852 km/h. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "knots to kmh",
       "knots to km/h",
-      "knots kmh converter"
+      "kn to km/h",
+      "knots km/h converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kmh-to-knots",
-    "title": "km/h to Knots Converter — Free Online",
-    "description": "Convert km/h to knots instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers per Hour to Knots Converter (km/h → kn)",
+    "description": "Convert km/h to knots instantly. Formula: kn = km/h × 0.539957. Example: 1 km/h = 0.54 kn. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kmh to knots",
       "km/h to knots",
-      "kmh knots converter"
+      "km/h to kn",
+      "km/h knots converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "seconds-to-minutes",
-    "title": "Seconds to Minutes Converter — Free Online",
-    "description": "Convert seconds to minutes instantly. Free, accurate calculator, no signup.",
+    "title": "Seconds to Minutes Converter (sec → min)",
+    "description": "Convert seconds to minutes instantly. Formula: min = sec × 0.0166667. Example: 1 sec = 0.0167 min. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "seconds to minutes",
       "seconds to minutes",
-      "seconds minutes converter"
+      "sec to min",
+      "seconds minutes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "minutes-to-seconds",
-    "title": "Minutes to Seconds Converter — Free Online",
-    "description": "Convert minutes to seconds instantly. Free, accurate calculator, no signup.",
+    "title": "Minutes to Seconds Converter (min → sec)",
+    "description": "Convert minutes to seconds instantly. Formula: sec = min × 60. Example: 1 min = 60 sec. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "minutes to seconds",
       "minutes to seconds",
-      "minutes seconds converter"
+      "min to sec",
+      "minutes seconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "minutes-to-hours",
-    "title": "Minutes to Hours Converter — Free Online",
-    "description": "Convert minutes to hours instantly. Free, accurate calculator, no signup.",
+    "title": "Minutes to Hours Converter (min → hr)",
+    "description": "Convert minutes to hours instantly. Formula: hr = min × 0.0166667. Example: 1 min = 0.0167 hr. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "minutes to hours",
       "minutes to hours",
-      "minutes hours converter"
+      "min to hr",
+      "minutes hours converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hours-to-minutes",
-    "title": "Hours to Minutes Converter — Free Online",
-    "description": "Convert hours to minutes instantly. Free, accurate calculator, no signup.",
+    "title": "Hours to Minutes Converter (hr → min)",
+    "description": "Convert hours to minutes instantly. Formula: min = hr × 60. Example: 1 hr = 60 min. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hours to minutes",
       "hours to minutes",
-      "hours minutes converter"
+      "hr to min",
+      "hours minutes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hours-to-seconds",
-    "title": "Hours to Seconds Converter — Free Online",
-    "description": "Convert hours to seconds instantly. Free, accurate calculator, no signup.",
+    "title": "Hours to Seconds Converter (hr → sec)",
+    "description": "Convert hours to seconds instantly. Formula: sec = hr × 3600. Example: 1 hr = 3600 sec. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hours to seconds",
       "hours to seconds",
-      "hours seconds converter"
+      "hr to sec",
+      "hours seconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "seconds-to-hours",
-    "title": "Seconds to Hours Converter — Free Online",
-    "description": "Convert seconds to hours instantly. Free, accurate calculator, no signup.",
+    "title": "Seconds to Hours Converter (sec → hr)",
+    "description": "Convert seconds to hours instantly. Formula: hr = sec × 0.000277778. Example: 1 sec = 0.0002778 hr. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "seconds to hours",
       "seconds to hours",
-      "seconds hours converter"
+      "sec to hr",
+      "seconds hours converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hours-to-days",
-    "title": "Hours to Days Converter — Free Online",
-    "description": "Convert hours to days instantly. Free, accurate calculator, no signup.",
+    "title": "Hours to Days Converter (hr → d)",
+    "description": "Convert hours to days instantly. Formula: d = hr × 0.0416667. Example: 1 hr = 0.0417 d. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hours to days",
       "hours to days",
-      "hours days converter"
+      "hr to d",
+      "hours days converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "days-to-hours",
-    "title": "Days to Hours Converter — Free Online",
-    "description": "Convert days to hours instantly. Free, accurate calculator, no signup.",
+    "title": "Days to Hours Converter (d → hr)",
+    "description": "Convert days to hours instantly. Formula: hr = d × 24. Example: 1 d = 24 hr. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "days to hours",
       "days to hours",
-      "days hours converter"
+      "d to hr",
+      "days hours converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "days-to-weeks",
-    "title": "Days to Weeks Converter — Free Online",
-    "description": "Convert days to weeks instantly. Free, accurate calculator, no signup.",
+    "title": "Days to Weeks Converter (d → wk)",
+    "description": "Convert days to weeks instantly. Formula: wk = d × 0.142857. Example: 1 d = 0.1429 wk. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "days to weeks",
       "days to weeks",
-      "days weeks converter"
+      "d to wk",
+      "days weeks converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "weeks-to-days",
-    "title": "Weeks to Days Converter — Free Online",
-    "description": "Convert weeks to days instantly. Free, accurate calculator, no signup.",
+    "title": "Weeks to Days Converter (wk → d)",
+    "description": "Convert weeks to days instantly. Formula: d = wk × 7. Example: 1 wk = 7 d. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "weeks to days",
       "weeks to days",
-      "weeks days converter"
+      "wk to d",
+      "weeks days converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "days-to-months",
-    "title": "Days to Months Converter — Free Online",
-    "description": "Convert days to months instantly. Free, accurate calculator, no signup.",
+    "title": "Days to Months Converter (d → mo)",
+    "description": "Convert days to months instantly. Formula: mo = d × 0.0333333. Example: 1 d = 0.0333 mo. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "days to months",
       "days to months",
-      "days months converter"
+      "d to mo",
+      "days months converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "months-to-days",
-    "title": "Months to Days Converter — Free Online",
-    "description": "Convert months to days instantly. Free, accurate calculator, no signup.",
+    "title": "Months to Days Converter (mo → d)",
+    "description": "Convert months to days instantly. Formula: d = mo × 30. Example: 1 mo = 30 d. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "months to days",
       "months to days",
-      "months days converter"
+      "mo to d",
+      "months days converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "days-to-years",
-    "title": "Days to Years Converter — Free Online",
-    "description": "Convert days to years instantly. Free, accurate calculator, no signup.",
+    "title": "Days to Years Converter (d → yr)",
+    "description": "Convert days to years instantly. Formula: yr = d × 0.00273973. Example: 1 d = 0.0027 yr. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "days to years",
       "days to years",
-      "days years converter"
+      "d to yr",
+      "days years converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "years-to-days",
-    "title": "Years to Days Converter — Free Online",
-    "description": "Convert years to days instantly. Free, accurate calculator, no signup.",
+    "title": "Years to Days Converter (yr → d)",
+    "description": "Convert years to days instantly. Formula: d = yr × 365. Example: 1 yr = 365 d. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "years to days",
       "years to days",
-      "years days converter"
+      "yr to d",
+      "years days converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "weeks-to-months",
-    "title": "Weeks to Months Converter — Free Online",
-    "description": "Convert weeks to months instantly. Free, accurate calculator, no signup.",
+    "title": "Weeks to Months Converter (wk → mo)",
+    "description": "Convert weeks (wk) to months (mo) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "weeks to months",
       "weeks to months",
-      "weeks months converter"
+      "wk to mo",
+      "weeks months converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "months-to-weeks",
-    "title": "Months to Weeks Converter — Free Online",
-    "description": "Convert months to weeks instantly. Free, accurate calculator, no signup.",
+    "title": "Months to Weeks Converter (mo → wk)",
+    "description": "Convert months (mo) to weeks (wk) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "months to weeks",
       "months to weeks",
-      "months weeks converter"
+      "mo to wk",
+      "months weeks converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "milliseconds-to-seconds",
-    "title": "Milliseconds to Seconds Converter — Free Online",
-    "description": "Convert milliseconds to seconds instantly. Free, accurate calculator, no signup.",
+    "title": "Milliseconds to Seconds Converter (ms → sec)",
+    "description": "Convert milliseconds to seconds instantly. Formula: sec = ms × 0.001. Example: 1 ms = 0.001 sec. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "milliseconds to seconds",
       "milliseconds to seconds",
-      "milliseconds seconds converter"
+      "ms to sec",
+      "milliseconds seconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "seconds-to-milliseconds",
-    "title": "Seconds to Milliseconds Converter — Free Online",
-    "description": "Convert seconds to milliseconds instantly. Free, accurate calculator, no signup.",
+    "title": "Seconds to Milliseconds Converter (sec → ms)",
+    "description": "Convert seconds to milliseconds instantly. Formula: ms = sec × 1000. Example: 1 sec = 1000 ms. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "seconds to milliseconds",
       "seconds to milliseconds",
-      "seconds milliseconds converter"
+      "sec to ms",
+      "seconds milliseconds converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "bytes-to-kb",
-    "title": "Bytes to KB Converter — Free Online",
-    "description": "Convert bytes to kb instantly. Free, accurate calculator, no signup.",
+    "title": "Bytes to Kilobytes Converter (B → KB)",
+    "description": "Convert bytes to kilobytes instantly. Formula: KB = B × 0.000976562. Example: 1 B = 0.0009766 KB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "bytes to kb",
-      "bytes to kb",
-      "bytes kb converter"
+      "bytes to kilobytes",
+      "B to KB",
+      "bytes kilobytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kb-to-bytes",
-    "title": "KB to Bytes Converter — Free Online",
-    "description": "Convert kb to bytes instantly. Free, accurate calculator, no signup.",
+    "title": "Kilobytes to Bytes Converter (KB → B)",
+    "description": "Convert kilobytes to bytes instantly. Formula: B = KB × 1024. Example: 1 KB = 1024 B. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kb to bytes",
-      "kb to bytes",
-      "kb bytes converter"
+      "kilobytes to bytes",
+      "KB to B",
+      "kilobytes bytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kb-to-mb",
-    "title": "KB to MB Converter — Free Online",
-    "description": "Convert kb to mb instantly. Free, accurate calculator, no signup.",
+    "title": "Kilobytes to Megabytes Converter (KB → MB)",
+    "description": "Convert kilobytes to megabytes instantly. Formula: MB = KB × 0.000976562. Example: 1 KB = 0.0009766 MB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kb to mb",
-      "kb to mb",
-      "kb mb converter"
+      "kilobytes to megabytes",
+      "KB to MB",
+      "kilobytes megabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mb-to-kb",
-    "title": "MB to KB Converter — Free Online",
-    "description": "Convert mb to kb instantly. Free, accurate calculator, no signup.",
+    "title": "Megabytes to Kilobytes Converter (MB → KB)",
+    "description": "Convert megabytes to kilobytes instantly. Formula: KB = MB × 1024. Example: 1 MB = 1024 KB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mb to kb",
-      "mb to kb",
-      "mb kb converter"
+      "megabytes to kilobytes",
+      "MB to KB",
+      "megabytes kilobytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mb-to-gb",
-    "title": "MB to GB Converter — Free Online",
-    "description": "Convert mb to gb instantly. Free, accurate calculator, no signup.",
+    "title": "Megabytes to Gigabytes Converter (MB → GB)",
+    "description": "Convert megabytes to gigabytes instantly. Formula: GB = MB × 0.000976562. Example: 1 MB = 0.0009766 GB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mb to gb",
-      "mb to gb",
-      "mb gb converter"
+      "megabytes to gigabytes",
+      "MB to GB",
+      "megabytes gigabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "gb-to-mb",
-    "title": "GB to MB Converter — Free Online",
-    "description": "Convert gb to mb instantly. Free, accurate calculator, no signup.",
+    "title": "Gigabytes to Megabytes Converter (GB → MB)",
+    "description": "Convert gigabytes to megabytes instantly. Formula: MB = GB × 1024. Example: 1 GB = 1024 MB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "gb to mb",
-      "gb to mb",
-      "gb mb converter"
+      "gigabytes to megabytes",
+      "GB to MB",
+      "gigabytes megabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "gb-to-tb",
-    "title": "GB to TB Converter — Free Online",
-    "description": "Convert gb to tb instantly. Free, accurate calculator, no signup.",
+    "title": "Gigabytes to Terabytes Converter (GB → TB)",
+    "description": "Convert gigabytes to terabytes instantly. Formula: TB = GB × 0.000976562. Example: 1 GB = 0.0009766 TB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "gb to tb",
-      "gb to tb",
-      "gb tb converter"
+      "gigabytes to terabytes",
+      "GB to TB",
+      "gigabytes terabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "tb-to-gb",
-    "title": "TB to GB Converter — Free Online",
-    "description": "Convert tb to gb instantly. Free, accurate calculator, no signup.",
+    "title": "Terabytes to Gigabytes Converter (TB → GB)",
+    "description": "Convert terabytes to gigabytes instantly. Formula: GB = TB × 1024. Example: 1 TB = 1024 GB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "tb to gb",
-      "tb to gb",
-      "tb gb converter"
+      "terabytes to gigabytes",
+      "TB to GB",
+      "terabytes gigabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "tb-to-pb",
-    "title": "TB to PB Converter — Free Online",
-    "description": "Convert tb to pb instantly. Free, accurate calculator, no signup.",
+    "title": "Terabytes to Petabytes Converter (TB → PB)",
+    "description": "Convert terabytes to petabytes instantly. Formula: PB = TB × 0.000976562. Example: 1 TB = 0.0009766 PB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "tb to pb",
-      "tb to pb",
-      "tb pb converter"
+      "terabytes to petabytes",
+      "TB to PB",
+      "terabytes petabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "pb-to-tb",
-    "title": "PB to TB Converter — Free Online",
-    "description": "Convert pb to tb instantly. Free, accurate calculator, no signup.",
+    "title": "Petabytes to Terabytes Converter (PB → TB)",
+    "description": "Convert petabytes to terabytes instantly. Formula: TB = PB × 1024. Example: 1 PB = 1024 TB. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "pb to tb",
-      "pb to tb",
-      "pb tb converter"
+      "petabytes to terabytes",
+      "PB to TB",
+      "petabytes terabytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "bits-to-bytes",
-    "title": "Bits to Bytes Converter — Free Online",
-    "description": "Convert bits to bytes instantly. Free, accurate calculator, no signup.",
+    "title": "Bits to Bytes Converter (b → B)",
+    "description": "Convert bits to bytes instantly. Formula: B = b × 0.125. Example: 1 b = 0.125 B. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "bits to bytes",
       "bits to bytes",
-      "bits bytes converter"
+      "b to B",
+      "bits bytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "bytes-to-bits",
-    "title": "Bytes to Bits Converter — Free Online",
-    "description": "Convert bytes to bits instantly. Free, accurate calculator, no signup.",
+    "title": "Bytes to Bits Converter (B → b)",
+    "description": "Convert bytes to bits instantly. Formula: b = B × 8. Example: 1 B = 8 b. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "bytes to bits",
       "bytes to bits",
-      "bytes bits converter"
+      "B to b",
+      "bytes bits converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mb-to-bytes",
-    "title": "MB to Bytes Converter — Free Online",
-    "description": "Convert mb to bytes instantly. Free, accurate calculator, no signup.",
+    "title": "Megabytes to Bytes Converter (MB → B)",
+    "description": "Convert megabytes to bytes instantly. Formula: B = MB × 1048576. Example: 1 MB = 1.049e+06 B. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mb to bytes",
-      "mb to bytes",
-      "mb bytes converter"
+      "megabytes to bytes",
+      "MB to B",
+      "megabytes bytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "gb-to-bytes",
-    "title": "GB to Bytes Converter — Free Online",
-    "description": "Convert gb to bytes instantly. Free, accurate calculator, no signup.",
+    "title": "Gigabytes to Bytes Converter (GB → B)",
+    "description": "Convert gigabytes (GB) to bytes (B) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "gb to bytes",
-      "gb to bytes",
-      "gb bytes converter"
+      "gigabytes to bytes",
+      "GB to B",
+      "gigabytes bytes converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kbps-to-mbps",
-    "title": "Kbps to Mbps Converter — Free Online",
-    "description": "Convert kbps to mbps instantly. Free, accurate calculator, no signup.",
+    "title": "Kilobits per Second to Megabits per Second Converter (kbps → Mbps)",
+    "description": "Convert kilobits/sec to megabits/sec instantly. Formula: Mbps = kbps × 0.001. Example: 1 kbps = 0.001 Mbps. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kbps to mbps",
-      "kbps to mbps",
-      "kbps mbps converter"
+      "kilobits/sec to megabits/sec",
+      "kbps to Mbps",
+      "kilobits/sec megabits/sec converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mbps-to-kbps",
-    "title": "Mbps to Kbps Converter — Free Online",
-    "description": "Convert mbps to kbps instantly. Free, accurate calculator, no signup.",
+    "title": "Megabits per Second to Kilobits per Second Converter (Mbps → kbps)",
+    "description": "Convert megabits/sec to kilobits/sec instantly. Formula: kbps = Mbps × 1000. Example: 1 Mbps = 1000 kbps. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mbps to kbps",
-      "mbps to kbps",
-      "mbps kbps converter"
+      "megabits/sec to kilobits/sec",
+      "Mbps to kbps",
+      "megabits/sec kilobits/sec converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mbps-to-gbps",
-    "title": "Mbps to Gbps Converter — Free Online",
-    "description": "Convert mbps to gbps instantly. Free, accurate calculator, no signup.",
+    "title": "Megabits per Second to Gigabits per Second Converter (Mbps → Gbps)",
+    "description": "Convert megabits/sec to gigabits/sec instantly. Formula: Gbps = Mbps × 0.001. Example: 1 Mbps = 0.001 Gbps. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mbps to gbps",
-      "mbps to gbps",
-      "mbps gbps converter"
+      "megabits/sec to gigabits/sec",
+      "Mbps to Gbps",
+      "megabits/sec gigabits/sec converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "gbps-to-mbps",
-    "title": "Gbps to Mbps Converter — Free Online",
-    "description": "Convert gbps to mbps instantly. Free, accurate calculator, no signup.",
+    "title": "Gigabits per Second to Megabits per Second Converter (Gbps → Mbps)",
+    "description": "Convert gigabits/sec to megabits/sec instantly. Formula: Mbps = Gbps × 1000. Example: 1 Gbps = 1000 Mbps. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "gbps to mbps",
-      "gbps to mbps",
-      "gbps mbps converter"
+      "gigabits/sec to megabits/sec",
+      "Gbps to Mbps",
+      "gigabits/sec megabits/sec converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqft-to-sqm",
-    "title": "Square Feet to Square Meters Converter — Free Online",
-    "description": "Convert square feet to square meters instantly. Free, accurate calculator, no signup.",
+    "title": "Square Feet to Square Meters Converter (sq ft → sq m)",
+    "description": "Convert square feet to square meters instantly. Formula: sq m = sq ft × 0.092903. Example: 1 sq ft = 0.0929 sq m. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqft to sqm",
       "square feet to square meters",
-      "sqft sqm converter"
+      "sq ft to sq m",
+      "square feet square meters converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqm-to-sqft",
-    "title": "Square Meters to Square Feet Converter — Free Online",
-    "description": "Convert square meters to square feet instantly. Free, accurate calculator, no signup.",
+    "title": "Square Meters to Square Feet Converter (sq m → sq ft)",
+    "description": "Convert square meters to square feet instantly. Formula: sq ft = sq m × 10.7639. Example: 1 sq m = 10.7639 sq ft. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqm to sqft",
       "square meters to square feet",
-      "sqm sqft converter"
+      "sq m to sq ft",
+      "square meters square feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "acres-to-hectares",
-    "title": "Acres to Hectares Converter — Free Online",
-    "description": "Convert acres to hectares instantly. Free, accurate calculator, no signup.",
+    "title": "Acres to Hectares Converter (ac → ha)",
+    "description": "Convert acres to hectares instantly. Formula: ha = ac × 0.404686. Example: 1 ac = 0.4047 ha. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "acres to hectares",
       "acres to hectares",
-      "acres hectares converter"
+      "ac to ha",
+      "acres hectares converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hectares-to-acres",
-    "title": "Hectares to Acres Converter — Free Online",
-    "description": "Convert hectares to acres instantly. Free, accurate calculator, no signup.",
+    "title": "Hectares to Acres Converter (ha → ac)",
+    "description": "Convert hectares to acres instantly. Formula: ac = ha × 2.47105. Example: 1 ha = 2.4711 ac. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hectares to acres",
       "hectares to acres",
-      "hectares acres converter"
+      "ha to ac",
+      "hectares acres converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "acres-to-sqft",
-    "title": "Acres to Square Feet Converter — Free Online",
-    "description": "Convert acres to square feet instantly. Free, accurate calculator, no signup.",
+    "title": "Acres to Square Feet Converter (ac → sq ft)",
+    "description": "Convert acres (ac) to square feet (sq ft) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "acres to sqft",
       "acres to square feet",
-      "acres sqft converter"
+      "ac to sq ft",
+      "acres square feet converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqft-to-acres",
-    "title": "Square Feet to Acres Converter — Free Online",
-    "description": "Convert square feet to acres instantly. Free, accurate calculator, no signup.",
+    "title": "Square Feet to Acres Converter (sq ft → ac)",
+    "description": "Convert square feet (sq ft) to acres (ac) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqft to acres",
       "square feet to acres",
-      "sqft acres converter"
+      "sq ft to ac",
+      "square feet acres converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqm-to-acres",
-    "title": "Square Meters to Acres Converter — Free Online",
-    "description": "Convert square meters to acres instantly. Free, accurate calculator, no signup.",
+    "title": "Square Meters to Acres Converter (sq m → ac)",
+    "description": "Convert square meters to acres instantly. Formula: ac = sq m × 0.000247105. Example: 1 sq m = 0.0002471 ac. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqm to acres",
       "square meters to acres",
-      "sqm acres converter"
+      "sq m to ac",
+      "square meters acres converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqkm-to-sqmiles",
-    "title": "Square Kilometers to Square Miles Converter — Free Online",
-    "description": "Convert square kilometers to square miles instantly. Free, accurate calculator, no signup.",
+    "title": "Square Kilometers to Square Miles Converter (sq km → sq mi)",
+    "description": "Convert square km to square miles instantly. Formula: sq mi = sq km × 0.386102. Example: 1 sq km = 0.3861 sq mi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqkm to sqmiles",
-      "square kilometers to square miles",
-      "sqkm sqmiles converter"
+      "square km to square miles",
+      "sq km to sq mi",
+      "square km square miles converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "sqmiles-to-sqkm",
-    "title": "Square Miles to Square Kilometers Converter — Free Online",
-    "description": "Convert square miles to square kilometers instantly. Free, accurate calculator, no signup.",
+    "title": "Square Miles to Square Kilometers Converter (sq mi → sq km)",
+    "description": "Convert square miles to square km instantly. Formula: sq km = sq mi × 2.58999. Example: 1 sq mi = 2.59 sq km. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "sqmiles to sqkm",
-      "square miles to square kilometers",
-      "sqmiles sqkm converter"
+      "square miles to square km",
+      "sq mi to sq km",
+      "square miles square km converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "psi-to-bar",
-    "title": "PSI to Bar Converter — Free Online",
-    "description": "Convert psi to bar instantly. Free, accurate calculator, no signup.",
+    "title": "PSI to Bar Converter (psi → bar)",
+    "description": "Convert pounds per sq inch to bar instantly. Formula: bar = psi × 0.0689476. Example: 1 psi = 0.0689 bar. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "psi to bar",
+      "pounds per sq inch to bar",
       "psi to bar",
-      "psi bar converter"
+      "pounds per sq inch bar converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "bar-to-psi",
-    "title": "Bar to PSI Converter — Free Online",
-    "description": "Convert bar to psi instantly. Free, accurate calculator, no signup.",
+    "title": "Bar to PSI Converter (bar → psi)",
+    "description": "Convert bar to pounds per sq inch instantly. Formula: psi = bar × 14.5038. Example: 1 bar = 14.5038 psi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "bar to psi",
+      "bar to pounds per sq inch",
       "bar to psi",
-      "bar psi converter"
+      "bar pounds per sq inch converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "atm-to-psi",
-    "title": "Atmospheres to PSI Converter — Free Online",
-    "description": "Convert atmospheres to psi instantly. Free, accurate calculator, no signup.",
+    "title": "Atmospheres to PSI Converter (atm → psi)",
+    "description": "Convert atmospheres (atm) to pounds per sq inch (psi) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "atm to psi",
-      "atmospheres to psi",
-      "atm psi converter"
+      "atmospheres to pounds per sq inch",
+      "atm to psi",
+      "atmospheres pounds per sq inch converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "psi-to-atm",
-    "title": "PSI to Atmospheres Converter — Free Online",
-    "description": "Convert psi to atmospheres instantly. Free, accurate calculator, no signup.",
+    "title": "PSI to Atmospheres Converter (psi → atm)",
+    "description": "Convert pounds per sq inch (psi) to atmospheres (atm) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "psi to atm",
-      "psi to atmospheres",
-      "psi atm converter"
+      "pounds per sq inch to atmospheres",
+      "psi to atm",
+      "pounds per sq inch atmospheres converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "pa-to-psi",
-    "title": "Pascals to PSI Converter — Free Online",
-    "description": "Convert pascals to psi instantly. Free, accurate calculator, no signup.",
+    "title": "Pascals to PSI Converter (Pa → psi)",
+    "description": "Convert pascals to pounds per sq inch instantly. Formula: psi = Pa × 0.000145038. Example: 1 Pa = 0.000145 psi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "pa to psi",
-      "pascals to psi",
-      "pa psi converter"
+      "pascals to pounds per sq inch",
+      "Pa to psi",
+      "pascals pounds per sq inch converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "psi-to-pa",
-    "title": "PSI to Pascals Converter — Free Online",
-    "description": "Convert psi to pascals instantly. Free, accurate calculator, no signup.",
+    "title": "PSI to Pascals Converter (psi → Pa)",
+    "description": "Convert pounds per sq inch to pascals instantly. Formula: Pa = psi × 6894.76. Example: 1 psi = 6895 Pa. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "psi to pa",
-      "psi to pascals",
-      "psi pa converter"
+      "pounds per sq inch to pascals",
+      "psi to Pa",
+      "pounds per sq inch pascals converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kpa-to-psi",
-    "title": "Kilopascals to PSI Converter — Free Online",
-    "description": "Convert kilopascals to psi instantly. Free, accurate calculator, no signup.",
+    "title": "Kilopascals to PSI Converter (kPa → psi)",
+    "description": "Convert kilopascals to pounds per sq inch instantly. Formula: psi = kPa × 0.145038. Example: 1 kPa = 0.145 psi. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kpa to psi",
-      "kilopascals to psi",
-      "kpa psi converter"
+      "kilopascals to pounds per sq inch",
+      "kPa to psi",
+      "kilopascals pounds per sq inch converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "psi-to-kpa",
-    "title": "PSI to Kilopascals Converter — Free Online",
-    "description": "Convert psi to kilopascals instantly. Free, accurate calculator, no signup.",
+    "title": "PSI to Kilopascals Converter (psi → kPa)",
+    "description": "Convert pounds per sq inch to kilopascals instantly. Formula: kPa = psi × 6.89476. Example: 1 psi = 6.8948 kPa. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "psi to kpa",
-      "psi to kilopascals",
-      "psi kpa converter"
+      "pounds per sq inch to kilopascals",
+      "psi to kPa",
+      "pounds per sq inch kilopascals converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "bar-to-kpa",
-    "title": "Bar to Kilopascals Converter — Free Online",
-    "description": "Convert bar to kilopascals instantly. Free, accurate calculator, no signup.",
+    "title": "Bar to Kilopascals Converter (bar → kPa)",
+    "description": "Convert bar (bar) to kilopascals (kPa) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "bar to kpa",
       "bar to kilopascals",
-      "bar kpa converter"
+      "bar to kPa",
+      "bar kilopascals converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kpa-to-bar",
-    "title": "Kilopascals to Bar Converter — Free Online",
-    "description": "Convert kilopascals to bar instantly. Free, accurate calculator, no signup.",
+    "title": "Kilopascals to Bar Converter (kPa → bar)",
+    "description": "Convert kilopascals (kPa) to bar (bar) instantly. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kpa to bar",
       "kilopascals to bar",
-      "kpa bar converter"
+      "kPa to bar",
+      "kilopascals bar converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "joules-to-calories",
-    "title": "Joules to Calories Converter — Free Online",
-    "description": "Convert joules to calories instantly. Free, accurate calculator, no signup.",
+    "title": "Joules to Calories Converter (J → cal)",
+    "description": "Convert joules to calories instantly. Formula: cal = J × 0.239006. Example: 1 J = 0.239 cal. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "joules to calories",
       "joules to calories",
-      "joules calories converter"
+      "J to cal",
+      "joules calories converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "calories-to-joules",
-    "title": "Calories to Joules Converter — Free Online",
-    "description": "Convert calories to joules instantly. Free, accurate calculator, no signup.",
+    "title": "Calories to Joules Converter (cal → J)",
+    "description": "Convert calories to joules instantly. Formula: J = cal × 4.184. Example: 1 cal = 4.184 J. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "calories to joules",
       "calories to joules",
-      "calories joules converter"
+      "cal to J",
+      "calories joules converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kj-to-kcal",
-    "title": "Kilojoules to Kilocalories Converter — Free Online",
-    "description": "Convert kilojoules to kilocalories instantly. Free, accurate calculator, no signup.",
+    "title": "Kilojoules to Kilocalories Converter (kJ → kcal)",
+    "description": "Convert kilojoules to kilocalories instantly. Formula: kcal = kJ × 0.239006. Example: 1 kJ = 0.239 kcal. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kj to kcal",
       "kilojoules to kilocalories",
-      "kj kcal converter"
+      "kJ to kcal",
+      "kilojoules kilocalories converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kcal-to-kj",
-    "title": "Kilocalories to Kilojoules Converter — Free Online",
-    "description": "Convert kilocalories to kilojoules instantly. Free, accurate calculator, no signup.",
+    "title": "Kilocalories to Kilojoules Converter (kcal → kJ)",
+    "description": "Convert kilocalories to kilojoules instantly. Formula: kJ = kcal × 4.184. Example: 1 kcal = 4.184 kJ. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kcal to kj",
       "kilocalories to kilojoules",
-      "kcal kj converter"
+      "kcal to kJ",
+      "kilocalories kilojoules converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kwh-to-joules",
-    "title": "kWh to Joules Converter — Free Online",
-    "description": "Convert kwh to joules instantly. Free, accurate calculator, no signup.",
+    "title": "Kilowatt-hours to Joules Converter (kWh → J)",
+    "description": "Convert kilowatt-hours to joules instantly. Formula: J = kWh × 3600000. Example: 1 kWh = 3.6e+06 J. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kwh to joules",
-      "kwh to joules",
-      "kwh joules converter"
+      "kilowatt-hours to joules",
+      "kWh to J",
+      "kilowatt-hours joules converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "joules-to-kwh",
-    "title": "Joules to kWh Converter — Free Online",
-    "description": "Convert joules to kwh instantly. Free, accurate calculator, no signup.",
+    "title": "Joules to Kilowatt-hours Converter (J → kWh)",
+    "description": "Convert joules to kilowatt-hours instantly. Formula: kWh = J × 2.77778e-07. Example: 1 J = 2.778e-07 kWh. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "joules to kwh",
-      "joules to kwh",
-      "joules kwh converter"
+      "joules to kilowatt-hours",
+      "J to kWh",
+      "joules kilowatt-hours converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "btu-to-joules",
-    "title": "BTU to Joules Converter — Free Online",
-    "description": "Convert btu to joules instantly. Free, accurate calculator, no signup.",
+    "title": "BTU to Joules Converter (BTU → J)",
+    "description": "Convert BTU to joules instantly. Formula: J = BTU × 1055.06. Example: 1 BTU = 1055 J. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "btu to joules",
-      "btu to joules",
-      "btu joules converter"
+      "BTU to joules",
+      "BTU to J",
+      "BTU joules converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "joules-to-btu",
-    "title": "Joules to BTU Converter — Free Online",
-    "description": "Convert joules to btu instantly. Free, accurate calculator, no signup.",
+    "title": "Joules to BTU Converter (J → BTU)",
+    "description": "Convert joules to BTU instantly. Formula: BTU = J × 0.000947813. Example: 1 J = 0.0009478 BTU. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "joules to btu",
-      "joules to btu",
-      "joules btu converter"
+      "joules to BTU",
+      "J to BTU",
+      "joules BTU converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "watts-to-hp",
-    "title": "Watts to Horsepower Converter — Free Online",
-    "description": "Convert watts to horsepower instantly. Free, accurate calculator, no signup.",
+    "title": "Watts to Horsepower Converter (W → hp)",
+    "description": "Convert watts to horsepower instantly. Formula: hp = W × 0.00134102. Example: 1 W = 0.0013 hp. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "watts to hp",
       "watts to horsepower",
-      "watts hp converter"
+      "W to hp",
+      "watts horsepower converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hp-to-watts",
-    "title": "Horsepower to Watts Converter — Free Online",
-    "description": "Convert horsepower to watts instantly. Free, accurate calculator, no signup.",
+    "title": "Horsepower to Watts Converter (hp → W)",
+    "description": "Convert horsepower to watts instantly. Formula: W = hp × 745.7. Example: 1 hp = 745.6999 W. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hp to watts",
       "horsepower to watts",
-      "hp watts converter"
+      "hp to W",
+      "horsepower watts converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kw-to-hp",
-    "title": "Kilowatts to Horsepower Converter — Free Online",
-    "description": "Convert kilowatts to horsepower instantly. Free, accurate calculator, no signup.",
+    "title": "Kilowatts to Horsepower Converter (kW → hp)",
+    "description": "Convert kilowatts to horsepower instantly. Formula: hp = kW × 1.34102. Example: 1 kW = 1.341 hp. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kw to hp",
       "kilowatts to horsepower",
-      "kw hp converter"
+      "kW to hp",
+      "kilowatts horsepower converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hp-to-kw",
-    "title": "Horsepower to Kilowatts Converter — Free Online",
-    "description": "Convert horsepower to kilowatts instantly. Free, accurate calculator, no signup.",
+    "title": "Horsepower to Kilowatts Converter (hp → kW)",
+    "description": "Convert horsepower to kilowatts instantly. Formula: kW = hp × 0.7457. Example: 1 hp = 0.7457 kW. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hp to kw",
       "horsepower to kilowatts",
-      "hp kw converter"
+      "hp to kW",
+      "horsepower kilowatts converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "degrees-to-radians",
-    "title": "Degrees to Radians Converter — Free Online",
-    "description": "Convert degrees to radians instantly. Free, accurate calculator, no signup.",
+    "title": "Degrees to Radians Converter (° → rad)",
+    "description": "Convert degrees to radians instantly. Formula: rad = ° × 0.0174533. Example: 1 ° = 0.0175 rad. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "degrees to radians",
       "degrees to radians",
-      "degrees radians converter"
+      "° to rad",
+      "degrees radians converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "radians-to-degrees",
-    "title": "Radians to Degrees Converter — Free Online",
-    "description": "Convert radians to degrees instantly. Free, accurate calculator, no signup.",
+    "title": "Radians to Degrees Converter (rad → °)",
+    "description": "Convert radians to degrees instantly. Formula: ° = rad × 57.2958. Example: 1 rad = 57.2958 °. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "radians to degrees",
       "radians to degrees",
-      "radians degrees converter"
+      "rad to °",
+      "radians degrees converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hz-to-khz",
-    "title": "Hertz to Kilohertz Converter — Free Online",
-    "description": "Convert hertz to kilohertz instantly. Free, accurate calculator, no signup.",
+    "title": "Hertz to Kilohertz Converter (Hz → kHz)",
+    "description": "Convert hertz to kilohertz instantly. Formula: kHz = Hz × 0.001. Example: 1 Hz = 0.001 kHz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "hz to khz",
       "hertz to kilohertz",
-      "hz khz converter"
+      "Hz to kHz",
+      "hertz kilohertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "khz-to-hz",
-    "title": "Kilohertz to Hertz Converter — Free Online",
-    "description": "Convert kilohertz to hertz instantly. Free, accurate calculator, no signup.",
+    "title": "Kilohertz to Hertz Converter (kHz → Hz)",
+    "description": "Convert kilohertz to hertz instantly. Formula: Hz = kHz × 1000. Example: 1 kHz = 1000 Hz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "khz to hz",
       "kilohertz to hertz",
-      "khz hz converter"
+      "kHz to Hz",
+      "kilohertz hertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "khz-to-mhz",
-    "title": "Kilohertz to Megahertz Converter — Free Online",
-    "description": "Convert kilohertz to megahertz instantly. Free, accurate calculator, no signup.",
+    "title": "Kilohertz to Megahertz Converter (kHz → MHz)",
+    "description": "Convert kilohertz to megahertz instantly. Formula: MHz = kHz × 0.001. Example: 1 kHz = 0.001 MHz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "khz to mhz",
       "kilohertz to megahertz",
-      "khz mhz converter"
+      "kHz to MHz",
+      "kilohertz megahertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mhz-to-khz",
-    "title": "Megahertz to Kilohertz Converter — Free Online",
-    "description": "Convert megahertz to kilohertz instantly. Free, accurate calculator, no signup.",
+    "title": "Megahertz to Kilohertz Converter (MHz → kHz)",
+    "description": "Convert megahertz to kilohertz instantly. Formula: kHz = MHz × 1000. Example: 1 MHz = 1000 kHz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mhz to khz",
       "megahertz to kilohertz",
-      "mhz khz converter"
+      "MHz to kHz",
+      "megahertz kilohertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mhz-to-ghz",
-    "title": "Megahertz to Gigahertz Converter — Free Online",
-    "description": "Convert megahertz to gigahertz instantly. Free, accurate calculator, no signup.",
+    "title": "Megahertz to Gigahertz Converter (MHz → GHz)",
+    "description": "Convert megahertz to gigahertz instantly. Formula: GHz = MHz × 0.001. Example: 1 MHz = 0.001 GHz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mhz to ghz",
       "megahertz to gigahertz",
-      "mhz ghz converter"
+      "MHz to GHz",
+      "megahertz gigahertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ghz-to-mhz",
-    "title": "Gigahertz to Megahertz Converter — Free Online",
-    "description": "Convert gigahertz to megahertz instantly. Free, accurate calculator, no signup.",
+    "title": "Gigahertz to Megahertz Converter (GHz → MHz)",
+    "description": "Convert gigahertz to megahertz instantly. Formula: MHz = GHz × 1000. Example: 1 GHz = 1000 MHz. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "ghz to mhz",
       "gigahertz to megahertz",
-      "ghz mhz converter"
+      "GHz to MHz",
+      "gigahertz megahertz converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "mpg-to-kmpl",
-    "title": "MPG to km/L Converter — Free Online",
-    "description": "Convert mpg to km/l instantly. Free, accurate calculator, no signup.",
+    "title": "Miles per Gallon to Kilometers per Liter Converter (mpg → km/L)",
+    "description": "Convert mpg to km/L instantly. Formula: km/L = mpg × 0.425144. Example: 30 mpg ≈ 12.75 km/L. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "mpg to kmpl",
-      "mpg to km/l",
-      "mpg kmpl converter"
+      "mpg to km/L",
+      "mpg to km/L",
+      "mpg km/L converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "kmpl-to-mpg",
-    "title": "km/L to MPG Converter — Free Online",
-    "description": "Convert km/l to mpg instantly. Free, accurate calculator, no signup.",
+    "title": "Kilometers per Liter to Miles per Gallon Converter (km/L → mpg)",
+    "description": "Convert km/L to mpg instantly. Formula: mpg = km/L × 2.35215. Example: 10 km/L ≈ 23.52 mpg. Free, accurate, no signup.",
     "category": "unit-converter",
     "tags": [
       "kmpl to mpg",
-      "km/l to mpg",
-      "kmpl mpg converter"
+      "km/L to mpg",
+      "km/L to mpg",
+      "km/L mpg converter",
+      "unit converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false

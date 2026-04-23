@@ -424,3 +424,28 @@ paths so we never leak `/home/runner/...` to the client.
 Combined with this morning's frontend fix (red error banner instead of green
 "Done!" for handler-returned errors), every failure mode in the entire app now
 gives the user a clear, actionable message in plain language.
+
+---
+
+## 2026-04-23 — Unique unit-converter cards (155 tools, real formulas + examples)
+
+The directory had 155 unit converters all sharing the same generic title
+shape ("X to Y Converter — Free Online") and a one-line description with
+zero per-tool differentiation. Looked spammy in the grid and offered no
+SEO advantage. Built `scripts/rewrite_unit_converters.py` — a single,
+re-runnable Python script that rewrites every `<from>-to-<to>` row in
+`backend/app/registry.py` (`_UNIT_DEFS`) AND the matching JSON entries in
+`frontend/src/data/catalogFallback.ts`.
+
+Each entry now carries:
+- **Title with symbols** — e.g. `Centimeters to Inches Converter (cm → in)`,
+  `Bits to Bytes Converter (b → B)`, `Celsius to Fahrenheit Converter (°C → °F)`.
+- **Real formula** — `°F = °C × 9/5 + 32`, `cm = in × 2.54`, `B = b × 0.125`.
+- **Worked example** — `100°C = 212°F`, `1 in = 2.54 cm`, `1 nmi = 1.852 km`.
+- **Richer tag set** — slug form, full names, symbol form, "unit converter",
+  "free converter" — for stronger fuzzy search matches.
+
+All 155 entries updated (`registry.py`: 155, `catalogFallback.ts`: 155).
+The script is idempotent and uses a unit-table + factor-table approach so
+adding more converters later is a one-line change. Backend restarted
+clean, no LSP errors.
