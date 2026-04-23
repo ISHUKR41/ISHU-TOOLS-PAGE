@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Link } from 'react-router-dom'
 import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
@@ -12,7 +11,7 @@ import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
-import { loadUsage } from '../tools/AllToolsPage'
+import { loadUsage } from '../../lib/usageTracker'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
 import './home-modern.css'

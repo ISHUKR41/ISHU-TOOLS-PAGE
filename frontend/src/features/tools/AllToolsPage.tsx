@@ -3,8 +3,7 @@ import type { CSSProperties } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Search, ArrowRight, Star, Clock, TrendingUp, Grid3X3, List, X,
-  Flame, Bookmark, SlidersHorizontal, Zap, ChevronDown, Hash, LayoutGrid
-} from 'lucide-react'
+  Bookmark, SlidersHorizontal, Zap, ChevronDown, Hash } from 'lucide-react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 import SiteShell from '../../components/layout/SiteShell'
@@ -14,29 +13,6 @@ import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentat
 import ToolIcon from '../../components/tools/ToolIcon'
 
 /* ─── Constants ─────────────────────────────────────────── */
-
-const POPULAR_TOOLS = [
-  { slug: 'merge-pdf',             label: 'Merge PDF',       emoji: '📄', cat: 'pdf-core',       hot: true  },
-  { slug: 'compress-pdf',          label: 'Compress PDF',    emoji: '🗜️', cat: 'pdf-core',       hot: true  },
-  { slug: 'compress-image',        label: 'Compress Image',  emoji: '🖼️', cat: 'image-core',     hot: true  },
-  { slug: 'remove-background',     label: 'Remove BG',       emoji: '✂️', cat: 'image-core',     hot: true  },
-  { slug: 'json-formatter',        label: 'JSON Formatter',  emoji: '{ }', cat: 'developer-tools', hot: false },
-  { slug: 'bmi-calculator',        label: 'BMI Calculator',  emoji: '⚖️', cat: 'health-tools',   hot: false },
-  { slug: 'password-generator',    label: 'Password Gen',    emoji: '🔑', cat: 'hash-crypto',    hot: false },
-  { slug: 'qr-code-generator',     label: 'QR Generator',    emoji: '⬛', cat: 'developer-tools', hot: true  },
-  { slug: 'pdf-to-word',           label: 'PDF to Word',     emoji: '📝', cat: 'office-suite',   hot: false },
-  { slug: 'word-to-pdf',           label: 'Word to PDF',     emoji: '📋', cat: 'office-suite',   hot: false },
-  { slug: 'resize-image',          label: 'Resize Image',    emoji: '📐', cat: 'image-core',     hot: false },
-  { slug: 'emi-calculator-advanced',label: 'EMI Calc',       emoji: '💰', cat: 'finance-tools',  hot: false },
-  { slug: 'gst-calculator-india',  label: 'GST Calc',        emoji: '🧾', cat: 'finance-tools',  hot: true  },
-  { slug: 'base64-encode',         label: 'Base64 Encode',   emoji: '🔢', cat: 'developer-tools', hot: false },
-  { slug: 'word-counter',          label: 'Word Counter',    emoji: '📊', cat: 'text-ops',       hot: false },
-  { slug: 'uuid-generator',        label: 'UUID Gen',        emoji: '🆔', cat: 'developer-tools', hot: false },
-  { slug: 'image-to-text',         label: 'Image to Text',   emoji: '🔤', cat: 'ocr-vision',     hot: true  },
-  { slug: 'youtube-downloader',    label: 'YT Download',     emoji: '▶️', cat: 'video-tools',    hot: true  },
-  { slug: 'scientific-calculator', label: 'Scientific Calc', emoji: '🔬', cat: 'math-tools',     hot: false },
-  { slug: 'compress-to-100kb',     label: 'Compress to 100KB',emoji: '📦', cat: 'image-core',   hot: true  },
-]
 
 const TRENDING_SLUGS = new Set([
   'merge-pdf', 'compress-image', 'remove-background', 'qr-code-generator',
@@ -124,144 +100,14 @@ const SORT_OPTIONS = [
 ] as const
 type SortOption = (typeof SORT_OPTIONS)[number]['value']
 
-const FAVORITES_KEY = 'ishu_fav_tools'
-const RECENT_KEY   = 'ishu_recent_tools'
-const USAGE_KEY    = 'ishu_tool_usage_v1'
-const MAX_RECENT   = 12
-
-/* ─── localStorage helpers ──────────────────────────────── */
-
-function loadFavorites(): Set<string> {
-  try { return new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]')) } catch { return new Set() }
-}
-function saveFavorites(f: Set<string>) {
-  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify([...f])) } catch {}
-}
-function loadRecent(): string[] {
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') } catch { return [] }
-}
-export function loadUsage(): Record<string, number> {
-  try { return JSON.parse(localStorage.getItem(USAGE_KEY) ?? '{}') } catch { return {} }
-}
-export function trackToolVisit(slug: string) {
-  try {
-    const r = loadRecent().filter(s => s !== slug)
-    r.unshift(slug)
-    localStorage.setItem(RECENT_KEY, JSON.stringify(r.slice(0, MAX_RECENT)))
-    const u = loadUsage()
-    u[slug] = (u[slug] ?? 0) + 1
-    localStorage.setItem(USAGE_KEY, JSON.stringify(u))
-  } catch {}
-}
+/* ─── localStorage helpers (now live in lib/usageTracker.ts) ─────────────── */
+import {
+  loadFavorites,
+  saveFavorites,
+  loadRecent,
+} from '../../lib/usageTracker'
 
 /* ─── Featured Bento Tools ───────────────────────────────── */
-
-const FEATURED_TOOLS = [
-  {
-    slug: 'merge-pdf',
-    label: 'Merge PDF',
-    desc: 'Combine multiple PDFs into one file instantly — drag, drop, reorder & merge.',
-    emoji: '📄',
-    cat: 'pdf-core',
-    gradient: 'linear-gradient(135deg, rgba(59,208,255,0.18) 0%, rgba(59,208,255,0.04) 100%)',
-    accent: '#3bd0ff',
-    size: 'large',
-    stat: '10M+ merges',
-  },
-  {
-    slug: 'compress-image',
-    label: 'Compress Image',
-    desc: 'Shrink JPG, PNG & WebP without losing quality. Up to 90% size reduction.',
-    emoji: '🖼️',
-    cat: 'image-core',
-    gradient: 'linear-gradient(135deg, rgba(77,240,181,0.18) 0%, rgba(77,240,181,0.04) 100%)',
-    accent: '#4df0b5',
-    size: 'medium',
-    stat: '5M+ images',
-  },
-  {
-    slug: 'remove-background',
-    label: 'Remove Background',
-    desc: 'AI-powered background removal. Get a clean transparent PNG in seconds.',
-    emoji: '✂️',
-    cat: 'image-core',
-    gradient: 'linear-gradient(135deg, rgba(167,139,250,0.18) 0%, rgba(167,139,250,0.04) 100%)',
-    accent: '#a78bfa',
-    size: 'medium',
-    stat: 'AI-Powered',
-  },
-  {
-    slug: 'json-formatter',
-    label: 'JSON Formatter',
-    desc: 'Beautify & validate JSON with syntax highlighting and error detection.',
-    emoji: '{ }',
-    cat: 'developer-tools',
-    gradient: 'linear-gradient(135deg, rgba(251,191,36,0.16) 0%, rgba(251,191,36,0.04) 100%)',
-    accent: '#fbbf24',
-    size: 'small',
-    stat: 'Instant',
-  },
-  {
-    slug: 'bmi-calculator',
-    label: 'BMI Calculator',
-    desc: 'Calculate your Body Mass Index and get health insights.',
-    emoji: '⚖️',
-    cat: 'health-tools',
-    gradient: 'linear-gradient(135deg, rgba(248,113,113,0.16) 0%, rgba(248,113,113,0.04) 100%)',
-    accent: '#f87171',
-    size: 'small',
-    stat: 'Health Tool',
-  },
-] as const
-
-function FeaturedSection() {
-  return (
-    <motion.section
-      className='featured-bento-section'
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }}
-    >
-      <div className='featured-bento-header'>
-        <span className='featured-bento-label'>
-          <Zap size={13} /> Featured Tools
-        </span>
-        <span className='featured-bento-sub'>Handpicked for you</span>
-      </div>
-      <div className='featured-bento-grid'>
-        {FEATURED_TOOLS.map((tool, idx) => (
-          <motion.div
-            key={tool.slug}
-            className={`featured-bento-card featured-bento-${tool.size}`}
-            style={{
-              '--feat-accent': tool.accent,
-              '--feat-gradient': tool.gradient,
-            } as CSSProperties}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + idx * 0.06, duration: 0.35 }}
-            whileHover={{ y: -3, transition: { duration: 0.18 } }}
-          >
-            <Link to={`/tools/${tool.slug}`} className='featured-bento-link'>
-              <div className='feat-card-top'>
-                <span className='feat-emoji'>{tool.emoji}</span>
-                <span className='feat-stat'>{tool.stat}</span>
-              </div>
-              <div className='feat-card-body'>
-                <h3>{tool.label}</h3>
-                <p>{tool.desc}</p>
-              </div>
-              <div className='feat-card-cta'>
-                Open tool <ArrowRight size={13} />
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-    </motion.section>
-  )
-}
-
 /* ─── Search Autocomplete ────────────────────────────────── */
 
 function SearchAutocomplete({
@@ -286,7 +132,13 @@ function SearchAutocomplete({
       .slice(0, 8)
   }, [q, tools])
 
-  useEffect(() => { setActiveIdx(0) }, [q])
+  // Reset highlight when query changes — using the React 19 "store-previous-prop" pattern
+  // (avoids the cascading-render warning from useEffect+setState).
+  const [prevQ, setPrevQ] = useState(q)
+  if (q !== prevQ) {
+    setPrevQ(q)
+    setActiveIdx(0)
+  }
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -348,107 +200,6 @@ function SearchAutocomplete({
 }
 
 /* ─── Category Browser ───────────────────────────────────── */
-
-const CATEGORY_EMOJIS: Record<string, string> = {
-  // PDF
-  'pdf-core': '📄', 'pdf-advanced': '📑', 'pdf-security': '🔐',
-  'pdf-insights': '🔍', 'pdf-tools': '📋',
-  // Image
-  'image-core': '🖼️', 'image-layout': '🎨', 'image-enhance': '✨',
-  'image-effects': '🌈', 'image-tools': '🖌️',
-  // Developer
-  'developer-tools': '⌨️', 'developer': '💻', 'developer-generators': '⚙️',
-  'code-tools': '{ }', 'hash-crypto': '🔑',
-  // Unit / Format
-  'unit-converter': '📏', 'conversion-tools': '🔄',
-  // Student / Math
-  'student-tools': '🎓', 'math-tools': '🔢', 'math-calculators': '🧮',
-  'science-tools': '🔬',
-  // Video / Audio
-  'video-tools': '🎥', 'video': '🎞️', 'audio-tools': '🎵', 'audio': '🎶',
-  // Finance / Tax / Business
-  'finance-tools': '💰', 'finance-tax': '🧾', 'business-tools': '💼',
-  'crypto-web3': '₿',
-  // Text
-  'text-ops': '📝', 'text-operations': '✏️', 'text-cleanup': '🧹',
-  'text-ai': '🤖', 'writing-tools': '✍️', 'ai-writing': '🪄',
-  // Health / Fitness
-  'health-tools': '❤️', 'health-fitness': '🏋️', 'health-calculators': '🩺',
-  // Productivity
-  'productivity': '⚡', 'productivity-tools': '📅',
-  // Network / SEO / Security
-  'network-tools': '🌐', 'seo-tools': '📊', 'security-tools': '🔒',
-  // Office / Document
-  'office-suite': '📋', 'document-convert': '📂', 'format-lab': '🔧',
-  'ocr-vision': '👁️', 'data-tools': '📈', 'archive-lab': '📦',
-  'ebook-convert': '📚', 'vector-lab': '✒️', 'batch-automation': '🔁',
-  'page-ops': '📐', 'utility': '🛠️',
-  // Other
-  'color-tools': '🎨', 'social-media': '📱',
-  'hr-jobs': '👔', 'travel-tools': '✈️', 'legal-tools': '⚖️',
-  'geography-tools': '🌍', 'cooking-tools': '🍳',
-}
-
-function CategoryBrowser({
-  categories,
-  toolCountByCategory,
-  onCategorySelect,
-}: {
-  categories: { id: string; label: string; description: string }[]
-  toolCountByCategory: Map<string, number>
-  onCategorySelect: (id: string) => void
-}) {
-  const sortedCats = useMemo(() =>
-    [...categories]
-      .filter(c => (toolCountByCategory.get(c.id) ?? 0) > 0)
-      .sort((a, b) => {
-        const ai = CATEGORY_PRIORITY.indexOf(a.id), bi = CATEGORY_PRIORITY.indexOf(b.id)
-        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-      }),
-    [categories, toolCountByCategory],
-  )
-
-  return (
-    <motion.section
-      className='category-browser-section'
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.45 }}
-    >
-      <div className='cat-browser-header'>
-        <LayoutGrid size={14} />
-        <span>Browse by Category</span>
-        <span className='cat-browser-count'>{sortedCats.length} categories</span>
-      </div>
-      <div className='cat-browser-grid'>
-        {sortedCats.map((cat, idx) => {
-          const theme = getCategoryTheme(cat.id)
-          const count = toolCountByCategory.get(cat.id) ?? 0
-          const emoji = CATEGORY_EMOJIS[cat.id] ?? '🔧'
-          return (
-            <motion.button
-              key={cat.id}
-              type='button'
-              className='cat-browser-card'
-              style={{ '--cb-accent': theme.accent } as CSSProperties}
-              onClick={() => onCategorySelect(cat.id)}
-              initial={{ opacity: 0, scale: 0.94 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: Math.min(idx * 0.015, 0.3), duration: 0.25 }}
-              whileHover={{ y: -2, transition: { duration: 0.15 } }}
-            >
-              <span className='cb-emoji'>{emoji}</span>
-              <span className='cb-label'>{cat.label}</span>
-              <span className='cb-count'>{count}</span>
-            </motion.button>
-          )
-        })}
-      </div>
-    </motion.section>
-  )
-}
 
 /* ─── Skeleton ───────────────────────────────────────────── */
 
@@ -640,67 +391,6 @@ const AnimatedSection = memo(function AnimatedSection({
 })
 
 /* ─── Popular Strip ──────────────────────────────────────── */
-
-function PopularStrip({ tools: popTools, allTools, favorites, onToggleFav }: {
-  tools: typeof POPULAR_TOOLS
-  allTools: { slug: string; title: string; description: string; category: string }[]
-  favorites: Set<string>
-  onToggleFav: (slug: string, e: React.MouseEvent) => void
-}) {
-  return (
-    <motion.section
-      className='popular-strip-section'
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-    >
-      <div className='popular-strip-header'>
-        <span className='pop-header-icon'><Flame size={15} /></span>
-        <span className='pop-header-title'>Most Popular</span>
-        <span className='pop-header-sub'>Tools everyone uses daily</span>
-        <span className='pop-live-badge'><span className='pop-live-dot' />Live</span>
-      </div>
-      <div className='popular-strip-grid'>
-        {popTools.map((pt, idx) => {
-          const fullTool = allTools.find(t => t.slug === pt.slug)
-          const theme = getCategoryTheme(pt.cat)
-          const isFav = favorites.has(pt.slug)
-          return (
-            <motion.div
-              key={pt.slug}
-              className='popular-strip-card-wrapper'
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.03, duration: 0.3 }}
-            >
-              <Link
-                to={`/tools/${pt.slug}`}
-                className='popular-strip-card'
-                style={{ '--pop-accent': theme.accent } as CSSProperties}
-              >
-                {pt.hot && <span className='pop-card-hot' aria-label='Trending'>🔥</span>}
-                <span className='popular-strip-emoji'>{pt.emoji}</span>
-                <div className='pop-card-body'>
-                  <span className='popular-strip-label'>{pt.label}</span>
-                  {fullTool && <span className='popular-strip-desc'>{fullTool.description.split('—')[0].split('.')[0].trim()}</span>}
-                </div>
-                <span className='pop-card-arrow'><ArrowRight size={12} /></span>
-              </Link>
-              <button
-                type='button'
-                className={`fav-star-btn sm${isFav ? ' active' : ''}`}
-                onClick={e => onToggleFav(pt.slug, e)}
-                title={isFav ? 'Remove from favorites' : 'Save'}
-              >
-                <Star size={10} fill={isFav ? 'currentColor' : 'none'} />
-              </button>
-            </motion.div>
-          )
-        })}
-      </div>
-    </motion.section>
-  )
-}
 
 /* ─── Recently Used ──────────────────────────────────────── */
 
@@ -948,7 +638,7 @@ export default function AllToolsPage() {
     e.preventDefault(); e.stopPropagation()
     setFavorites(prev => {
       const next = new Set(prev)
-      next.has(slug) ? next.delete(slug) : next.add(slug)
+      if (next.has(slug)) next.delete(slug); else next.add(slug)
       saveFavorites(next)
       return next
     })
@@ -1068,7 +758,6 @@ export default function AllToolsPage() {
       .filter(e => e.tools.length > 0)
   }, [sortedCategories, filteredTools, isSearching])
 
-  const showPopular   = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showRecent    = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showFavorites = activeTab === 'favorites'
 

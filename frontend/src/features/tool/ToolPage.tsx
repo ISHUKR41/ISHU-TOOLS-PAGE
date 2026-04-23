@@ -29,7 +29,7 @@ import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
-import { trackToolVisit } from '../tools/AllToolsPage'
+import { trackToolVisit } from '../../lib/usageTracker'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -652,7 +652,6 @@ export default function ToolPage() {
     } catch {
       /* ignore parse errors */
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, fields.length])
 
   useEffect(() => {

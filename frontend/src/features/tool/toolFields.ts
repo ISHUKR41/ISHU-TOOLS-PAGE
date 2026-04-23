@@ -5254,7 +5254,7 @@ const NUM_BASE_OCTAL   = ['octal-to-decimal','octal-to-binary','octal-to-hex'];
 const NUM_BASE_TEXT    = ['text-to-binary','string-to-binary','text-to-hex','string-to-hex','text-to-octal','text-to-ascii','string-to-ascii','ascii-to-binary','ascii-to-hex'];
 const NUM_BASE_ASCII   = ['ascii-to-text','ascii-to-string'];
 const _baseFields = (label: string, ph: string, rows = 3) => [
-  { name: 'value', label, type: 'textarea' as const, placeholder: ph, rows } as any,
+  { name: 'value', label, type: 'textarea' as const, placeholder: ph, rows } as unknown as ToolField,
 ];
 for (const s of NUM_BASE_DECIMAL) TOOL_FIELDS[s] = _baseFields('Enter decimal number', '255', 2);
 for (const s of NUM_BASE_BINARY)  TOOL_FIELDS[s] = _baseFields('Enter binary number',  '11111111 (or 0b11111111)', 2);
