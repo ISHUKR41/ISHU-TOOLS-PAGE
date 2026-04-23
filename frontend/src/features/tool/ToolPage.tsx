@@ -555,9 +555,24 @@ export default function ToolPage() {
         toast.show(result.message || 'File is ready to download!', 'success')
         scrollToResult()
       } else {
-        setJsonResult(result.payload)
-        setRunMessage(result.payload.message || 'Tool completed successfully.')
-        toast.show(result.payload.message || 'Done!', 'success')
+        // Detect handler-level errors returned as JSON (e.g. Instagram cookies needed,
+        // Twitter no-video-in-tweet, rate limits). The HTTP status is 200 but the body
+        // signals failure — surface it prominently instead of a misleading green "Done".
+        const data = (result.payload?.data || {}) as Record<string, unknown>
+        const errText = typeof data.error === 'string' ? (data.error as string) : ''
+        const msg = result.payload?.message || ''
+        const looksLikeError = !!errText
+          || /^(error|failed|unable|invalid|not|no |please (paste|enter|provide))/i.test(msg.trim())
+        if (looksLikeError) {
+          const friendly = msg || errText || 'This tool could not complete the request.'
+          setRunError(friendly)
+          setJsonResult(result.payload) // still show details for power users
+          toast.show(friendly, 'error', 6000)
+        } else {
+          setJsonResult(result.payload)
+          setRunMessage(msg || 'Tool completed successfully.')
+          toast.show(msg || 'Done!', 'success')
+        }
         scrollToResult()
       }
     } catch (err) {

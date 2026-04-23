@@ -372,3 +372,28 @@ All new tools have `toolFields.ts` frontend form fields and `registry.py` defini
 ## Workflows
 - `Backend API`: `cd /home/runner/workspace && python backend/run.py`
 - `Start application`: `cd /home/runner/workspace/frontend && npm run dev`
+
+## 2026-04-23 — Critical UX fix: tool errors no longer hidden behind green "Done!"
+
+`frontend/src/features/tool/ToolPage.tsx` (~line 560): when a tool returned a JSON
+result the frontend always showed "Done! ✅" — even when the handler returned a
+friendly error like "Instagram now blocks anonymous downloads, paste cookies in the
+optional field below." Result: users thought every video downloader was broken.
+
+Now we detect handler-level error responses (presence of `data.error` or message
+starting with Error/Failed/Unable/Invalid/Not/No/Please paste/enter/provide) and:
+- Set `runError` (red error banner)
+- Show a 6s error toast with the friendly message
+- Still render the JSON details below for power users
+
+Backend probe (Apr 23): 13/19 video downloaders return real binary mp4/mp3 files
+(YouTube, TikTok, Vimeo, Dailymotion, Facebook, SoundCloud all working). The remaining
+6 are platform restrictions (IG/Twitter need cookies) — and those messages now show as
+big red errors with clear instructions instead of being hidden under fake success.
+
+Backend bugs fixed same day (zero remaining 500s across 803 text/URL tools):
+- `whitespace-remover` (image_plus_handlers.py): Python scoping bug — `re` was being
+  referenced before a deferred `import re` inside the function, crashing default mode.
+- `world-meeting-planner` / `meeting-time-finder` / `timezone-meeting-planner`
+  (worldwide_tools_handlers.py): `:02d` format crash on half-hour timezones (India IST
+  +5:30). Now displays minutes correctly with `int()` casts.
