@@ -235,6 +235,96 @@ def smart_payload(slug: str) -> dict:
         p.update({"value": 100, "amount": 100, "input": 100, "number": 100,
                   "from": "metric", "to": "imperial"})
 
+    # ─── India-specific document validators ───
+    if "pan-card" in s or "pan-validator" in s:
+        p.update({"pan": "ABCDE1234F", "pan_number": "ABCDE1234F", "text": "ABCDE1234F"})
+    elif "gstin" in s or "gst-validator" in s or "gst-number" in s:
+        p.update({"gstin": "27AAPFU0939F1ZV", "gst": "27AAPFU0939F1ZV",
+                  "text": "27AAPFU0939F1ZV"})
+    elif "ifsc" in s:
+        p.update({"ifsc": "SBIN0001234", "ifsc_code": "SBIN0001234", "code": "SBIN0001234",
+                  "text": "SBIN0001234"})
+    elif "aadhaar" in s or "aadhar" in s:
+        p.update({"aadhaar": "234567890123", "aadhar": "234567890123",
+                  "number": "234567890123", "text": "234567890123"})
+    elif "voter" in s and "id" in s:
+        p.update({"voter_id": "ABC1234567", "text": "ABC1234567"})
+    elif "vehicle" in s and ("number" in s or "registration" in s):
+        p.update({"vehicle": "MH12AB1234", "number": "MH12AB1234", "text": "MH12AB1234"})
+
+    # ─── Specific input-format tools ───
+    if not p or all(isinstance(v, str) and v == SAMPLE_TEXT for v in p.values()):
+        if "morse-to-" in s:
+            p.update({"morse": ".... . .-.. .-.. ---", "text": ".... . .-.. .-.. ---",
+                      "input": ".... . .-.. .-.. ---"})
+        elif "octal-to-" in s:
+            p.update({"octal": "110 145 154 154 157", "text": "110 145 154 154 157",
+                      "input": "110 145 154 154 157"})
+        elif "hex-to-rgb" in s or "hex-to-hsl" in s or "hex-to-color" in s:
+            p.update({"hex": "ff5733", "color": "#ff5733", "text": "ff5733"})
+        elif "rgb-to-" in s:
+            p.update({"rgb": "rgb(255,87,51)", "r": 255, "g": 87, "b": 51,
+                      "color": "rgb(255,87,51)", "text": "rgb(255,87,51)"})
+        elif "find-replace" in s or "find-and-replace" in s:
+            p.update({"text": "Hello Hub friends Hub", "find": "Hub", "replace": "World",
+                      "search": "Hub", "replacement": "World"})
+        elif "json-" in s or s.startswith("json"):
+            p.update({"json": SAMPLE_JSON, "text": SAMPLE_JSON, "input": SAMPLE_JSON,
+                      "json1": SAMPLE_JSON, "json2": '{"name":"Aman","tools":1247}',
+                      "json_a": SAMPLE_JSON, "json_b": '{"name":"Aman"}',
+                      "data": SAMPLE_JSON})
+        elif "html-to-csv" in s or "html-to-json" in s or "html-table-to" in s:
+            p.update({"html": "<table><tr><th>Name</th><th>Age</th></tr><tr><td>Ishu</td><td>22</td></tr></table>",
+                      "text": "<table><tr><th>A</th></tr><tr><td>1</td></tr></table>"})
+        elif "markdown-to-csv" in s or "md-to-csv" in s:
+            p.update({"markdown": "| Name | Age |\n|------|-----|\n| Ishu | 22 |\n",
+                      "text": "| A | B |\n|---|---|\n| 1 | 2 |\n"})
+        elif "epoch" in s or "unix-time" in s or "timestamp" in s:
+            p.update({"epoch": 1700000000, "timestamp": 1700000000, "unix": 1700000000,
+                      "value": 1700000000, "text": "1700000000", "input": "1700000000"})
+        elif "cidr" in s:
+            p.update({"cidr": "192.168.1.0/24", "ip": "192.168.1.0/24",
+                      "text": "192.168.1.0/24", "input": "192.168.1.0/24"})
+        elif "molecular-weight" in s or "molecular-mass" in s:
+            p.update({"formula": "H2O", "molecule": "H2O", "text": "H2O", "input": "H2O"})
+        elif "element-lookup" in s or "periodic" in s:
+            p.update({"element": "Fe", "symbol": "Fe", "name": "Iron", "text": "Fe"})
+        elif "cron" in s:
+            p.update({"expression": "0 9 * * *", "cron": "0 9 * * *", "text": "0 9 * * *",
+                      "input": "0 9 * * *"})
+        elif "email-validator" in s or "email-checker" in s or "email-verif" in s:
+            p.update({"email": SAMPLE_EMAIL, "text": SAMPLE_EMAIL, "input": SAMPLE_EMAIL})
+        elif "url-cleaner" in s or "clean-url" in s or "citation-url" in s:
+            p.update({"urls": "https://example.com/page?utm_source=x\nhttps://example.com",
+                      "text": "https://example.com/page?utm_source=x",
+                      "url": "https://example.com/page?utm_source=x"})
+        elif "hmac" in s:
+            p.update({"text": SAMPLE_TEXT, "secret": "secret", "secret_key": "secret",
+                      "key": "secret", "algorithm": "sha256"})
+        elif "fitness-goal" in s or "weight-goal" in s:
+            p.update({"current": 75, "goal": 70, "current_weight": 75, "goal_weight": 70,
+                      "weeks": 12, "weight": 75})
+        elif "gpa" in s or "cgpa" in s:
+            p.update({"grades": [{"grade": 8.5, "credits": 3}, {"grade": 9.0, "credits": 4}],
+                      "subjects": [{"grade": 8.5, "credits": 3}],
+                      "text": '[{"grade":8.5,"credits":3},{"grade":9,"credits":4}]'})
+        elif "flashcard" in s:
+            p.update({"text": (SAMPLE_TEXT + " ") * 5, "input": (SAMPLE_TEXT + " ") * 5,
+                      "content": (SAMPLE_TEXT + " ") * 5, "count": 5})
+        elif "dice-roll" in s or "roll-dice" in s:
+            p.update({"dice": "2d6", "count": 2, "sides": 6, "rolls": 2,
+                      "text": "2d6", "input": "2d6"})
+        elif "create-workflow" in s or "workflow" in s:
+            p.update({"steps": "step 1\nstep 2\nstep 3", "text": "step 1, step 2, step 3"})
+        elif "debt-payoff" in s:
+            p.update({"debts": "Credit Card,5000,18,500\nCar Loan,15000,8,400",
+                      "text": "Credit Card,5000,18,500"})
+        elif "csv-column" in s:
+            p.update({"csv": SAMPLE_CSV, "columns": "name", "indexes": "1",
+                      "text": SAMPLE_CSV})
+        elif "fancy-text" in s or "stylish-text" in s:
+            p.update({"text": "Hello", "input": "Hello", "value": "Hello"})
+
     # ─── Specific calculators by slug pattern ───
     if not p or all(isinstance(v, str) for v in p.values()):
         if "attendance" in s:
@@ -248,9 +338,9 @@ def smart_payload(slug: str) -> dict:
         elif "ascii-to-text" in s or "ascii-to-string" in s:
             p.update({"text": "72 105 32 73 115 104 117", "input": "72 105 32 73 115 104 117",
                       "ascii": "72 105 32 73 115 104 117"})
-        elif "binary-to-text" in s or "binary-to-string" in s:
+        elif "binary-to-" in s:
             p.update({"text": "01001000 01101001", "input": "01001000 01101001",
-                      "binary": "01001000 01101001"})
+                      "binary": "01001000 01101001", "number": "11111111", "value": "11111111"})
         elif "hex-to-text" in s or "hex-to-string" in s:
             p.update({"text": "48 69 6c 6c 6f", "input": "48 65 6c 6c 6f",
                       "hex": "48 65 6c 6c 6f"})
