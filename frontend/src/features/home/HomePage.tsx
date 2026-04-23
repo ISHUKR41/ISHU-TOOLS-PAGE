@@ -5,7 +5,6 @@ import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
   Calculator, Star, ChevronDown, Award, Users, Sparkles, X as XIcon,
-  TrendingUp, Flame,
 } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
@@ -379,20 +378,7 @@ export default function HomePage() {
 
   const totalVisibleTools = filteredTools.length
 
-  // Top Most-Popular tools — pinned section above categorised tools
-  const topPopularTools = useMemo(() => {
-    if (activeCategory !== 'all' || debouncedQuery.trim()) return []
-    return [...tools]
-      .filter((t) => (t.popularity_rank ?? 0) >= 200)
-      .sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
-      .slice(0, 18)
-  }, [tools, activeCategory, debouncedQuery])
-
-  const inspiredBrands = [
-    'Apple', 'Stripe', 'Linear', 'Vercel', 'Framer', 'Notion', 'Figma', 'Spotify',
-    'Airbnb', 'Awwwards', 'Webflow', 'Shadcn', 'Aceternity', 'Magic UI', 'Radix',
-    'Tailwind', 'Three.js', 'GSAP', 'Lenis', 'Locomotive',
-  ]
+  // Removed dead code: topPopularTools + inspiredBrands (sections deleted from JSX, variables no longer used).
 
   return (
     <SiteShell>
