@@ -31,8 +31,8 @@
         --shadow-md:0 12px 30px rgba(0,0,0,0.4);
         --shadow-lg:0 24px 64px rgba(0,0,0,0.55);
         /* Exact font stack from index.css — system fonts render instantly */
-        --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-        --font-display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        --font-body:'Inter','Inter Tight',-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        --font-display:'Space Grotesk',-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       }
 
       /* ── HTML base ── */
@@ -702,11 +702,11 @@
          browser fetches but does NOT apply until onload fires → zero render-block.
          System font stack (defined in :root above) shows instantly with no FOUC. -->
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional"
           media="print"
           onload="this.media='all';this.onload=null" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional" />
     </noscript>
 
     <!-- PWA Manifest -->

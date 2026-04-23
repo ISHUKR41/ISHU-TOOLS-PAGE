@@ -867,3 +867,54 @@
   .home-wrap .search-input-xl input { font-size: 0.98rem; }
   .home-wrap .search-result-count { display: none; }
 }
+
+/* ── Quick-access tools grid (Hero section) ─────────────────── */
+.home-wrap .hero-v2-quick {
+  margin-top: 1rem;
+  text-align: center;
+}
+.home-wrap .hero-v2-quick .quick-label {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(207, 234, 255, 0.6);
+  margin-bottom: 0.65rem;
+  font-weight: 600;
+}
+.home-wrap .hero-v2-quick .quick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.home-wrap .quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--chip-color, #4ad4ff) 28%, rgba(160, 190, 255, 0.12));
+  background: color-mix(in srgb, var(--chip-color, #4ad4ff) 8%, rgba(255, 255, 255, 0.03));
+  color: #dbe7ff;
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 200ms ease, border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+.home-wrap .quick-chip:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--chip-color) 55%, transparent);
+  background: color-mix(in srgb, var(--chip-color) 14%, rgba(255, 255, 255, 0.04));
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--chip-color) 22%, transparent);
+  color: #fff;
+}
+.home-wrap .quick-chip svg {
+  color: var(--chip-color, #4ad4ff);
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .home-wrap .hero-v2-quick .quick-grid { gap: 0.35rem; }
+  .home-wrap .quick-chip { padding: 0.4rem 0.7rem; font-size: 0.78rem; }
+}

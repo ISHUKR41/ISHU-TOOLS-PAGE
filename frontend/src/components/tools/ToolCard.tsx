@@ -11,7 +11,16 @@ type ToolCardProps = {
   accentColor?: string
 }
 
+const INPUT_KIND_LABELS: Record<string, { label: string; icon: string }> = {
+  files: { label: 'File upload', icon: '📁' },
+  url: { label: 'URL input', icon: '🔗' },
+  mixed: { label: 'File + Text', icon: '📁' },
+  text: { label: 'Text input', icon: '⌨️' },
+}
+
 export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardProps) {
+  const inputKind = INPUT_KIND_LABELS[tool.input_kind] || INPUT_KIND_LABELS.text
+
   return (
     <article
       className='tool-card'
@@ -31,10 +40,19 @@ export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardP
         <h3>{tool.title}</h3>
         <p>{tool.description}</p>
         <div className='tool-meta'>
-          <span>{tool.input_kind}</span>
-          <span>{tool.accepts_multiple ? 'Multi-file' : 'Single-file'}</span>
+          <span className='tool-meta-pill'>
+            <span className='tool-meta-icon'>{inputKind.icon}</span>
+            {inputKind.label}
+          </span>
+          {tool.accepts_multiple && (
+            <span className='tool-meta-pill'>
+              <span className='tool-meta-icon'>📦</span>
+              Multi-file
+            </span>
+          )}
         </div>
       </Link>
     </article>
   )
 }
+

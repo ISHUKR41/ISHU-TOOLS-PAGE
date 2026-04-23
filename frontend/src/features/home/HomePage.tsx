@@ -416,15 +416,153 @@ export default function HomePage() {
     return map
   }, [categories])
 
+  // ─── Search synonym map: maps common alternative words to canonical tool terms ───
+  // This allows "combine pdf" to find "merge pdf", "shrink image" to find "compress image", etc.
+  const SEARCH_SYNONYMS: Record<string, string[]> = useMemo(() => ({
+    combine: ['merge', 'join', 'concatenate'],
+    merge: ['combine', 'join', 'concatenate'],
+    join: ['merge', 'combine'],
+    shrink: ['compress', 'reduce', 'minify', 'optimize'],
+    compress: ['shrink', 'reduce', 'optimize', 'minify'],
+    reduce: ['compress', 'shrink', 'minimize'],
+    minify: ['compress', 'minimize', 'shrink', 'reduce'],
+    minimize: ['minify', 'compress', 'reduce'],
+    convert: ['transform', 'change', 'switch'],
+    transform: ['convert', 'change'],
+    change: ['convert', 'transform'],
+    resize: ['scale', 'dimensions', 'size'],
+    scale: ['resize', 'dimensions'],
+    crop: ['trim', 'cut', 'clip'],
+    trim: ['crop', 'cut', 'strip'],
+    cut: ['crop', 'trim', 'split'],
+    split: ['separate', 'divide', 'extract', 'cut'],
+    separate: ['split', 'divide'],
+    divide: ['split', 'separate'],
+    extract: ['pull', 'get', 'split'],
+    rotate: ['turn', 'flip', 'orient'],
+    flip: ['mirror', 'rotate'],
+    remove: ['delete', 'erase', 'strip', 'clear'],
+    delete: ['remove', 'erase'],
+    erase: ['remove', 'delete'],
+    watermark: ['stamp', 'overlay'],
+    stamp: ['watermark', 'overlay'],
+    protect: ['lock', 'encrypt', 'secure', 'password'],
+    lock: ['protect', 'encrypt', 'secure'],
+    unlock: ['decrypt', 'unprotect', 'remove password'],
+    decrypt: ['unlock', 'unprotect'],
+    encrypt: ['protect', 'lock', 'secure'],
+    secure: ['protect', 'encrypt', 'lock'],
+    password: ['protect', 'lock', 'secure'],
+    download: ['save', 'get', 'fetch'],
+    generate: ['create', 'make', 'build'],
+    create: ['generate', 'make', 'build'],
+    make: ['create', 'generate', 'build'],
+    build: ['create', 'generate', 'make'],
+    edit: ['modify', 'change', 'update'],
+    modify: ['edit', 'change', 'update'],
+    format: ['beautify', 'prettify', 'indent'],
+    beautify: ['format', 'prettify'],
+    prettify: ['format', 'beautify'],
+    validate: ['check', 'verify', 'lint'],
+    check: ['validate', 'verify'],
+    verify: ['validate', 'check'],
+    calculate: ['compute', 'calc', 'calculator'],
+    calc: ['calculate', 'calculator', 'compute'],
+    calculator: ['calculate', 'calc', 'compute'],
+    compute: ['calculate', 'calc'],
+    encode: ['encrypt', 'convert'],
+    decode: ['decrypt', 'convert'],
+    hash: ['checksum', 'digest'],
+    image: ['photo', 'picture', 'img', 'pic'],
+    photo: ['image', 'picture', 'img'],
+    picture: ['image', 'photo', 'img'],
+    img: ['image', 'photo'],
+    pic: ['image', 'photo', 'picture'],
+    pdf: ['document', 'doc'],
+    doc: ['document', 'docx', 'word'],
+    document: ['pdf', 'doc', 'file'],
+    word: ['docx', 'doc', 'document'],
+    excel: ['xlsx', 'spreadsheet', 'xls'],
+    spreadsheet: ['excel', 'xlsx'],
+    powerpoint: ['pptx', 'slides', 'presentation'],
+    pptx: ['powerpoint', 'slides', 'presentation'],
+    slides: ['powerpoint', 'pptx', 'presentation'],
+    bg: ['background'],
+    background: ['bg'],
+    ocr: ['text recognition', 'extract text', 'scan'],
+    scan: ['ocr'],
+    qr: ['qrcode', 'qr code'],
+    barcode: ['bar code'],
+    colour: ['color'],
+    color: ['colour'],
+    grey: ['gray', 'grayscale', 'greyscale'],
+    gray: ['grey', 'grayscale', 'greyscale'],
+    grayscale: ['greyscale', 'gray', 'grey'],
+    greyscale: ['grayscale', 'gray', 'grey'],
+    bw: ['black and white', 'monochrome'],
+    monochrome: ['black and white', 'bw', 'grayscale'],
+    txt: ['text'],
+    text: ['txt'],
+    jpg: ['jpeg'],
+    jpeg: ['jpg'],
+    svg: ['vector'],
+    vector: ['svg'],
+    gif: ['animation', 'animated'],
+    animation: ['gif', 'animated'],
+    zip: ['archive', 'compressed'],
+    archive: ['zip', 'compressed'],
+    kb: ['kilobyte', 'kilobytes'],
+    mb: ['megabyte', 'megabytes'],
+    // Hindi/Hinglish synonyms
+    karo: ['do', 'make'],
+    kaise: ['how'],
+    banao: ['make', 'create', 'generate'],
+    nikalo: ['extract', 'remove'],
+    badlo: ['change', 'convert'],
+    jodo: ['merge', 'join', 'combine'],
+    todo: ['break', 'split'],
+    hatao: ['remove', 'delete'],
+  }), [])
+
+  // Lightweight edit-distance check for typo tolerance (max 1 edit for short words, 2 for longer)
+  function fuzzyMatch(needle: string, haystack: string): boolean {
+    if (haystack.includes(needle)) return true
+    if (needle.length < 3) return false
+    const maxDist = needle.length <= 5 ? 1 : 2
+    // Check if any word in haystack is within edit distance
+    const words = haystack.split(/[\s\-_]+/)
+    for (const word of words) {
+      if (Math.abs(word.length - needle.length) > maxDist) continue
+      let dist = 0
+      const len = Math.max(word.length, needle.length)
+      for (let i = 0; i < len; i++) {
+        if (word[i] !== needle[i]) {
+          dist++
+          if (dist > maxDist) break
+        }
+      }
+      if (dist <= maxDist) return true
+    }
+    return false
+  }
+
   // Smart fuzzy-ish ranking when user types: exact title match > prefix > word boundary > tag/desc substring.
   // We score each tool, then sort by score desc, then by popularity_rank desc as tiebreaker.
+  // Enhanced with synonym expansion and basic typo tolerance.
   const filteredTools = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()
     if (!q) {
       // No query → return ALL tools sorted by popularity (used by grouped view + count).
       return [...tools].sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
     }
-    const terms = q.split(/\s+/).filter(Boolean)
+    const rawTerms = q.split(/\s+/).filter(Boolean)
+
+    // Expand each term with its synonyms for broader matching
+    const expandedTermSets: string[][] = rawTerms.map((term) => {
+      const synonyms = SEARCH_SYNONYMS[term]
+      return synonyms ? [term, ...synonyms] : [term]
+    })
+
     type Scored = { tool: (typeof tools)[number]; score: number }
     const scored: Scored[] = []
     for (const tool of tools) {
@@ -432,20 +570,32 @@ export default function HomePage() {
       const slug = tool.slug.toLowerCase()
       const desc = (tool.description || '').toLowerCase()
       const tags = tool.tags.join(' ').toLowerCase()
+      const haystack = `${title} ${slug} ${tags} ${desc}`
       let score = 0
       let matchedAll = true
-      for (const term of terms) {
-        let termScore = 0
-        if (title === term) termScore = 1000
-        else if (title.startsWith(term)) termScore = 500
-        else if (slug === term || slug.startsWith(term)) termScore = 480
-        else if (new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(title)) termScore = 300
-        else if (title.includes(term)) termScore = 200
-        else if (slug.includes(term)) termScore = 180
-        else if (tags.includes(term)) termScore = 120
-        else if (desc.includes(term)) termScore = 60
-        if (termScore === 0) { matchedAll = false; break }
-        score += termScore
+
+      for (const termSet of expandedTermSets) {
+        let bestTermScore = 0
+        for (const term of termSet) {
+          let termScore = 0
+          const isPrimary = term === termSet[0] // original term gets higher scores
+          const boost = isPrimary ? 1 : 0.7 // synonyms score 70% of direct matches
+
+          if (title === term) termScore = 1000 * boost
+          else if (title.startsWith(term)) termScore = 500 * boost
+          else if (slug === term || slug.startsWith(term)) termScore = 480 * boost
+          else if (new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(title)) termScore = 300 * boost
+          else if (title.includes(term)) termScore = 200 * boost
+          else if (slug.includes(term)) termScore = 180 * boost
+          else if (tags.includes(term)) termScore = 120 * boost
+          else if (desc.includes(term)) termScore = 60 * boost
+          // Fuzzy match as last resort (typo tolerance) — only for the primary term
+          else if (isPrimary && term.length >= 3 && fuzzyMatch(term, haystack)) termScore = 30
+
+          bestTermScore = Math.max(bestTermScore, termScore)
+        }
+        if (bestTermScore === 0) { matchedAll = false; break }
+        score += bestTermScore
       }
       if (!matchedAll) continue
       // Add small popularity bonus so ties favor heavily-used tools.
@@ -454,7 +604,7 @@ export default function HomePage() {
     }
     scored.sort((a, b) => b.score - a.score || ((b.tool.popularity_rank ?? 0) - (a.tool.popularity_rank ?? 0)))
     return scored.map((s) => s.tool)
-  }, [debouncedQuery, tools])
+  }, [debouncedQuery, tools, SEARCH_SYNONYMS])
 
   // Grouped-by-category view (used only when NOT searching).
   const groupedSections = useMemo(() => {

@@ -172,7 +172,24 @@ export default function HeroSection({
           ))}
         </div>
 
-        {/* Removed: TickerRow + "Popular right now" quick-chips strip — tools below are the priority. */}
+        <TickerRow />
+
+        <div className='hero-v2-quick'>
+          <span className='quick-label'>⚡ Popular right now</span>
+          <div className='quick-grid'>
+            {QUICK_TOOLS.map((tool) => (
+              <Link
+                key={tool.to}
+                to={tool.to}
+                className='quick-chip'
+                style={{ '--chip-color': tool.color } as CSSProperties}
+              >
+                <tool.icon size={14} />
+                {tool.label}
+              </Link>
+            ))}
+          </div>
+        </div>
 
         <div className='trust-row'>
           {TRUST_BADGES.map((badge) => (
