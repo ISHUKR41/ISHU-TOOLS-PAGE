@@ -110,11 +110,9 @@ export default function HeroSection({
       <div className='hero-v2-inner'>
         <div className='hero-v2-topbar'>
           <div className='hero-status-wrap'>
-            <div className={`status-badge ${apiReady ? 'online' : 'loading'}`}>
+            <div className='status-badge online'>
               <span className='status-dot-pulse' />
-              <span className='status-badge-text'>
-                {apiReady ? 'All systems operational' : 'Starting up\u2026'}
-              </span>
+              <span className='status-badge-text'>All systems operational</span>
             </div>
           </div>
           <div className='hero-v2-social'>
