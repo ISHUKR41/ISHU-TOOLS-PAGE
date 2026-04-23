@@ -928,6 +928,37 @@ export default function ToolPage() {
                               </option>
                             ))}
                           </select>
+                        ) : /url|link/i.test(field.name) ? (
+                          <div className='input-with-paste'>
+                            <input
+                              type={field.type}
+                              placeholder={field.placeholder}
+                              value={payloadState[field.name] || ''}
+                              onChange={(event) =>
+                                setPayloadState((prev) => ({
+                                  ...prev,
+                                  [field.name]: event.target.value,
+                                }))
+                              }
+                            />
+                            <button
+                              type='button'
+                              className='paste-btn'
+                              title='Paste from clipboard'
+                              onClick={async () => {
+                                try {
+                                  const text = (await navigator.clipboard.readText()).trim();
+                                  if (text) {
+                                    setPayloadState((prev) => ({ ...prev, [field.name]: text }));
+                                  }
+                                } catch {
+                                  // Clipboard permission denied — silently no-op; user can paste manually.
+                                }
+                              }}
+                            >
+                              Paste
+                            </button>
+                          </div>
                         ) : (
                           <input
                             type={field.type}

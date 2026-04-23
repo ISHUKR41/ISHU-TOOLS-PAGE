@@ -1369,6 +1369,30 @@ h3 {
   font-size: 0.85rem;
 }
 
+.input-with-paste {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.input-with-paste > input { flex: 1; min-width: 0; }
+.paste-btn {
+  flex: 0 0 auto;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.paste-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.paste-btn:active { transform: translateY(1px); }
+
 .run-button:disabled {
   opacity: 0.78;
   cursor: not-allowed;
