@@ -132,25 +132,25 @@ if ('PerformanceObserver' in window) {
   } catch { /* unsupported browser */ }
 }
 
-// ── Register Service Worker for PWA support ───────────────────────────────────
+// ── Service Worker cleanup ────────────────────────────────────────────────────
+// Older versions of this app shipped an aggressive caching SW that served a
+// stale HTML shell from cache. We register a kill-switch SW that wipes every
+// cache and unregisters itself, then we also proactively unregister any
+// existing registrations and clear caches on the page itself. After the next
+// load, no SW will be active.
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js', { scope: '/' })
-      .then((registration) => {
-        setInterval(() => registration.update(), 60 * 60 * 1000)
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                newWorker.postMessage({ type: 'SKIP_WAITING' })
-              }
-            })
-          }
-        })
-      })
-      .catch(() => {})
+  window.addEventListener('load', async () => {
+    try {
+      // Register the kill-switch so returning users get cleaned up.
+      await navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {})
+      // Belt and suspenders: also unregister everything from the page side.
+      const regs = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(regs.map((r) => r.unregister().catch(() => {})))
+      if ('caches' in window) {
+        const names = await caches.keys()
+        await Promise.all(names.map((n) => caches.delete(n).catch(() => false)))
+      }
+    } catch { /* ignore */ }
   })
 }
 
