@@ -3574,6 +3574,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'twitter-video-downloader': [
     { name: 'url', label: 'Twitter / X Video URL', type: 'text', placeholder: 'Paste tweet URL with video, e.g. https://twitter.com/user/status/123...' },
@@ -3593,6 +3594,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public tweets.' },
   ],
   'x-video-downloader': [
     { name: 'url', label: 'X (Twitter) Video URL', type: 'text', placeholder: 'Paste X.com or twitter.com video URL...' },
@@ -3612,6 +3614,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public posts.' },
   ],
   'facebook-video-downloader': [
     { name: 'url', label: 'Facebook Video URL', type: 'text', placeholder: 'Paste Facebook video URL or fb.watch link...' },
@@ -3631,6 +3634,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'vimeo-downloader': [
     { name: 'url', label: 'Vimeo Video URL', type: 'text', placeholder: 'Paste Vimeo URL, e.g. https://vimeo.com/123456789...' },
@@ -3791,6 +3795,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Instagram Cookies (optional — paste if Instagram blocks anonymous downloads)', type: 'textarea', placeholder: 'Optional. Export your Instagram cookies (Netscape cookies.txt format) from a logged-in browser session, or paste a "sessionid=...; ds_user_id=...;" string. Leave blank for public posts.' },
   ],
   'instagram-reel-downloader': [{ name: 'url', label: 'Instagram Reel URL', type: 'text', placeholder: 'Paste Instagram Reel URL e.g. https://www.instagram.com/reel/...' },
     {
@@ -3809,6 +3814,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Instagram Cookies (optional — paste if Instagram blocks anonymous downloads)', type: 'textarea', placeholder: 'Optional. Export your Instagram cookies (Netscape cookies.txt format) from a logged-in browser session, or paste a "sessionid=...; ds_user_id=...;" string. Leave blank for public reels.' },
   ],
   'stream-downloader': [{ name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste any video URL from 1000+ supported platforms...' },
     {

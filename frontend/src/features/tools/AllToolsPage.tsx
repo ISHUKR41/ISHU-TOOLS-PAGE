@@ -126,6 +126,7 @@ type SortOption = (typeof SORT_OPTIONS)[number]['value']
 
 const FAVORITES_KEY = 'ishu_fav_tools'
 const RECENT_KEY   = 'ishu_recent_tools'
+const USAGE_KEY    = 'ishu_tool_usage_v1'
 const MAX_RECENT   = 12
 
 /* ─── localStorage helpers ──────────────────────────────── */
@@ -139,11 +140,17 @@ function saveFavorites(f: Set<string>) {
 function loadRecent(): string[] {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') } catch { return [] }
 }
+export function loadUsage(): Record<string, number> {
+  try { return JSON.parse(localStorage.getItem(USAGE_KEY) ?? '{}') } catch { return {} }
+}
 export function trackToolVisit(slug: string) {
   try {
     const r = loadRecent().filter(s => s !== slug)
     r.unshift(slug)
     localStorage.setItem(RECENT_KEY, JSON.stringify(r.slice(0, MAX_RECENT)))
+    const u = loadUsage()
+    u[slug] = (u[slug] ?? 0) + 1
+    localStorage.setItem(USAGE_KEY, JSON.stringify(u))
   } catch {}
 }
 
@@ -886,6 +893,7 @@ export default function AllToolsPage() {
   const [sortBy, setSortBy]         = useState<SortOption>('popular')
   const [favorites, setFavorites]   = useState<Set<string>>(() => loadFavorites())
   const [recentSlugs]               = useState<string[]>(() => loadRecent())
+  const [usageMap]                  = useState<Record<string, number>>(() => loadUsage())
   const searchRef                   = useRef<HTMLInputElement>(null)
   const searchWrapRef               = useRef<HTMLDivElement>(null)
 
@@ -976,7 +984,20 @@ export default function AllToolsPage() {
     const inCat = (tool: { category: string }) =>
       activeCategory === 'all' || tool.category === activeCategory
 
-    if (!raw) return tools.filter(inCat)
+    if (!raw) {
+      const base = tools.filter(inCat)
+      // Smart usage-based ordering: only when the default "popular" sort is active.
+      // Boost tools the user actually uses, then fall back to the catalog's natural order.
+      if (sortBy === 'popular' && Object.keys(usageMap).length > 0) {
+        return [...base].sort((a, b) => {
+          const ua = usageMap[a.slug] ?? 0
+          const ub = usageMap[b.slug] ?? 0
+          if (ua !== ub) return ub - ua
+          return 0
+        })
+      }
+      return base
+    }
 
     const words = raw.split(/\s+/).filter(Boolean)
 
@@ -1025,12 +1046,17 @@ export default function AllToolsPage() {
       if (TRENDING_SLUGS.has(tool.slug)) score += 8
       if (NEW_SLUGS.has(tool.slug)) score += 4
 
+      // Smart usage boost — tools you actually open rank higher in your search results.
+      // Capped at +60 so personalization can't completely override real text relevance.
+      const usage = usageMap[tool.slug] ?? 0
+      if (usage > 0) score += Math.min(60, 6 * Math.log2(usage + 1) + usage * 0.5)
+
       scored.push({ tool, score })
     }
 
     scored.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
     return scored.map(s => s.tool)
-  }, [activeCategory, deferredQuery, tools])
+  }, [activeCategory, deferredQuery, tools, sortBy, usageMap])
 
   const isSearching   = deferredQuery.trim().length > 0
 

@@ -360,6 +360,8 @@ All new tools have `toolFields.ts` frontend form fields and `registry.py` defini
 - Workspace auto-cleanup via BackgroundTasks — prevents disk buildup from tool executions
 - Added 8 server-backed tools: SIP Calculator India, Income Tax Calculator India, Salary Hike Calculator, Discount Calculator, Loan Prepayment Calculator, Marks Percentage Calculator, CGPA to Percentage Converter, and Attendance Required Calculator. Added matching frontend fields and handcrafted SEO for top India/student targets.
 - Added 8 more production-backed daily-use tools: Fixed Deposit Calculator India, Recurring Deposit Calculator, Loan Eligibility Calculator, Expense Splitter, UPI QR Code Generator, Wi-Fi QR Code Generator, Grade Needed Calculator, and Exam Countdown Calculator. Vercel build now uses Vite build plus static SEO page generation, avoiding TypeScript-only deploy failures while still producing crawlable tool pages.
+- Optional Cookies textarea added to TikTok / Twitter / X / Facebook / Instagram / Instagram Reel downloader forms — backend already supports `payload.cookies` (Netscape `cookies.txt` or `name=value;` strings). Lets users bypass login walls / age gates / Instagram anonymous-download blocks without any backend changes.
+- Smart usage-based ordering implemented in AllToolsPage: every tool open is counted in `localStorage.ishu_tool_usage_v1`. With the default "Popular" sort, the catalog is reordered by personal usage frequency (most-used first). Search results also receive a capped log-scaled boost (max +60) for tools the user actually opens, so personalization helps without overriding real text relevance.
 
 ## Social Links
 - LinkedIn: https://linkedin.com/in/ishu-kumar-5a0940281/
