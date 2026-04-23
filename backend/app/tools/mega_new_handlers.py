@@ -1137,22 +1137,23 @@ def _yt_dlp_download(url: str, extra_args: list[str] | None = None) -> dict:
             return _err("yt-dlp not installed on server")
 
 
-def _handle_instagram_downloader(files, payload):
-    url = str(payload.get("url", "")).strip()
-    if not url or "instagram.com" not in url:
-        return _err("Enter a valid Instagram post/reel URL (e.g. https://www.instagram.com/p/...)")
-    return _yt_dlp_download(url)
+# instagram-downloader: handled by the proper version in video_extra_handlers.py
+# (cookies support + IG-specific extractor args + mobile UA + clear error msg).
+# instagram-reel-downloader: delegate to the same proper handler.
+def _handle_instagram_reel_delegate(files, payload, *args, **kwargs):
+    from .video_extra_handlers import _handle_instagram_downloader as _ig
+    # Proper handler signature: (files, payload, job_dir). The runtime adapter
+    # passes job_dir as 3rd positional arg; if missing, fall back to a temp dir.
+    if args:
+        return _ig(files, payload, args[0])
+    job_dir = kwargs.get("job_dir")
+    if job_dir is None:
+        import tempfile
+        from pathlib import Path as _P
+        job_dir = _P(tempfile.mkdtemp(prefix="ig_reel_"))
+    return _ig(files, payload, job_dir)
 
-MEGA_NEW_HANDLERS["instagram-downloader"] = _handle_instagram_downloader
-
-
-def _handle_instagram_reel_downloader(files, payload):
-    url = str(payload.get("url", "")).strip()
-    if not url or "instagram.com" not in url:
-        return _err("Enter a valid Instagram Reel URL (e.g. https://www.instagram.com/reel/...)")
-    return _yt_dlp_download(url)
-
-MEGA_NEW_HANDLERS["instagram-reel-downloader"] = _handle_instagram_reel_downloader
+MEGA_NEW_HANDLERS["instagram-reel-downloader"] = _handle_instagram_reel_delegate
 
 
 def _handle_rumble_downloader(files, payload):

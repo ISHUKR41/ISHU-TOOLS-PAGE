@@ -125,10 +125,25 @@ def _find_output_file(job_dir: Path, preferred_ext: str = "mp4") -> Path | None:
 def _classify_ytdlp_error(err: str) -> str:
     """Return a user-friendly message based on yt-dlp error text."""
     el = err.lower()
+    # Instagram-specific: anonymous access is blocked platform-wide as of 2024-2025.
+    if "empty media response" in el or ("instagram" in el and ("login" in el or "cookies" in el or "authentication" in el)):
+        return ("Instagram now blocks anonymous downloads on its servers. "
+                "To download, paste your Instagram session cookies in the optional 'Cookies' field "
+                "(Browser → DevTools → Application → Cookies → instagram.com → copy as 'name=value; ...'). "
+                "Public reels via desktop browser still work fine.")
+    # TikTok-specific: extractor often returns "Unexpected response" due to TT's anti-bot.
+    if "tiktok" in el and ("unexpected response" in el or "unable to extract" in el):
+        return ("TikTok is currently blocking server-side downloads (anti-bot protection). "
+                "Try again in a few minutes, or paste your TikTok cookies in the optional 'Cookies' field. "
+                "We attempted a free fallback API but it also failed.")
+    # Twitter/X: needs guest token or auth in many regions
+    if ("twitter" in el or "x.com" in el) and ("no video could be found" in el or "guest token" in el or "no longer available" in el):
+        return ("Twitter/X requires authentication for most videos now. "
+                "Paste your X cookies in the optional 'Cookies' field, or use a working alternative platform.")
     if "private video" in el or "private" in el:
         return "This video is private and cannot be downloaded."
     if "sign in" in el or "login" in el or "age" in el:
-        return "This video requires sign-in or is age-restricted and cannot be downloaded automatically."
+        return "This video requires sign-in or is age-restricted. Paste your account cookies in the optional 'Cookies' field to download it."
     if "unavailable" in el or "not available" in el or "removed" in el:
         return "This video is unavailable or has been removed."
     if "copyright" in el or "blocked" in el:
@@ -148,6 +163,44 @@ def _classify_ytdlp_error(err: str) -> str:
     return f"Download failed: {err[:250]}"
 
 
+def _write_cookies_file(job_dir: Path, cookies_text: str) -> Path | None:
+    """
+    Write a user-supplied cookies blob to a Netscape-format cookies.txt file.
+    Accepts either a raw Netscape cookies file (preferred) or a 'name=value; name=value'
+    cookie string copied from browser devtools (best-effort converted to Netscape).
+    Returns the path on success, None on parse failure.
+    """
+    cookies_text = (cookies_text or "").strip()
+    if not cookies_text:
+        return None
+    cookies_path = job_dir / "_cookies.txt"
+    # Already Netscape format?
+    if cookies_text.startswith("# Netscape") or cookies_text.startswith("# HTTP Cookie File"):
+        cookies_path.write_text(cookies_text, encoding="utf-8")
+        return cookies_path
+    # 'k=v; k=v' header style → convert (best-effort, domain unknown so use generic)
+    if "=" in cookies_text and ";" in cookies_text and "\n" not in cookies_text:
+        lines = ["# Netscape HTTP Cookie File"]
+        for pair in cookies_text.split(";"):
+            pair = pair.strip()
+            if "=" not in pair:
+                continue
+            name, _, value = pair.partition("=")
+            name, value = name.strip(), value.strip()
+            if not name:
+                continue
+            # domain TRUE path TRUE httpOnly expires name value
+            lines.append(f".instagram.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+            lines.append(f".tiktok.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+            lines.append(f".x.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+            lines.append(f".twitter.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+        cookies_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return cookies_path
+    # Multi-line free-form — assume Netscape-ish, write as-is and let yt-dlp try
+    cookies_path.write_text(cookies_text, encoding="utf-8")
+    return cookies_path
+
+
 def _yt_dlp_download(
     url: str,
     job_dir: Path,
@@ -155,10 +208,14 @@ def _yt_dlp_download(
     audio_only: bool = False,
     audio_kbps: str = "192",
     extra_opts: dict | None = None,
+    cookies_text: str | None = None,
 ) -> ExecutionResult:
     """
     Core yt-dlp download function used by all video/audio downloader handlers.
     Returns ExecutionResult with kind='file' on success or kind='json' on error.
+
+    cookies_text: Optional Netscape cookies file contents (or 'k=v; k=v' header)
+    to authenticate with platforms that block anonymous access (IG, TikTok, etc.).
     """
     try:
         import yt_dlp
@@ -186,6 +243,12 @@ def _yt_dlp_download(
 
     if extra_opts:
         opts.update(extra_opts)
+
+    # Optional user-supplied cookies (for IG/TikTok/Twitter etc.)
+    if cookies_text:
+        cookies_path = _write_cookies_file(job_dir, cookies_text)
+        if cookies_path:
+            opts["cookiefile"] = str(cookies_path)
 
     try:
         with yt_dlp.YoutubeDL(opts) as ydl:
@@ -331,7 +394,52 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
             "Accept": "*/*",
         },
     }
-    return _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra)
+    cookies = payload.get("cookies") or payload.get("cookies_text")
+    return _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra, cookies_text=cookies)
+
+
+def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """
+    Free no-auth TikTok fallback via tikwm.com public API.
+    Returns ExecutionResult on success, None to signal 'try yt-dlp instead'.
+    """
+    try:
+        r = httpx.post(
+            "https://www.tikwm.com/api/",
+            data={"url": url, "hd": "1"},
+            timeout=20,
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        if r.status_code != 200:
+            return None
+        j = r.json()
+        if j.get("code") != 0 or not j.get("data"):
+            return None
+        d = j["data"]
+        video_url = d.get("hdplay") or d.get("play")
+        if not video_url:
+            return None
+        # Some tikwm responses return relative URLs
+        if video_url.startswith("/"):
+            video_url = "https://www.tikwm.com" + video_url
+        v = httpx.get(video_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+        title = (d.get("title") or "tiktok").strip() or "tiktok"
+        out = job_dir / f"{_safe_title(title)}.mp4"
+        out.write_bytes(v.content)
+        size_mb = round(len(v.content) / 1024 / 1024, 1)
+        author = (d.get("author") or {}).get("nickname", "")
+        detail = f"{size_mb} MB" + (f", by {author}" if author else "")
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded: {title} ({detail})",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4",
+        )
+    except Exception:
+        return None
 
 
 def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -340,7 +448,17 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a TikTok video URL.", data={"error": "No URL"})
     if "tiktok.com" not in url and "vm.tiktok" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid TikTok URL.", data={"error": "Not TikTok"})
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), extra_opts={"noplaylist": True})
+    cookies = payload.get("cookies") or payload.get("cookies_text")
+    # Try yt-dlp first (gives best quality + cookies support)
+    result = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")),
+                              extra_opts={"noplaylist": True}, cookies_text=cookies)
+    if result.kind == "file":
+        return result
+    # yt-dlp failed → try free no-auth fallback
+    fallback = _tikwm_fallback(url, job_dir)
+    if fallback:
+        return fallback
+    return result  # return original yt-dlp error message
 
 
 def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -349,7 +467,8 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
         return ExecutionResult(kind="json", message="Please paste a Twitter/X video URL.", data={"error": "No URL"})
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    cookies = payload.get("cookies") or payload.get("cookies_text")
+    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
 
 
 def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:

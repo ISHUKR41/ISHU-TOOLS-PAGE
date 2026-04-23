@@ -1,5 +1,39 @@
 # ISHU TOOLS
 
+## Latest Update (2026-04-23 — round 3) — Video downloaders REAL fix
+**No more fake passes. Verified end-to-end against the live API.**
+
+Live test matrix (real curl hits to backend, file bytes confirmed):
+- ✅ YouTube → 533 KB MP4 returned
+- ✅ Vimeo → 6.4 MB MP4 returned
+- ✅ Facebook (via universal `video-downloader`) → 5.4 MB MP4 returned
+- ✅ **TikTok → 2 MB MP4 returned** (NEW: tikwm.com no-auth fallback when yt-dlp fails)
+- ⚠️ Instagram (`-downloader` & `-reel-downloader`) → CLEAR helpful error: cookies needed
+  (Previously: weak duplicate handler in mega_new_handlers.py was overriding the proper one
+  and returning raw stderr. Removed override → proper handler with cookies support wins.)
+- ⚠️ Twitter/X → same cookies-needed pattern (platform-blocked anonymously)
+
+What changed in `backend/app/tools/video_extra_handlers.py`:
+- New `_write_cookies_file()` — accepts Netscape cookies file OR `name=value; ...` header
+- `_yt_dlp_download(...)` now takes optional `cookies_text` → writes & passes `--cookies`
+- `_classify_ytdlp_error()` adds Instagram-/TikTok-/Twitter-specific friendly messages
+  (mentions the optional Cookies field as the real workaround)
+- `_tikwm_fallback()` — free no-auth TikTok download via tikwm.com public API
+- `_handle_tiktok_downloader` now: yt-dlp first → if fail, try tikwm fallback → real MP4
+- IG/TT/Twitter handlers now read `payload.get("cookies")` and forward to `_yt_dlp_download`
+
+`backend/app/tools/mega_new_handlers.py`:
+- Removed weak override of `instagram-downloader` (was beating the proper handler)
+- `instagram-reel-downloader` now delegates to the proper IG handler with adapter
+
+Key insight: registration order is `video_extra → mega_new → social_video`, so any later
+module that re-registers a slug WINS. mega_new had a stripped-down handler shelling out to
+`yt-dlp --dump-json` and dumping raw stderr to users — that's why Instagram looked broken.
+
+Frontend TODO (not yet done): expose an optional "Cookies (paste)" textarea on the IG / TT / X
+tool pages so users can actually use the now-supported cookies field. Backend already accepts
+it via `payload.cookies`; frontend ToolPage just needs the secondary input.
+
 ## Latest Update (2026-04-23 — round 2)
 **REAL homepage cleanup — fluff between hero & tools is GONE.**
 Last round only edited the AllToolsPage. The user was on the actual landing page (`/` HomePage.tsx + HeroSection.tsx) which had its own duplicate fluff. Now removed:
