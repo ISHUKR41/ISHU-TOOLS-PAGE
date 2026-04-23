@@ -1,6 +1,16 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 3) — Video downloaders REAL fix
+## Latest Update (2026-04-23 — round 4) — Hero actually cleaned + Replit import
+**Replit migration complete.** Python deps installed, FastAPI backend (1315 handlers) on :8000, Vite frontend on :5000, /api proxy verified.
+
+**Hero fluff that round-2 promised but never shipped is now actually gone:**
+- ❌ TickerRow (50-name marquee) — file still had it; removed.
+- ❌ "Popular right now" 8-quick-chip strip in hero — removed.
+- ✅ Hero now: status badge → social → kicker → "ISHU TOOLS" title → subtitle → 2 CTAs → 4 stat cards → 6 trust badges. Nothing else between hero and search panel.
+
+**Frontend cookies field for IG/TT/X downloaders — already shipped** (verified in toolFields.ts: `instagram-downloader`, `instagram-reel-downloader`, `tiktok-downloader`, `twitter-video-downloader`, `x-video-downloader` all expose an optional Cookies textarea matching the backend `payload.cookies` contract from round 3).
+
+## Previous Update (2026-04-23 — round 3) — Video downloaders REAL fix
 **No more fake passes. Verified end-to-end against the live API.**
 
 Live test matrix (real curl hits to backend, file bytes confirmed):

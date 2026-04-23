@@ -3,24 +3,13 @@ import {
   ArrowRight,
   Files,
   ShieldCheck,
-  Images,
-  Code2,
-  Calculator,
-  Search,
   Zap,
   Globe,
   Star,
   TrendingUp,
   Lock,
-  Wand2,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-
-// Synchronous check at module level — no useEffect, no re-render, zero CLS.
-// This reads the media query ONCE when the module is imported (before first render).
-const PREFERS_REDUCED_MOTION: boolean =
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 type SocialLink = {
   label: string
@@ -36,31 +25,6 @@ type HeroSectionProps = {
   socialLinks: SocialLink[]
 }
 
-const TICKER_ITEMS = [
-  'Merge PDF', 'Compress Images', 'OCR PDF', 'Remove Background', 'JSON Formatter',
-  'BMI Calculator', 'Translate PDF', 'QR Code Generator', 'Password Generator', 'Resize Image',
-  'Word to PDF', 'PDF to Excel', 'Barcode Generator', 'Base64 Encoder', 'Summarize PDF',
-  'Color Picker', 'UUID Generator', 'Compress PDF', 'Split PDF', 'Image to PDF',
-  'YouTube Downloader', 'CGPA Calculator', 'Attendance Tracker', 'Citation Generator',
-  'Regex Tester', 'CSV to JSON', 'SVG Optimizer', 'HTML Beautifier', 'Markdown Editor',
-  'Text Summarizer', 'Grammar Checker', 'Loan Calculator', 'Percentage Calculator',
-  'Age Calculator', 'Time Zone Converter', 'Case Converter', 'Diff Checker', 'IP Lookup',
-  'Hash Generator', 'Instagram Downloader', 'Photo Collage Maker', 'SIP Calculator',
-  'Meme Generator', 'PDF Annotator', 'Image Compressor', 'CSS Minifier', 'SQL Formatter',
-  'EMI Calculator', 'GST Calculator', 'Unit Converter', 'Plagiarism Checker', 'Resume Builder',
-]
-
-const QUICK_TOOLS = [
-  { to: '/tools/merge-pdf', label: 'Merge PDF', icon: Files, color: '#56a6ff' },
-  { to: '/tools/compress-image', label: 'Compress Image', icon: Images, color: '#3ee58f' },
-  { to: '/tools/remove-background', label: 'Remove BG', icon: Wand2, color: '#f472b6' },
-  { to: '/tools/json-formatter', label: 'JSON Formatter', icon: Code2, color: '#06b6d4' },
-  { to: '/tools/bmi-calculator', label: 'BMI Calculator', icon: Calculator, color: '#f59e0b' },
-  { to: '/tools/password-generator', label: 'Password Gen', icon: ShieldCheck, color: '#f97316' },
-  { to: '/tools/ocr-pdf', label: 'OCR PDF', icon: Search, color: '#a78bfa' },
-  { to: '/tools/qr-code-generator', label: 'QR Generator', icon: Globe, color: '#22d3ee' },
-]
-
 const TRUST_BADGES = [
   { icon: Zap, label: 'Instant Processing' },
   { icon: ShieldCheck, label: '100% Private & Secure' },
@@ -70,32 +34,11 @@ const TRUST_BADGES = [
   { icon: Globe, label: 'Works Everywhere' },
 ]
 
-function TickerRow() {
-  const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
-
-  return (
-    <div className='ticker-wrap'>
-      <div
-        className='ticker-track'
-        style={PREFERS_REDUCED_MOTION ? { animation: 'none' } : undefined}
-      >
-        {items.map((item, i) => (
-          <span key={i} className='ticker-item'>
-            <Wand2 size={10} />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export default function HeroSection({
   toolCount,
   categoryCount,
   pdfCount,
   imageCount,
-  apiReady,
   socialLinks,
 }: HeroSectionProps) {
   const toolLabel = toolCount > 0 ? toolCount : 1200
@@ -170,25 +113,6 @@ export default function HeroSection({
               <div className='stat-glow' />
             </div>
           ))}
-        </div>
-
-        <TickerRow />
-
-        <div className='hero-v2-quick'>
-          <span className='quick-label'>⚡ Popular right now</span>
-          <div className='quick-grid'>
-            {QUICK_TOOLS.map((tool) => (
-              <Link
-                key={tool.to}
-                to={tool.to}
-                className='quick-chip'
-                style={{ '--chip-color': tool.color } as CSSProperties}
-              >
-                <tool.icon size={14} />
-                {tool.label}
-              </Link>
-            ))}
-          </div>
         </div>
 
         <div className='trust-row'>
