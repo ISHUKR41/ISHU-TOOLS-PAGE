@@ -1,6 +1,15 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23)
+## Latest Update (2026-04-23 — round 2)
+**REAL homepage cleanup — fluff between hero & tools is GONE.**
+Last round only edited the AllToolsPage. The user was on the actual landing page (`/` HomePage.tsx + HeroSection.tsx) which had its own duplicate fluff. Now removed:
+- ❌ **TickerRow** (50-tool name marquee scrolling under stats) — gone
+- ❌ **"Popular right now" quick-chips** strip in hero (Merge PDF, Compress Image, Remove BG, JSON Formatter, BMI Calc, Password Gen, OCR PDF, QR Generator) — gone
+- ❌ **Brand-inspired marquee** (Apple, Stripe, Linear, Vercel, Framer, Notion, Figma, Spotify, Airbnb, Awwwards, Webflow, Shadcn, ...) between hero and search — gone
+- ❌ **"Most Popular / Top Tools used by everyone"** curated section between search panel and the actual tool directory — gone
+- ✅ Page flow now: **Header → Hero (title + stats + trust badges) → Search + category pills → ACTUAL TOOL DIRECTORY (1247 tools grouped by category)**. Nothing between them.
+
+## Previous Update (2026-04-23)
 **Tools-only homepage + Instagram downloader fix.**
 - **Removed "Most Popular" / "Top Tools used by everyone"** strip from the homepage — was a curated list pretending to be data; gone.
 - **Removed "Featured" section** ("Top Tools used by everyone" header) — it pushed real tools below the fold.

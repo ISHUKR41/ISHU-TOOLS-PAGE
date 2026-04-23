@@ -407,13 +407,7 @@ export default function HomePage() {
           socialLinks={socialLinks}
         />
 
-        <div className='inspired-marquee' aria-hidden='true'>
-          <div className='inspired-track'>
-            {[...inspiredBrands, ...inspiredBrands].map((b, i) => (
-              <span key={i}>{b}</span>
-            ))}
-          </div>
-        </div>
+        {/* Removed: inspired-brands marquee (Apple, Stripe, Linear, ...) — visual fluff that pushed tools below the fold. */}
 
         <section className='surface-panel search-panel'>
           <div className='toolbar-meta'>
@@ -482,35 +476,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {topPopularTools.length > 0 && (
-          <section className='popular-tools-section' aria-label='Most popular tools'>
-            <div className='popular-tools-header'>
-              <span className='section-kicker'>
-                <Flame size={14} style={{ display: 'inline', marginRight: 6, verticalAlign: '-2px' }} />
-                Most Popular
-              </span>
-              <h2>Top Tools used by everyone</h2>
-              <p>Daily-use tools millions of students &amp; professionals trust. One click — instant result.</p>
-            </div>
-            <div className='popular-tools-grid'>
-              {topPopularTools.map((tool) => {
-                const theme = getCategoryTheme(tool.category)
-                return (
-                  <Link
-                    key={tool.slug}
-                    to={`/tools/${tool.slug}`}
-                    className='popular-tool-card'
-                    style={{ '--card-accent': theme.accent } as CSSProperties}
-                  >
-                    <div className='popular-tool-icon'><TrendingUp size={16} /></div>
-                    <strong>{tool.title}</strong>
-                    <small>{tool.description?.slice(0, 70) || 'Free online tool'}{tool.description && tool.description.length > 70 ? '…' : ''}</small>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        )}
+        {/* Removed: "Most Popular / Top Tools used by everyone" curated section — actual tool directory below is the priority. */}
 
         <section id='tool-directory' className='directory-stack'>
           {loading && (
