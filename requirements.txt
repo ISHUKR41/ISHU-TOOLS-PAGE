@@ -208,3 +208,4 @@ qrcode[pil]>=8.2,<9.0.0
 rarfile>=4.2,<5.0.0
 scipy>=1.14.1,<2.0.0
 tzdata>=2024.1
+yt-dlp

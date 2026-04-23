@@ -1,6 +1,26 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 4) — Hero actually cleaned + Replit import
+## Latest Update (2026-04-23 — round 5) — Video downloaders ACTUALLY fixed
+**Found the actual root cause user complained about ("Instagram downloader doesn't work"):**
+- ❌ `yt-dlp` Python package was NEVER installed in the backend env or in `requirements.txt`. Every video downloader tool (Instagram, YouTube, TikTok, X/Twitter, Reel, etc.) was returning the cryptic `"Video downloader library is not installed. Please contact support."` JSON error since deployment.
+- ✅ Installed `yt-dlp 2026.3.17` and added `yt-dlp>=2025.1.0` to `backend/requirements.txt` so Render's Docker rebuild also picks it up.
+- ✅ End-to-end verified: YouTube returns real 33 MB MP4, Instagram public reels return MP4 (private reels correctly return the "paste cookies" guidance), TikTok returns real MP4 for non-IP-blocked videos, X/Twitter returns the proper "auth required" message for protected tweets. The cookie textarea field for IG/TT/X is already wired up frontend-to-backend.
+
+**Frontend lint cleanup (13 errors → 0):**
+- Extracted `loadUsage`, `trackToolVisit`, `loadFavorites`, `saveFavorites`, `loadRecent` from `AllToolsPage.tsx` to a new `frontend/src/lib/usageTracker.ts`. Fixes the React Fast Refresh violations and untangles imports — `HomePage` and `ToolPage` now both import from `lib/usageTracker` instead of from a giant page component.
+- Deleted dead leftovers from earlier "Most Popular" removal: `POPULAR_TOOLS` array, `FeaturedSection` component, `CategoryBrowser` component, `PopularStrip` component, `FEATURED_TOOLS`, `CATEGORY_EMOJIS`, `Flame` + `LayoutGrid` icon imports, `showPopular` flag, unused `Link` import, stale `eslint-disable` directive in `ToolPage`.
+- `AllToolsPage.tsx`: 1281 → 970 lines (~24% smaller).
+- Replaced cascading-render `useEffect(() => setActiveIdx(0), [q])` with the React 19 "store-previous-prop" pattern.
+- Fixed `next.has(slug) ? next.delete(slug) : next.add(slug)` unused-expression → proper `if/else`.
+- Fixed `as any` cast in `toolFields.ts` to typed `as unknown as ToolField`.
+- Production build clean (2.25 s, 0 errors), lint clean (0 errors / 0 warnings).
+
+**Confirmed already-shipped:**
+- ✅ No "Show More" anywhere in the codebase (`grep` returned 0 matches).
+- ✅ Categories grid is hidden during search (`isSearching` gate at AllToolsPage L751, L755, L826, L841, L929).
+- ✅ Per-tool SEO already injects: title, description, keywords, robots, canonical, AI bot directives (GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot, anthropic-ai, ChatGPT-User) — see `ToolPage.tsx` L173-199.
+
+## Previous Update (2026-04-23 — round 4) — Hero actually cleaned + Replit import
 **Replit migration complete.** Python deps installed, FastAPI backend (1315 handlers) on :8000, Vite frontend on :5000, /api proxy verified.
 
 **Hero fluff that round-2 promised but never shipped is now actually gone:**
