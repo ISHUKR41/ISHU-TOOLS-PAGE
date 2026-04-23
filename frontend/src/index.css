@@ -977,7 +977,9 @@ h3 {
   border-radius: 20px;
   transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
-  /* contain-intrinsic-size prevents layout shift when content-visibility:auto is used */
+  /* Skip rendering offscreen cards for buttery scroll with 1200+ tools.
+     contain-intrinsic-size reserves space so scrollbar/layout stays stable. */
+  content-visibility: auto;
   contain-intrinsic-size: auto 260px;
   contain: layout style;
 }

@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -11,6 +11,7 @@ import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
+import ToolCard from '../../components/tools/ToolCard'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
 import './home-modern.css'
@@ -315,9 +316,11 @@ function ToolSkeleton() {
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState('all')
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
-  const debouncedQuery = useDebounce(query, 180)
+  // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
+  const debouncedQuery = useDebounce(query, 90)
+  const isSearching = debouncedQuery.trim().length > 0
 
   useEffect(() => {
     applyDocumentBranding(
@@ -325,6 +328,27 @@ export default function HomePage() {
       '1200+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
       '#3bd0ff',
     )
+  }, [])
+
+  // Global keyboard shortcuts:
+  //   `/`  → focus search (skip when typing in another input/textarea/contenteditable).
+  //   Esc  → clear current search and blur (only when search input itself is focused).
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName
+      const typingInField =
+        tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable
+      if (e.key === '/' && !typingInField) {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      } else if (e.key === 'Escape' && document.activeElement === searchInputRef.current) {
+        setQuery('')
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
   }, [])
 
   const counts = useMemo(() => {
@@ -341,31 +365,65 @@ export default function HomePage() {
     return { byCategory, pdfCount, imageCount }
   }, [categories, tools])
 
+  // Lookup: category id → category label, used by the flat search-result grid.
+  const categoryLabelById = useMemo(() => {
+    const map = new Map<string, { label: string; accent: string }>()
+    for (const c of categories) {
+      const theme = getCategoryTheme(c.id)
+      map.set(c.id, { label: c.label, accent: theme.accent })
+    }
+    return map
+  }, [categories])
+
+  // Smart fuzzy-ish ranking when user types: exact title match > prefix > word boundary > tag/desc substring.
+  // We score each tool, then sort by score desc, then by popularity_rank desc as tiebreaker.
   const filteredTools = useMemo(() => {
-    const normalizedQuery = debouncedQuery.trim().toLowerCase()
+    const q = debouncedQuery.trim().toLowerCase()
+    if (!q) {
+      // No query → return ALL tools sorted by popularity (used by grouped view + count).
+      return [...tools].sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
+    }
+    const terms = q.split(/\s+/).filter(Boolean)
+    type Scored = { tool: (typeof tools)[number]; score: number }
+    const scored: Scored[] = []
+    for (const tool of tools) {
+      const title = tool.title.toLowerCase()
+      const slug = tool.slug.toLowerCase()
+      const desc = (tool.description || '').toLowerCase()
+      const tags = tool.tags.join(' ').toLowerCase()
+      let score = 0
+      let matchedAll = true
+      for (const term of terms) {
+        let termScore = 0
+        if (title === term) termScore = 1000
+        else if (title.startsWith(term)) termScore = 500
+        else if (slug === term || slug.startsWith(term)) termScore = 480
+        else if (new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(title)) termScore = 300
+        else if (title.includes(term)) termScore = 200
+        else if (slug.includes(term)) termScore = 180
+        else if (tags.includes(term)) termScore = 120
+        else if (desc.includes(term)) termScore = 60
+        if (termScore === 0) { matchedAll = false; break }
+        score += termScore
+      }
+      if (!matchedAll) continue
+      // Add small popularity bonus so ties favor heavily-used tools.
+      score += Math.min(50, tool.popularity_rank ?? 0)
+      scored.push({ tool, score })
+    }
+    scored.sort((a, b) => b.score - a.score || ((b.tool.popularity_rank ?? 0) - (a.tool.popularity_rank ?? 0)))
+    return scored.map((s) => s.tool)
+  }, [debouncedQuery, tools])
 
-    return tools
-      .filter((tool) => {
-        if (activeCategory !== 'all' && tool.category !== activeCategory) return false
-        if (!normalizedQuery) return true
-
-        const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
-        return haystack.includes(normalizedQuery)
-      })
-      .sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
-  }, [activeCategory, debouncedQuery, tools])
-
+  // Grouped-by-category view (used only when NOT searching).
   const groupedSections = useMemo(() => {
+    if (isSearching) return []
     const grouped = new Map<string, typeof filteredTools>()
     for (const tool of filteredTools) {
       const list = grouped.get(tool.category)
-      if (list) {
-        list.push(tool)
-      } else {
-        grouped.set(tool.category, [tool])
-      }
+      if (list) list.push(tool)
+      else grouped.set(tool.category, [tool])
     }
-
     return categories
       .map((category) => {
         const categoryTools = grouped.get(category.id) || []
@@ -374,11 +432,9 @@ export default function HomePage() {
       })
       .filter((entry) => entry.tools.length > 0)
       .sort((a, b) => b.maxRank - a.maxRank)
-  }, [categories, filteredTools])
+  }, [categories, filteredTools, isSearching])
 
   const totalVisibleTools = filteredTools.length
-
-  // Removed dead code: topPopularTools + inspiredBrands (sections deleted from JSX, variables no longer used).
 
   return (
     <SiteShell>
@@ -395,6 +451,12 @@ export default function HomePage() {
 
         {/* Removed: inspired-brands marquee (Apple, Stripe, Linear, ...) — visual fluff that pushed tools below the fold. */}
 
+        {/* ── Smart search panel ───────────────────────────────────────────────
+             Category-pill filter row removed by request — search is now the
+             single, prominent way to narrow the directory. Press `/` to focus
+             from anywhere, Esc to clear. Result count and clear (×) button
+             give instant feedback as you type.
+        */}
         <section className='surface-panel search-panel'>
           <div className='toolbar-meta'>
             <div>
@@ -402,67 +464,45 @@ export default function HomePage() {
               <h2>Find the exact tool fast</h2>
             </div>
             <p>
-              Search by tool name, workflow, tag, or category. Every tool opens on its own
-              dedicated page with a focused workspace.
+              Type to instantly search all {tools.length || '1,200+'} tools by name, tag, or
+              workflow. Press <kbd className='kbd'>/</kbd> from anywhere to focus,{' '}
+              <kbd className='kbd'>Esc</kbd> to clear.
             </p>
           </div>
 
           <div className='search-control'>
-            <label className='search-input'>
-              <Search size={18} />
+            <label className='search-input search-input-xl'>
+              <Search size={20} />
               <input
+                ref={searchInputRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder='Search merge, OCR, watermark, image, PDF, JSON...'
+                placeholder='Search merge, compress, OCR, JSON, BMI, EMI, remove background…'
+                autoComplete='off'
+                spellCheck={false}
+                aria-label='Search all tools'
               />
-            </label>
-
-            <div className='category-row'>
-              {loading ? (
-                <div className='category-row-skeleton'>
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className='skeleton-shimmer category-pill-skeleton' />
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <button
-                    type='button'
-                    className={`category-pill ${activeCategory === 'all' ? 'active' : ''}`}
-                    onClick={() =>
-                      startTransition(() => {
-                        setActiveCategory('all')
-                      })
-                    }
-                  >
-                    All ({tools.length})
-                  </button>
-
-                  {categories.map((category) => {
-                    const theme = getCategoryTheme(category.id)
-                    return (
-                      <button
-                        type='button'
-                        key={category.id}
-                        className={`category-pill themed ${activeCategory === category.id ? 'active' : ''}`}
-                        style={{ '--pill-accent': theme.accent } as CSSProperties}
-                        onClick={() =>
-                          startTransition(() => {
-                            setActiveCategory(category.id)
-                          })
-                        }
-                      >
-                        {category.label} ({counts.byCategory[category.id] || 0})
-                      </button>
-                    )
-                  })}
-                </>
+              {query && (
+                <button
+                  type='button'
+                  className='search-clear-btn'
+                  onClick={() => {
+                    setQuery('')
+                    searchInputRef.current?.focus()
+                  }}
+                  aria-label='Clear search'
+                >
+                  <XIcon size={16} />
+                </button>
               )}
-            </div>
+              <span className='search-result-count' aria-live='polite'>
+                {isSearching
+                  ? `${totalVisibleTools} ${totalVisibleTools === 1 ? 'match' : 'matches'}`
+                  : `${tools.length || 0} tools`}
+              </span>
+            </label>
           </div>
         </section>
-
-        {/* Removed: "Most Popular / Top Tools used by everyone" curated section — actual tool directory below is the priority. */}
 
         <section id='tool-directory' className='directory-stack'>
           {loading && (
@@ -474,15 +514,46 @@ export default function HomePage() {
           )}
           {error && <p className='status-text error'>{error}</p>}
 
-          {!loading && !error && groupedSections.length === 0 && (
+          {/* SEARCHING → flat result grid, ranked by relevance + popularity. */}
+          {!loading && !error && isSearching && filteredTools.length > 0 && (
+            <section className='tool-section search-results-section'>
+              <header className='section-heading'>
+                <div className='section-heading-left'>
+                  <span className='section-kicker'>Search results</span>
+                  <div className='section-heading-title-row'>
+                    <h2>“{debouncedQuery}”</h2>
+                    <span className='tool-count-badge'>{totalVisibleTools} tools</span>
+                  </div>
+                </div>
+                <p>Ranked by relevance and daily popularity. Press Esc to clear.</p>
+              </header>
+              <div className='tool-grid'>
+                {filteredTools.map((tool) => {
+                  const meta = categoryLabelById.get(tool.category)
+                  return (
+                    <ToolCard
+                      key={tool.slug}
+                      tool={tool}
+                      categoryLabel={meta?.label ?? tool.category}
+                      accentColor={meta?.accent ?? '#56a6ff'}
+                    />
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {!loading && !error && isSearching && filteredTools.length === 0 && (
             <article className='empty-state'>
-              <h3>No tools matched this search</h3>
-              <p>Try another keyword or switch back to all categories.</p>
+              <h3>No tools matched “{debouncedQuery}”</h3>
+              <p>Try a shorter keyword, or press Esc to see all {tools.length} tools.</p>
             </article>
           )}
 
+          {/* IDLE → full directory grouped by category, sorted by usage. */}
           {!loading &&
             !error &&
+            !isSearching &&
             groupedSections.map(({ category, tools: categoryTools }) => (
               <ToolCategorySection key={category.id} category={category} tools={categoryTools} />
             ))}
