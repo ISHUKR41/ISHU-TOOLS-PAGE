@@ -310,9 +310,28 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste an Instagram URL.", data={"error": "No URL"})
-    if "instagram.com" not in url:
-        return ExecutionResult(kind="json", message="Please enter a valid Instagram URL (instagram.com/...).", data={"error": "Not Instagram"})
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    if "instagram.com" not in url and "instagr.am" not in url:
+        return ExecutionResult(kind="json", message="Please enter a valid Instagram URL (instagram.com/reel/... or /p/... or /tv/...).", data={"error": "Not Instagram"})
+
+    # Strip query strings (?igsh=, ?utm_*, etc.) — they sometimes confuse the extractor
+    clean_url = url.split("?")[0].rstrip("/")
+
+    # Instagram serves a single combined mp4 stream for most reels/posts.
+    # The default format "bestvideo+bestaudio" FAILS on Instagram because there's no separate audio track.
+    # Use a forgiving format chain: prefer 'best' (single-file), fall back to merge.
+    ig_fmt = "best[ext=mp4]/best/bestvideo+bestaudio"
+
+    # IG-specific extractor args + extra browser-like headers help avoid the 401/login wall on public reels.
+    ig_extra = {
+        "extractor_args": {"instagram": {"app_id": ["936619743392459"]}},
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+            "X-IG-App-ID": "936619743392459",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept": "*/*",
+        },
+    }
+    return _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra)
 
 
 def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:

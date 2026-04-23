@@ -1172,11 +1172,7 @@ export default function AllToolsPage() {
 
           {!loading && !error && !showFavorites && (
             <>
-              {showPopular && <FeaturedSection />}
-
-              {showPopular && (
-                <PopularStrip tools={POPULAR_TOOLS} allTools={tools} favorites={favorites} onToggleFav={onToggleFav} />
-              )}
+              {/* Removed: FeaturedSection ("Top Tools used by everyone") + PopularStrip ("Most Popular") — tools are the priority. */}
               {showRecent && (
                 <RecentSection recentSlugs={recentSlugs} allTools={tools} favorites={favorites} onToggleFav={onToggleFav} viewMode={viewMode} />
               )}
@@ -1227,16 +1223,7 @@ export default function AllToolsPage() {
                 />
               ))}
 
-              {!isSearching && groupedSections.length > 0 && (
-                <CategoryBrowser
-                  categories={categories}
-                  toolCountByCategory={toolCountByCategory}
-                  onCategorySelect={id => {
-                    startTransition(() => setActiveCat(id))
-                    window.scrollTo({ top: 0, behavior: 'smooth' })
-                  }}
-                />
-              )}
+              {/* Removed: CategoryBrowser panel — tools are the priority, categories are still accessible via filter chips at top. */}
             </>
           )}
         </section>

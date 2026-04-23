@@ -1,6 +1,21 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-22)
+## Latest Update (2026-04-23)
+**Tools-only homepage + Instagram downloader fix.**
+- **Removed "Most Popular" / "Top Tools used by everyone"** strip from the homepage — was a curated list pretending to be data; gone.
+- **Removed "Featured" section** ("Top Tools used by everyone" header) — it pushed real tools below the fold.
+- **Removed bottom CategoryBrowser panel** — categories are still accessible via the filter chips at the top, but the page no longer ends with another categories block. **Tools first, last, only.**
+- **Sort order unchanged**: still defaults to "Most Popular" (handler-count-weighted) so daily-use categories like PDF / Image / Calculator surface at top.
+- **Search behavior unchanged** (already a clean flat ranked list — no category pills, no popular block, no recent block — just the matched tools).
+- **Instagram downloader — actually fixed.** Was failing because the default yt-dlp format selector `bestvideo+bestaudio` doesn't work on Instagram (IG serves a single combined mp4, no separate audio stream → merger fails). New IG-specific config:
+  - Format chain `best[ext=mp4]/best/bestvideo+bestaudio` — picks the single combined file first
+  - Mobile Safari User-Agent + `X-IG-App-ID` header → bypasses the public-reel login wall
+  - `extractor_args.instagram.app_id` = official IG web app ID → cleaner extraction path
+  - URL is auto-cleaned (`?igsh=...` query strings stripped — they confuse the extractor)
+  - Accepts `instagram.com` AND `instagr.am` short links
+- All public Reels / Posts / IGTV URLs now download cleanly. Private posts still blocked (no way around without login).
+
+## Previous Update (2026-04-22)
 **Universal power-user features — every one of 1247 tools just got 3 huge UX upgrades.**
 - **⌨️ Keyboard shortcuts** (work on every tool):
   - `Ctrl/Cmd + Enter` → Run the tool (works even while typing in textarea — no need to reach for the mouse)
