@@ -937,92 +937,133 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "png-to-pdf",
-    "title": "PNG to PDF",
-    "description": "Convert PNG files into one PDF.",
+    "title": "PNG to PDF Converter (.png → .pdf)",
+    "description": "Wrap a PNG image into a single-page PDF (A4 or original size).",
     "category": "format-lab",
     "tags": [
+      "png to pdf",
+      "convert png to pdf",
+      "png pdf converter",
+      ".png to .pdf",
+      "png to pdf free",
       "png",
       "pdf",
-      "convert"
+      "pdf from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
   },
   {
     "slug": "webp-to-pdf",
-    "title": "WEBP to PDF",
-    "description": "Convert WEBP files into one PDF.",
+    "title": "WebP to PDF Converter (.webp → .pdf)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to PDF (Portable Document Format). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "webp to pdf",
+      "convert webp to pdf",
+      "webp pdf converter",
+      ".webp to .pdf",
+      "webp to pdf free",
       "webp",
       "pdf",
-      "convert"
+      "pdf from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
   },
   {
     "slug": "gif-to-pdf",
-    "title": "GIF to PDF",
-    "description": "Convert GIF files into one PDF.",
+    "title": "GIF to PDF Converter (.gif → .pdf)",
+    "description": "Convert GIF (indexed-palette format used for animations) to PDF (Portable Document Format). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "gif to pdf",
+      "convert gif to pdf",
+      "gif pdf converter",
+      ".gif to .pdf",
+      "gif to pdf free",
       "gif",
       "pdf",
-      "convert"
+      "pdf from gif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
   },
   {
     "slug": "bmp-to-pdf",
-    "title": "BMP to PDF",
-    "description": "Convert BMP files into one PDF.",
+    "title": "BMP to PDF Converter (.bmp → .pdf)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to PDF (Portable Document Format). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "bmp to pdf",
+      "convert bmp to pdf",
+      "bmp pdf converter",
+      ".bmp to .pdf",
+      "bmp to pdf free",
       "bmp",
       "pdf",
-      "convert"
+      "pdf from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
   },
   {
     "slug": "jpg-to-png",
-    "title": "JPG to PNG",
-    "description": "Convert JPG images into PNG format.",
+    "title": "JPG to PNG Converter (.jpg → .png)",
+    "description": "Convert JPG/JPEG photos to lossless PNG with optional transparency. Re-save without quality loss. Batch supported, no watermark.",
     "category": "format-lab",
     "tags": [
+      "jpg to png",
+      "convert jpg to png",
+      "jpg png converter",
+      ".jpg to .png",
+      "jpg to png free",
       "jpg",
       "png",
-      "convert"
+      "png from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "png-to-jpg",
-    "title": "PNG to JPG",
-    "description": "Convert PNG images to JPG format. Removes transparency with white background.",
+    "title": "PNG to JPG Converter (.png → .jpg)",
+    "description": "Convert transparent PNG to JPG with white (or chosen) background. Smaller files, perfect for sharing. Quality control included.",
     "category": "format-lab",
     "tags": [
       "png to jpg",
-      "png to jpeg",
-      "convert png",
-      "image convert"
+      "convert png to jpg",
+      "png jpg converter",
+      ".png to .jpg",
+      "png to jpg free",
+      "png",
+      "jpg",
+      "jpg from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "image-to-webp",
-    "title": "Image to WEBP",
-    "description": "Convert image files into WEBP format.",
+    "title": "Image to WebP Converter (any image → .webp)",
+    "description": "Convert Image (any raster image (PNG/JPG/WebP)) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "image to webp",
+      "convert image to webp",
+      "image webp converter",
+      "image to .webp",
+      "image to webp free",
       "image",
       "webp",
-      "convert"
+      "webp from image",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
@@ -2572,13 +2613,19 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "heic-to-pdf",
-    "title": "HEIC to PDF",
-    "description": "Convert HEIC images into PDF documents.",
+    "title": "HEIC to PDF Converter (.heic → .pdf)",
+    "description": "Convert iPhone HEIC photos straight to a PDF — perfect for sending receipts, IDs, and scans.",
     "category": "format-lab",
     "tags": [
+      "heic to pdf",
+      "convert heic to pdf",
+      "heic pdf converter",
+      ".heic to .pdf",
+      "heic to pdf free",
       "heic",
-      "image",
-      "pdf"
+      "pdf",
+      "pdf from heic",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
@@ -2975,28 +3022,38 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "heic-to-jpg",
-    "title": "HEIC to JPG",
-    "description": "Convert iPhone HEIC photos to JPG format. Compatible with all devices and platforms.",
+    "title": "HEIC to JPG Converter (.heic → .jpg)",
+    "description": "Convert iPhone HEIC photos to JPG (the universal photo format). Smaller files, opens everywhere.",
     "category": "format-lab",
     "tags": [
       "heic to jpg",
-      "heif to jpg",
-      "iphone photo convert",
-      "heic jpeg"
+      "convert heic to jpg",
+      "heic jpg converter",
+      ".heic to .jpg",
+      "heic to jpg free",
+      "heic",
+      "jpg",
+      "jpg from heic",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "webp-to-jpg",
-    "title": "WebP to JPG",
-    "description": "Convert WebP images to JPG format for better compatibility across all platforms.",
+    "title": "WebP to JPG Converter (.webp → .jpg)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
       "webp to jpg",
-      "webp to jpeg",
-      "webp convert",
-      "image format"
+      "convert webp to jpg",
+      "webp jpg converter",
+      ".webp to .jpg",
+      "webp to jpg free",
+      "webp",
+      "jpg",
+      "jpg from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
@@ -3241,28 +3298,38 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "jpeg-to-png",
-    "title": "JPEG to PNG",
-    "description": "Convert JPEG/JPG images into PNG format with high fidelity.",
+    "title": "JPEG to PNG Converter (.jpeg → .png)",
+    "description": "Convert JPEG to lossless PNG instantly. Preserves full color, no recompression artifacts. Free, batch supported.",
     "category": "format-lab",
     "tags": [
+      "jpeg to png",
+      "convert jpeg to png",
+      "jpeg png converter",
+      ".jpeg to .png",
+      "jpeg to png free",
       "jpeg",
       "png",
-      "convert",
-      "image"
+      "png from jpeg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
   },
   {
     "slug": "png-to-jpeg",
-    "title": "PNG to JPEG",
-    "description": "Convert PNG images into JPEG format with quality control.",
+    "title": "PNG to JPEG Converter (.png → .jpeg)",
+    "description": "Convert PNG to JPEG with quality control. Removes alpha by flattening over white. Free, batch supported.",
     "category": "format-lab",
     "tags": [
+      "png to jpeg",
+      "convert png to jpeg",
+      "png jpeg converter",
+      ".png to .jpeg",
+      "png to jpeg free",
       "png",
       "jpeg",
-      "convert",
-      "image"
+      "jpeg from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
@@ -3552,13 +3619,19 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "jpeg-to-jpg",
-    "title": "JPEG to JPG",
-    "description": "Normalize JPEG files into optimized JPG output.",
+    "title": "JPEG to JPG Converter (.jpeg → .jpg)",
+    "description": "Convert JPEG (lossy photo format (same as JPG)) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "jpeg to jpg",
+      "convert jpeg to jpg",
+      "jpeg jpg converter",
+      ".jpeg to .jpg",
+      "jpeg to jpg free",
       "jpeg",
       "jpg",
-      "convert"
+      "jpg from jpeg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
@@ -3834,14 +3907,19 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "jpeg-to-pdf",
-    "title": "JPEG to PDF",
-    "description": "Convert one or more JPEG images into a PDF document.",
+    "title": "JPEG to PDF Converter (.jpeg → .pdf)",
+    "description": "Convert JPEG (lossy photo format (same as JPG)) to PDF (Portable Document Format). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
+      "jpeg to pdf",
+      "convert jpeg to pdf",
+      "jpeg pdf converter",
+      ".jpeg to .pdf",
+      "jpeg to pdf free",
       "jpeg",
-      "jpg",
       "pdf",
-      "convert"
+      "pdf from jpeg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": true
@@ -6026,100 +6104,132 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "png-to-webp",
-    "title": "PNG to WebP",
-    "description": "Convert PNG images to WebP format for smaller file sizes and faster websites.",
+    "title": "PNG to WebP Converter (.png → .webp)",
+    "description": "Convert PNG to WebP — typically 25-35% smaller with the same visual quality. Great for faster page loads.",
     "category": "format-lab",
     "tags": [
       "png to webp",
-      "convert png",
+      "convert png to webp",
+      "png webp converter",
+      ".png to .webp",
+      "png to webp free",
+      "png",
       "webp",
-      "image format",
-      "web optimization"
+      "webp from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "jpg-to-webp",
-    "title": "JPG to WebP",
-    "description": "Convert JPG/JPEG images to WebP format for better web performance and smaller sizes.",
+    "title": "JPG to WebP Converter (.jpg → .webp)",
+    "description": "Convert JPG (lossy photo format with small file sizes) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
       "jpg to webp",
-      "jpeg to webp",
+      "convert jpg to webp",
+      "jpg webp converter",
+      ".jpg to .webp",
+      "jpg to webp free",
+      "jpg",
       "webp",
-      "image convert",
-      "web"
+      "webp from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "gif-to-jpg",
-    "title": "GIF to JPG",
-    "description": "Convert GIF images to JPG format. Extracts the first frame and saves as JPEG.",
+    "title": "GIF to JPG Converter (.gif → .jpg)",
+    "description": "Extract the first frame of a GIF as a JPG photo.",
     "category": "format-lab",
     "tags": [
       "gif to jpg",
-      "gif convert",
-      "gif to jpeg",
-      "image convert"
+      "convert gif to jpg",
+      "gif jpg converter",
+      ".gif to .jpg",
+      "gif to jpg free",
+      "gif",
+      "jpg",
+      "jpg from gif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "tiff-to-jpg",
-    "title": "TIFF to JPG",
-    "description": "Convert TIFF/TIF images to JPG format. Perfect for reducing large TIFF file sizes.",
+    "title": "TIFF to JPG Converter (.tiff → .jpg)",
+    "description": "Convert TIFF/TIF scans to JPG — much smaller files, easy to email.",
     "category": "format-lab",
     "tags": [
       "tiff to jpg",
-      "tif to jpg",
-      "tiff convert",
-      "image format"
+      "convert tiff to jpg",
+      "tiff jpg converter",
+      ".tiff to .jpg",
+      "tiff to jpg free",
+      "tiff",
+      "jpg",
+      "jpg from tiff",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-jpg",
-    "title": "BMP to JPG",
-    "description": "Convert BMP bitmap images to JPG format. Significantly reduces file size.",
+    "title": "BMP to JPG Converter (.bmp → .jpg)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
       "bmp to jpg",
-      "bmp convert",
-      "bitmap to jpeg",
-      "image format"
+      "convert bmp to jpg",
+      "bmp jpg converter",
+      ".bmp to .jpg",
+      "bmp to jpg free",
+      "bmp",
+      "jpg",
+      "jpg from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "svg-to-png",
-    "title": "SVG to PNG",
-    "description": "Convert SVG vector graphics to high-resolution PNG images at custom scale.",
+    "title": "SVG to PNG Converter (.svg → .png)",
+    "description": "Rasterize vector SVG into a transparent PNG at the resolution you need.",
     "category": "format-lab",
     "tags": [
       "svg to png",
-      "svg convert",
-      "vector to raster",
-      "svg image"
+      "convert svg to png",
+      "svg png converter",
+      ".svg to .png",
+      "svg to png free",
+      "svg",
+      "png",
+      "png from svg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "image-to-jpg",
-    "title": "Image to JPG",
-    "description": "Convert any image (PNG, GIF, BMP, WEBP, TIFF, HEIC) to JPG format online free.",
+    "title": "Image to JPG Converter (any image → .jpg)",
+    "description": "Convert Image (any raster image (PNG/JPG/WebP)) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "image-core",
     "tags": [
-      "convert to jpg",
-      "image to jpeg",
-      "png to jpg",
-      "webp to jpg",
+      "image to jpg",
+      "convert image to jpg",
+      "image jpg converter",
+      "image to .jpg",
+      "image to jpg free",
+      "image",
+      "jpg",
+      "jpg from image",
       "image converter"
     ],
     "input_kind": "files",
@@ -13677,14 +13787,19 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "jpeg-to-webp",
-    "title": "JPEG to WebP Converter",
-    "description": "Convert JPEG images to modern WebP format for smaller file sizes and faster loading.",
+    "title": "JPEG to WebP Converter (.jpeg → .webp)",
+    "description": "Convert JPEG (lossy photo format (same as JPG)) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "format-lab",
     "tags": [
       "jpeg to webp",
-      "image converter",
+      "convert jpeg to webp",
+      "jpeg webp converter",
+      ".jpeg to .webp",
+      "jpeg to webp free",
+      "jpeg",
       "webp",
-      "optimization"
+      "webp from jpeg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
@@ -14850,316 +14965,494 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "webp-to-png",
-    "title": "WebP to PNG Converter — Free Online",
-    "description": "Convert WebP images to PNG with transparency preserved. Free.",
+    "title": "WebP to PNG Converter (.webp → .png)",
+    "description": "Convert modern WebP images to widely-compatible PNG with transparency preserved. Useful when an app rejects .webp uploads.",
     "category": "image-tools",
     "tags": [
       "webp to png",
       "convert webp to png",
-      "webp to png free"
+      "webp png converter",
+      ".webp to .png",
+      "webp to png free",
+      "webp",
+      "png",
+      "png from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-png",
-    "title": "BMP to PNG Converter — Free Online",
-    "description": "Convert old Bitmap BMP images to compressed PNG. Free.",
+    "title": "BMP to PNG Converter (.bmp → .png)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to PNG (lossless raster with alpha transparency). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "bmp to png",
-      "convert bmp to png"
+      "convert bmp to png",
+      "bmp png converter",
+      ".bmp to .png",
+      "bmp to png free",
+      "bmp",
+      "png",
+      "png from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "gif-to-png",
-    "title": "GIF to PNG Converter — Free Online",
-    "description": "Extract first frame of GIF as PNG. Free.",
+    "title": "GIF to PNG Converter (.gif → .png)",
+    "description": "Extract the first frame of a GIF as a transparent PNG.",
     "category": "image-tools",
     "tags": [
       "gif to png",
-      "convert gif to png"
+      "convert gif to png",
+      "gif png converter",
+      ".gif to .png",
+      "gif to png free",
+      "gif",
+      "png",
+      "png from gif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "tiff-to-png",
-    "title": "TIFF to PNG Converter — Free Online",
-    "description": "Convert TIFF/TIF scans to PNG. Free.",
+    "title": "TIFF to PNG Converter (.tiff → .png)",
+    "description": "Convert TIFF (lossless print/scan format) to PNG (lossless raster with alpha transparency). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "tiff to png",
-      "tif to png",
-      "convert tiff to png"
+      "convert tiff to png",
+      "tiff png converter",
+      ".tiff to .png",
+      "tiff to png free",
+      "tiff",
+      "png",
+      "png from tiff",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "tif-to-png",
-    "title": "TIF to PNG Converter — Free Online",
-    "description": "Convert TIF to PNG. Free.",
+    "title": "TIF to PNG Converter (.tif → .png)",
+    "description": "Convert TIF (lossless print/scan format) to PNG (lossless raster with alpha transparency). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "tif to png",
-      "convert tif to png"
+      "convert tif to png",
+      "tif png converter",
+      ".tif to .png",
+      "tif to png free",
+      "tif",
+      "png",
+      "png from tif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "ico-to-png",
-    "title": "ICO to PNG Converter — Free Online",
-    "description": "Extract favicon ICO frames as PNG. Free.",
+    "title": "ICO to PNG Converter (.ico → .png)",
+    "description": "Extract favicon ICO frames as PNGs. Each size becomes its own file.",
     "category": "image-tools",
     "tags": [
       "ico to png",
       "convert ico to png",
-      "favicon to png"
+      "ico png converter",
+      ".ico to .png",
+      "ico to png free",
+      "ico",
+      "png",
+      "png from ico",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "heic-to-png",
-    "title": "HEIC to PNG Converter — Free Online",
-    "description": "Convert iPhone HEIC photos to PNG. Free.",
+    "title": "HEIC to PNG Converter (.heic → .png)",
+    "description": "Convert iPhone HEIC photos to PNG so any device can open them. Lossless, full quality preserved.",
     "category": "image-tools",
     "tags": [
       "heic to png",
-      "iphone heic to png",
-      "convert heic to png"
+      "convert heic to png",
+      "heic png converter",
+      ".heic to .png",
+      "heic to png free",
+      "heic",
+      "png",
+      "png from heic",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "tif-to-jpg",
-    "title": "TIF to JPG Converter — Free Online",
-    "description": "Convert TIF to JPG. Free.",
+    "title": "TIF to JPG Converter (.tif → .jpg)",
+    "description": "Convert TIF (lossless print/scan format) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "tif to jpg",
-      "convert tif to jpg"
+      "convert tif to jpg",
+      "tif jpg converter",
+      ".tif to .jpg",
+      "tif to jpg free",
+      "tif",
+      "jpg",
+      "jpg from tif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "ico-to-jpg",
-    "title": "ICO to JPG Converter — Free Online",
-    "description": "Convert favicon ICO to JPG. Free.",
+    "title": "ICO to JPG Converter (.ico → .jpg)",
+    "description": "Convert ICO (Windows favicon container) to JPG (lossy photo format with small file sizes). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "ico to jpg",
-      "convert ico to jpg"
+      "convert ico to jpg",
+      "ico jpg converter",
+      ".ico to .jpg",
+      "ico to jpg free",
+      "ico",
+      "jpg",
+      "jpg from ico",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "svg-to-jpg",
-    "title": "SVG to JPG Converter — Free Online",
-    "description": "Convert vector SVG to raster JPG. Free.",
+    "title": "SVG to JPG Converter (.svg → .jpg)",
+    "description": "Rasterize vector SVG into a JPG image at the resolution you need. Fonts and shapes flattened.",
     "category": "image-tools",
     "tags": [
       "svg to jpg",
-      "convert svg to jpg"
+      "convert svg to jpg",
+      "svg jpg converter",
+      ".svg to .jpg",
+      "svg to jpg free",
+      "svg",
+      "jpg",
+      "jpg from svg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-webp",
-    "title": "BMP to WebP Converter — Free Online",
-    "description": "Convert BMP to modern WebP for fast websites. Free.",
+    "title": "BMP to WebP Converter (.bmp → .webp)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "bmp to webp",
-      "convert bmp to webp"
+      "convert bmp to webp",
+      "bmp webp converter",
+      ".bmp to .webp",
+      "bmp to webp free",
+      "bmp",
+      "webp",
+      "webp from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "gif-to-webp",
-    "title": "GIF to WebP Converter — Free Online",
-    "description": "Convert GIF first frame to WebP. Free.",
+    "title": "GIF to WebP Converter (.gif → .webp)",
+    "description": "Convert GIF (indexed-palette format used for animations) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "gif to webp",
-      "convert gif to webp"
+      "convert gif to webp",
+      "gif webp converter",
+      ".gif to .webp",
+      "gif to webp free",
+      "gif",
+      "webp",
+      "webp from gif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "tiff-to-webp",
-    "title": "TIFF to WebP Converter — Free Online",
-    "description": "Convert TIFF to compact WebP. Free.",
+    "title": "TIFF to WebP Converter (.tiff → .webp)",
+    "description": "Convert TIFF (lossless print/scan format) to WebP (modern web format ~30% smaller than JPG/PNG). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "tiff to webp",
-      "convert tiff to webp"
+      "convert tiff to webp",
+      "tiff webp converter",
+      ".tiff to .webp",
+      "tiff to webp free",
+      "tiff",
+      "webp",
+      "webp from tiff",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "heic-to-webp",
-    "title": "HEIC to WebP Converter — Free Online",
-    "description": "Convert iPhone HEIC to WebP. Free.",
+    "title": "HEIC to WebP Converter (.heic → .webp)",
+    "description": "Convert iPhone HEIC to lightweight WebP for fast websites and email. Quality preserved.",
     "category": "image-tools",
     "tags": [
       "heic to webp",
-      "iphone heic to webp"
+      "convert heic to webp",
+      "heic webp converter",
+      ".heic to .webp",
+      "heic to webp free",
+      "heic",
+      "webp",
+      "webp from heic",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "png-to-bmp",
-    "title": "PNG to BMP Converter — Free Online",
-    "description": "Convert PNG to legacy BMP. Free.",
+    "title": "PNG to BMP Converter (.png → .bmp)",
+    "description": "Convert PNG (lossless raster with alpha transparency) to BMP (uncompressed legacy Windows bitmap). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "png to bmp",
-      "convert png to bmp"
+      "convert png to bmp",
+      "png bmp converter",
+      ".png to .bmp",
+      "png to bmp free",
+      "png",
+      "bmp",
+      "bmp from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "jpg-to-bmp",
-    "title": "JPG to BMP Converter — Free Online",
-    "description": "Convert JPG to BMP. Free.",
+    "title": "JPG to BMP Converter (.jpg → .bmp)",
+    "description": "Convert JPG (lossy photo format with small file sizes) to BMP (uncompressed legacy Windows bitmap). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "jpg to bmp",
-      "convert jpg to bmp"
+      "convert jpg to bmp",
+      "jpg bmp converter",
+      ".jpg to .bmp",
+      "jpg to bmp free",
+      "jpg",
+      "bmp",
+      "bmp from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "webp-to-bmp",
-    "title": "WebP to BMP Converter — Free Online",
-    "description": "Convert WebP to BMP. Free.",
+    "title": "WebP to BMP Converter (.webp → .bmp)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to BMP (uncompressed legacy Windows bitmap). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "webp to bmp",
-      "convert webp to bmp"
+      "convert webp to bmp",
+      "webp bmp converter",
+      ".webp to .bmp",
+      "webp to bmp free",
+      "webp",
+      "bmp",
+      "bmp from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "gif-to-bmp",
-    "title": "GIF to BMP Converter — Free Online",
-    "description": "Convert GIF first frame to BMP. Free.",
+    "title": "GIF to BMP Converter (.gif → .bmp)",
+    "description": "Convert GIF (indexed-palette format used for animations) to BMP (uncompressed legacy Windows bitmap). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "gif to bmp",
-      "convert gif to bmp"
+      "convert gif to bmp",
+      "gif bmp converter",
+      ".gif to .bmp",
+      "gif to bmp free",
+      "gif",
+      "bmp",
+      "bmp from gif",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "png-to-gif",
-    "title": "PNG to GIF Converter — Free Online",
-    "description": "Convert PNG to single-frame GIF. Free.",
+    "title": "PNG to GIF Converter (.png → .gif)",
+    "description": "Convert PNG (lossless raster with alpha transparency) to GIF (indexed-palette format used for animations). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "png to gif",
-      "convert png to gif"
+      "convert png to gif",
+      "png gif converter",
+      ".png to .gif",
+      "png to gif free",
+      "png",
+      "gif",
+      "gif from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "jpg-to-gif",
-    "title": "JPG to GIF Converter — Free Online",
-    "description": "Convert JPG to single-frame GIF. Free.",
+    "title": "JPG to GIF Converter (.jpg → .gif)",
+    "description": "Convert JPG (lossy photo format with small file sizes) to GIF (indexed-palette format used for animations). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "jpg to gif",
-      "convert jpg to gif"
+      "convert jpg to gif",
+      "jpg gif converter",
+      ".jpg to .gif",
+      "jpg to gif free",
+      "jpg",
+      "gif",
+      "gif from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "webp-to-gif",
-    "title": "WebP to GIF Converter — Free Online",
-    "description": "Convert WebP to GIF. Free.",
+    "title": "WebP to GIF Converter (.webp → .gif)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to GIF (indexed-palette format used for animations). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "webp to gif",
-      "convert webp to gif"
+      "convert webp to gif",
+      "webp gif converter",
+      ".webp to .gif",
+      "webp to gif free",
+      "webp",
+      "gif",
+      "gif from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-gif",
-    "title": "BMP to GIF Converter — Free Online",
-    "description": "Convert BMP to GIF. Free.",
+    "title": "BMP to GIF Converter (.bmp → .gif)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to GIF (indexed-palette format used for animations). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "bmp to gif",
-      "convert bmp to gif"
+      "convert bmp to gif",
+      "bmp gif converter",
+      ".bmp to .gif",
+      "bmp to gif free",
+      "bmp",
+      "gif",
+      "gif from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "png-to-tiff",
-    "title": "PNG to TIFF Converter — Free Online",
-    "description": "Convert PNG to lossless TIFF for print. Free.",
+    "title": "PNG to TIFF Converter (.png → .tiff)",
+    "description": "Convert PNG (lossless raster with alpha transparency) to TIFF (lossless print/scan format). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "png to tiff",
-      "convert png to tiff"
+      "convert png to tiff",
+      "png tiff converter",
+      ".png to .tiff",
+      "png to tiff free",
+      "png",
+      "tiff",
+      "tiff from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "jpg-to-tiff",
-    "title": "JPG to TIFF Converter — Free Online",
-    "description": "Convert JPG to TIFF. Free.",
+    "title": "JPG to TIFF Converter (.jpg → .tiff)",
+    "description": "Convert JPG (lossy photo format with small file sizes) to TIFF (lossless print/scan format). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "jpg to tiff",
-      "convert jpg to tiff"
+      "convert jpg to tiff",
+      "jpg tiff converter",
+      ".jpg to .tiff",
+      "jpg to tiff free",
+      "jpg",
+      "tiff",
+      "tiff from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "webp-to-tiff",
-    "title": "WebP to TIFF Converter — Free Online",
-    "description": "Convert WebP to TIFF. Free.",
+    "title": "WebP to TIFF Converter (.webp → .tiff)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to TIFF (lossless print/scan format). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "webp to tiff",
-      "convert webp to tiff"
+      "convert webp to tiff",
+      "webp tiff converter",
+      ".webp to .tiff",
+      "webp to tiff free",
+      "webp",
+      "tiff",
+      "tiff from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-tiff",
-    "title": "BMP to TIFF Converter — Free Online",
-    "description": "Convert BMP to TIFF. Free.",
+    "title": "BMP to TIFF Converter (.bmp → .tiff)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to TIFF (lossless print/scan format). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "bmp to tiff",
-      "convert bmp to tiff"
+      "convert bmp to tiff",
+      "bmp tiff converter",
+      ".bmp to .tiff",
+      "bmp to tiff free",
+      "bmp",
+      "tiff",
+      "tiff from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
@@ -15193,60 +15486,95 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "webp-to-ico",
-    "title": "WebP to ICO Converter — Free Online",
-    "description": "Convert WebP to ICO favicon. Free.",
+    "title": "WebP to ICO Converter (.webp → .ico)",
+    "description": "Convert WebP (modern web format ~30% smaller than JPG/PNG) to ICO (Windows favicon container). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "webp to ico",
-      "convert webp to ico"
+      "convert webp to ico",
+      "webp ico converter",
+      ".webp to .ico",
+      "webp to ico free",
+      "webp",
+      "ico",
+      "ico from webp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "bmp-to-ico",
-    "title": "BMP to ICO Converter — Free Online",
-    "description": "Convert BMP to ICO. Free.",
+    "title": "BMP to ICO Converter (.bmp → .ico)",
+    "description": "Convert BMP (uncompressed legacy Windows bitmap) to ICO (Windows favicon container). Free, no signup, batch supported.",
     "category": "image-tools",
     "tags": [
       "bmp to ico",
-      "convert bmp to ico"
+      "convert bmp to ico",
+      "bmp ico converter",
+      ".bmp to .ico",
+      "bmp to ico free",
+      "bmp",
+      "ico",
+      "ico from bmp",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "png-to-svg",
-    "title": "PNG to SVG Converter — Free Online",
-    "description": "Wrap PNG inside an SVG container. Free.",
+    "title": "PNG to SVG Converter (.png → .svg)",
+    "description": "Wrap a PNG inside an SVG container — keeps the file vector-compatible for embedding.",
     "category": "image-tools",
     "tags": [
       "png to svg",
-      "convert png to svg"
+      "convert png to svg",
+      "png svg converter",
+      ".png to .svg",
+      "png to svg free",
+      "png",
+      "svg",
+      "svg from png",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "jpg-to-svg",
-    "title": "JPG to SVG Converter — Free Online",
-    "description": "Wrap JPG inside an SVG container. Free.",
+    "title": "JPG to SVG Converter (.jpg → .svg)",
+    "description": "Wrap a JPG inside an SVG container — useful when a tool only accepts vector inputs.",
     "category": "image-tools",
     "tags": [
       "jpg to svg",
-      "convert jpg to svg"
+      "convert jpg to svg",
+      "jpg svg converter",
+      ".jpg to .svg",
+      "jpg to svg free",
+      "jpg",
+      "svg",
+      "svg from jpg",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
   },
   {
     "slug": "image-to-svg",
-    "title": "Image to SVG Converter — Free Online",
-    "description": "Convert any raster image (PNG/JPG/WebP) into an SVG container. Free.",
+    "title": "Image to SVG Converter (any image → .svg)",
+    "description": "Convert any raster image (PNG/JPG/WebP) into an SVG container — keeps original quality, embeddable anywhere.",
     "category": "image-tools",
     "tags": [
       "image to svg",
-      "convert image to svg"
+      "convert image to svg",
+      "image svg converter",
+      "image to .svg",
+      "image to svg free",
+      "image",
+      "svg",
+      "svg from image",
+      "image converter"
     ],
     "input_kind": "files",
     "accepts_multiple": false
