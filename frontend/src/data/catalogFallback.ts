@@ -4985,26 +4985,32 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "text-to-binary",
-    "title": "Text to Binary",
-    "description": "Convert text characters into 8-bit binary representation.",
+    "title": "Text to Binary Converter (UTF-8 characters → base 2)",
+    "description": "Convert text to binary (base 2, UTF-8) instantly. Example: 'A' = 01000001. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "binary",
-      "text",
-      "convert"
+      "text to binary",
+      "convert text to binary",
+      "text binary converter",
+      "text to binary converter (utf-8 characters → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "binary-to-text",
-    "title": "Binary to Text",
-    "description": "Convert space-separated binary codes back to readable text.",
+    "title": "Binary to Text Converter (base 2 → UTF-8 characters)",
+    "description": "Convert binary (base 2) to text instantly. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "binary",
-      "text",
-      "decode"
+      "binary to text",
+      "convert binary to text",
+      "binary text converter",
+      "binary to text converter (base 2 → utf-8 characters)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
@@ -5039,26 +5045,32 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "text-to-ascii",
-    "title": "Text to ASCII",
-    "description": "Convert text characters to their ASCII numeric values.",
+    "title": "Text to ASCII Converter",
+    "description": "Convert text to ascii instantly. Example: 'A' = 65. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "ascii",
-      "text",
-      "convert"
+      "text to ascii",
+      "convert text to ascii",
+      "text ascii converter",
+      "text to ascii converter",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ascii-to-text",
-    "title": "ASCII to Text",
-    "description": "Convert ASCII numeric values back to readable text.",
+    "title": "ASCII to Text Converter",
+    "description": "Convert ascii to text instantly. Example: 65 = 'A'. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "ascii",
-      "text",
-      "decode"
+      "ascii to text",
+      "convert ascii to text",
+      "ascii text converter",
+      "ascii to text converter",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
@@ -5310,26 +5322,32 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "text-to-hex",
-    "title": "Text to Hex",
-    "description": "Convert text to hexadecimal representation.",
+    "title": "Text to Hex Converter (UTF-8 characters → base 16)",
+    "description": "Convert text to hex (base 16, UTF-8) instantly. Example: 'A' = 41. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "text",
-      "hex",
-      "convert"
+      "text to hex",
+      "convert text to hex",
+      "text hex converter",
+      "text to hex converter (utf-8 characters → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hex-to-text",
-    "title": "Hex to Text",
-    "description": "Convert hexadecimal values back to readable text.",
+    "title": "Hex to Text Converter (base 16 → UTF-8 characters)",
+    "description": "Convert hex (base 16) to text instantly. Free, no signup, accepts common prefixes.",
     "category": "student-tools",
     "tags": [
-      "hex",
-      "text",
-      "decode"
+      "hex to text",
+      "convert hex to text",
+      "hex text converter",
+      "hex to text converter (base 16 → utf-8 characters)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
@@ -6374,28 +6392,32 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "octal-to-text",
-    "title": "Octal to Text",
-    "description": "Convert octal values to readable text online for free. Decode octal encoded strings.",
+    "title": "Octal to Text Converter (base 8 → UTF-8 characters)",
+    "description": "Convert octal (base 8) to text instantly. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "octal to text",
-      "octal decode",
-      "octal converter",
-      "number system"
+      "convert octal to text",
+      "octal text converter",
+      "octal to text converter (base 8 → utf-8 characters)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "text-to-octal",
-    "title": "Text to Octal",
-    "description": "Convert text to octal (base-8) values online for free. Encode strings in octal.",
+    "title": "Text to Octal Converter (UTF-8 characters → base 8)",
+    "description": "Convert text to octal (base 8, UTF-8) instantly. Example: 'A' = 101. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "text to octal",
-      "octal encode",
-      "octal converter",
-      "base 8"
+      "convert text to octal",
+      "text octal converter",
+      "text to octal converter (utf-8 characters → base 8)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
@@ -15551,252 +15573,352 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
   },
   {
     "slug": "decimal-to-binary",
-    "title": "Decimal to Binary Converter — Free Online",
-    "description": "Convert any decimal number to binary instantly. Free, accurate, supports negatives.",
+    "title": "Decimal to Binary Converter (base 10 → base 2)",
+    "description": "Convert decimal (base 10) to binary (base 2) instantly. Example: 10₁₀ = 1010₂. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "decimal to binary",
-      "dec to bin",
-      "convert decimal to binary"
+      "convert decimal to binary",
+      "decimal binary converter",
+      "decimal to binary converter (base 10 → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "decimal-to-hex",
-    "title": "Decimal to Hex Converter — Free Online",
-    "description": "Convert decimal numbers to hexadecimal (base-16). Free, instant.",
+    "title": "Decimal to Hex Converter (base 10 → base 16)",
+    "description": "Convert decimal (base 10) to hex (base 16) instantly. Example: 255 = 0xFF. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "decimal to hex",
-      "dec to hex",
-      "decimal to hexadecimal"
+      "convert decimal to hex",
+      "decimal hex converter",
+      "decimal to hex converter (base 10 → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "decimal-to-hexadecimal",
-    "title": "Decimal to Hexadecimal Converter — Free",
-    "description": "Same as decimal-to-hex. Convert base-10 to base-16 instantly.",
+    "title": "Decimal to Hexadecimal Converter (base 10 → base 16)",
+    "description": "Convert decimal (base 10) to hexadecimal (base 16) instantly. Example: 255 = 0xFF. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "decimal to hexadecimal"
+      "decimal to hexadecimal",
+      "convert decimal to hexadecimal",
+      "decimal hexadecimal converter",
+      "decimal to hexadecimal converter (base 10 → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "decimal-to-octal",
-    "title": "Decimal to Octal Converter — Free Online",
-    "description": "Convert decimal to octal (base-8) numbers. Free.",
+    "title": "Decimal to Octal Converter (base 10 → base 8)",
+    "description": "Convert decimal (base 10) to octal (base 8) instantly. Example: 15 = 0o17. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "decimal to octal",
-      "dec to oct"
+      "convert decimal to octal",
+      "decimal octal converter",
+      "decimal to octal converter (base 10 → base 8)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "binary-to-decimal",
-    "title": "Binary to Decimal Converter — Free Online",
-    "description": "Convert binary (base-2) numbers to decimal instantly. Accepts 0b prefix.",
+    "title": "Binary to Decimal Converter (base 2 → base 10)",
+    "description": "Convert binary (base 2) to decimal (base 10) instantly. Example: 1010₂ = 10₁₀. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "binary to decimal",
-      "bin to dec"
+      "convert binary to decimal",
+      "binary decimal converter",
+      "binary to decimal converter (base 2 → base 10)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hex-to-decimal",
-    "title": "Hex to Decimal Converter — Free Online",
-    "description": "Convert hexadecimal to decimal. Accepts 0x and # prefixes. Free.",
+    "title": "Hex to Decimal Converter (base 16 → base 10)",
+    "description": "Convert hex (base 16) to decimal (base 10) instantly. Example: 0xFF = 255. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "hex to decimal",
-      "hexadecimal to decimal"
+      "convert hex to decimal",
+      "hex decimal converter",
+      "hex to decimal converter (base 16 → base 10)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hexadecimal-to-decimal",
-    "title": "Hexadecimal to Decimal Converter — Free",
-    "description": "Convert hex to base-10 instantly. Free.",
+    "title": "Hexadecimal to Decimal Converter (base 16 → base 10)",
+    "description": "Convert hexadecimal (base 16) to decimal (base 10) instantly. Example: 0xFF = 255. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "hexadecimal to decimal"
+      "hexadecimal to decimal",
+      "convert hexadecimal to decimal",
+      "hexadecimal decimal converter",
+      "hexadecimal to decimal converter (base 16 → base 10)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "octal-to-decimal",
-    "title": "Octal to Decimal Converter — Free Online",
-    "description": "Convert octal (base-8) to decimal. Free.",
+    "title": "Octal to Decimal Converter (base 8 → base 10)",
+    "description": "Convert octal (base 8) to decimal (base 10) instantly. Example: 0o17 = 15. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "octal to decimal",
-      "oct to dec"
+      "convert octal to decimal",
+      "octal decimal converter",
+      "octal to decimal converter (base 8 → base 10)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "binary-to-hex",
-    "title": "Binary to Hex Converter — Free Online",
-    "description": "Convert binary directly to hexadecimal. Free.",
+    "title": "Binary to Hex Converter (base 2 → base 16)",
+    "description": "Convert binary (base 2) to hex (base 16) instantly. Example: 11111111₂ = 0xFF. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "binary to hex",
-      "bin to hex"
+      "convert binary to hex",
+      "binary hex converter",
+      "binary to hex converter (base 2 → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "binary-to-hexadecimal",
-    "title": "Binary to Hexadecimal Converter — Free",
-    "description": "Convert binary to hex (base-16) instantly.",
+    "title": "Binary to Hexadecimal Converter (base 2 → base 16)",
+    "description": "Convert binary (base 2) to hexadecimal (base 16) instantly. Example: 11111111₂ = 0xFF. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "binary to hexadecimal"
+      "binary to hexadecimal",
+      "convert binary to hexadecimal",
+      "binary hexadecimal converter",
+      "binary to hexadecimal converter (base 2 → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hex-to-binary",
-    "title": "Hex to Binary Converter — Free Online",
-    "description": "Convert hexadecimal to binary instantly. Free.",
+    "title": "Hex to Binary Converter (base 16 → base 2)",
+    "description": "Convert hex (base 16) to binary (base 2) instantly. Example: 0xFF = 11111111₂. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
       "hex to binary",
-      "hexadecimal to binary"
+      "convert hex to binary",
+      "hex binary converter",
+      "hex to binary converter (base 16 → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hexadecimal-to-binary",
-    "title": "Hexadecimal to Binary Converter — Free",
-    "description": "Convert hex (base-16) to binary instantly.",
+    "title": "Hexadecimal to Binary Converter (base 16 → base 2)",
+    "description": "Convert hexadecimal (base 16) to binary (base 2) instantly. Example: 0xFF = 11111111₂. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "hexadecimal to binary"
+      "hexadecimal to binary",
+      "convert hexadecimal to binary",
+      "hexadecimal binary converter",
+      "hexadecimal to binary converter (base 16 → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "binary-to-octal",
-    "title": "Binary to Octal Converter — Free Online",
-    "description": "Convert binary to octal (base-8). Free.",
+    "title": "Binary to Octal Converter (base 2 → base 8)",
+    "description": "Convert binary (base 2) to octal (base 8) instantly. Example: 111111₂ = 0o77. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "binary to octal"
+      "binary to octal",
+      "convert binary to octal",
+      "binary octal converter",
+      "binary to octal converter (base 2 → base 8)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "octal-to-binary",
-    "title": "Octal to Binary Converter — Free Online",
-    "description": "Convert octal to binary instantly. Free.",
+    "title": "Octal to Binary Converter (base 8 → base 2)",
+    "description": "Convert octal (base 8) to binary (base 2) instantly. Example: 0o77 = 111111₂. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "octal to binary"
+      "octal to binary",
+      "convert octal to binary",
+      "octal binary converter",
+      "octal to binary converter (base 8 → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "hex-to-octal",
-    "title": "Hex to Octal Converter — Free Online",
-    "description": "Convert hexadecimal to octal. Free.",
+    "title": "Hex to Octal Converter (base 16 → base 8)",
+    "description": "Convert hex (base 16) to octal (base 8) instantly. Example: 0xFF = 0o377. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "hex to octal"
+      "hex to octal",
+      "convert hex to octal",
+      "hex octal converter",
+      "hex to octal converter (base 16 → base 8)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "octal-to-hex",
-    "title": "Octal to Hex Converter — Free Online",
-    "description": "Convert octal to hexadecimal. Free.",
+    "title": "Octal to Hex Converter (base 8 → base 16)",
+    "description": "Convert octal (base 8) to hex (base 16) instantly. Example: 0o377 = 0xFF. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "octal to hex"
+      "octal to hex",
+      "convert octal to hex",
+      "octal hex converter",
+      "octal to hex converter (base 8 → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "string-to-binary",
-    "title": "String to Binary Converter — Free Online",
-    "description": "Convert any string to binary using UTF-8 encoding. Free.",
+    "title": "String to Binary Converter (UTF-8 characters → base 2)",
+    "description": "Convert string to binary (base 2, UTF-8) instantly. Example: 'A' = 01000001. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "string to binary"
+      "string to binary",
+      "convert string to binary",
+      "string binary converter",
+      "string to binary converter (utf-8 characters → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "string-to-hex",
-    "title": "String to Hex Converter — Free Online",
-    "description": "Convert any string to hex using UTF-8. Free.",
+    "title": "String to Hex Converter (UTF-8 characters → base 16)",
+    "description": "Convert string to hex (base 16, UTF-8) instantly. Example: 'A' = 41. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "string to hex"
+      "string to hex",
+      "convert string to hex",
+      "string hex converter",
+      "string to hex converter (utf-8 characters → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "string-to-ascii",
-    "title": "String to ASCII Codes — Free Online",
-    "description": "Convert each character to its ASCII decimal code.",
+    "title": "String to ASCII Converter",
+    "description": "Convert string to ascii instantly. Example: 'A' = 65. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "string to ascii"
+      "string to ascii",
+      "convert string to ascii",
+      "string ascii converter",
+      "string to ascii converter",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ascii-to-string",
-    "title": "ASCII to String Converter — Free Online",
-    "description": "Decode ASCII codes back to original string.",
+    "title": "ASCII to String Converter",
+    "description": "Convert ascii to string instantly. Example: 65 = 'A'. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "ascii to string"
+      "ascii to string",
+      "convert ascii to string",
+      "ascii string converter",
+      "ascii to string converter",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ascii-to-binary",
-    "title": "ASCII to Binary Converter — Free Online",
-    "description": "Convert ASCII text characters to binary (UTF-8). Free.",
+    "title": "ASCII to Binary Converter (ASCII codes → base 2)",
+    "description": "Convert ascii to binary (base 2, UTF-8) instantly. Example: 65 = 01000001. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "ascii to binary"
+      "ascii to binary",
+      "convert ascii to binary",
+      "ascii binary converter",
+      "ascii to binary converter (ascii codes → base 2)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
   },
   {
     "slug": "ascii-to-hex",
-    "title": "ASCII to Hex Converter — Free Online",
-    "description": "Convert ASCII text to hex (UTF-8). Free.",
+    "title": "ASCII to Hex Converter (ASCII codes → base 16)",
+    "description": "Convert ascii to hex (base 16, UTF-8) instantly. Example: 65 = 0x41. Free, no signup, accepts common prefixes.",
     "category": "developer-tools",
     "tags": [
-      "ascii to hex"
+      "ascii to hex",
+      "convert ascii to hex",
+      "ascii hex converter",
+      "ascii to hex converter (ascii codes → base 16)",
+      "number base converter",
+      "free converter"
     ],
     "input_kind": "text",
     "accepts_multiple": false
