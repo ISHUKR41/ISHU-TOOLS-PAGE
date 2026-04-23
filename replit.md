@@ -397,3 +397,30 @@ Backend bugs fixed same day (zero remaining 500s across 803 text/URL tools):
 - `world-meeting-planner` / `meeting-time-finder` / `timezone-meeting-planner`
   (worldwide_tools_handlers.py): `:02d` format crash on half-hour timezones (India IST
   +5:30). Now displays minutes correctly with `int()` casts.
+
+## 2026-04-23 — Friendly error translation across all 444 file-upload tools
+
+Added `_friendly_error_message` in `backend/app/main.py` that intercepts every
+unhandled exception from a tool handler and translates it into plain-English
+text. This affects every file-upload tool at once — image, PDF, video/audio,
+document — without touching any individual handler.
+
+Before:
+> "Processing failed: cannot identify image file '/home/runner/workspace/backend/storage/jobs/abc.../input/1_sample.png'. Please try again with a valid file."
+
+After (Compress Image with a non-image file):
+> "We couldn't read that image. Please upload a valid image file (PNG, JPG, WebP, BMP, GIF or TIFF)."
+
+After (Extract Pages with a non-PDF file):
+> "We couldn't read that PDF — the file looks corrupted or incomplete. Please re-export it and try again."
+
+The translator covers Pillow (UnidentifiedImageError, truncated, decompression
+bomb), PyPDF2/pypdf (Stream has ended unexpectedly, EOF marker, encryption),
+ffmpeg (moov atom, invalid data), yt-dlp (rate limits, cookie hints), SSL,
+timeouts, connection errors, and generic programmer errors (Key/Index/Type/
+AttributeError → "double-check the values"). It also scrubs server filesystem
+paths so we never leak `/home/runner/...` to the client.
+
+Combined with this morning's frontend fix (red error banner instead of green
+"Done!" for handler-returned errors), every failure mode in the entire app now
+gives the user a clear, actionable message in plain language.

@@ -491,6 +491,76 @@ def _cleanup_workspace(job_dir: Path) -> None:
         pass
 
 
+def _friendly_error_message(exc: Exception, files: list | None = None) -> str:
+    """Translate raw library exceptions into user-friendly text.
+
+    Goals:
+    - Never leak server filesystem paths to the client.
+    - Map common library errors (PIL, PyPDF2, ffmpeg, requests, yt-dlp) to
+      plain-English suggestions the user can act on.
+    """
+    import re as _re
+    raw = str(exc) if exc else ""
+    # Scrub server paths /home/runner/... or /tmp/... and replace with the
+    # uploaded file name when known.
+    upload_name = ""
+    if files:
+        try:
+            first = files[0]
+            upload_name = getattr(first, "filename", "") or ""
+        except Exception:
+            upload_name = ""
+    raw = _re.sub(r"/[\w\-./]+/jobs/[a-f0-9]+/(?:input|output)/[\w\-.]+", upload_name or "your file", raw)
+    raw = _re.sub(r"/(home|tmp|var|usr)/[\w\-./]+", "[file]", raw)
+
+    low = raw.lower()
+    cls = exc.__class__.__name__
+
+    # ── Image library (Pillow) ──────────────────────────────────────────────
+    if "cannot identify image file" in low or "unidentifiedimageerror" in cls.lower():
+        return "We couldn't read that image. Please upload a valid image file (PNG, JPG, WebP, BMP, GIF or TIFF)."
+    if "image file is truncated" in low:
+        return "The image file appears to be incomplete or corrupted. Please re-export it and try again."
+    if "decompression bomb" in low:
+        return "That image is too large to process safely. Please resize it before uploading."
+
+    # ── PDF library (PyPDF2 / pypdf) ────────────────────────────────────────
+    if "stream has ended unexpectedly" in low or "eof marker not found" in low or "pdf header" in low:
+        return "We couldn't read that PDF — the file looks corrupted or incomplete. Please re-export it and try again."
+    if "file has not been decrypted" in low or "encrypted" in low and "pdf" in low:
+        return "This PDF is password-protected. Please remove the password before uploading, or use the Unlock PDF tool first."
+    if cls in ("PdfReadError", "PdfStreamError"):
+        return "This PDF could not be parsed. It may be corrupted, scanned-only, or use a non-standard format."
+
+    # ── ffmpeg / video / audio ──────────────────────────────────────────────
+    if "ffmpeg" in low or "moov atom not found" in low or "invalid data found" in low:
+        return "We couldn't process that media file. Please make sure it's a valid video or audio file (MP4, MOV, MP3, WAV, etc.)."
+    if "no such file or directory" in low and ("ffmpeg" in low or "ffprobe" in low):
+        return "Media processing is temporarily unavailable on the server. Please try again in a moment."
+
+    # ── Network / yt-dlp / requests ─────────────────────────────────────────
+    if "yt-dlp" in low or "youtube_dl" in low or "extractorerror" in cls.lower():
+        return "The video host blocked or rate-limited the download. Try again in a minute, or paste your browser cookies in the optional Cookies field below."
+    if "ssl" in low and ("error" in low or "verify" in low):
+        return "Could not establish a secure connection to that URL. Please check the link and try again."
+    if "timed out" in low or "timeout" in low:
+        return "The request took too long. Please try a smaller file or try again in a moment."
+    if "connection" in low and ("refused" in low or "reset" in low):
+        return "Network connection failed. Please check your link and try again."
+
+    # ── Generic library / programmer errors — never expose tracebacks ──────
+    if cls in ("KeyError", "IndexError", "TypeError", "AttributeError", "UnboundLocalError"):
+        return "Something went wrong while processing your input. Please double-check the values and try again."
+    if cls == "MemoryError":
+        return "The file is too large for this tool. Please try a smaller file."
+    if "permission denied" in low:
+        return "Could not write the result. Please try again."
+
+    # ── Fallback: trimmed message, no paths ─────────────────────────────────
+    safe = raw.strip()[:180] or "Something went wrong."
+    return f"Could not complete the task: {safe}"
+
+
 @app.get("/api/cache/stats")
 def cache_stats() -> dict:
     """Return LRU cache statistics for monitoring."""
@@ -602,7 +672,7 @@ def run_tool(
         background_tasks.add_task(_cleanup_workspace, job_root)
         raise HTTPException(
             status_code=500,
-            detail=f"Processing failed: {str(exc)[:200]}. Please try again with a valid file.",
+            detail=_friendly_error_message(exc, files),
         ) from exc
 
     if result.kind == "json":
