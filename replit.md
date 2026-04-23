@@ -459,3 +459,46 @@ All 155 entries updated (`registry.py`: 155, `catalogFallback.ts`: 155).
 The script is idempotent and uses a unit-table + factor-table approach so
 adding more converters later is a one-line change. Backend restarted
 clean, no LSP errors.
+
+## 2026-04-23 — Full-catalog audit + self-hosted fonts + personalized ordering
+
+### Audit (all 1247 tools)
+Wrote `scripts/smoke_test_all_tools.py` — async smoke-tester that POSTs an empty
+payload to `/api/tools/{slug}/execute` for every registered tool and classifies
+the response. Result against the live dev backend:
+
+- **0 crashes / 5xx** — every handler is wired and exception-safe.
+- **780 → 200** — generators with no required input ran cleanly.
+- **150 → 400** — handlers explicitly rejected with a useful message.
+- **317 → 422** — FastAPI form validation caught missing required fields.
+
+Also did a real (non-regex) registry-vs-handlers diff:
+
+- **Registry tools: 1247**
+- **Handlers: 1315** (some legacy aliases)
+- **Tools without a handler: 0**
+
+The static `_audit.py` regex script is unreliable (says "175 missing" because
+its regex misses many of the registration patterns); use the runtime diff or
+`scripts/smoke_test_all_tools.py` instead.
+
+### Self-hosted variable fonts
+Installed `@fontsource-variable/inter` and `@fontsource-variable/space-grotesk`
+and imported them at the top of `frontend/src/main.tsx`. `--font-body` now
+points at `Inter Variable` (was relying on the user's OS having Inter installed)
+and `--font-display` at `Space Grotesk Variable`. No Google Fonts handshake,
+no FOIT, identical look on every device.
+
+### Personalized home ordering (`ishu_tool_usage_v1`)
+The `loadUsage()` map (already bumped on every visit by `trackToolVisit` in
+`AllToolsPage.tsx`) is now read by `HomePage.tsx` and blended into the
+no-query sort:
+
+```
+score = popularity_rank + log(visits + 1) * 25
+```
+
+So 1 visit ≈ +17 effective rank, 10 visits ≈ +60, 100 ≈ +115. Enough to
+surface the 5 tools each individual user actually opens, but never enough
+to drown out a genuinely hot tool. Snapshot is taken once on mount so the
+order is stable while you scroll.

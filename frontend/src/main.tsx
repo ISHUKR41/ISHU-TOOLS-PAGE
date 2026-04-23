@@ -1,5 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// ── Self-hosted variable fonts (no FOIT, no Google Fonts handshake) ───────────
+// Inter (body) + Space Grotesk (display) — same look on every device, every OS.
+import '@fontsource-variable/inter/index.css'
+import '@fontsource-variable/space-grotesk/index.css'
 // ── CSS is loaded as a render-blocking <link> in index.html ───────────────────
 // This is the correct approach — CSS loads BEFORE any JS runs, ensuring the page
 // is ALWAYS fully styled from the very first paint. Never import CSS via JS

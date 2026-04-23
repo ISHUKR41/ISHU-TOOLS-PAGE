@@ -12,6 +12,7 @@ import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
+import { loadUsage } from '../tools/AllToolsPage'
 import HeroSection from './components/HeroSection'
 import ToolCategorySection from './components/ToolCategorySection'
 import './home-modern.css'
@@ -549,11 +550,21 @@ export default function HomePage() {
   // Smart fuzzy-ish ranking when user types: exact title match > prefix > word boundary > tag/desc substring.
   // We score each tool, then sort by score desc, then by popularity_rank desc as tiebreaker.
   // Enhanced with synonym expansion and basic typo tolerance.
+  // Snapshot personal usage once per page mount so the order is stable while you scroll.
+  // Tools you've actually opened bubble above untouched ones with the same popularity_rank.
+  const usageSnapshot = useMemo<Record<string, number>>(() => loadUsage(), [])
+
   const filteredTools = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()
     if (!q) {
-      // No query → return ALL tools sorted by popularity (used by grouped view + count).
-      return [...tools].sort((a, b) => (b.popularity_rank ?? 0) - (a.popularity_rank ?? 0))
+      // No query → ALL tools, blending YOUR personal usage with the static popularity_rank.
+      // We add log(visits + 1) * 25 so 1 visit ≈ +17 rank, 10 visits ≈ +60, 100 ≈ +115 — never
+      // overpowering a truly hot tool, but enough to surface "the 5 things this user actually opens".
+      return [...tools].sort((a, b) => {
+        const ua = Math.log((usageSnapshot[a.slug] ?? 0) + 1) * 25
+        const ub = Math.log((usageSnapshot[b.slug] ?? 0) + 1) * 25
+        return ((b.popularity_rank ?? 0) + ub) - ((a.popularity_rank ?? 0) + ua)
+      })
     }
     const rawTerms = q.split(/\s+/).filter(Boolean)
 
@@ -604,7 +615,7 @@ export default function HomePage() {
     }
     scored.sort((a, b) => b.score - a.score || ((b.tool.popularity_rank ?? 0) - (a.tool.popularity_rank ?? 0)))
     return scored.map((s) => s.tool)
-  }, [debouncedQuery, tools, SEARCH_SYNONYMS])
+  }, [debouncedQuery, tools, SEARCH_SYNONYMS, usageSnapshot])
 
   // Grouped-by-category view (used only when NOT searching).
   const groupedSections = useMemo(() => {
