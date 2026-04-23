@@ -316,7 +316,30 @@ function ToolSkeleton() {
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
+  const [recentSlugs, setRecentSlugs] = useState<string[]>([])
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Read "recently used" tools from localStorage. Updates when the tab regains
+  // focus, so visiting a tool and coming back home shows it pinned at top.
+  useEffect(() => {
+    const read = () => {
+      try {
+        const raw = localStorage.getItem('ishu_recent_tools')
+        const arr = raw ? (JSON.parse(raw) as string[]) : []
+        setRecentSlugs(Array.isArray(arr) ? arr.slice(0, 6) : [])
+      } catch {
+        setRecentSlugs([])
+      }
+    }
+    read()
+    const onFocus = () => read()
+    window.addEventListener('focus', onFocus)
+    window.addEventListener('storage', onFocus)
+    return () => {
+      window.removeEventListener('focus', onFocus)
+      window.removeEventListener('storage', onFocus)
+    }
+  }, [])
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
   const debouncedQuery = useDebounce(query, 90)
@@ -364,6 +387,24 @@ export default function HomePage() {
 
     return { byCategory, pdfCount, imageCount }
   }, [categories, tools])
+
+  // Map of slug → tool, for the "Recently used" pin row.
+  const toolsBySlug = useMemo(() => {
+    const map = new Map<string, (typeof tools)[number]>()
+    for (const t of tools) map.set(t.slug, t)
+    return map
+  }, [tools])
+
+  const recentTools = useMemo(() => {
+    if (!recentSlugs.length || !tools.length) return []
+    const out: typeof tools = []
+    for (const slug of recentSlugs) {
+      const t = toolsBySlug.get(slug)
+      if (t) out.push(t)
+      if (out.length >= 6) break
+    }
+    return out
+  }, [recentSlugs, tools, toolsBySlug])
 
   // Lookup: category id → category label, used by the flat search-result grid.
   const categoryLabelById = useMemo(() => {
@@ -503,6 +544,37 @@ export default function HomePage() {
             </label>
           </div>
         </section>
+
+        {/* ── Recently used (pinned) ─────────────────────────────────────────
+             Hidden during search and when the visitor has no history yet.
+             Pure localStorage — no signup, no tracking server-side. */}
+        {!isSearching && recentTools.length > 0 && (
+          <section className='tool-section recent-pin-section'>
+            <header className='section-heading'>
+              <div className='section-heading-left'>
+                <span className='section-kicker'>Recently used</span>
+                <div className='section-heading-title-row'>
+                  <h2>Jump back in</h2>
+                  <span className='tool-count-badge'>{recentTools.length}</span>
+                </div>
+              </div>
+              <p>The tools you opened most recently — pinned here just for you.</p>
+            </header>
+            <div className='tool-grid'>
+              {recentTools.map((tool) => {
+                const meta = categoryLabelById.get(tool.category)
+                return (
+                  <ToolCard
+                    key={tool.slug}
+                    tool={tool}
+                    categoryLabel={meta?.label ?? tool.category}
+                    accentColor={meta?.accent ?? '#56a6ff'}
+                  />
+                )
+              })}
+            </div>
+          </section>
+        )}
 
         <section id='tool-directory' className='directory-stack'>
           {loading && (
