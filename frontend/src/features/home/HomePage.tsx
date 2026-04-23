@@ -792,6 +792,10 @@ export default function HomePage() {
             ))}
         </section>
 
+        {/* Marketing sections — hidden during search so results stay the focus.
+            User asked: "when I search for a tool, I do not want distracting sections … in the way." */}
+        {!isSearching && (
+        <>
         <section className='features-bento-section'>
           <span className='section-kicker'>Why ISHU TOOLS?</span>
           <h2>Everything You Need. 100% Free. Always.</h2>
@@ -849,6 +853,8 @@ export default function HomePage() {
         <AccordionFAQ />
 
         <SEOCloud />
+        </>
+        )}
 
         <footer className='home-footer'>
           <p>

@@ -502,3 +502,21 @@ So 1 visit ≈ +17 effective rank, 10 visits ≈ +60, 100 ≈ +115. Enough to
 surface the 5 tools each individual user actually opens, but never enough
 to drown out a genuinely hot tool. Snapshot is taken once on mount so the
 order is stable while you scroll.
+
+## 2026-04-23 — Distraction-free search results
+
+The user explicitly asked: "when I search for a tool, I do not want distracting
+sections like Categories or Most Popular appearing in the way." Categories +
+Recent + Popular were already gated behind `!isSearching`, but the marketing
+sections below (Bento "Why ISHU TOOLS?", Comparison Table, How-It-Works,
+CreatorSection, FAQ, SEOCloud) were still rendering during search and pushing
+the actual matches off-screen.
+
+Wrapped all six marketing sections in a single `{!isSearching && (<>…</>)}` so
+that the moment a query is typed, the page collapses to: Hero search bar →
+Search results grid → footer. No noise. Matches the user's mental model of "I
+typed a query, just show me my matches."
+
+The footer (and the per-section search-result count) still renders during
+search so the user always knows how many tools matched and what's beneath the
+fold. Typecheck is clean.
