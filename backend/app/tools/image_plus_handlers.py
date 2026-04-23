@@ -760,23 +760,25 @@ def handle_text_to_ascii_art(files: list[Path], payload: dict[str, Any], output_
 
 
 def handle_whitespace_remover(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
+    import re as _re
     text = str(payload.get("text", ""))
-    mode = str(payload.get("mode", "all")).lower()
+    mode = str(payload.get("mode", "extra")).lower()
     if mode == "leading":
         result = "\n".join(line.lstrip() for line in text.splitlines())
     elif mode == "trailing":
         result = "\n".join(line.rstrip() for line in text.splitlines())
-    elif mode == "extra":
-        import re
-        result = re.sub(r"[ \t]+", " ", text).strip()
+    elif mode == "all":
+        result = _re.sub(r"\s+", "", text)
     elif mode == "all_lines":
         result = "\n".join(line.strip() for line in text.splitlines())
     else:
-        result = re.sub(r"\s+", " ", text).strip() if True else text
-        import re
-        result = re.sub(r"\s+", " ", text).strip()
+        # default "extra": collapse runs of spaces/tabs to one and trim each line
+        cleaned = _re.sub(r"[ \t]+", " ", text)
+        cleaned = _re.sub(r"\n[ \t]*\n", "\n\n", cleaned)
+        result = cleaned.strip()
     original_len = len(text)
     return ExecutionResult(kind="json", message=f"Removed {original_len - len(result)} whitespace characters", data={
+        "text": result,
         "result": result,
         "original_length": original_len,
         "new_length": len(result),

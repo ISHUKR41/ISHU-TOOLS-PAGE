@@ -1616,7 +1616,10 @@ def handle_world_meeting_planner(files, payload, output_dir) -> ExecutionResult:
         if offset is None:
             results.append({"zone": zone, "time": "Unknown timezone", "offset": None})
             continue
-        local_hour = (meeting_hour + (offset - base_offset)) % 24
+        # Half-hour timezones (e.g. India +5:30) are supported via fractional offsets.
+        local_total = (meeting_hour + (offset - base_offset)) % 24
+        local_hour = int(local_total) % 24
+        local_minute = int(round((local_total - int(local_total)) * 60)) % 60
         am_pm = "AM" if local_hour < 12 else "PM"
         display_hour = local_hour if local_hour <= 12 else local_hour - 12
         if display_hour == 0:
@@ -1624,15 +1627,16 @@ def handle_world_meeting_planner(files, payload, output_dir) -> ExecutionResult:
         business = "✅ Business hours" if 8 <= local_hour <= 18 else ("🌙 Evening" if local_hour > 18 else "🌅 Early morning")
         results.append({
             "zone": zone,
-            "time": f"{display_hour:02d}:00 {am_pm}",
+            "time": f"{display_hour:02d}:{local_minute:02d} {am_pm}",
             "hour_24": local_hour,
+            "minute": local_minute,
             "status": business,
             "utc_offset": f"UTC{'+' if offset >= 0 else ''}{offset:.1f}".replace('.0', ''),
         })
 
     output_lines = [
         f"WORLD MEETING PLANNER",
-        f"Base time: {meeting_hour:02d}:00 {base_zone}",
+        f"Base time: {int(meeting_hour):02d}:00 {base_zone}",
         "=" * 50,
     ]
     for r in results:
@@ -1647,12 +1651,12 @@ def handle_world_meeting_planner(files, payload, output_dir) -> ExecutionResult:
         all_good = True
         for zone in zones:
             offset = _TZ_OFFSETS.get(zone, base_offset)
-            local = (test_hour + (offset - base_offset)) % 24
+            local = int((test_hour + (offset - base_offset)) % 24)
             if not (8 <= local <= 18):
                 all_good = False
                 break
         if all_good:
-            good_slots.append(f"{test_hour:02d}:00 {base_zone}")
+            good_slots.append(f"{int(test_hour):02d}:00 {base_zone}")
 
     if good_slots:
         output_lines.extend(["", f"✅ GOOD MEETING TIMES ({base_zone}): {', '.join(good_slots[:5])}"])
