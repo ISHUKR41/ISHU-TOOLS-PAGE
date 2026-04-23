@@ -73,6 +73,14 @@ _DEFAULT_FORMAT = (
 _AUDIO_FORMAT = "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best"
 
 
+def _coerce_str(value, default: str = "") -> str:
+    """Safely coerce any payload value to a stripped string. Handles ints, floats, lists, None."""
+    if value is None:
+        return default
+    if isinstance(value, (list, tuple)):
+        value = ", ".join(str(v) for v in value)
+    return str(value).strip()
+
 def _format_for_quality(quality: str | int | None) -> str:
     """Build a yt-dlp format selector for a requested max height (e.g. '720', '2160', 'best')."""
     if quality is None:
@@ -676,7 +684,7 @@ def _handle_bulk_image_compressor(files: list[Path], payload: dict[str, Any], jo
 # ─── Network Tools ────────────────────────────────────────────────────────────
 
 def _handle_ip_lookup(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    target = payload.get("ip", payload.get("text", "")).strip()
+    target = _coerce_str(payload.get("ip", payload.get("text")))
     try:
         if not target:
             # Get user's own IP
@@ -711,7 +719,7 @@ def _handle_ip_lookup(files: list[Path], payload: dict[str, Any], job_dir: Path)
 
 
 def _handle_dns_lookup(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    domain = payload.get("domain", payload.get("text", "")).strip().lower()
+    domain = _coerce_str(payload.get("domain", payload.get("text"))).lower()
     if not domain:
         return ExecutionResult(kind="json", message="Please enter a domain name.", data={"error": "No domain"})
     domain = domain.replace("http://", "").replace("https://", "").split("/")[0]
@@ -762,7 +770,7 @@ def _handle_dns_lookup(files: list[Path], payload: dict[str, Any], job_dir: Path
 
 
 def _handle_whois_lookup(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    domain = payload.get("domain", payload.get("text", "")).strip().lower()
+    domain = _coerce_str(payload.get("domain", payload.get("text"))).lower()
     if not domain:
         return ExecutionResult(kind="json", message="Please enter a domain name.", data={"error": "No domain"})
     domain = domain.replace("http://", "").replace("https://", "").split("/")[0]
@@ -784,7 +792,7 @@ def _handle_whois_lookup(files: list[Path], payload: dict[str, Any], job_dir: Pa
 
 
 def _handle_ssl_checker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    domain = payload.get("domain", payload.get("text", "")).strip().lower()
+    domain = _coerce_str(payload.get("domain", payload.get("text"))).lower()
     if not domain:
         return ExecutionResult(kind="json", message="Please enter a domain name.", data={"error": "No domain"})
     domain = domain.replace("http://", "").replace("https://", "").split("/")[0]
@@ -903,7 +911,7 @@ def _handle_text_to_morse(files: list[Path], payload: dict[str, Any], job_dir: P
 
 
 def _handle_roman_numeral(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", payload.get("number", "")).strip()
+    text = _coerce_str(payload.get("text", payload.get("number")))
     if not text:
         return ExecutionResult(kind="json", message="Please enter a number or Roman numeral.", data={"error": "No input"})
 
@@ -1049,7 +1057,7 @@ def _handle_grammar_checker(files: list[Path], payload: dict[str, Any], job_dir:
 # ─── Math Tools ───────────────────────────────────────────────────────────────
 
 def _handle_fibonacci(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", payload.get("n", "10")).strip()
+    text = _coerce_str(payload.get("text", payload.get("n")), "10")
     try:
         n = int(text)
         if n < 1 or n > 100:
@@ -1070,7 +1078,8 @@ def _handle_fibonacci(files: list[Path], payload: dict[str, Any], job_dir: Path)
 
 
 def _handle_prime_checker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", payload.get("number", "")).strip()
+    raw = payload.get("text", payload.get("number", payload.get("value", "")))
+    text = str(raw).strip() if raw is not None else ""
     if not text:
         return ExecutionResult(kind="json", message="Please enter a number to check.", data={"error": "No input"})
 
@@ -1123,7 +1132,7 @@ def _handle_prime_checker(files: list[Path], payload: dict[str, Any], job_dir: P
 
 
 def _handle_statistics_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", payload.get("data", "")).strip()
+    text = _coerce_str(payload.get("text", payload.get("data")))
     if not text:
         return ExecutionResult(kind="json", message="Please enter numbers separated by commas or spaces.", data={"error": "No data"})
 
@@ -1228,7 +1237,7 @@ def _handle_matrix_calculator(files: list[Path], payload: dict[str, Any], job_di
 
 
 def _handle_equation_solver(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    equation = payload.get("text", payload.get("equation", "")).strip()
+    equation = _coerce_str(payload.get("text", payload.get("equation")))
     if not equation:
         return ExecutionResult(kind="json", message="Please enter an equation to solve. Example: x^2 + 5x + 6 = 0", data={"error": "No equation"})
 
@@ -1770,7 +1779,7 @@ def _handle_grade_needed_calculator(files: list[Path], payload: dict[str, Any], 
 
 
 def _handle_exam_countdown_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    exam_date_raw = payload.get("exam_date", payload.get("text", "")).strip()
+    exam_date_raw = _coerce_str(payload.get("exam_date", payload.get("text")))
     daily_hours = float(payload.get("daily_study_hours", 3))
     if not exam_date_raw:
         return ExecutionResult(kind="json", message="Please enter exam date in YYYY-MM-DD format.", data={"error": "Exam date required"})
@@ -1792,7 +1801,7 @@ def _handle_exam_countdown_calculator(files: list[Path], payload: dict[str, Any]
 
 
 def _handle_number_to_words(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", payload.get("number", "")).strip().replace(",", "")
+    text = _coerce_str(payload.get("text", payload.get("number"))).replace(",", "")
     if not text:
         return ExecutionResult(kind="json", message="Please enter a number to convert.", data={"error": "No input"})
 
@@ -1964,7 +1973,7 @@ def _handle_water_intake(files: list[Path], payload: dict[str, Any], job_dir: Pa
 
 
 def _handle_sleep_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    wake_time = payload.get("wake_time", payload.get("text", "06:00")).strip()
+    wake_time = _coerce_str(payload.get("wake_time", payload.get("text")), "06:00")
     sleep_time = payload.get("sleep_time", "").strip()
 
     CYCLE = 90  # minutes per sleep cycle
@@ -2090,7 +2099,7 @@ def _handle_credit_card_validator(files: list[Path], payload: dict[str, Any], jo
 
 
 def _handle_ifsc_finder(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    ifsc = payload.get("text", payload.get("ifsc", "")).strip().upper()
+    ifsc = _coerce_str(payload.get("text", payload.get("ifsc"))).upper()
     if not ifsc:
         return ExecutionResult(kind="json", message="Please enter an IFSC code to look up.", data={"error": "No IFSC code"})
 
@@ -2303,7 +2312,7 @@ def _handle_color_palette(files: list[Path], payload: dict[str, Any], job_dir: P
             return ExecutionResult(kind="json", message=f"Color extraction failed: {str(e)}", data={"error": str(e)[:200]})
     else:
         # Generate palette from keyword/color
-        base_color = payload.get("text", payload.get("color", "#3bd0ff")).strip()
+        base_color = _coerce_str(payload.get("text", payload.get("color")), "#3bd0ff")
         if not base_color.startswith("#"):
             base_color = "#3bd0ff"
 

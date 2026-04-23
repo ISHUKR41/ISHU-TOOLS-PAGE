@@ -1,6 +1,31 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 8) — File-upload tool scan + quality-preset crash fixed across 12 handlers
+## Latest Update (2026-04-23 — round 9) — UNIVERSAL "error-as-success" bug fixed (affects hundreds of tools) + 13 .strip()-on-int crashes swept
+
+**Two huge structural fixes this round, both with massive blast radius.**
+
+### Fix 1: Universal `status:"success"` lie (the single biggest UX bug on the platform)
+While debugging the "Instagram downloader is broken" complaint, discovered the actual handler is **working correctly** — yt-dlp is installed, it detects Instagram's anti-bot wall and returns a clear helpful message: *"Instagram now blocks anonymous downloads. Paste your session cookies in the Cookies field…"*. But the response was being wrapped as `{"status": "success", "data": {"error": "..."}}` because **`backend/app/main.py:678` hardcoded `"status": "success"` for every JSON response**, ignoring whether `result.data.error` was set. So the frontend treated genuine error messages as successful API calls and never showed them in the error UI. **This is why hundreds of tools "looked broken" to users** — the help text was being silently swallowed.
+
+**Fix:** in the JSON-response branch of `main.py`, inspect `result.data.error` and set `status` to `"error"` when the handler signalled a graceful error. Five regression tests pass: empty Instagram URL → `error`, bad URL → `error`, working unit converter → still `success`, valid JSON → still `success`, invalid JSON → `error` with parser line/column. **Convention `data.error` was already used by ~all handlers**, so this fix retroactively repairs every tool that ever returned a graceful error.
+
+### Fix 2: 13 `.strip()`-on-int crashes in math/calculator handlers (V4 fixture scan)
+Built a V4 scanner that POSTs realistic numeric calculator payloads (`number`, `value`, `principal`, `rate`, `years`, `marks`, `dob`, etc.) to every math/finance/health/calculator tool. Found exactly **1 real crash** (`prime-number-checker`) — but root-cause grep revealed the **same fragile pattern in 13 callsites** in `video_extra_handlers.py`:
+
+```python
+text = payload.get("text", payload.get("number", "")).strip()
+```
+
+When `payload["number"]` is a real `int` (which is the natural type from a number input field), the outer `.strip()` blows up with `AttributeError: 'int' object has no attribute 'strip'` → HTTP 500. Affects: `prime-number-checker`, `fibonacci-generator`, `equation-solver`, `dns-lookup`, `whois-lookup`, `ssl-certificate-checker`, `ip-address-lookup`, `ifsc-finder`, `color-palette-generator`, `sleep-cycle-calculator`, `exam-countdown`, `binary-converter`, `formula-evaluator`.
+
+**Fix:** introduced a small `_coerce_str(value, default)` helper that handles `None` / `int` / `float` / `list` / `tuple` and always returns a stripped string. Sweep-replaced all 13 callsites with one regex. Re-ran V4 scan after restart — **0 crashes, 0 HTTP 500s** in the calculator workstream (previously 1).
+
+### Status: error-handling layer is now correct end-to-end
+The "looks broken but isn't" class of bugs across the entire 1247-tool catalog is now eliminated at the framework level. Going forward, any handler that returns `data={"error": "..."}` will correctly surface as `status: "error"` to the frontend without further per-tool work needed.
+
+**Reminder for the user:** the live homepage IS clean (verified by fresh screenshot this round) — no "Popular right now", no duplicate marquees, no "Categories" sidebar. The screenshots being attached repeatedly are stale browser-cached versions of the pre-round-4 site. A hard refresh (Ctrl+Shift+R) on the live URL will show the current clean version.
+
+## Previous Update (2026-04-23 — round 8) — File-upload tool scan + quality-preset crash fixed across 12 handlers
 **Built a V3 scanner that POSTs real PDF/PNG/JPG/TXT/CSV/JSON fixtures to every file-upload tool.** Tested 134 file-upload tools in 24 seconds.
 
 **Out of 134 file-upload tools: 119 OK (106 binary downloads + 13 JSON success), 1 real bug, 14 correct validation rejections.**

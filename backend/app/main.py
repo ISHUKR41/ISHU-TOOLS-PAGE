@@ -678,11 +678,17 @@ def run_tool(
     if result.kind == "json":
         # JSON results don't need the workspace — clean it up immediately
         background_tasks.add_task(_cleanup_workspace, job_root)
+        # If the handler signalled a graceful error via data.error, surface it as status:"error"
+        # so the frontend can render the helpful message in its error UI instead of treating it
+        # as a successful response. This fixes the universal "looks broken" UX across hundreds
+        # of tools (Instagram cookies needed, invalid URL, missing field, rate-limited, etc.).
+        result_data = result.data or {}
+        has_error = isinstance(result_data, dict) and bool(result_data.get("error"))
         response_data = {
-            "status": "success",
+            "status": "error" if has_error else "success",
             "message": result.message,
             "job_id": job_id,
-            "data": result.data or {},
+            "data": result_data,
         }
         # Store in LRU cache if eligible
         if use_cache:
