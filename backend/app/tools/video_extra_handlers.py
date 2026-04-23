@@ -33,6 +33,7 @@ import httpx
 from PIL import Image
 
 from .handlers import ExecutionResult
+from .handlers import coerce_quality
 
 
 # ─── Video Downloader (yt-dlp based) ─────────────────────────────────────────
@@ -625,7 +626,7 @@ def _handle_bulk_image_compressor(files: list[Path], payload: dict[str, Any], jo
     if not files:
         return ExecutionResult(kind="json", message="Please upload image files to compress.", data={"error": "No files"})
 
-    quality = int(payload.get("quality", 75))
+    quality = coerce_quality(payload.get("quality"), 75)
     quality = max(10, min(95, quality))
 
     results = []

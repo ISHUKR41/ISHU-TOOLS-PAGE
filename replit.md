@@ -1,6 +1,36 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 7) — Systematic 1247-tool scan + 4 real handler bugs fixed
+## Latest Update (2026-04-23 — round 8) — File-upload tool scan + quality-preset crash fixed across 12 handlers
+**Built a V3 scanner that POSTs real PDF/PNG/JPG/TXT/CSV/JSON fixtures to every file-upload tool.** Tested 134 file-upload tools in 24 seconds.
+
+**Out of 134 file-upload tools: 119 OK (106 binary downloads + 13 JSON success), 1 real bug, 14 correct validation rejections.**
+
+The bug: **5 tools (`compress-image`, `convert-image`, and 3 siblings)** crashed with `invalid literal for int() with base 10: 'medium'` whenever a user picked a quality *preset* like "low" / "medium" / "high" instead of a raw number. The handlers did `int(payload.get("quality", 70))` which only accepts numeric strings — preset names = HTTP 422.
+
+**Root-cause grep showed 12 identical callsites across 5 files** (`handlers.py`, `image_plus_handlers.py`, `video_extra_handlers.py`, `pdf_core_enhanced.py`, `production_core_handlers.py`). Same fragile pattern everywhere.
+
+**Fix: introduced one shared helper `coerce_quality(value, default, lo, hi)` in `handlers.py`** that:
+- Accepts ints, numeric strings, AND preset names (`low`/`medium`/`high`/`best`/`max`/`screen`/`ebook`/`printer`/`prepress`/`lossless`/etc.)
+- Falls back to the default instead of raising on unknown input
+- Always returns a clamped int in `[lo, hi]`
+
+Then patched all 12 callsites with a regex sed-script (3 different patterns: `max(lo, min(hi, int(...)))`, `min(hi, max(lo, int(...)))`, plain `int(...)`). Imported the helper into the 4 sibling files. Verified zero `int(payload.get("quality"...` calls remain in any tool module.
+
+**End-to-end verified after backend restart, 4 cases each returning HTTP 200 + real image bytes:**
+- `compress-image` quality=`"medium"` → ✅ image/PNG download
+- `convert-image` quality=`"high"`, target_format=`"webp"` → ✅ image/WEBP download
+- `compress-image` quality=`"70"` (numeric string regression check) → ✅
+- `compress-image` no quality field at all (default fallback) → ✅
+
+**Also confirmed clean from the V2 (text-handler) re-scan after round-7 fixes:**
+- `csv-to-json` works for real CSV input → returns proper JSON array
+- `json-to-csv` works for real JSON arrays → returns `Content-Type: text/csv` download
+- `nato-alphabet`, `text-to-ascii-art` — both working as fixed in round 7
+- The 1247-tool catalog has zero duplicate slugs (variants like `remove-metadata-image` vs `remove-image-metadata` are intentional SEO endpoints, not bugs)
+
+**On the user's broader "improve every single tool" ask:** the catastrophic backend crashes that the V2 + V3 scanners can detect are now gone. The remaining ~440 HTTP 400/422 responses are correct validation gates (need a specific file type, a specific field name, etc.) — not bugs. Going further requires per-tool fixture work, frontend UX polish, or SEO additions, which are separate workstreams.
+
+## Previous Update (2026-04-23 — round 7) — Systematic 1247-tool scan + 4 real handler bugs fixed
 **Wrote a batch tester that POSTed every text-handler tool with a kitchen-sink payload in 20 seconds.** Out of 1247 tools, the scan found exactly **4 real handler bugs** (everything else was either fully working or correctly rejecting test inputs that didn't match its expected fields). Each was a surgical fix:
 
 1. **`nato-alphabet`** (`image_plus_handlers.py:610`) — `IndexError` when input contained a space character. The success-message builder did `r.split(" = ")[1]` over a list that included the literal string `"(space)"` (no `" = "` separator → `IndexError`). Refactored to track a parallel `spoken` list, so spaces and unknown chars are handled cleanly.

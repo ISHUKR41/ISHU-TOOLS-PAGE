@@ -17,6 +17,7 @@ from pdf2image import convert_from_path
 from pdf2docx import Converter
 
 from ..models import HandlerResult
+from .handlers import coerce_quality
 
 
 def merge_pdf_production(files: list[Path], payload: dict[str, Any], output_dir: Path) -> HandlerResult:
@@ -529,7 +530,7 @@ def compress_image_production(files: list[Path], payload: dict[str, Any], output
         )
     
     try:
-        quality = int(payload.get("quality", 85))
+        quality = coerce_quality(payload.get("quality"), 85)
         compressed_files = []
         
         for img_file in files:

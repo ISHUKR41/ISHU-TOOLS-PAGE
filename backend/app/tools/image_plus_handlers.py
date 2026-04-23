@@ -23,6 +23,7 @@ from PIL import (
 )
 
 from .handlers import ExecutionResult, ensure_files, create_single_file_result
+from .handlers import coerce_quality
 
 
 # ─── helpers ─────────────────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ def _compress_to_kb(img: Image.Image, target_kb: int, fmt: str = "JPEG") -> byte
 def handle_png_to_webp(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     img = _open_image(files[0])
-    quality = min(100, max(1, int(payload.get("quality", 85))))
+    quality = coerce_quality(payload.get("quality"), 85, 1, 100)
     out = output_dir / (files[0].stem + ".webp")
     img.save(str(out), "WEBP", quality=quality)
     return create_single_file_result(out, f"Converted to WebP (quality {quality})", "image/webp")
@@ -91,7 +92,7 @@ def handle_jpg_to_webp(files: list[Path], payload: dict[str, Any], output_dir: P
 def handle_gif_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     img = _open_image(files[0])
-    quality = min(100, max(1, int(payload.get("quality", 90))))
+    quality = coerce_quality(payload.get("quality"), 90, 1, 100)
     out = output_dir / (files[0].stem + ".jpg")
     _save_as_jpg(img, out, quality=quality)
     return create_single_file_result(out, "Converted GIF to JPG", "image/jpeg")
@@ -100,7 +101,7 @@ def handle_gif_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Pa
 def handle_tiff_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     img = _open_image(files[0])
-    quality = min(100, max(1, int(payload.get("quality", 90))))
+    quality = coerce_quality(payload.get("quality"), 90, 1, 100)
     out = output_dir / (files[0].stem + ".jpg")
     _save_as_jpg(img, out, quality=quality)
     return create_single_file_result(out, "Converted TIFF to JPG", "image/jpeg")
@@ -109,7 +110,7 @@ def handle_tiff_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: P
 def handle_bmp_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     img = _open_image(files[0])
-    quality = min(100, max(1, int(payload.get("quality", 90))))
+    quality = coerce_quality(payload.get("quality"), 90, 1, 100)
     out = output_dir / (files[0].stem + ".jpg")
     _save_as_jpg(img, out, quality=quality)
     return create_single_file_result(out, "Converted BMP to JPG", "image/jpeg")
@@ -133,7 +134,7 @@ def handle_svg_to_png(files: list[Path], payload: dict[str, Any], output_dir: Pa
 def handle_image_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
     img = _open_image(files[0])
-    quality = min(100, max(1, int(payload.get("quality", 92))))
+    quality = coerce_quality(payload.get("quality"), 92, 1, 100)
     out = output_dir / (files[0].stem + ".jpg")
     _save_as_jpg(img, out, quality=quality)
     return create_single_file_result(out, "Image converted to JPG", "image/jpeg")
@@ -155,7 +156,7 @@ def handle_heic_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: P
     except ImportError:
         pass
     img = _open_image(files[0])
-    quality = int(payload.get("quality", 90))
+    quality = coerce_quality(payload.get("quality"), 90)
     out = output_dir / (files[0].stem + ".jpg")
     _save_as_jpg(img, out, quality=quality)
     return create_single_file_result(out, "HEIC converted to JPG", "image/jpeg")

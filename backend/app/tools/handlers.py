@@ -308,6 +308,31 @@ def ensure_files(files: list[Path], min_count: int = 1) -> None:
         raise HTTPException(status_code=400, detail=f"This tool requires at least {min_count} file(s)")
 
 
+_QUALITY_PRESETS = {
+    "low": 40, "lowest": 25, "draft": 30, "small": 40,
+    "medium": 70, "med": 70, "normal": 70, "balanced": 70, "default": 75,
+    "high": 90, "good": 85, "best": 95, "max": 95, "maximum": 95,
+    "screen": 40, "ebook": 70, "printer": 85, "prepress": 95,
+    "lossless": 100,
+}
+
+
+def coerce_quality(value: Any, default: int = 85, lo: int = 1, hi: int = 100) -> int:
+    """Accept ints, numeric strings, OR string presets like 'low'/'medium'/'high'.
+
+    Returns an int clamped to [lo, hi]. Never raises — falls back to ``default``.
+    """
+    if value is None or value == "":
+        q = default
+    else:
+        try:
+            q = int(float(value))
+        except (TypeError, ValueError):
+            key = str(value).strip().lower()
+            q = _QUALITY_PRESETS.get(key, default)
+    return max(lo, min(hi, q))
+
+
 def parse_page_numbers(raw: str, total_pages: int) -> list[int]:
     cleaned = raw.strip().lower()
     if not cleaned or cleaned == "all":
@@ -1797,7 +1822,7 @@ def handle_summarize_pdf(files: list[Path], payload: dict[str, Any], output_dir:
 
 def handle_compress_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    quality = int(payload.get("quality", 70))
+    quality = coerce_quality(payload.get("quality"), 70)
     quality = max(5, min(95, quality))
 
     for file_path in files:
@@ -1887,7 +1912,7 @@ def handle_convert_image(files: list[Path], payload: dict[str, Any], output_dir:
     if target_format not in supported:
         raise HTTPException(status_code=400, detail=f"target_format must be one of: {', '.join(sorted(supported))}")
 
-    quality = max(5, min(100, int(payload.get("quality", 92))))
+    quality = coerce_quality(payload.get("quality"), 92, 5, 100)
     img = open_image_file(files[0])
     ext = "jpg" if target_format == "jpeg" else ("tiff" if target_format == "tif" else target_format)
     output = output_dir / f"converted.{ext}"
@@ -5563,7 +5588,7 @@ def handle_jpg_to_kb(files: list[Path], payload: dict[str, Any], output_dir: Pat
 
 def handle_jpeg_to_jpg(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    quality = max(10, min(100, int(payload.get("quality", 95))))
+    quality = coerce_quality(payload.get("quality"), 95, 10, 100)
     results: list[Path] = []
 
     for source in files:
@@ -5735,7 +5760,7 @@ def handle_resize_for_youtube(files: list[Path], payload: dict[str, Any], output
 
 def handle_convert_to_jpg_image(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     ensure_files(files, 1)
-    quality = int(payload.get("quality", 92))
+    quality = coerce_quality(payload.get("quality"), 92)
     results = []
     for f in files:
         img = Image.open(f).convert("RGB")
@@ -6081,7 +6106,7 @@ def handle_bulk_image_resizer(files: list[Path], payload: dict[str, Any], output
     ensure_files(files, 1)
     width = max(1, int(payload.get("width", 1080)))
     height = max(1, int(payload.get("height", 1080)))
-    quality = max(5, min(100, int(payload.get("quality", 92))))
+    quality = coerce_quality(payload.get("quality"), 92, 5, 100)
     maintain_aspect = str(payload.get("maintain_aspect", "true")).strip().lower() not in {"false", "0", "no"}
 
     outputs: list[Path] = []

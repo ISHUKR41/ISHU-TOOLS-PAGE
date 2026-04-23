@@ -21,6 +21,7 @@ import pikepdf
 from PIL import Image, ImageEnhance, ImageOps
 
 from .handlers import ExecutionResult
+from .handlers import coerce_quality
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -461,7 +462,7 @@ def _pdf_to_image_enhanced(files, payload, output_dir, fmt: str) -> ExecutionRes
     except Exception:
         dpi = 200
     try:
-        quality = max(10, min(100, int(payload.get("quality") or 92)))
+        quality = max(10, min(100, coerce_quality(payload.get("quality"), 92)))
     except Exception:
         quality = 92
     color_mode = (payload.get("color_mode") or "rgb").lower()
