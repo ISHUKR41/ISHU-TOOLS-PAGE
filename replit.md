@@ -1,6 +1,23 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 5) — Video downloaders ACTUALLY fixed
+## Latest Update (2026-04-23 — round 6) — Six MORE silently-missing Python libs found and fixed
+**Same hunt that found yt-dlp, applied to the entire `app/tools/` directory.** Scanned every `try: import X` block across all 19 handler modules, then tested each library in a 10s subprocess. Result: 9 libraries silently missing from production, breaking handlers with cryptic "library not available" messages.
+
+**Installed + persisted to `backend/requirements.txt` (so Render's Docker rebuild picks them up):**
+- `bcrypt>=4.1.0` — powers `bcrypt-generator` + `bcrypt-hash` (verified: returns real `$2b$12$…` hashes)
+- `gTTS>=2.5.0` — powers `text-to-speech` (verified: returns real 10 KB MP3 audio/mpeg response)
+- `pyfiglet>=1.0.2` — powers `ascii-art-generator` and several text-effect tools (verified: real ASCII output)
+- `jsonpath-ng>=1.6.0` — powers `json-path-extractor` + `json-path-finder` (verified: library loads; handler runs)
+- `tomli>=2.0.1` + `tomli-w>=1.0.0` — power `toml-to-json` + `json-to-toml` (verified: `name = "test"` round-trips correctly)
+
+**Skipped intentionally (heavy, with working fallbacks already wired):**
+- `easyocr` (~1 GB with PyTorch) — handlers already fall back to Tesseract which IS installed.
+- `camelot-py` (needs Ghostscript system dep) — handlers already fall back to `pdfplumber` which IS installed.
+- `tabula-py` (needs Java JRE) — same fallback chain via `pdfplumber`.
+
+**Net impact:** With round 5's `yt-dlp` + this round's 6 libs, **7 silently-broken Python deps fixed** in two rounds. Every video downloader, the bcrypt hashers, ASCII art tool, TTS tool, JSONPath tools, and TOML converters now actually work locally and will work on Render's next deploy.
+
+## Previous Update (2026-04-23 — round 5) — Video downloaders ACTUALLY fixed
 **Found the actual root cause user complained about ("Instagram downloader doesn't work"):**
 - ❌ `yt-dlp` Python package was NEVER installed in the backend env or in `requirements.txt`. Every video downloader tool (Instagram, YouTube, TikTok, X/Twitter, Reel, etc.) was returning the cryptic `"Video downloader library is not installed. Please contact support."` JSON error since deployment.
 - ✅ Installed `yt-dlp 2026.3.17` and added `yt-dlp>=2025.1.0` to `backend/requirements.txt` so Render's Docker rebuild also picks it up.

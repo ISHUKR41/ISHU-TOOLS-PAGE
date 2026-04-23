@@ -78,3 +78,9 @@ pytz>=2024.1
 tzdata>=2024.1
 
 yt-dlp>=2025.1.0
+bcrypt>=4.1.0
+gTTS>=2.5.0
+jsonpath-ng>=1.6.0
+pyfiglet>=1.0.2
+tomli>=2.0.1
+tomli-w>=1.0.0

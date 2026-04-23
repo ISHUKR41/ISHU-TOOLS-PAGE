@@ -209,3 +209,9 @@ rarfile>=4.2,<5.0.0
 scipy>=1.14.1,<2.0.0
 tzdata>=2024.1
 yt-dlp
+bcrypt
+gTTS
+jsonpath-ng
+pyfiglet
+tomli
+tomli-w
