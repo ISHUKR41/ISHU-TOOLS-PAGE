@@ -670,10 +670,17 @@ def run_tool(
         raise HTTPException(status_code=422, detail=f"Invalid input: {str(exc)[:200]}") from exc
     except Exception as exc:
         background_tasks.add_task(_cleanup_workspace, job_root)
-        raise HTTPException(
-            status_code=500,
-            detail=_friendly_error_message(exc, files),
-        ) from exc
+        friendly = _friendly_error_message(exc, files)
+        # Detect user-input/file-validation issues and surface them as 400 (not scary 500).
+        low = friendly.lower()
+        validation_signals = (
+            "couldn't read", "could not read", "looks corrupted", "password-protected",
+            "valid image", "valid pdf", "valid file", "valid url", "invalid file",
+            "not a zip", "not a valid", "unsupported", "please upload", "please re-export",
+            "bad zip", "package not found", "cannot be used in worksheets",
+        )
+        status = 400 if any(sig in low for sig in validation_signals) else 500
+        raise HTTPException(status_code=status, detail=friendly) from exc
 
     if result.kind == "json":
         # JSON results don't need the workspace — clean it up immediately

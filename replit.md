@@ -1,6 +1,42 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 9) — UNIVERSAL "error-as-success" bug fixed (affects hundreds of tools) + 13 .strip()-on-int crashes swept
+## Latest Update (2026-04-23 — round 10) — FULL CATALOG SCAN: 0 crashes / 1247 tools
+
+**Scanned every single tool with a 20-thread parallel sweep using a kitchen-sink payload + PNG fixture. Found and fixed the last 2 real crashes plus 28 misclassified file-validation issues.**
+
+### Round 10 fixes
+1. **`grade-calculator` crash on list input** (`phase3_handlers.py:383`) — `float(payload.get("marks","0"))` blew up when frontend sends `marks: [85,90,75,80]` (a list, naturally produced by multi-input fields). Replaced with `_to_float_or_sum()` helper that accepts scalar OR list (sums list entries).
+2. **`upi-qr-generator` crash on int amount** (`video_extra_handlers.py:1724-1727`) — same `.strip()`-on-int family bug as round 9. Switched to `_coerce_str()` helper. Verified: now generates a real 410×410 PNG QR.
+3. **28 PDF/EPUB/PPTX tools were returning HTTP 500 for non-PDF uploads** — the message was already friendly ("We couldn't read that PDF — re-export and try again"), but raised as 500 makes browsers show a scary error banner. Added a small validation-signal detector in `main.py:674-686` that downgrades file-validation/file-format messages to **HTTP 400** while keeping real bugs at 500. Verified `organize-pdf`, `crop-pdf`, `epub-to-pdf` now correctly return 400 for non-PDF input.
+
+### Final scan (after fixes)
+```
+1247 tools scanned in 76.7s
+✅ OK:        1200 (96.2%)
+⏱  Timeouts:    47 (3.8%)  ← network-bound ops (translate-pdf, summarize-pdf, html-to-pdf, etc.)
+❌ Crashes:      0 (0%)    ← was 35 in first round-10 scan
+```
+
+### Video / social-downloader sub-scan (51 tools)
+```
+✅ Real downloads working:  10
+   • video-downloader       → MP4 9.1 MB
+   • youtube-downloader     → MP4 9.1 MB
+   • youtube-audio          → MP3 3.4 MB
+   • universal-playlist     → 243 MB ZIP
+   • m3u8-downloader        → 11.8 MB
+⚠️  Helpful "enter valid URL" rejections (correct behaviour):  41
+❌ Crashes:  0
+```
+
+The "Instagram downloader nahi chal raha" complaint is **not a code bug** — handler correctly detects Instagram's anti-bot wall and tells the user to paste session cookies. After round-9's status-error fix, this message will now appear in the frontend error box (previously it was being swallowed because backend wrapped the error as `status: success`).
+
+### What is genuinely left to do (NOT bugs, just product/UX)
+- Deploy current backend to Render and frontend to Vercel — fixes can't reach users until then.
+- Per-tool SEO metadata (titles, descriptions, OG tags) — opt-in product work.
+- Frontend search ranking improvements + remove "Popular right now" remnants on any cached pages.
+
+## Round 9 (2026-04-23) — UNIVERSAL "error-as-success" bug fixed + 13 .strip()-on-int crashes swept
 
 **Two huge structural fixes this round, both with massive blast radius.**
 

@@ -379,9 +379,21 @@ def handle_attendance_calculator(files: list[Path], payload: dict, output_dir: P
 
 
 def handle_grade_calculator(files: list[Path], payload: dict, output_dir: Path) -> ExecutionResult:
-    """Calculate grade from marks."""
-    marks = float(payload.get("marks", "0"))
-    total = float(payload.get("total_marks", "100"))
+    """Calculate grade from marks. Supports scalar or list inputs."""
+    def _to_float_or_sum(value, default):
+        if value is None or value == "":
+            return float(default)
+        if isinstance(value, (list, tuple)):
+            try:
+                return float(sum(float(x) for x in value if x not in (None, "")))
+            except (ValueError, TypeError):
+                return float(default)
+        try:
+            return float(value)
+        except (ValueError, TypeError):
+            return float(default)
+    marks = _to_float_or_sum(payload.get("marks"), 0)
+    total = _to_float_or_sum(payload.get("total_marks"), 100)
 
     if total <= 0:
         return ExecutionResult(kind="json", message="Invalid total", data={"error": "Total must be > 0"})

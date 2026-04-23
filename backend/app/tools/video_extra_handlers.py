@@ -1721,10 +1721,10 @@ def _handle_expense_splitter(files: list[Path], payload: dict[str, Any], job_dir
 
 
 def _handle_upi_qr_generator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    upi_id = payload.get("upi_id", "").strip()
-    name = payload.get("name", "ISHU TOOLS").strip()
-    amount = payload.get("amount", "").strip()
-    note = payload.get("note", "Payment").strip()
+    upi_id = _coerce_str(payload.get("upi_id"))
+    name = _coerce_str(payload.get("name"), "ISHU TOOLS")
+    amount = _coerce_str(payload.get("amount"))
+    note = _coerce_str(payload.get("note"), "Payment")
     if not re.match(r"^[\w.-]+@[\w.-]+$", upi_id):
         return ExecutionResult(kind="json", message="Please enter a valid UPI ID like name@bank.", data={"error": "Invalid UPI ID"})
     params = [f"pa={upi_id}", f"pn={name}", f"tn={note}", "cu=INR"]
