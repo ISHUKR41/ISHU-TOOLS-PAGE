@@ -1,0 +1,9 @@
+# ISHU TOOLS — Full Tool Index
+
+This file is generated during production builds from the current tool catalog.
+
+Use:
+
+- https://ishutools.fun/llms.txt for the short LLM summary
+- https://ishutools.fun/tools.json for the machine-readable catalog
+- https://ishutools.fun/tools for the user-facing tool directory

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-import { writeFileSync, existsSync } from "node:fs";
+import { writeFileSync, existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, "../public/sitemap.xml");
+const CATALOG_SOURCE = resolve(__dirname, "../src/data/catalogFallback.ts");
 const SITE = (
   process.env.VITE_SITE_URL ||
   process.env.PUBLIC_SITE_URL ||
@@ -26,6 +27,45 @@ const HIGH = [
 ];
 const isHigh = (s) => HIGH.some((p) => s.toLowerCase().includes(p));
 
+function extractCatalogArray(source, exportName) {
+  const marker = `export const ${exportName}`;
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex < 0) return [];
+  const start = source.indexOf("[", markerIndex);
+  if (start < 0) return [];
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < source.length; i++) {
+    const ch = source[i];
+    if (inString) {
+      escaped = ch === "\\" && !escaped;
+      if (ch === '"' && !escaped) inString = false;
+      if (ch !== "\\") escaped = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch === "[") depth += 1;
+    if (ch === "]") depth -= 1;
+    if (depth === 0) return JSON.parse(source.slice(start, i + 1));
+  }
+  return [];
+}
+
+function fallbackToolsFromSource() {
+  if (!existsSync(CATALOG_SOURCE)) return [];
+  try {
+    return extractCatalogArray(readFileSync(CATALOG_SOURCE, "utf8"), "FALLBACK_TOOLS");
+  } catch (e) {
+    console.warn(`[sitemap] fallback catalog parse failed (${e.message})`);
+    return [];
+  }
+}
+
 async function fetchJson(url, timeoutMs = 12000) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -44,19 +84,23 @@ async function fetchJson(url, timeoutMs = 12000) {
     tools = await fetchJson(`${BACKEND}/api/tools`);
     console.log(`[sitemap] fetched ${tools.length} tools from ${BACKEND}`);
   } catch (e) {
-    console.warn(`[sitemap] backend unreachable (${e.message}); keeping existing sitemap.xml`);
-    if (existsSync(OUT)) {
+    console.warn(`[sitemap] backend unreachable (${e.message}); using shipped fallback catalog`);
+    tools = fallbackToolsFromSource();
+    if (tools.length) {
+      console.log(`[sitemap] fallback catalog loaded ${tools.length} tools`);
+    } else if (existsSync(OUT)) {
       console.warn(`[sitemap] existing sitemap.xml preserved at ${OUT}`);
       process.exit(0);
+    } else {
+      console.error(`[sitemap] no fallback sitemap exists; writing minimal one`);
+      writeFileSync(OUT,
+        `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+        `  <url><loc>${SITE}/</loc><priority>1.0</priority></url>\n` +
+        `  <url><loc>${SITE}/tools</loc><priority>0.97</priority></url>\n` +
+        `</urlset>\n`);
+      process.exit(0);
     }
-    console.error(`[sitemap] no fallback sitemap exists; writing minimal one`);
-    writeFileSync(OUT,
-      `<?xml version="1.0" encoding="UTF-8"?>\n` +
-      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-      `  <url><loc>${SITE}/</loc><priority>1.0</priority></url>\n` +
-      `  <url><loc>${SITE}/tools</loc><priority>0.97</priority></url>\n` +
-      `</urlset>\n`);
-    process.exit(0);
   }
 
   const today = new Date().toISOString().slice(0, 10);

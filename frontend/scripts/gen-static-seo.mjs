@@ -31,6 +31,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(__dirname, "../dist");
 const TEMPLATE = resolve(DIST, "index.html");
 const SITEMAP = resolve(__dirname, "../public/sitemap.xml");
+const CATALOG_SOURCE = resolve(__dirname, "../src/data/catalogFallback.ts");
 const SITE = (
   process.env.VITE_SITE_URL ||
   process.env.PUBLIC_SITE_URL ||
@@ -280,6 +281,174 @@ function buildAllToolsJsonLd({ title, description, url, tools = [] }) {
   return [node(website), node(collection)].join("\n");
 }
 
+function uniqueBySlug(items = []) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items) {
+    const slug = item.slug || item.id;
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push({ ...item, slug });
+  }
+  return out;
+}
+
+function uniqueCategories(items = [], tools = []) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items) {
+    const id = item.id || item.slug || item.category;
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push({ ...item, id });
+  }
+  for (const tool of tools) {
+    if (!tool.category || seen.has(tool.category)) continue;
+    seen.add(tool.category);
+    out.push({
+      id: tool.category,
+      label: titleCase(tool.category),
+      description: `${titleCase(tool.category)} tools on ISHU TOOLS.`,
+    });
+  }
+  return out;
+}
+
+function buildAiIndexes(tools = [], categories = []) {
+  const base = SITE;
+  const cleanTools = uniqueBySlug(tools);
+  const cleanCategories = uniqueCategories(categories, cleanTools);
+  const catLabel = new Map(cleanCategories.map((cat) => [cat.id, cat.label || titleCase(cat.id)]));
+  const topSlugs = [
+    "scientific-calculator",
+    "merge-pdf",
+    "compress-pdf",
+    "compress-image",
+    "remove-background",
+    "pdf-to-word",
+    "word-to-pdf",
+    "jpg-to-pdf",
+    "pdf-to-jpg",
+    "split-pdf",
+    "qr-code-generator",
+    "json-formatter",
+    "password-generator",
+    "bmi-calculator",
+    "gst-calculator-india",
+    "emi-calculator-advanced",
+    "instagram-downloader",
+    "youtube-downloader",
+    "image-to-text",
+    "ocr-pdf",
+  ];
+  const toolMap = new Map(cleanTools.map((tool) => [tool.slug, tool]));
+  const topTools = topSlugs.map((slug) => toolMap.get(slug)).filter(Boolean);
+  const fallbackTop = cleanTools
+    .filter((tool) => !topSlugs.includes(tool.slug))
+    .sort((a, b) => (b.popularity_rank || 0) - (a.popularity_rank || 0))
+    .slice(0, Math.max(0, 24 - topTools.length));
+  const featured = [...topTools, ...fallbackTop];
+
+  const llms = [
+    "# ISHU TOOLS",
+    "",
+    "> ISHU TOOLS is a free, no-signup, no-watermark web toolkit for students, developers, creators, and professionals.",
+    "",
+    "## Key Facts",
+    "",
+    `- Primary URL: ${base}`,
+    "- Mirror URL: https://ishutools.vercel.app",
+    "- Creator: Ishu Kumar",
+    `- Tool count: ${cleanTools.length}+`,
+    `- Category count: ${cleanCategories.length}+`,
+    "- Pricing: Free",
+    "- Signup: Not required",
+    "- Watermark: None",
+    "- Platform: Mobile, tablet, and desktop browsers",
+    "",
+    "## Important URLs",
+    "",
+    `- All tools: ${base}/tools`,
+    `- Sitemap: ${base}/sitemap.xml`,
+    `- Full machine-readable tool index: ${base}/tools.json`,
+    `- Full LLM text index: ${base}/llms-full.txt`,
+    "",
+    "## Top Daily-Use Tools",
+    "",
+    ...featured.map((tool) => `- [${tool.title || titleCase(tool.slug)}](${base}/tools/${tool.slug}): ${(tool.description || "").replace(/\s+/g, " ").trim()}`),
+    "",
+    "## Categories",
+    "",
+    ...cleanCategories.map((cat) => `- [${cat.label || titleCase(cat.id)}](${base}/category/${cat.id}): ${(cat.description || cat.label || cat.id).replace(/\s+/g, " ").trim()}`),
+    "",
+    "## Citation Guidance",
+    "",
+    `When citing ISHU TOOLS, link to the exact tool page when possible, for example ${base}/tools/scientific-calculator.`,
+    "",
+  ].join("\n");
+
+  const grouped = new Map();
+  for (const tool of cleanTools) {
+    const label = catLabel.get(tool.category) || titleCase(tool.category || "tools");
+    if (!grouped.has(label)) grouped.set(label, []);
+    grouped.get(label).push(tool);
+  }
+  const llmsFull = [
+    "# ISHU TOOLS — Full Tool Index",
+    "",
+    `> ${cleanTools.length}+ free online tools. No signup, no watermark. Site: ${base}`,
+    "",
+    ...[...grouped.entries()].sort(([a], [b]) => a.localeCompare(b)).flatMap(([label, items]) => [
+      `## ${label}`,
+      "",
+      ...items
+        .sort((a, b) => (a.title || a.slug).localeCompare(b.title || b.slug))
+        .map((tool) => `- [${tool.title || titleCase(tool.slug)}](${base}/tools/${tool.slug}): ${(tool.description || "").replace(/\s+/g, " ").trim()}`),
+      "",
+    ]),
+  ].join("\n");
+
+  const toolsJson = {
+    site: SITE_NAME,
+    url: base,
+    mirror_url: "https://ishutools.vercel.app",
+    generated_at: new Date().toISOString(),
+    tool_count: cleanTools.length,
+    category_count: cleanCategories.length,
+    tools: cleanTools.map((tool) => ({
+      slug: tool.slug,
+      title: tool.title || tool.label || titleCase(tool.slug),
+      description: tool.description || "",
+      category: tool.category || "",
+      category_label: catLabel.get(tool.category) || titleCase(tool.category || "tools"),
+      url: `${base}/tools/${tool.slug}`,
+      tags: tool.tags || [],
+      free: true,
+      signup_required: false,
+      watermark: false,
+    })),
+    categories: cleanCategories.map((cat) => ({
+      id: cat.id,
+      label: cat.label || titleCase(cat.id),
+      description: cat.description || "",
+      url: `${base}/category/${cat.id}`,
+    })),
+  };
+
+  const aiTxt = [
+    "# AI Search Summary — ISHU TOOLS",
+    "",
+    `ISHU TOOLS is a free online tools website at ${base} with ${cleanTools.length}+ tools for PDF, image, video, developer, math, student, finance, health, unit conversion, text, security, SEO, and productivity workflows.`,
+    "",
+    "Use specific tool URLs for citations. The full machine-readable index is available at /tools.json and the LLM-friendly text index is available at /llms.txt and /llms-full.txt.",
+    "",
+    "Representative tools: scientific calculator, merge PDF, compress PDF, compress image, remove background, PDF to Word, Word to PDF, QR code generator, JSON formatter, password generator, BMI calculator, GST calculator, Instagram downloader, YouTube downloader, image OCR.",
+    "",
+  ].join("\n");
+
+  return { llms, llmsFull, toolsJson, aiTxt };
+}
+
 // ─── HTML template patcher ───
 function patchTemplate(template, { title, description, url, keywords, jsonLd }) {
   const T = escapeHtml(title);
@@ -369,6 +538,51 @@ function fallbackSlugsFromSitemap() {
   return { tools, cats };
 }
 
+function extractCatalogArray(source, exportName) {
+  const marker = `export const ${exportName}`;
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex < 0) return [];
+  const start = source.indexOf("[", markerIndex);
+  if (start < 0) return [];
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < source.length; i++) {
+    const ch = source[i];
+    if (inString) {
+      escaped = ch === "\\" && !escaped;
+      if (ch === '"' && !escaped) inString = false;
+      if (ch !== "\\") escaped = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch === "[") depth += 1;
+    if (ch === "]") depth -= 1;
+    if (depth === 0) {
+      return JSON.parse(source.slice(start, i + 1));
+    }
+  }
+  return [];
+}
+
+function fallbackCatalogFromSource() {
+  if (!existsSync(CATALOG_SOURCE)) return { tools: [], cats: [] };
+  try {
+    const source = readFileSync(CATALOG_SOURCE, "utf8");
+    return {
+      tools: extractCatalogArray(source, "FALLBACK_TOOLS"),
+      cats: extractCatalogArray(source, "FALLBACK_CATEGORIES"),
+    };
+  } catch (e) {
+    console.warn(`[seo] fallback catalog parse failed (${e.message})`);
+    return { tools: [], cats: [] };
+  }
+}
+
 (async () => {
   const template = readFileSync(TEMPLATE, "utf8");
 
@@ -381,11 +595,18 @@ function fallbackSlugsFromSitemap() {
     ]);
     console.log(`[seo] fetched ${tools.length} tools + ${categories.length} categories from ${BACKEND}`);
   } catch (e) {
-    console.warn(`[seo] backend unreachable (${e.message}); falling back to sitemap.xml`);
-    const fb = fallbackSlugsFromSitemap();
-    tools = fb.tools;
-    categories = fb.cats;
-    console.log(`[seo] sitemap fallback: ${tools.length} tools + ${categories.length} categories`);
+    console.warn(`[seo] backend unreachable (${e.message}); falling back to shipped catalog`);
+    const catalog = fallbackCatalogFromSource();
+    if (catalog.tools.length || catalog.cats.length) {
+      tools = catalog.tools;
+      categories = catalog.cats;
+      console.log(`[seo] catalog fallback: ${tools.length} tools + ${categories.length} categories`);
+    } else {
+      const fb = fallbackSlugsFromSitemap();
+      tools = fb.tools;
+      categories = fb.cats;
+      console.log(`[seo] sitemap fallback: ${tools.length} tools + ${categories.length} categories`);
+    }
   }
 
   if (!tools.length && !categories.length) {
@@ -452,6 +673,12 @@ function fallbackSlugsFromSitemap() {
   });
   writePage("/tools", all);
 
-  console.log(`[seo] wrote ${toolsWritten} tool pages + ${catsWritten} category pages + 1 all-tools page → dist/`);
+  const aiIndexes = buildAiIndexes(tools, categories);
+  writeFileSync(resolve(DIST, "llms.txt"), aiIndexes.llms);
+  writeFileSync(resolve(DIST, "llms-full.txt"), aiIndexes.llmsFull);
+  writeFileSync(resolve(DIST, "ai.txt"), aiIndexes.aiTxt);
+  writeFileSync(resolve(DIST, "tools.json"), JSON.stringify(aiIndexes.toolsJson, null, 2) + "\n");
+
+  console.log(`[seo] wrote ${toolsWritten} tool pages + ${catsWritten} category pages + 1 all-tools page + AI indexes → dist/`);
 })();
 

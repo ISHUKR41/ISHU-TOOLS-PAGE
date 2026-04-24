@@ -1,6 +1,5 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react'
 import type { CSSProperties } from 'react'
-import Fuse from 'fuse.js'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Search, ArrowRight, Star, TrendingUp, Grid3X3, List, X,
@@ -13,7 +12,9 @@ import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { toSiteUrl } from '../../lib/siteConfig'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
+import { getToolPriorityScore, searchTools } from '../../lib/toolSearch'
 import ToolIcon from '../../components/tools/ToolIcon'
+import type { ToolDefinition } from '../../types/tools'
 
 /* ─── Constants ─────────────────────────────────────────── */
 
@@ -27,79 +28,10 @@ const NEW_SLUGS = new Set([
   'scientific-calculator', 'uuid-generator',
 ])
 
-const CATEGORY_PRIORITY: string[] = [
-  // Highest traffic — core tool categories
-  'unit-converter',       // 156 tools
-  'developer-tools',      // 129 tools
-  'video-tools',          // 83 tools
-  'student-tools',        // 70 tools
-  'finance-tools',        // 63 tools
-  'image-core',           // 62 tools
-  'text-ops',             // 51 tools
-  'audio-tools',          // 47 tools
-  'image-layout',         // 48 tools
-  'format-lab',           // 35 tools
-  'image-tools',          // 34 tools
-  'productivity',         // 33 tools
-  'health-tools',         // 26 tools
-  'image-enhance',        // 24 tools
-  'utility',              // 24 tools
-  // Mid-tier
-  'developer',            // 14 tools
-  'seo-tools',            // 15 tools
-  'network-tools',        // 13 tools
-  'text-operations',      // 12 tools
-  'pdf-advanced',         // 15 tools
-  'pdf-core',             // 11 tools
-  'office-suite',         // 16 tools
-  'math-tools',           // 28 tools
-  'security-tools',       // 10 tools
-  'color-tools',          // 10 tools
-  'audio',                // 10 tools
-  'ocr-vision',           // 9 tools
-  'writing-tools',        // 8 tools
-  'text-ai',              // 8 tools
-  'video',                // 8 tools
-  'social-media',         // 7 tools
-  'document-convert',     // 7 tools
-  'developer-generators', // 6 tools
-  'hr-jobs',              // 6 tools
-  'text-cleanup',         // 6 tools
-  'batch-automation',     // 6 tools
-  'crypto-web3',          // 5 tools
-  'math-calculators',     // 5 tools
-  // Niche / specialty
-  'pdf-security',         // 7 tools
-  'image-effects',        // 12 tools
-  'ai-writing',           // 4 tools
-  'business-tools',       // 6 tools
-  'travel-tools',         // 4 tools
-  'health-fitness',       // 4 tools
-  'page-ops',             // 15 tools
-  'data-tools',           // 11 tools
-  'ebook-convert',        // 11 tools
-  'vector-lab',           // 6 tools
-  'archive-lab',          // 4 tools
-  'pdf-insights',         // 5 tools
-  'code-tools',           // 4 tools
-  'hash-crypto',          // 4 tools
-  'conversion-tools',     // 10 tools
-  'finance-tax',          // 2 tools
-  'science-tools',        // 3 tools
-  'geography-tools',      // 3 tools
-  'cooking-tools',        // 3 tools
-  'legal-tools',          // 3 tools
-  'health-calculators',   // 3 tools
-  'productivity-tools',   // 2 tools
-  'pdf-tools',            // 1 tool
-]
-
 const SORT_OPTIONS = [
   { value: 'popular', label: 'Smart Rank' },
   { value: 'az', label: 'A → Z' },
   { value: 'za', label: 'Z → A' },
-  { value: 'count-desc', label: 'Most Tools' },
-  { value: 'count-asc', label: 'Fewest Tools' },
 ] as const
 type SortOption = (typeof SORT_OPTIONS)[number]['value']
 
@@ -120,7 +52,7 @@ function SearchAutocomplete({
   onClose,
 }: {
   query: string
-  tools: { slug: string; title: string; description: string; category: string }[]
+  tools: ToolDefinition[]
   onSelect: () => void
   onClose: () => void
 }) {
@@ -130,9 +62,7 @@ function SearchAutocomplete({
 
   const matches = useMemo(() => {
     if (q.length < 1) return []
-    return tools
-      .filter(t => [t.title, t.description, t.category].join(' ').toLowerCase().includes(q))
-      .slice(0, 8)
+    return searchTools(tools, q, { limit: 8 })
   }, [q, tools])
 
   // Reset highlight when query changes — using the React 19 "store-previous-prop" pattern
@@ -538,25 +468,14 @@ export default function AllToolsPage() {
     })
   }, [])
 
-  const rankBoost = useCallback((tool: { slug: string; category?: string; popularity_rank?: number }) => {
-    const localVisits = usageMap[tool.slug] ?? 0
-    const globalVisits = globalPopularity[tool.slug] ?? 0
-    const staticRank = tool.popularity_rank ?? 0
-    const categoryIndex = tool.category ? CATEGORY_PRIORITY.indexOf(tool.category) : -1
-
-    const localScore = Math.log2(localVisits + 1) * 28 + localVisits * 1.8
-    const globalScore = Math.log2(globalVisits + 1) * 18 + Math.min(250, globalVisits) * 0.7
-    const staticScore = staticRank * 0.45
-    const categoryScore = categoryIndex >= 0 ? (CATEGORY_PRIORITY.length - categoryIndex) * 0.35 : 0
-
-    return localScore + globalScore + staticScore + categoryScore
+  const rankBoost = useCallback((tool: ToolDefinition) => {
+    return getToolPriorityScore(tool, usageMap, globalPopularity)
   }, [globalPopularity, usageMap])
 
-  // ── Smart relevance-scored search ──
-  // Multi-word: every word must match somewhere. Sort by computed score
-  // (title exact > title prefix > title word-prefix > slug > tags > description).
+  // Shared smart search: synonyms, typo tolerance, Hinglish aliases, popularity,
+  // personal usage, and daily-use priority all flow through one engine.
   const filteredTools = useMemo(() => {
-    const raw = deferredQuery.trim().toLowerCase()
+    const raw = deferredQuery.trim()
     const inCat = (tool: { category: string }) =>
       activeCategory === 'all' || tool.category === activeCategory
 
@@ -576,89 +495,12 @@ export default function AllToolsPage() {
       })
     }
 
-    const words = raw.split(/\s+/).filter(Boolean)
-
-    type Scored = { tool: typeof tools[number]; score: number }
-    const scored: Scored[] = []
-
-    for (const tool of tools) {
-      if (!inCat(tool)) continue
-      const title = tool.title.toLowerCase()
-      const slug = tool.slug.toLowerCase()
-      const desc = (tool.description || '').toLowerCase()
-      const tagText = (tool.tags || []).join(' ').toLowerCase()
-      const haystack = `${title} ${slug} ${desc} ${tagText}`
-
-      // Multi-word AND — every word must appear somewhere
-      if (!words.every(w => haystack.includes(w))) continue
-
-      let score = 0
-      // ── Whole-query bonuses (most important) ──
-      if (title === raw) score += 1000
-      else if (title.startsWith(raw)) score += 500
-      else {
-        // Word-boundary prefix match (e.g. "merge" → "Merge PDF")
-        const titleWords = title.split(/\s+/)
-        if (titleWords.some(w => w.startsWith(raw))) score += 300
-        else if (title.includes(raw)) score += 150
-      }
-      if (slug === raw) score += 800
-      else if (slug.startsWith(raw)) score += 250
-      else if (slug.includes(raw)) score += 100
-      if (tagText.includes(raw)) score += 80
-      if (desc.includes(raw)) score += 30
-
-      // ── Per-word bonuses (multi-word queries) ──
-      for (const w of words) {
-        if (title.includes(w)) score += 40
-        if (slug.includes(w)) score += 20
-        if (tagText.includes(w)) score += 15
-        if (desc.includes(w)) score += 5
-      }
-
-      // Shorter titles = more specific match → small boost
-      score += Math.max(0, 30 - title.length / 2)
-
-      // Trending/new tools get a tiny tiebreaker boost
-      if (TRENDING_SLUGS.has(tool.slug)) score += 8
-      if (NEW_SLUGS.has(tool.slug)) score += 4
-
-      // Smart usage boost — tools you actually open rank higher in your search results.
-      // Capped so personalization/global trends cannot override core lexical relevance.
-      score += Math.min(180, rankBoost(tool) * 0.2)
-
-      scored.push({ tool, score })
-    }
-
-    scored.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
-
-    // Typo-tolerance safety net: when the exact-match path returns very few
-    // hits, fall back to Fuse.js fuzzy search so misspellings still find tools.
-    if (scored.length < 4 && raw.length >= 2) {
-      const seen = new Set(scored.map(s => s.tool.slug))
-      const pool = activeCategory === 'all' ? tools : tools.filter(inCat)
-      const fuse = new Fuse(pool, {
-        keys: [
-          { name: 'title', weight: 0.55 },
-          { name: 'slug', weight: 0.20 },
-          { name: 'tags', weight: 0.15 },
-          { name: 'description', weight: 0.10 },
-        ],
-        threshold: 0.38,
-        ignoreLocation: true,
-        minMatchCharLength: 2,
-        includeScore: true,
-      })
-      for (const hit of fuse.search(raw, { limit: 12 })) {
-        if (!seen.has(hit.item.slug)) {
-          scored.push({ tool: hit.item, score: -1 - (hit.score ?? 0) })
-          seen.add(hit.item.slug)
-        }
-      }
-    }
-
-    return scored.map(s => s.tool)
-  }, [activeCategory, deferredQuery, tools, sortBy, rankBoost])
+    return searchTools(tools, raw, {
+      category: activeCategory,
+      localUsage: usageMap,
+      globalPopularity,
+    })
+  }, [activeCategory, deferredQuery, tools, sortBy, rankBoost, usageMap, globalPopularity])
 
   const isSearching   = deferredQuery.trim().length > 0
 

@@ -32,6 +32,7 @@ import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 import { trackToolVisit } from '../../lib/usageTracker'
+import ScientificCalculator from '../calculator/ScientificCalculator'
 
 function normalizePayloadValue(value: string, fieldType: string) {
   if (fieldType === 'number') {
@@ -754,6 +755,7 @@ export default function ToolPage() {
   }
 
   const hasResult = !!(runMessage || runError || jsonResult || downloadUrl)
+  const isScientificCalculator = tool.slug === 'scientific-calculator'
 
   return (
     <SiteShell>
@@ -821,6 +823,10 @@ export default function ToolPage() {
                 </div>
               </div>
 
+              {isScientificCalculator ? (
+                <ScientificCalculator accent={toolTheme.accent} />
+              ) : (
+              <>
               {/* Progress bar */}
               <AnimatePresence>
                 {running && (
@@ -1147,11 +1153,13 @@ export default function ToolPage() {
                   )}
                 </div>
               </form>
+              </>
+              )}
             </motion.section>
 
             {/* Results */}
             <AnimatePresence>
-              {hasResult && (
+              {!isScientificCalculator && hasResult && (
                 <motion.section
                   ref={resultRef}
                   className='result-card'

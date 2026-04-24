@@ -28,6 +28,7 @@ function RouteContent() {
   const element = useRoutes([
     { path: '/',             element: <HomePage />     },
     { path: '/tools',        element: <AllToolsPage /> },
+    { path: '/scientific-calculator', element: <Navigate to='/tools/scientific-calculator' replace /> },
     { path: '/tools/:slug',  element: <ToolPage />     },
     { path: '/category/:categoryId', element: <CategoryPage /> },
     { path: '*',             element: <Navigate to='/' replace /> },

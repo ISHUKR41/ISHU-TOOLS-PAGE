@@ -6,6 +6,7 @@ All pure-Python implementations – no external APIs needed.
 """
 from __future__ import annotations
 
+import ast
 import math
 import random
 import re
@@ -23,6 +24,129 @@ def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult
 
 def _get_text(payload: dict[str, Any]) -> str:
     return str(payload.get("text", "") or payload.get("input", "")).strip()
+
+
+def _safe_scientific_eval(expression: str, angle_mode: str = "rad") -> float:
+    """Evaluate a scientific-calculator expression with an AST whitelist."""
+    angle = str(angle_mode or "rad").strip().lower()
+    use_degrees = angle.startswith("deg")
+
+    def _to_rad(value: float) -> float:
+        return math.radians(value) if use_degrees else value
+
+    def _from_rad(value: float) -> float:
+        return math.degrees(value) if use_degrees else value
+
+    functions: dict[str, Any] = {
+        "sin": lambda x: math.sin(_to_rad(x)),
+        "cos": lambda x: math.cos(_to_rad(x)),
+        "tan": lambda x: math.tan(_to_rad(x)),
+        "asin": lambda x: _from_rad(math.asin(x)),
+        "acos": lambda x: _from_rad(math.acos(x)),
+        "atan": lambda x: _from_rad(math.atan(x)),
+        "sinh": math.sinh,
+        "cosh": math.cosh,
+        "tanh": math.tanh,
+        "sqrt": math.sqrt,
+        "cbrt": lambda x: math.copysign(abs(x) ** (1 / 3), x),
+        "ln": math.log,
+        "log": math.log,
+        "log10": math.log10,
+        "log2": math.log2,
+        "exp": math.exp,
+        "abs": abs,
+        "round": round,
+        "floor": math.floor,
+        "ceil": math.ceil,
+        "pow": pow,
+        "factorial": math.factorial,
+        "gcd": math.gcd,
+        "radians": math.radians,
+        "degrees": math.degrees,
+    }
+    constants = {"pi": math.pi, "e": math.e, "tau": math.tau}
+
+    expr = expression.strip()
+    if not expr:
+        raise ValueError("Enter a math expression")
+    if len(expr) > 500:
+        raise ValueError("Expression is too long")
+    expr = (
+        expr.replace("×", "*")
+        .replace("÷", "/")
+        .replace("−", "-")
+        .replace("π", "pi")
+        .replace("^", "**")
+    )
+    expr = re.sub(r"(?<![\w.])(\d+(?:\.\d+)?)%", r"(\1/100)", expr)
+    if re.search(r"[^0-9+\-*/().,% a-zA-Z_*\t]", expr):
+        raise ValueError("Expression contains invalid characters")
+
+    tree = ast.parse(expr, mode="eval")
+    node_count = sum(1 for _ in ast.walk(tree))
+    if node_count > 140:
+        raise ValueError("Expression is too complex")
+
+    def _eval(node: ast.AST) -> float:
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return float(node.value)
+        if isinstance(node, ast.Name):
+            key = node.id.lower()
+            if key in constants:
+                return float(constants[key])
+            raise ValueError(f"Unknown name '{node.id}'")
+        if isinstance(node, ast.UnaryOp):
+            value = _eval(node.operand)
+            if isinstance(node.op, ast.UAdd):
+                return value
+            if isinstance(node.op, ast.USub):
+                return -value
+            raise ValueError("Unsupported unary operator")
+        if isinstance(node, ast.BinOp):
+            left = _eval(node.left)
+            right = _eval(node.right)
+            if isinstance(node.op, ast.Add):
+                return left + right
+            if isinstance(node.op, ast.Sub):
+                return left - right
+            if isinstance(node.op, ast.Mult):
+                return left * right
+            if isinstance(node.op, ast.Div):
+                if right == 0:
+                    raise ValueError("Cannot divide by zero")
+                return left / right
+            if isinstance(node.op, ast.Mod):
+                if right == 0:
+                    raise ValueError("Cannot divide by zero")
+                return left % right
+            if isinstance(node.op, ast.Pow):
+                if abs(right) > 1000:
+                    raise ValueError("Exponent is too large")
+                return left ** right
+            raise ValueError("Unsupported operator")
+        if isinstance(node, ast.Call):
+            if not isinstance(node.func, ast.Name):
+                raise ValueError("Unsupported function")
+            name = node.func.id.lower()
+            fn = functions.get(name)
+            if not fn:
+                raise ValueError(f"Unsupported function '{node.func.id}'")
+            if node.keywords:
+                raise ValueError("Keyword arguments are not supported")
+            args = [_eval(arg) for arg in node.args]
+            if name in {"factorial", "gcd"}:
+                args = [int(arg) for arg in args]
+            if name == "factorial" and (len(args) != 1 or args[0] < 0 or args[0] > 170):
+                raise ValueError("Factorial supports whole numbers from 0 to 170")
+            return float(fn(*args))
+        raise ValueError("Unsupported expression")
+
+    result = _eval(tree)
+    if not math.isfinite(result):
+        raise ValueError("Result is not finite")
+    return result
 
 
 # ============================================================================
@@ -626,39 +750,31 @@ def handle_stopwatch_calculator(files, payload, output_dir) -> ExecutionResult:
 
 
 def handle_scientific_calculator(files, payload, output_dir) -> ExecutionResult:
-    """Evaluate mathematical expressions safely"""
+    """Evaluate mathematical expressions safely."""
     text = _get_text(payload)
     if not text:
         return _text_result({"error": "Enter a math expression"}, "Error")
 
-    # Safe math namespace
-    safe_ns = {
-        "sin": math.sin, "cos": math.cos, "tan": math.tan,
-        "asin": math.asin, "acos": math.acos, "atan": math.atan,
-        "sqrt": math.sqrt, "log": math.log, "log10": math.log10,
-        "log2": math.log2, "exp": math.exp, "pi": math.pi,
-        "e": math.e, "abs": abs, "pow": pow, "round": round,
-        "floor": math.floor, "ceil": math.ceil,
-        "factorial": math.factorial, "gcd": math.gcd,
-        "radians": math.radians, "degrees": math.degrees,
-    }
-
-    # Clean expression
-    expr = text.strip()
-    # Only allow safe characters
-    if re.search(r'[^0-9+\-*/().,%^a-zA-Z_ \t]', expr):
-        return _text_result({"error": "Expression contains invalid characters"}, "Error")
-
-    # Replace ^ with **
-    expr = expr.replace("^", "**")
-
     try:
-        result = eval(expr, {"__builtins__": {}}, safe_ns)
+        angle_mode = str(
+            payload.get("angle_mode")
+            or payload.get("angleMode")
+            or payload.get("angle")
+            or payload.get("mode")
+            or "rad"
+        )
+        result = _safe_scientific_eval(text, angle_mode)
+        formatted = f"{result:.12g}"
         return _text_result({
-            "result": str(result),
+            "result": formatted,
             "expression": text,
-            "value": result if isinstance(result, (int, float)) else str(result),
-        }, f"{text} = {result}")
+            "value": result,
+            "angle_mode": "deg" if angle_mode.lower().startswith("deg") else "rad",
+            "supported_functions": [
+                "sin", "cos", "tan", "asin", "acos", "atan", "sqrt", "cbrt",
+                "ln", "log", "log10", "log2", "exp", "abs", "pow", "factorial",
+            ],
+        }, f"{text} = {formatted}")
     except Exception as e:
         return _text_result({"error": f"Calculation error: {e}"}, "Error")
 

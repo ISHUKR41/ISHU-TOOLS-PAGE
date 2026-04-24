@@ -1,4 +1,4 @@
-from collections import defaultdict, OrderedDict
+from collections import Counter, defaultdict, OrderedDict
 from datetime import date
 import hashlib
 import json
@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 import importlib.util
 import platform
+import re
 import shutil
 from threading import Lock
 from typing import Annotated, Any
@@ -57,9 +58,135 @@ def _check_rate_limit(ip: str) -> None:
 
 
 # ── Global popularity telemetry (persistent) ───────────────────────────────
-_TOOL_SLUGS = {tool.slug for tool in TOOLS}
+_TOOL_BY_SLUG: dict[str, ToolDefinition] = {}
+_TOOL_SLUG_COUNTS = Counter(tool.slug for tool in TOOLS)
+_DUPLICATE_TOOL_SLUGS = sorted(slug for slug, count in _TOOL_SLUG_COUNTS.items() if count > 1)
+for _tool in TOOLS:
+    _TOOL_BY_SLUG.setdefault(_tool.slug, _tool)
+_TOOL_SLUGS = set(_TOOL_BY_SLUG)
+_CATEGORY_IDS = {category.id for category in CATEGORIES}
+_ORPHAN_CATEGORY_IDS = sorted({tool.category for tool in TOOLS if tool.category not in _CATEGORY_IDS})
+_MISSING_HANDLER_SLUGS = sorted(slug for slug in _TOOL_SLUGS if slug not in HANDLERS)
 _POPULARITY_FILE = STORAGE_DIR / "tool_popularity.json"
 _popularity_lock = Lock()
+
+_DAILY_CATEGORY_PRIORITY = [
+    "pdf-core",
+    "image-core",
+    "unit-converter",
+    "developer-tools",
+    "math-tools",
+    "student-tools",
+    "finance-tools",
+    "health-tools",
+    "text-ops",
+    "video-tools",
+    "office-suite",
+    "format-lab",
+    "image-layout",
+    "image-tools",
+    "pdf-advanced",
+    "pdf-security",
+    "network-tools",
+    "color-tools",
+    "security-tools",
+    "productivity",
+    "audio-tools",
+    "data-tools",
+    "seo-tools",
+    "social-media",
+]
+
+_DAILY_TOOL_BONUS = {
+    "scientific-calculator": 260,
+    "merge-pdf": 250,
+    "compress-pdf": 248,
+    "compress-image": 246,
+    "pdf-to-word": 244,
+    "word-to-pdf": 242,
+    "remove-background": 240,
+    "jpg-to-pdf": 238,
+    "pdf-to-jpg": 236,
+    "split-pdf": 234,
+    "qr-code-generator": 232,
+    "json-formatter": 230,
+    "password-generator": 228,
+    "bmi-calculator": 226,
+    "percentage-calculator": 224,
+    "age-calculator": 222,
+    "gst-calculator-india": 220,
+    "emi-calculator-advanced": 218,
+    "sip-calculator-india": 216,
+    "income-tax-calculator-india": 214,
+    "word-counter": 212,
+    "case-converter": 210,
+    "uuid-generator": 208,
+    "base64-encode": 206,
+    "base64-decode": 204,
+    "unit-converter": 202,
+    "currency-converter": 200,
+    "instagram-downloader": 198,
+    "youtube-downloader": 196,
+    "image-to-text": 194,
+    "ocr-pdf": 192,
+}
+
+_SEARCH_SYNONYMS = {
+    "combine": ("merge", "join", "jodo"),
+    "join": ("merge", "combine", "jodo"),
+    "merge": ("combine", "join", "jodo"),
+    "shrink": ("compress", "reduce", "minify", "optimize", "kam"),
+    "compress": ("shrink", "reduce", "optimize", "minify", "kam"),
+    "reduce": ("compress", "shrink", "kam"),
+    "bg": ("background", "remove background"),
+    "background": ("bg", "remove background"),
+    "remove": ("delete", "erase", "hatao", "nikalo"),
+    "delete": ("remove", "hatao"),
+    "convert": ("change", "transform", "badlo"),
+    "change": ("convert", "badlo"),
+    "calculator": ("calc", "calculate", "ganit"),
+    "calc": ("calculator", "calculate"),
+    "calculate": ("calculator", "compute"),
+    "scientific": ("calculator", "math", "sin", "cos", "log"),
+    "maths": ("math", "calculator"),
+    "math": ("maths", "calculator"),
+    "photo": ("image", "picture", "pic"),
+    "image": ("photo", "picture", "img", "pic"),
+    "img": ("image", "photo", "picture"),
+    "pic": ("image", "photo", "picture"),
+    "picture": ("image", "photo"),
+    "pdf": ("document", "file"),
+    "document": ("pdf", "doc", "file"),
+    "doc": ("document", "word", "pdf"),
+    "docx": ("word", "document"),
+    "word": ("docx", "document"),
+    "xlsx": ("excel", "spreadsheet"),
+    "excel": ("xlsx", "spreadsheet"),
+    "pptx": ("powerpoint", "presentation", "slides"),
+    "powerpoint": ("pptx", "presentation", "slides"),
+    "qr": ("qrcode", "qr code"),
+    "qrcode": ("qr", "qr code"),
+    "url": ("link",),
+    "link": ("url",),
+    "instagram": ("insta", "ig", "reels", "reel"),
+    "insta": ("instagram", "ig", "reel"),
+    "ig": ("instagram", "insta", "reel"),
+    "reel": ("instagram", "insta", "reels"),
+    "reels": ("instagram", "insta", "reel"),
+    "youtube": ("yt", "shorts", "video"),
+    "yt": ("youtube",),
+    "download": ("save", "fetch", "get"),
+    "save": ("download", "fetch", "get"),
+    "get": ("download", "fetch"),
+    "saver": ("download", "save"),
+    "create": ("generate", "make", "banao"),
+    "generate": ("create", "make", "banao"),
+    "banao": ("make", "create", "generate"),
+    "jodo": ("merge", "join", "combine"),
+    "hatao": ("remove", "delete"),
+    "nikalo": ("extract", "remove"),
+    "badlo": ("convert", "change"),
+}
 
 
 def _load_popularity_store() -> tuple[dict[str, int], int, str]:
@@ -115,57 +242,136 @@ def _popularity_snapshot() -> tuple[dict[str, int], int, str]:
         return dict(_tool_popularity), _popularity_total, _popularity_updated_at
 
 
-def _query_score(tool: ToolDefinition, query: str, popularity_map: dict[str, int]) -> int:
-    tokens = [token for token in query.split() if token]
-    title = tool.title.lower()
-    slug = tool.slug.lower()
-    desc = tool.description.lower()
-    tags = " ".join(tool.tags).lower()
-    haystack = f"{title} {slug} {desc} {tags}"
+def _normalize_search_text(value: str) -> str:
+    return re.sub(
+        r"\s+",
+        " ",
+        re.sub(r"[^a-z0-9.+#%\-\s]", " ", str(value).lower().replace("_", " ").replace("/", " ")),
+    ).strip()
 
-    if tokens and not all(token in haystack for token in tokens):
-        return -1
 
-    score = 0
-    if title == query:
-        score += 1000
-    elif title.startswith(query):
-        score += 550
-    elif query in title:
-        score += 260
+def _search_terms(query: str) -> list[str]:
+    return [term for term in _normalize_search_text(query).split() if term]
 
-    if slug == query:
-        score += 850
-    elif slug.startswith(query):
-        score += 230
-    elif query in slug:
-        score += 140
 
-    if query in tags:
-        score += 120
-    if query in desc:
-        score += 80
+def _expand_search_term(term: str) -> list[str]:
+    expanded = [term, *_SEARCH_SYNONYMS.get(term, ())]
+    seen: set[str] = set()
+    values: list[str] = []
+    for item in expanded:
+        normalized = _normalize_search_text(item)
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            values.append(normalized)
+    return values
 
+
+def _levenshtein(a: str, b: str) -> int:
+    if a == b:
+        return 0
+    if not a:
+        return len(b)
+    if not b:
+        return len(a)
+    row = list(range(len(b) + 1))
+    for i, char_a in enumerate(a, start=1):
+        prev = row[0]
+        row[0] = i
+        for j, char_b in enumerate(b, start=1):
+            tmp = row[j]
+            row[j] = min(row[j] + 1, row[j - 1] + 1, prev + (0 if char_a == char_b else 1))
+            prev = tmp
+    return row[-1]
+
+
+def _fuzzy_word_match(term: str, haystack: str) -> bool:
+    if len(term) < 3:
+        return False
+    max_distance = 1 if len(term) <= 5 else 2
+    for word in re.split(r"[\s-]+", haystack):
+        if abs(len(word) - len(term)) <= max_distance and _levenshtein(term, word) <= max_distance:
+            return True
+    return False
+
+
+def _tool_priority_score(tool: ToolDefinition, popularity_map: dict[str, int]) -> float:
+    global_count = popularity_map.get(tool.slug, 0)
+    static_rank = float(tool.popularity_rank or 0)
+    try:
+        category_index = _DAILY_CATEGORY_PRIORITY.index(tool.category)
+    except ValueError:
+        category_score = 0.0
+    else:
+        category_score = float(len(_DAILY_CATEGORY_PRIORITY) - category_index) * 1.5
+    return (
+        float(_DAILY_TOOL_BONUS.get(tool.slug, 0))
+        + static_rank * 0.8
+        + category_score
+        + min(260.0, float(global_count)) * 0.7
+        + (20.0 * ((global_count + 1) ** 0.5))
+    )
+
+
+def _query_score(tool: ToolDefinition, query: str, popularity_map: dict[str, int]) -> float:
+    normalized_query = _normalize_search_text(query)
+    tokens = _search_terms(normalized_query)
+    title = _normalize_search_text(tool.title)
+    slug = _normalize_search_text(tool.slug.replace("-", " "))
+    desc = _normalize_search_text(tool.description)
+    tags = _normalize_search_text(" ".join(tool.tags))
+    category = _normalize_search_text(tool.category)
+    haystack = f"{title} {slug} {desc} {tags} {category}"
+
+    if not tokens:
+        return _tool_priority_score(tool, popularity_map)
+
+    score = 0.0
     for token in tokens:
-        if token in title:
-            score += 45
-        if token in slug:
-            score += 24
-        if token in tags:
-            score += 18
-        if token in desc:
-            score += 7
+        best = 0.0
+        for index, term in enumerate(_expand_search_term(token)):
+            multiplier = 1.0 if index == 0 else 0.72
+            if title == term:
+                best = max(best, 1200.0 * multiplier)
+            elif slug == term:
+                best = max(best, 1100.0 * multiplier)
+            elif title.startswith(term):
+                best = max(best, 720.0 * multiplier)
+            elif slug.startswith(term):
+                best = max(best, 680.0 * multiplier)
+            elif re.search(rf"\b{re.escape(term)}", title):
+                best = max(best, 460.0 * multiplier)
+            elif term in title:
+                best = max(best, 300.0 * multiplier)
+            elif term in slug:
+                best = max(best, 260.0 * multiplier)
+            elif term in tags:
+                best = max(best, 180.0 * multiplier)
+            elif term in desc:
+                best = max(best, 80.0 * multiplier)
+            elif term in category:
+                best = max(best, 52.0 * multiplier)
+            elif index == 0 and _fuzzy_word_match(term, haystack):
+                best = max(best, 36.0)
+        if best == 0:
+            return -1
+        score += best
 
-    score += min(120, popularity_map.get(tool.slug, 0))
-    score += min(80, int(tool.popularity_rank or 0))
+    if title == normalized_query:
+        score += 600.0
+    if slug == normalized_query:
+        score += 540.0
+    if normalized_query and normalized_query in title:
+        score += 220.0
+    if normalized_query and normalized_query in slug:
+        score += 190.0
+
+    score += max(0.0, 44.0 - len(title) / 2)
+    score += min(220.0, _tool_priority_score(tool, popularity_map) * 0.24)
     return score
 
 
 def _catalog_score(tool: ToolDefinition, popularity_map: dict[str, int]) -> float:
-    global_count = popularity_map.get(tool.slug, 0)
-    global_boost = min(220.0, 18.0 * (global_count + 1) ** 0.5)
-    static_rank = float(tool.popularity_rank or 0)
-    return global_boost + static_rank
+    return _tool_priority_score(tool, popularity_map)
 
 
 # ── In-memory LRU cache for text-only tool results ────────────────────────
@@ -243,16 +449,24 @@ app.add_middleware(
 
 
 def get_tool(slug: str) -> ToolDefinition:
-    for tool in TOOLS:
-        if tool.slug == slug:
-            return tool
+    tool = _TOOL_BY_SLUG.get(slug)
+    if tool:
+        return tool
     raise HTTPException(status_code=404, detail="Tool not found")
 
 
 @app.get("/health")
 @app.get("/api/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+def health() -> dict[str, Any]:
+    return {
+        "status": "ok" if not _MISSING_HANDLER_SLUGS and not _DUPLICATE_TOOL_SLUGS else "degraded",
+        "tools": len(_TOOL_SLUGS),
+        "handlers": len(HANDLERS),
+        "categories": len(_CATEGORY_IDS),
+        "missing_handlers": len(_MISSING_HANDLER_SLUGS),
+        "duplicate_slugs": len(_DUPLICATE_TOOL_SLUGS),
+        "orphan_categories": len(_ORPHAN_CATEGORY_IDS),
+    }
 
 
 @app.get("/sitemap.xml", response_class=Response)
@@ -570,13 +784,7 @@ def categories() -> Response:
 
 @app.get("/api/tools")
 def list_tools(category: str | None = None, q: str | None = None) -> Response:
-    seen: set[str] = set()
-    records = []
-    for tool in TOOLS:
-        if tool.slug in seen:
-            continue
-        seen.add(tool.slug)
-        records.append(tool)
+    records = list(_TOOL_BY_SLUG.values())
 
     if category:
         records = [tool for tool in records if tool.category == category]
@@ -585,7 +793,7 @@ def list_tools(category: str | None = None, q: str | None = None) -> Response:
 
     if q:
         query = q.lower().strip()
-        scored: list[tuple[int, ToolDefinition]] = []
+        scored: list[tuple[float, ToolDefinition]] = []
         for tool in records:
             score = _query_score(tool, query, popularity_map)
             if score >= 0:
@@ -614,6 +822,26 @@ def tool_popularity() -> Response:
     return JSONResponse(
         content=payload,
         headers={"Cache-Control": "public, max-age=60, stale-while-revalidate=30"},
+    )
+
+
+@app.get("/api/tools/integrity")
+def tools_integrity() -> Response:
+    """Machine-readable catalog/handler integrity report for deploy checks."""
+    payload = {
+        "status": "ok" if not _MISSING_HANDLER_SLUGS and not _DUPLICATE_TOOL_SLUGS else "degraded",
+        "tool_count": len(_TOOL_SLUGS),
+        "raw_tool_records": len(TOOLS),
+        "handler_count": len(HANDLERS),
+        "category_count": len(_CATEGORY_IDS),
+        "missing_handlers": _MISSING_HANDLER_SLUGS,
+        "duplicate_slugs": _DUPLICATE_TOOL_SLUGS,
+        "orphan_categories": _ORPHAN_CATEGORY_IDS,
+        "coverage_percent": round(((len(_TOOL_SLUGS) - len(_MISSING_HANDLER_SLUGS)) / max(1, len(_TOOL_SLUGS))) * 100, 2),
+    }
+    return JSONResponse(
+        content=payload,
+        headers={"Cache-Control": "public, max-age=60, stale-while-revalidate=60"},
     )
 
 
@@ -740,7 +968,7 @@ def run_tool(
     request: Request,
     background_tasks: BackgroundTasks,
     slug: str,
-    files: Annotated[list[UploadFile], File()] = [],
+    files: Annotated[list[UploadFile] | None, File()] = None,
     payload: Annotated[str | None, Form()] = None,
 ):
     # Rate limiting — 60 requests per minute per IP
@@ -752,10 +980,11 @@ def run_tool(
     if not handler:
         raise HTTPException(status_code=501, detail=f"Handler is not implemented for '{tool.title}'. Please check back later.")
 
+    uploaded_files = files or []
     payload_data = parse_payload(payload)
 
     # ── Check LRU cache for text-only tools ──────────────────────────────────
-    use_cache = _should_cache(slug, files)
+    use_cache = _should_cache(slug, uploaded_files)
     if use_cache:
         cached = _tool_cache.get(slug, payload_data)
         if cached is not None:
@@ -765,7 +994,7 @@ def run_tool(
             )
 
     # ── Validate file upload requirements ──
-    if tool.input_kind == "files" and not files:
+    if tool.input_kind == "files" and not uploaded_files:
         raise HTTPException(
             status_code=422,
             detail=f"{tool.title} requires at least one file to be uploaded.",
@@ -773,7 +1002,7 @@ def run_tool(
 
     # ── Validate individual file sizes (100 MB max per file) ──
     MAX_FILE_SIZE = 100 * 1024 * 1024
-    for f in files:
+    for f in uploaded_files:
         if f.size and f.size > MAX_FILE_SIZE:
             raise HTTPException(
                 status_code=413,
@@ -808,7 +1037,15 @@ def run_tool(
         # Fonts
         ".ttf", ".otf", ".woff", ".woff2",
     }
-    for f in files:
+    MAX_TOTAL_UPLOAD_SIZE = 250 * 1024 * 1024
+    known_total_size = sum(int(f.size or 0) for f in uploaded_files)
+    if known_total_size > MAX_TOTAL_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="Total upload size exceeds 250 MB. Please split the job into smaller batches.",
+        )
+
+    for f in uploaded_files:
         if f.filename:
             ext = Path(f.filename).suffix.lower()
             if ext and ext not in ALLOWED_EXTENSIONS:
@@ -826,7 +1063,7 @@ def run_tool(
 
     job_id, input_dir, output_dir = create_job_workspace()
     job_root = input_dir.parent   # parent dir of input/ and output/
-    saved_files = save_uploads(files, input_dir) if files else []
+    saved_files = save_uploads(uploaded_files, input_dir) if uploaded_files else []
 
     try:
         result = handler(saved_files, payload_data, output_dir)
@@ -838,7 +1075,7 @@ def run_tool(
         raise HTTPException(status_code=422, detail=f"Invalid input: {str(exc)[:200]}") from exc
     except Exception as exc:
         background_tasks.add_task(_cleanup_workspace, job_root)
-        friendly = _friendly_error_message(exc, files)
+        friendly = _friendly_error_message(exc, uploaded_files)
         # Detect user-input/file-validation issues and surface them as 400 (not scary 500).
         low = friendly.lower()
         validation_signals = (

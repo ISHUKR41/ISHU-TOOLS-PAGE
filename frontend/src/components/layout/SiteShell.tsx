@@ -219,6 +219,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <Link to='/tools/compress-pdf' className='nav-pill' onClick={() => setMegaOpen(false)}>Compress PDF</Link>
             <Link to='/tools/compress-image' className='nav-pill' onClick={() => setMegaOpen(false)}>Compress Image</Link>
             <Link to='/tools/remove-background' className='nav-pill' onClick={() => setMegaOpen(false)}>Remove BG</Link>
+            <Link to='/tools/scientific-calculator' className='nav-pill' onClick={() => setMegaOpen(false)}>Scientific</Link>
 
             <div className='nav-mega-wrap' ref={megaRef}>
               <button

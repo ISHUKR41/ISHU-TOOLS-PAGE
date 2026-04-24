@@ -15,6 +15,9 @@ Sitemap: https://ishutools.fun/sitemap.xml
 Sitemap: https://ishutools.vercel.app/sitemap.xml
 
 # AI assistant index — see /llms.txt (https://llmstxt.org)
+# LLM summary: https://ishutools.fun/llms.txt
+# Full LLM index: https://ishutools.fun/llms-full.txt
+# Machine-readable tools JSON: https://ishutools.fun/tools.json
 
 # ─── Traditional search engines ───
 User-agent: Googlebot

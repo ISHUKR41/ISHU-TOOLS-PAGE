@@ -5,13 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- Modern font stack — Inter for UI, JetBrains Mono for code/numbers.
-         preconnect first so DNS+TLS happen in parallel with HTML parse. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'" />
-
     <!-- ═══════════════════════════════════════════════════════════════════
          CRITICAL CSS — Inlined first, no external dependency, zero FOUC.
          ALL values EXACTLY mirror frontend/src/index.css to prevent reflow.
@@ -345,15 +338,9 @@
     <link rel="preload" href="/src/index.css" as="style" />
     <link rel="stylesheet" href="/src/index.css" />
 
-    <!-- Resource Hints — preconnect before any external request -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Same-origin API preconnect (production) — saves DNS+TCP+TLS on first call -->
-    <link rel="dns-prefetch" href="https://ishutools.fun" />
-    <link rel="dns-prefetch" href="https://api.ishutools.fun" />
-    <link rel="preconnect" href="https://api.ishutools.fun" crossorigin />
+    <!-- Resource hints — warm the production API used by Vercel rewrites. -->
+    <link rel="dns-prefetch" href="https://ishu-tools-page.onrender.com" />
+    <link rel="preconnect" href="https://ishu-tools-page.onrender.com" crossorigin />
 
     <!-- Primary SEO -->
     <title>ISHU TOOLS – Indian Student Hub University Tools | 1200+ Free PDF, Image, Developer & Student Tools by Ishu Kumar</title>
@@ -698,17 +685,6 @@
     <meta name="distribution" content="global" />
     <meta name="coverage" content="Worldwide" />
 
-    <!-- Google Fonts — NON-BLOCKING async load. media="print" trick:
-         browser fetches but does NOT apply until onload fires → zero render-block.
-         System font stack (defined in :root above) shows instantly with no FOUC. -->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional"
-          media="print"
-          onload="this.media='all';this.onload=null" />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=optional" />
-    </noscript>
-
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -717,11 +693,6 @@
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     <!-- Performance: warm up the API connection so the first tool run is faster -->
-    <link rel="dns-prefetch" href="https://ishutools-backend.onrender.com" />
-    <link rel="preconnect" href="https://ishutools-backend.onrender.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <!-- WebSite + SearchAction → Google sitelinks search box on brand SERPs -->
     <script type="application/ld+json">
     {

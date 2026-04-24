@@ -4,7 +4,7 @@
  */
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ClipboardCopy, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { ClipboardCopy, Check, ChevronDown, ChevronUp, Download, FileJson, Table2 } from 'lucide-react'
 
 interface SmartResultProps {
   data: Record<string, unknown>
@@ -12,7 +12,117 @@ interface SmartResultProps {
   accent?: string
 }
 
-function CopyButton({ text }: { text: string }) {
+const MAX_GENERIC_TABLE_ROWS = 80
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function formatLabel(label: string) {
+  return label.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined || value === '') return '—'
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
+  if (typeof value === 'number') return Number.isFinite(value) ? value.toLocaleString() : String(value)
+  if (Array.isArray(value)) return value.map(formatValue).join(', ')
+  if (isRecord(value)) return JSON.stringify(value, null, 2)
+  return String(value)
+}
+
+function stringifyJson(value: unknown) {
+  return JSON.stringify(value, null, 2)
+}
+
+function downloadTextFile(filename: string, text: string, type: string) {
+  const blob = new Blob([text], { type })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+function toCsv(rows: Record<string, unknown>[]) {
+  const headers = Array.from(new Set(rows.flatMap(row => Object.keys(row))))
+  const escape = (value: unknown) => `"${formatValue(value).replace(/"/g, '""')}"`
+  return [
+    headers.map(escape).join(','),
+    ...rows.map(row => headers.map(header => escape(row[header])).join(',')),
+  ].join('\n')
+}
+
+function rowsFromArray(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) return []
+  return value.filter(isRecord)
+}
+
+function ResultActions({
+  data,
+  slug,
+  tableData,
+}: {
+  data: Record<string, unknown>
+  slug: string
+  tableData?: Record<string, unknown>[]
+}) {
+  const json = stringifyJson(data)
+  const safeSlug = slug.replace(/[^a-z0-9-]+/gi, '-').replace(/^-+|-+$/g, '') || 'tool-result'
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' }}>
+      <CopyButton text={json} label="Copy JSON" />
+      <button
+        type="button"
+        onClick={() => downloadTextFile(`${safeSlug}-result.json`, json, 'application/json;charset=utf-8')}
+        style={{
+          padding: '6px 10px',
+          borderRadius: 6,
+          border: '1px solid rgba(255,255,255,0.15)',
+          background: 'rgba(255,255,255,0.04)',
+          color: 'rgba(255,255,255,0.72)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          fontSize: 12,
+          fontWeight: 700,
+        }}
+      >
+        <FileJson size={13} />
+        JSON
+      </button>
+      {tableData && tableData.length > 0 && (
+        <button
+          type="button"
+          onClick={() => downloadTextFile(`${safeSlug}-table.csv`, toCsv(tableData), 'text/csv;charset=utf-8')}
+          style={{
+            padding: '6px 10px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: 'rgba(255,255,255,0.04)',
+            color: 'rgba(255,255,255,0.72)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
+          <Download size={13} />
+          CSV
+        </button>
+      )}
+    </div>
+  )
+}
+
+function CopyButton({ text, label = 'Copy' }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     await navigator.clipboard.writeText(text)
@@ -38,14 +148,14 @@ function CopyButton({ text }: { text: string }) {
       }}
     >
       {copied ? <Check size={12} /> : <ClipboardCopy size={12} />}
-      {copied ? 'Copied!' : 'Copy'}
+      {copied ? 'Copied!' : label}
     </button>
   )
 }
 
 function DataCard({ label, value, accent }: { label: string; value: unknown; accent?: string }) {
-  const displayLabel = label.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)
+  const displayLabel = formatLabel(label)
+  const displayValue = formatValue(value)
 
   return (
     <div style={{
@@ -69,7 +179,7 @@ function DataCard({ label, value, accent }: { label: string; value: unknown; acc
 
 function TableRenderer({ data, accent }: { data: Record<string, unknown>[]; accent?: string }) {
   if (!data.length) return null
-  const keys = Object.keys(data[0])
+  const keys = Array.from(new Set(data.flatMap(row => Object.keys(row))))
 
   return (
     <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -88,7 +198,7 @@ function TableRenderer({ data, accent }: { data: Record<string, unknown>[]; acce
             <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
               {keys.map(k => (
                 <td key={k} style={{ padding: '10px 14px', color: '#ecf2ff', verticalAlign: 'top' }}>
-                  {typeof row[k] === 'boolean' ? (row[k] ? 'Yes' : 'No') : String(row[k] ?? '—')}
+                {formatValue(row[k])}
                 </td>
               ))}
             </tr>
@@ -252,14 +362,14 @@ function IssuesList({ issues }: { issues: Array<{ message: string; replacements:
           }}
         >
           {showAll ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          {showAll ? 'Show less' : `Show ${issues.length - 5} more issues`}
+          {showAll ? 'Collapse issues' : `View all ${issues.length} issues`}
         </button>
       )}
     </div>
   )
 }
 
-export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartResultProps) {
+export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: SmartResultProps) {
   // Color palette tool
   if (data.palette && Array.isArray(data.palette)) {
     return (
@@ -1200,14 +1310,23 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
   // Fallback: generic smart display
   const scalarKeys = Object.keys(data).filter(k => data[k] !== null && data[k] !== undefined && typeof data[k] !== 'object' && !Array.isArray(data[k]))
   const arrayKeys = Object.keys(data).filter(k => Array.isArray(data[k]) && !((data[k] as unknown[])[0] && typeof (data[k] as unknown[])[0] === 'object'))
+  const objectArrayKeys = Object.keys(data).filter(k => rowsFromArray(data[k]).length > 0)
+  const objectKeys = Object.keys(data).filter(k => isRecord(data[k]))
   // Check for primary text output
   const textKeys = ['output', 'text', 'result', 'content', 'answer', 'paraphrased', 'words', 'in_words', 'ascii_art']
   const primaryText = textKeys.find(k => data[k] && typeof data[k] === 'string')
+  const firstTableData = objectArrayKeys.length ? rowsFromArray(data[objectArrayKeys[0]]).slice(0, MAX_GENERIC_TABLE_ROWS) : undefined
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ResultActions data={data} slug={slug} tableData={firstTableData} />
       {primaryText && (
         <CodeResultRenderer text={String(data[primaryText])} label={primaryText.replace(/_/g, ' ')} />
+      )}
+      {typeof data.error === 'string' && (
+        <div style={{ padding: '12px 14px', background: 'rgba(255,100,80,0.08)', borderRadius: 8, fontSize: 13, color: '#ff9580', borderLeft: '3px solid #ff6889' }}>
+          {String(data.error)}
+        </div>
       )}
       {scalarKeys.filter(k => k !== primaryText).length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
@@ -1216,6 +1335,27 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           ))}
         </div>
       )}
+      {objectArrayKeys.map(k => {
+        const rows = rowsFromArray(data[k])
+        const displayedRows = rows.slice(0, MAX_GENERIC_TABLE_ROWS)
+        return (
+          <div key={k}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: accent, textTransform: 'uppercase' }}>
+                <Table2 size={14} />
+                {formatLabel(k)}
+              </div>
+              <CopyButton text={toCsv(displayedRows)} label="Copy CSV" />
+            </div>
+            <TableRenderer data={displayedRows} accent={accent} />
+            {rows.length > displayedRows.length && (
+              <div style={{ marginTop: 8, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+                Showing first {displayedRows.length.toLocaleString()} rows for smooth rendering. Download CSV for the visible table data.
+              </div>
+            )}
+          </div>
+        )
+      })}
       {arrayKeys.map(k => (
         <div key={k}>
           <div style={{ fontSize: 12, fontWeight: 700, color: accent, marginBottom: 8, textTransform: 'uppercase' }}>{k.replace(/_/g, ' ')}</div>
@@ -1228,6 +1368,24 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           </div>
         </div>
       ))}
+      {objectKeys.map(k => {
+        const nested = data[k] as Record<string, unknown>
+        const nestedScalarKeys = Object.keys(nested).filter(key => nested[key] !== null && nested[key] !== undefined && typeof nested[key] !== 'object' && !Array.isArray(nested[key]))
+        return (
+          <div key={k}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: accent, marginBottom: 8, textTransform: 'uppercase' }}>{formatLabel(k)}</div>
+            {nestedScalarKeys.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
+                {nestedScalarKeys.map(key => (
+                  <DataCard key={key} label={key} value={nested[key]} accent={accent} />
+                ))}
+              </div>
+            ) : (
+              <CodeResultRenderer text={stringifyJson(nested)} label={k.replace(/_/g, ' ')} />
+            )}
+          </div>
+        )
+      })}
       {Boolean(data.note) && (
         <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
           ℹ️ {String(data.note)}

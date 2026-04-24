@@ -326,7 +326,7 @@ def _yt_dlp_download(
 # ─── Universal Video Downloader ───────────────────────────────────────────────
 
 def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a video URL to download.", data={"error": "No URL"})
     if not url.startswith(("http://", "https://")):
@@ -338,7 +338,7 @@ def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir
 # ─── YouTube Downloaders ──────────────────────────────────────────────────────
 
 def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
     if "youtube.com" not in url and "youtu.be" not in url:
@@ -348,7 +348,7 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
 
 
 def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
     if "youtube.com" not in url and "youtu.be" not in url:
@@ -360,7 +360,7 @@ def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: 
 
 
 def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube Shorts URL.", data={"error": "No URL"})
     if "youtube.com" not in url and "youtu.be" not in url:
@@ -370,7 +370,7 @@ def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any]
 
 
 def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL to extract audio.", data={"error": "No URL"})
     kbps = _audio_quality_kbps(payload.get("audio_quality") or payload.get("bitrate") or payload.get("quality"))
@@ -563,7 +563,7 @@ def _instagram_html_meta_fallback(url: str, job_dir: Path) -> ExecutionResult | 
 
 
 def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste an Instagram URL.", data={"error": "No URL"})
     if "instagram.com" not in url and "instagr.am" not in url:
@@ -587,7 +587,7 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
             "Accept": "*/*",
         },
     }
-    cookies = payload.get("cookies") or payload.get("cookies_text")
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
 
     # Try yt-dlp first (best quality, supports cookies for private/age-gated content).
     primary = _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra, cookies_text=cookies)
@@ -658,12 +658,12 @@ def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
 
 
 def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a TikTok video URL.", data={"error": "No URL"})
     if "tiktok.com" not in url and "vm.tiktok" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid TikTok URL.", data={"error": "Not TikTok"})
-    cookies = payload.get("cookies") or payload.get("cookies_text")
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     # Strip tracking params that sometimes confuse yt-dlp's TikTok extractor
     clean_url = url.split("?")[0]
     # Try yt-dlp first (gives best quality + cookies support).
@@ -754,12 +754,12 @@ def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | 
 
 
 def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Twitter/X video URL.", data={"error": "No URL"})
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
-    cookies = payload.get("cookies") or payload.get("cookies_text")
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     # Syndication CDN works without auth even when yt-dlp gets rate-limited on cloud IPs.
     # Try it first when we don't have user cookies — it's faster and more reliable for public tweets.
     if not cookies:
@@ -829,12 +829,12 @@ def _facebook_html_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
 
 
 def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
     if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
-    cookies = payload.get("cookies") or payload.get("cookies_text")
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
     if primary.kind == "file":
         return primary
@@ -912,7 +912,7 @@ def _vimeo_player_config_fallback(url: str, job_dir: Path, quality_hint: str | N
 
 
 def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Vimeo video URL.", data={"error": "No URL"})
     if "vimeo.com" not in url:
@@ -995,7 +995,7 @@ def _dailymotion_metadata_fallback(url: str, job_dir: Path, quality_hint: str | 
 
 
 def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Dailymotion video URL.", data={"error": "No URL"})
     if "dailymotion.com" not in url and "dai.ly" not in url:
@@ -1013,7 +1013,7 @@ def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], j
 
 def _handle_playlist_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     """Download YouTube playlist (up to 5 videos) as ZIP."""
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube playlist URL.", data={"error": "No URL"})
     if "list=" not in url:
@@ -1068,7 +1068,7 @@ def _handle_playlist_downloader(files: list[Path], payload: dict[str, Any], job_
 # ─── Audio Extractor (any URL) ────────────────────────────────────────────────
 
 def _handle_audio_extractor(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    url = payload.get("url", "").strip()
+    url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a video URL to extract audio.", data={"error": "No URL"})
     if not url.startswith(("http://", "https://")):
@@ -1101,7 +1101,7 @@ def _handle_image_to_base64(files: list[Path], payload: dict[str, Any], job_dir:
 
 
 def _handle_base64_to_image(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please paste a Base64 string.", data={"error": "No input"})
 
@@ -1351,7 +1351,7 @@ def _handle_ssl_checker(files: list[Path], payload: dict[str, Any], job_dir: Pat
 # ─── Text Tools ───────────────────────────────────────────────────────────────
 
 def _handle_word_frequency(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to analyze.", data={"error": "No text"})
 
@@ -1378,7 +1378,7 @@ def _handle_word_frequency(files: list[Path], payload: dict[str, Any], job_dir: 
 
 
 def _handle_text_to_morse(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to convert.", data={"error": "No input"})
 
@@ -1456,7 +1456,7 @@ def _handle_roman_numeral(files: list[Path], payload: dict[str, Any], job_dir: P
 
 
 def _handle_ascii_art(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to convert to ASCII art.", data={"error": "No input"})
 
@@ -1517,7 +1517,7 @@ def _handle_ascii_art(files: list[Path], payload: dict[str, Any], job_dir: Path)
 
 
 def _handle_grammar_checker(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to check grammar.", data={"error": "No text"})
 
@@ -1869,7 +1869,7 @@ def _handle_currency_converter(files: list[Path], payload: dict[str, Any], job_d
 
 
 def _handle_gst_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     amount_raw = payload.get("amount", "0")
     gst_rate_raw = payload.get("gst_rate", "18")
     calc_type = payload.get("type", "exclusive")
@@ -1913,7 +1913,7 @@ def _handle_gst_calculator(files: list[Path], payload: dict[str, Any], job_dir: 
 
 
 def _handle_fuel_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     distance = float(payload.get("distance", 100))
     fuel_price = float(payload.get("fuel_price", 100))
     mileage = float(payload.get("mileage", 15))
@@ -1950,7 +1950,7 @@ def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: 
     annual_rate = float(payload.get("rate", payload.get("interest_rate", 8.5)))
     tenure_months = int(payload.get("tenure", payload.get("tenure_months", 60)))
 
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if text:
         nums = re.findall(r'\d+\.?\d*', text)
         if len(nums) >= 1: principal = float(nums[0])
@@ -2247,8 +2247,8 @@ def _handle_upi_qr_generator(files: list[Path], payload: dict[str, Any], job_dir
 
 
 def _handle_wifi_qr_generator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    ssid = payload.get("ssid", "").strip()
-    password = payload.get("password", "").strip()
+    ssid = _coerce_str(payload.get("ssid"))
+    password = _coerce_str(payload.get("password"))
     security = payload.get("security", "WPA").upper()
     hidden = str(payload.get("hidden", "false")).lower() == "true"
     if not ssid:
@@ -2476,7 +2476,7 @@ def _handle_water_intake(files: list[Path], payload: dict[str, Any], job_dir: Pa
 
 def _handle_sleep_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     wake_time = _coerce_str(payload.get("wake_time", payload.get("text")), "06:00")
-    sleep_time = payload.get("sleep_time", "").strip()
+    sleep_time = _coerce_str(payload.get("sleep_time"))
 
     CYCLE = 90  # minutes per sleep cycle
     FALL_ASLEEP = 14  # average minutes to fall asleep
@@ -2636,7 +2636,7 @@ def _handle_ifsc_finder(files: list[Path], payload: dict[str, Any], job_dir: Pat
 
 
 def _handle_paraphrase_tool(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to paraphrase.", data={"error": "No text"})
     if len(text) > 3000:
@@ -2666,7 +2666,7 @@ def _handle_paraphrase_tool(files: list[Path], payload: dict[str, Any], job_dir:
 
 
 def _handle_plagiarism_detector(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to check for plagiarism.", data={"error": "No text"})
 
@@ -2700,7 +2700,7 @@ def _handle_plagiarism_detector(files: list[Path], payload: dict[str, Any], job_
 
 
 def _handle_text_to_handwriting(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    text = payload.get("text", "").strip()
+    text = _coerce_str(payload.get("text"))
     if not text:
         return ExecutionResult(kind="json", message="Please enter text to convert to handwriting.", data={"error": "No text"})
     if len(text) > 500:

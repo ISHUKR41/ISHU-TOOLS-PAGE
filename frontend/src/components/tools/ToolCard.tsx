@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
-import { useCallback } from 'react'
+import { memo, useCallback } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -20,7 +20,7 @@ const INPUT_KIND_LABELS: Record<string, { label: string; icon: string }> = {
   text: { label: 'Text input', icon: '⌨️' },
 }
 
-export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardProps) {
+const ToolCard = memo(function ToolCard({ tool, categoryLabel, accentColor }: ToolCardProps) {
   const inputKind = INPUT_KIND_LABELS[tool.input_kind] || INPUT_KIND_LABELS.text
 
   // ─── Hover/focus/touch prefetch ────────────────────────────────────────
@@ -69,5 +69,7 @@ export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardP
       </Link>
     </article>
   )
-}
+})
+
+export default ToolCard
 

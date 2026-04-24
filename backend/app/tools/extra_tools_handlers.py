@@ -4,7 +4,7 @@ Includes improved accuracy for existing calculations and NEW tools.
 All production-ready with real, accurate logic.
 """
 from __future__ import annotations
-import base64, csv, hashlib, html, io, json, math, os, re, secrets, string, sys, uuid
+import ast, base64, csv, hashlib, html, io, json, math, os, re, secrets, string, sys, uuid
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from typing import Any
@@ -649,8 +649,129 @@ def handle_percentage_calculator_improved(files, payload, output_dir):
         return ExecutionResult(kind="json", message=f"Calculation error: {e}", data={"error": str(e)})
 
 
+def _safe_scientific_eval_extra(expression: str, angle_mode: str = "rad") -> float:
+    """Evaluate scientific expressions with an AST whitelist and DEG/RAD support."""
+    angle = str(angle_mode or "rad").strip().lower()
+    use_degrees = angle.startswith("deg")
+
+    def to_rad(value: float) -> float:
+        return math.radians(value) if use_degrees else value
+
+    def from_rad(value: float) -> float:
+        return math.degrees(value) if use_degrees else value
+
+    functions = {
+        "sin": lambda x: math.sin(to_rad(x)),
+        "cos": lambda x: math.cos(to_rad(x)),
+        "tan": lambda x: math.tan(to_rad(x)),
+        "asin": lambda x: from_rad(math.asin(x)),
+        "acos": lambda x: from_rad(math.acos(x)),
+        "atan": lambda x: from_rad(math.atan(x)),
+        "sinh": math.sinh,
+        "cosh": math.cosh,
+        "tanh": math.tanh,
+        "sqrt": math.sqrt,
+        "cbrt": lambda x: math.copysign(abs(x) ** (1 / 3), x),
+        "log": math.log10,
+        "log10": math.log10,
+        "ln": math.log,
+        "log2": math.log2,
+        "exp": math.exp,
+        "abs": abs,
+        "round": round,
+        "floor": math.floor,
+        "ceil": math.ceil,
+        "pow": pow,
+        "factorial": math.factorial,
+        "fact": math.factorial,
+        "rad": math.radians,
+        "deg": math.degrees,
+    }
+    constants = {"pi": math.pi, "e": math.e, "tau": math.tau}
+
+    expr = expression.strip()
+    if not expr:
+        raise ValueError("Enter a math expression")
+    if len(expr) > 500:
+        raise ValueError("Expression is too long")
+    expr = (
+        expr.replace("×", "*")
+        .replace("÷", "/")
+        .replace("−", "-")
+        .replace("π", "pi")
+        .replace("^", "**")
+    )
+    expr = re.sub(r"(?<![\w.])(\d+(?:\.\d+)?)%", r"(\1/100)", expr)
+    if re.search(r"[^0-9+\-*/().,% a-zA-Z_*\t]", expr):
+        raise ValueError("Expression contains invalid characters")
+
+    tree = ast.parse(expr, mode="eval")
+    if sum(1 for _ in ast.walk(tree)) > 140:
+        raise ValueError("Expression is too complex")
+
+    def evaluate(node: ast.AST) -> float:
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return float(node.value)
+        if isinstance(node, ast.Name):
+            key = node.id.lower()
+            if key in constants:
+                return float(constants[key])
+            raise ValueError(f"Unknown name '{node.id}'")
+        if isinstance(node, ast.UnaryOp):
+            value = evaluate(node.operand)
+            if isinstance(node.op, ast.UAdd):
+                return value
+            if isinstance(node.op, ast.USub):
+                return -value
+            raise ValueError("Unsupported unary operator")
+        if isinstance(node, ast.BinOp):
+            left = evaluate(node.left)
+            right = evaluate(node.right)
+            if isinstance(node.op, ast.Add):
+                return left + right
+            if isinstance(node.op, ast.Sub):
+                return left - right
+            if isinstance(node.op, ast.Mult):
+                return left * right
+            if isinstance(node.op, ast.Div):
+                if right == 0:
+                    raise ValueError("Cannot divide by zero")
+                return left / right
+            if isinstance(node.op, ast.Mod):
+                if right == 0:
+                    raise ValueError("Cannot divide by zero")
+                return left % right
+            if isinstance(node.op, ast.Pow):
+                if abs(right) > 1000:
+                    raise ValueError("Exponent is too large")
+                return left ** right
+            raise ValueError("Unsupported operator")
+        if isinstance(node, ast.Call):
+            if not isinstance(node.func, ast.Name):
+                raise ValueError("Unsupported function call")
+            name = node.func.id.lower()
+            if name not in functions:
+                raise ValueError(f"Unsupported function '{node.func.id}'")
+            args = [evaluate(arg) for arg in node.args]
+            if len(args) > 3:
+                raise ValueError("Too many function arguments")
+            if name in {"factorial", "fact"}:
+                if len(args) != 1 or args[0] < 0 or int(args[0]) != args[0] or args[0] > 170:
+                    raise ValueError("factorial supports whole numbers from 0 to 170")
+                return float(functions[name](int(args[0])))
+            return float(functions[name](*args))
+        raise ValueError("Unsupported expression")
+
+    value = evaluate(tree)
+    if not math.isfinite(value):
+        raise ValueError("Result is not finite")
+    return value
+
+
 def handle_scientific_calculator_improved(files, payload, output_dir):
-    """Scientific calculator with safe eval, flexible field names."""
+    """Scientific calculator with safe AST evaluation and flexible field names."""
     # Accept many possible field names so any frontend / API caller works.
     raw = ""
     for key in ("expression", "expr", "formula", "text", "input", "value", "equation", "calculation"):
@@ -666,50 +787,16 @@ def handle_scientific_calculator_improved(files, payload, output_dir):
             data={"error": "Please enter a math expression."},
         )
 
-    # Word-boundary aware token replacement for math functions.
-    # Order matters: replace longer tokens first so `asin` isn't broken by `sin`.
-    token_map = [
-        ("π", "math.pi"), ("×", "*"), ("÷", "/"), ("−", "-"), ("^", "**"),
-        ("factorial", "math.factorial"), ("asin", "math.asin"), ("acos", "math.acos"),
-        ("atan", "math.atan"), ("sinh", "math.sinh"), ("cosh", "math.cosh"),
-        ("tanh", "math.tanh"), ("sqrt", "math.sqrt"), ("cbrt", "math.cbrt"),
-        ("log10", "math.log10"), ("log2", "math.log2"), ("log", "math.log10"),
-        ("ln", "math.log"), ("sin", "math.sin"), ("cos", "math.cos"),
-        ("tan", "math.tan"), ("ceil", "math.ceil"), ("floor", "math.floor"),
-        ("exp", "math.exp"), ("rad", "math.radians"), ("deg", "math.degrees"),
-        ("pow", "math.pow"), ("fact", "math.factorial"),
-        ("pi", "math.pi"), ("PI", "math.pi"), ("E", "math.e"),
-    ]
-    safe_expr = raw
-    import re
-    for token, repl in token_map:
-        # Only replace if not already preceded by `math.` (idempotent).
-        pattern = r"(?<!math\.)(?<![A-Za-z_])" + re.escape(token) + r"(?![A-Za-z0-9_])"
-        safe_expr = re.sub(pattern, repl, safe_expr)
-    # Bare `e` → math.e (only when standalone, not in `exp`, `math.e`, `1e5`).
-    safe_expr = re.sub(r"(?<![A-Za-z0-9_.])e(?![A-Za-z0-9_])", "math.e", safe_expr)
-
-    # Strict whitelist after substitution.
-    if not re.fullmatch(r"[\s0-9eE.+\-*/%(),math\.a-zA-Z_]+", safe_expr):
-        return ExecutionResult(
-            kind="json",
-            message="Unsafe expression. Only math is allowed.",
-            data={"error": "Only mathematical expressions are allowed."},
-        )
-
     try:
-        result = eval(  # noqa: S307 — sandboxed below
-            safe_expr,
-            {"__builtins__": {}},
-            {"math": math, "abs": abs, "round": round, "int": int, "float": float, "min": min, "max": max},
+        angle_mode = str(
+            payload.get("angle_mode")
+            or payload.get("angleMode")
+            or payload.get("angle")
+            or payload.get("mode")
+            or "rad"
         )
-        if isinstance(result, float):
-            if result == int(result) and abs(result) < 1e15:
-                display = str(int(result))
-            else:
-                display = f"{result:.12g}"
-        else:
-            display = str(result)
+        result = _safe_scientific_eval_extra(raw, angle_mode)
+        display = str(int(result)) if result == int(result) and abs(result) < 1e15 else f"{result:.12g}"
         return ExecutionResult(
             kind="json",
             message=f"= {display}",
@@ -718,10 +805,9 @@ def handle_scientific_calculator_improved(files, payload, output_dir):
                 "result": result if isinstance(result, (int, float)) else display,
                 "expression": raw,
                 "display": display,
+                "angle_mode": "deg" if angle_mode.lower().startswith("deg") else "rad",
             },
         )
-    except ZeroDivisionError:
-        return ExecutionResult(kind="json", message="Cannot divide by zero.", data={"error": "Division by zero", "expression": raw})
     except SyntaxError:
         return ExecutionResult(kind="json", message="Invalid expression. Check brackets and operators.", data={"error": "Syntax error", "expression": raw})
     except Exception as e:

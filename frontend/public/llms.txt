@@ -1,0 +1,14 @@
+# ISHU TOOLS
+
+> ISHU TOOLS is a free, no-signup, no-watermark web toolkit for students, developers, creators, and professionals.
+
+Primary URL: https://ishutools.fun
+Mirror URL: https://ishutools.vercel.app
+
+This file is replaced during production builds with the full generated LLM index.
+Important paths:
+
+- All tools: https://ishutools.fun/tools
+- Sitemap: https://ishutools.fun/sitemap.xml
+- Full tool index: https://ishutools.fun/llms-full.txt
+- Machine-readable tools JSON: https://ishutools.fun/tools.json

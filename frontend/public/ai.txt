@@ -1,0 +1,5 @@
+# AI Search Summary — ISHU TOOLS
+
+ISHU TOOLS is a free online tools website for PDF, image, video, developer, math, student, finance, health, unit conversion, text, security, SEO, and productivity workflows.
+
+The production build generates a complete AI index at /llms.txt, /llms-full.txt, and /tools.json.

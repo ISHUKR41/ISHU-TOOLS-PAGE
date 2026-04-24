@@ -1,6 +1,7 @@
 import type { RuntimeCapabilities, ToolCategory, ToolDefinition, ToolRunResponse } from '../types/tools'
 import { API_BASE_URL } from './config'
 import { FALLBACK_CATEGORIES, FALLBACK_TOOLS } from '../data/catalogFallback'
+import { searchTools } from '../lib/toolSearch'
 
 function parseFilename(contentDisposition: string | null, fallback: string): string {
   if (!contentDisposition) return fallback
@@ -177,14 +178,9 @@ export async function fetchTools(params?: {
       return data
     } catch {
       // Filter fallback tools to match current query so the UI stays hydrated instantly
-      const fallback = FALLBACK_TOOLS.filter((tool) => {
-        if (params?.category && tool.category !== params.category) return false
-        if (params?.q) {
-          const haystack = [tool.title, tool.description, ...tool.tags].join(' ').toLowerCase()
-          if (!haystack.includes(params.q.toLowerCase())) return false
-        }
-        return true
-      })
+      const fallback = params?.q
+        ? searchTools(FALLBACK_TOOLS, params.q, { category: params.category || 'all' })
+        : FALLBACK_TOOLS.filter((tool) => !params?.category || tool.category === params.category)
       TOOLS_LIST_CACHE.set(cacheKey, { data: fallback, ts: Date.now() })
       return fallback
     }
