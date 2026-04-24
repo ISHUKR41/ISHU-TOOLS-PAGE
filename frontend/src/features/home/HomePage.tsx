@@ -13,7 +13,6 @@ import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentat
 import ToolCard from '../../components/tools/ToolCard'
 import { loadUsage } from '../../lib/usageTracker'
 import HeroSection from './components/HeroSection'
-import ToolCategorySection from './components/ToolCategorySection'
 import './home-modern.css'
 
 const BENTO_FEATURES = [
@@ -316,30 +315,7 @@ function ToolSkeleton() {
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
-  const [recentSlugs, setRecentSlugs] = useState<string[]>([])
   const searchInputRef = useRef<HTMLInputElement>(null)
-
-  // Read "recently used" tools from localStorage. Updates when the tab regains
-  // focus, so visiting a tool and coming back home shows it pinned at top.
-  useEffect(() => {
-    const read = () => {
-      try {
-        const raw = localStorage.getItem('ishu_recent_tools')
-        const arr = raw ? (JSON.parse(raw) as string[]) : []
-        setRecentSlugs(Array.isArray(arr) ? arr.slice(0, 6) : [])
-      } catch {
-        setRecentSlugs([])
-      }
-    }
-    read()
-    const onFocus = () => read()
-    window.addEventListener('focus', onFocus)
-    window.addEventListener('storage', onFocus)
-    return () => {
-      window.removeEventListener('focus', onFocus)
-      window.removeEventListener('storage', onFocus)
-    }
-  }, [])
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
   const debouncedQuery = useDebounce(query, 90)
@@ -387,24 +363,6 @@ export default function HomePage() {
 
     return { byCategory, pdfCount, imageCount }
   }, [categories, tools])
-
-  // Map of slug → tool, for the "Recently used" pin row.
-  const toolsBySlug = useMemo(() => {
-    const map = new Map<string, (typeof tools)[number]>()
-    for (const t of tools) map.set(t.slug, t)
-    return map
-  }, [tools])
-
-  const recentTools = useMemo(() => {
-    if (!recentSlugs.length || !tools.length) return []
-    const out: typeof tools = []
-    for (const slug of recentSlugs) {
-      const t = toolsBySlug.get(slug)
-      if (t) out.push(t)
-      if (out.length >= 6) break
-    }
-    return out
-  }, [recentSlugs, tools, toolsBySlug])
 
   // Lookup: category id → category label, used by the flat search-result grid.
   const categoryLabelById = useMemo(() => {
@@ -616,25 +574,6 @@ export default function HomePage() {
     return scored.map((s) => s.tool)
   }, [debouncedQuery, tools, SEARCH_SYNONYMS, usageSnapshot])
 
-  // Grouped-by-category view (used only when NOT searching).
-  const groupedSections = useMemo(() => {
-    if (isSearching) return []
-    const grouped = new Map<string, typeof filteredTools>()
-    for (const tool of filteredTools) {
-      const list = grouped.get(tool.category)
-      if (list) list.push(tool)
-      else grouped.set(tool.category, [tool])
-    }
-    return categories
-      .map((category) => {
-        const categoryTools = grouped.get(category.id) || []
-        const maxRank = categoryTools.reduce((m, t) => Math.max(m, t.popularity_rank ?? 0), 0)
-        return { category, tools: categoryTools, maxRank }
-      })
-      .filter((entry) => entry.tools.length > 0)
-      .sort((a, b) => b.maxRank - a.maxRank)
-  }, [categories, filteredTools, isSearching])
-
   const totalVisibleTools = filteredTools.length
 
   return (
@@ -705,37 +644,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Recently used (pinned) ─────────────────────────────────────────
-             Hidden during search and when the visitor has no history yet.
-             Pure localStorage — no signup, no tracking server-side. */}
-        {!isSearching && recentTools.length > 0 && (
-          <section className='tool-section recent-pin-section'>
-            <header className='section-heading'>
-              <div className='section-heading-left'>
-                <span className='section-kicker'>Recently used</span>
-                <div className='section-heading-title-row'>
-                  <h2>Jump back in</h2>
-                  <span className='tool-count-badge'>{recentTools.length}</span>
-                </div>
-              </div>
-              <p>The tools you opened most recently — pinned here just for you.</p>
-            </header>
-            <div className='tool-grid'>
-              {recentTools.map((tool) => {
-                const meta = categoryLabelById.get(tool.category)
-                return (
-                  <ToolCard
-                    key={tool.slug}
-                    tool={tool}
-                    categoryLabel={meta?.label ?? tool.category}
-                    accentColor={meta?.accent ?? '#56a6ff'}
-                  />
-                )
-              })}
-            </div>
-          </section>
-        )}
-
+        {/* ── Unified flat tool directory ───────────────────────────────────
+             Per request: no Categories section, no "Most Popular" pinned row,
+             no "Show more". A single intelligently-sorted grid containing
+             every tool — daily-use tools surface first via popularity_rank +
+             personal usage signal. Same grid shape for both idle and search,
+             so the experience stays focused on the tools themselves. */}
         <section id='tool-directory' className='directory-stack'>
           {loading && (
             <>
@@ -746,18 +660,32 @@ export default function HomePage() {
           )}
           {error && <p className='status-text error'>{error}</p>}
 
-          {/* SEARCHING → flat result grid, ranked by relevance + popularity. */}
-          {!loading && !error && isSearching && filteredTools.length > 0 && (
-            <section className='tool-section search-results-section'>
+          {!loading && !error && isSearching && filteredTools.length === 0 && (
+            <article className='empty-state'>
+              <h3>No tools matched “{debouncedQuery}”</h3>
+              <p>Try a shorter keyword, or press Esc to see all {tools.length} tools.</p>
+            </article>
+          )}
+
+          {!loading && !error && filteredTools.length > 0 && (
+            <section className='tool-section all-tools-section'>
               <header className='section-heading'>
                 <div className='section-heading-left'>
-                  <span className='section-kicker'>Search results</span>
+                  <span className='section-kicker'>
+                    {isSearching ? 'Search results' : 'All tools'}
+                  </span>
                   <div className='section-heading-title-row'>
-                    <h2>“{debouncedQuery}”</h2>
+                    <h2>
+                      {isSearching ? `“${debouncedQuery}”` : 'Every tool, smart-sorted'}
+                    </h2>
                     <span className='tool-count-badge'>{totalVisibleTools} tools</span>
                   </div>
                 </div>
-                <p>Ranked by relevance and daily popularity. Press Esc to clear.</p>
+                <p>
+                  {isSearching
+                    ? 'Ranked by relevance, your usage, and daily popularity. Press Esc to clear.'
+                    : 'Daily-use tools surface first. No hidden tools, no “show more” — every single tool is here.'}
+                </p>
               </header>
               <div className='tool-grid'>
                 {filteredTools.map((tool) => {
@@ -774,21 +702,6 @@ export default function HomePage() {
               </div>
             </section>
           )}
-
-          {!loading && !error && isSearching && filteredTools.length === 0 && (
-            <article className='empty-state'>
-              <h3>No tools matched “{debouncedQuery}”</h3>
-              <p>Try a shorter keyword, or press Esc to see all {tools.length} tools.</p>
-            </article>
-          )}
-
-          {/* IDLE → full directory grouped by category, sorted by usage. */}
-          {!loading &&
-            !error &&
-            !isSearching &&
-            groupedSections.map(({ category, tools: categoryTools }) => (
-              <ToolCategorySection key={category.id} category={category} tools={categoryTools} />
-            ))}
         </section>
 
         {/* Marketing sections — hidden during search so results stay the focus.
