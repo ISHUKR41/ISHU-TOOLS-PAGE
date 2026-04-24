@@ -28,6 +28,7 @@ import string
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 from PIL import Image
@@ -495,6 +496,72 @@ def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | Non
     )
 
 
+def _normalize_instagram_url(url: str) -> str:
+    """Normalize Instagram links and strip trackers to improve extractor reliability."""
+    try:
+        parsed = urlsplit((url or "").strip())
+        host = parsed.netloc.lower().replace("instagr.am", "instagram.com")
+        clean_path = parsed.path.rstrip("/")
+        return urlunsplit((parsed.scheme or "https", host, clean_path, "", ""))
+    except Exception:
+        return (url or "").strip().split("?")[0].split("#")[0].rstrip("/")
+
+
+def _instagram_html_meta_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """Fallback: scrape og:video / og:image from Instagram page HTML."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": "https://www.instagram.com/",
+    }
+    try:
+        r = httpx.get(url, headers=headers, timeout=25, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        html = r.text
+    except Exception:
+        return None
+
+    media_url = None
+    is_video = False
+    patterns = [
+        (r'<meta[^>]+property=["\']og:video:secure_url["\'][^>]+content=["\']([^"\']+)["\']', True),
+        (r'<meta[^>]+property=["\']og:video["\'][^>]+content=["\']([^"\']+)["\']', True),
+        (r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', False),
+    ]
+    for pattern, video_flag in patterns:
+        match = re.search(pattern, html)
+        if match:
+            media_url = match.group(1).encode("utf-8", "ignore").decode("unicode_escape", "ignore")
+            media_url = media_url.replace("&amp;", "&")
+            is_video = video_flag
+            break
+
+    if not media_url:
+        return None
+
+    try:
+        media = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]})
+        if media.status_code != 200 or len(media.content) < 5000:
+            return None
+    except Exception:
+        return None
+
+    ext = "mp4" if is_video else "jpg"
+    out = job_dir / f"instagram_fallback.{ext}"
+    out.write_bytes(media.content)
+    size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded Instagram {'video' if is_video else 'image'} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4" if is_video else "image/jpeg",
+    )
+
+
 def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
@@ -502,8 +569,8 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if "instagram.com" not in url and "instagr.am" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Instagram URL (instagram.com/reel/... or /p/... or /tv/...).", data={"error": "Not Instagram"})
 
-    # Strip query strings (?igsh=, ?utm_*, etc.) — they sometimes confuse the extractor
-    clean_url = url.split("?")[0].rstrip("/")
+    # Normalize the URL and strip trackers (?igsh=, ?utm_*, etc.) for better extractor stability.
+    clean_url = _normalize_instagram_url(url)
 
     # Instagram serves a single combined mp4 stream for most reels/posts.
     # The default format "bestvideo+bestaudio" FAILS on Instagram because there's no separate audio track.
@@ -532,14 +599,16 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if fallback is not None:
         return fallback
 
+    # Some public posts expose media URLs through page OpenGraph tags.
+    html_fallback = _instagram_html_meta_fallback(clean_url, job_dir)
+    if html_fallback is not None:
+        return html_fallback
+
     # Both failed — return a clear, actionable message.
     msg = (
-        "Instagram blocked this download. This usually means: "
-        "(1) the post is private or age-restricted, or "
-        "(2) Instagram is rate-limiting our server's IP. "
-        "Fix: open instagram.com in your browser (logged in), export cookies "
-        "(use the 'Get cookies.txt LOCALLY' Chrome extension), and paste the "
-        "contents into the Cookies field below. Public reels usually work without cookies."
+        "Instagram blocked this media URL. This usually means the post is private, age-restricted, "
+        "or Instagram is temporarily rate-limiting server requests. "
+        "Fix: paste your Instagram cookies in the optional Cookies field, or retry after 1-2 minutes."
     )
     return ExecutionResult(kind="json", message=msg, data={"error": "instagram_blocked", "yt_dlp_error": primary.message})
 

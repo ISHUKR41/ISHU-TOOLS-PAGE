@@ -1,15 +1,17 @@
-import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react'
 import type { CSSProperties } from 'react'
 import Fuse from 'fuse.js'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
-  Search, ArrowRight, Star, Clock, TrendingUp, Grid3X3, List, X,
+  Search, ArrowRight, Star, TrendingUp, Grid3X3, List, X,
   Bookmark, SlidersHorizontal, Zap, ChevronDown, Hash } from 'lucide-react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import SiteShell from '../../components/layout/SiteShell'
+import { fetchPopularityMap } from '../../api/toolsApi'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
+import { toSiteUrl } from '../../lib/siteConfig'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolIcon from '../../components/tools/ToolIcon'
 
@@ -93,7 +95,7 @@ const CATEGORY_PRIORITY: string[] = [
 ]
 
 const SORT_OPTIONS = [
-  { value: 'popular', label: 'Most Popular' },
+  { value: 'popular', label: 'Smart Rank' },
   { value: 'az', label: 'A → Z' },
   { value: 'za', label: 'Z → A' },
   { value: 'count-desc', label: 'Most Tools' },
@@ -105,7 +107,7 @@ type SortOption = (typeof SORT_OPTIONS)[number]['value']
 import {
   loadFavorites,
   saveFavorites,
-  loadRecent,
+  loadUsage,
 } from '../../lib/usageTracker'
 
 /* ─── Featured Bento Tools ───────────────────────────────── */
@@ -298,141 +300,6 @@ const ToolCardCompact = memo(function ToolCardCompact({
   )
 })
 
-/* ─── Category Section ───────────────────────────────────── */
-
-const AnimatedSection = memo(function AnimatedSection({
-  category, catTools, theme, favorites, onToggleFav, viewMode,
-}: {
-  category: { id: string; label: string; description: string }
-  catTools: { slug: string; title: string; description: string }[]
-  theme: { accent: string }
-  favorites: Set<string>
-  onToggleFav: (slug: string, e: React.MouseEvent) => void
-  viewMode: 'grid' | 'list'
-}) {
-  const ref = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px 0px' })
-  const [collapsed, setCollapsed] = useState(false)
-
-  return (
-    <motion.article
-      ref={ref}
-      className='category-section modern-section'
-      style={{ '--cat-accent': theme.accent } as CSSProperties}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.32, ease: 'easeOut' }}
-    >
-      <div className='category-section-header modern-section-header'>
-        <button
-          type='button'
-          className='section-collapse-btn'
-          onClick={() => setCollapsed(c => !c)}
-          aria-label={collapsed ? 'Expand section' : 'Collapse section'}
-        >
-          <span
-            style={{
-              display: 'flex',
-              transition: 'transform 0.2s ease',
-              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-            }}
-          >
-            <ChevronDown size={16} style={{ color: theme.accent }} />
-          </span>
-        </button>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <h2 style={{ color: theme.accent }}>{category.label}</h2>
-            <span className='cat-count-badge' style={{
-              background: `color-mix(in srgb, ${theme.accent} 15%, transparent)`,
-              color: theme.accent,
-              border: `1px solid color-mix(in srgb, ${theme.accent} 30%, transparent)`,
-            }}>
-              {catTools.length}
-            </span>
-          </div>
-          <p>{category.description}</p>
-        </div>
-        <Link
-          to={`/category/${category.id}`}
-          className='view-all-link modern-view-all'
-          style={{ color: theme.accent }}
-        >
-          View all <ArrowRight size={14} />
-        </Link>
-      </div>
-
-      <AnimatePresence initial={false}>
-        {!collapsed && (
-          <motion.div
-            key='content'
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div className={`tools-grid compact cv-grid${viewMode === 'list' ? ' list-view' : ''}`} style={{ paddingTop: '0.75rem' }}>
-              {catTools.map((tool) => (
-                <ToolCardCompact
-                  key={tool.slug}
-                  tool={tool}
-                  theme={theme}
-                  favorites={favorites}
-                  onToggleFav={onToggleFav}
-                  viewMode={viewMode}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.article>
-  )
-})
-
-/* ─── Popular Strip ──────────────────────────────────────── */
-
-/* ─── Recently Used ──────────────────────────────────────── */
-
-function RecentSection({ recentSlugs, allTools, favorites, onToggleFav, viewMode }: {
-  recentSlugs: string[]
-  allTools: { slug: string; title: string; description: string; category: string }[]
-  favorites: Set<string>
-  onToggleFav: (slug: string, e: React.MouseEvent) => void
-  viewMode: 'grid' | 'list'
-}) {
-  const recentTools = useMemo(
-    () => recentSlugs.map(s => allTools.find(t => t.slug === s)).filter(Boolean) as typeof allTools,
-    [recentSlugs, allTools],
-  )
-  if (recentTools.length === 0) return null
-
-  return (
-    <motion.section
-      className='category-section recent-section'
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className='category-section-header'>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <Clock size={16} style={{ color: '#4ade80' }} />
-          <div>
-            <h2 style={{ color: '#4ade80' }}>Recently Used</h2>
-            <p>Your last {recentTools.length} visited tools — pick up where you left off</p>
-          </div>
-        </div>
-      </div>
-      <div className={`tools-grid compact${viewMode === 'list' ? ' list-view' : ''}`}>
-        {recentTools.map(tool => (
-          <ToolCardCompact key={tool.slug} tool={tool} theme={getCategoryTheme(tool.category)} favorites={favorites} onToggleFav={onToggleFav} viewMode={viewMode} />
-        ))}
-      </div>
-    </motion.section>
-  )
-}
-
 /* ─── Favorites ──────────────────────────────────────────── */
 
 function FavoritesSection({ allTools, favorites, onToggleFav, viewMode }: {
@@ -493,7 +360,7 @@ function SortDropdown({ sort, onChange }: { sort: SortOption; onChange: (v: Sort
         type='button'
         className='sort-dropdown-btn'
         onClick={() => setOpen(o => !o)}
-        aria-label='Sort categories'
+        aria-label='Sort tools'
       >
         <SlidersHorizontal size={14} />
         <span>{current.label}</span>
@@ -576,21 +443,33 @@ function QuickSearches({ onSelect }: { onSelect: (q: string) => void }) {
 
 export default function AllToolsPage() {
   const { categories, tools, loading, error } = useCatalogData()
-  const [query, setQuery]           = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery]           = useState(() => searchParams.get('q') ?? '')
   const [searchFocused, setSearchFocused] = useState(false)
-  const [activeCategory, setActiveCat] = useState('all')
+  const [activeCategory] = useState('all')
   const [viewMode, setViewMode]     = useState<'grid' | 'list'>('grid')
   const [activeTab, setActiveTab]   = useState<'all' | 'favorites'>('all')
   const [sortBy, setSortBy]         = useState<SortOption>('popular')
   const [favorites, setFavorites]   = useState<Set<string>>(() => loadFavorites())
-  const [recentSlugs]               = useState<string[]>(() => loadRecent())
   const [usageMap]                  = useState<Record<string, number>>(() => loadUsage())
+  const [globalPopularity, setGlobalPopularity] = useState<Record<string, number>>({})
   const searchRef                   = useRef<HTMLInputElement>(null)
   const searchWrapRef               = useRef<HTMLDivElement>(null)
 
   /* Debounce the raw query so filtering only runs after 180ms pause */
   const debouncedQuery = useDebounce(query, 180)
   const deferredQuery  = useDeferredValue(debouncedQuery)
+
+  useEffect(() => {
+    const current = searchParams.toString()
+    const next = new URLSearchParams(searchParams)
+    const trimmed = debouncedQuery.trim()
+    if (trimmed) next.set('q', trimmed)
+    else next.delete('q')
+    if (next.toString() !== current) {
+      setSearchParams(next, { replace: true })
+    }
+  }, [debouncedQuery, searchParams, setSearchParams])
 
   /* Keyboard shortcut: press "/" to focus search */
   useEffect(() => {
@@ -618,6 +497,20 @@ export default function AllToolsPage() {
   }, [])
 
   useEffect(() => {
+    let mounted = true
+    void fetchPopularityMap()
+      .then((counts) => {
+        if (mounted) setGlobalPopularity(counts)
+      })
+      .catch(() => {
+        // Ignore popularity fetch failures and fall back to local ordering.
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
     applyDocumentBranding(
       `All ${tools.length}+ Free Online Tools — PDF, Image, Developer, Student Tools | ISHU TOOLS`,
       `Browse all ${tools.length}+ free online tools at ISHU TOOLS by Ishu Kumar. Merge PDF, compress images, JSON formatter, BMI calculator, unit converter & more. No signup, no watermark, 100% free.`,
@@ -626,11 +519,11 @@ export default function AllToolsPage() {
     const desc = document.querySelector('meta[name="description"]')
     if (desc) desc.setAttribute('content', `Browse all ${tools.length}+ free online tools at ISHU TOOLS by Ishu Kumar. PDF merge, compress, convert, image resize, developer tools, student calculators, unit converters & more. No signup, no watermark, free forever.`)
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
-    if (canonical) canonical.href = 'https://ishutools.com/tools'
+    if (canonical) canonical.href = toSiteUrl('/tools')
     else {
       canonical = document.createElement('link')
       canonical.rel = 'canonical'
-      canonical.href = 'https://ishutools.com/tools'
+      canonical.href = toSiteUrl('/tools')
       document.head.appendChild(canonical)
     }
   }, [tools.length])
@@ -645,27 +538,19 @@ export default function AllToolsPage() {
     })
   }, [])
 
-  const toolCountByCategory = useMemo(() => {
-    const m = new Map<string, number>()
-    tools.forEach(t => m.set(t.category, (m.get(t.category) ?? 0) + 1))
-    return m
-  }, [tools])
+  const rankBoost = useCallback((tool: { slug: string; category?: string; popularity_rank?: number }) => {
+    const localVisits = usageMap[tool.slug] ?? 0
+    const globalVisits = globalPopularity[tool.slug] ?? 0
+    const staticRank = tool.popularity_rank ?? 0
+    const categoryIndex = tool.category ? CATEGORY_PRIORITY.indexOf(tool.category) : -1
 
-  const sortedCategories = useMemo(() => {
-    const cats = [...categories]
-    switch (sortBy) {
-      case 'az':         return cats.sort((a, b) => a.label.localeCompare(b.label))
-      case 'za':         return cats.sort((a, b) => b.label.localeCompare(a.label))
-      case 'count-desc': return cats.sort((a, b) => (toolCountByCategory.get(b.id) ?? 0) - (toolCountByCategory.get(a.id) ?? 0))
-      case 'count-asc':  return cats.sort((a, b) => (toolCountByCategory.get(a.id) ?? 0) - (toolCountByCategory.get(b.id) ?? 0))
-      default: return cats.sort((a, b) => {
-        const ai = CATEGORY_PRIORITY.indexOf(a.id)
-        const bi = CATEGORY_PRIORITY.indexOf(b.id)
-        if (ai === -1 && bi === -1) return a.label.localeCompare(b.label)
-        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-      })
-    }
-  }, [categories, sortBy, toolCountByCategory])
+    const localScore = Math.log2(localVisits + 1) * 28 + localVisits * 1.8
+    const globalScore = Math.log2(globalVisits + 1) * 18 + Math.min(250, globalVisits) * 0.7
+    const staticScore = staticRank * 0.45
+    const categoryScore = categoryIndex >= 0 ? (CATEGORY_PRIORITY.length - categoryIndex) * 0.35 : 0
+
+    return localScore + globalScore + staticScore + categoryScore
+  }, [globalPopularity, usageMap])
 
   // ── Smart relevance-scored search ──
   // Multi-word: every word must match somewhere. Sort by computed score
@@ -677,17 +562,18 @@ export default function AllToolsPage() {
 
     if (!raw) {
       const base = tools.filter(inCat)
-      // Smart usage-based ordering: only when the default "popular" sort is active.
-      // Boost tools the user actually uses, then fall back to the catalog's natural order.
-      if (sortBy === 'popular' && Object.keys(usageMap).length > 0) {
-        return [...base].sort((a, b) => {
-          const ua = usageMap[a.slug] ?? 0
-          const ub = usageMap[b.slug] ?? 0
-          if (ua !== ub) return ub - ua
-          return 0
-        })
+      if (sortBy === 'az') {
+        return [...base].sort((a, b) => a.title.localeCompare(b.title))
       }
-      return base
+      if (sortBy === 'za') {
+        return [...base].sort((a, b) => b.title.localeCompare(a.title))
+      }
+
+      return [...base].sort((a, b) => {
+        const diff = rankBoost(b) - rankBoost(a)
+        if (diff !== 0) return diff
+        return a.title.localeCompare(b.title)
+      })
     }
 
     const words = raw.split(/\s+/).filter(Boolean)
@@ -738,9 +624,8 @@ export default function AllToolsPage() {
       if (NEW_SLUGS.has(tool.slug)) score += 4
 
       // Smart usage boost — tools you actually open rank higher in your search results.
-      // Capped at +60 so personalization can't completely override real text relevance.
-      const usage = usageMap[tool.slug] ?? 0
-      if (usage > 0) score += Math.min(60, 6 * Math.log2(usage + 1) + usage * 0.5)
+      // Capped so personalization/global trends cannot override core lexical relevance.
+      score += Math.min(180, rankBoost(tool) * 0.2)
 
       scored.push({ tool, score })
     }
@@ -773,19 +658,15 @@ export default function AllToolsPage() {
     }
 
     return scored.map(s => s.tool)
-  }, [activeCategory, deferredQuery, tools, sortBy, usageMap])
+  }, [activeCategory, deferredQuery, tools, sortBy, rankBoost])
 
   const isSearching   = deferredQuery.trim().length > 0
 
   // No grouped-by-category sections (per user request — one flat smart-sorted grid).
-  // Category PILLS above remain as filters but never split the grid into sections.
-
-  const showRecent    = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showFavorites = activeTab === 'favorites'
 
   const clearSearch = useCallback(() => {
     setQuery('')
-    startTransition(() => setActiveCat('all'))
     searchRef.current?.focus()
   }, [])
 
@@ -859,36 +740,6 @@ export default function AllToolsPage() {
             </button>
           </div>
 
-          {/* ── Category pills (hidden during active search to give results full focus) ── */}
-          {!isSearching && (
-          <div className='category-row' style={{ marginTop: '0.75rem' }}>
-            {loading ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <span key={i} className='skeleton' style={{ display: 'inline-block', width: 80 + i * 10, height: 34, borderRadius: 999 }} />
-              ))
-            ) : (
-              <>
-                <button type='button' className={`category-pill${activeCategory === 'all' ? ' active' : ''}`}
-                  onClick={() => startTransition(() => setActiveCat('all'))}>
-                  All ({tools.length})
-                </button>
-                {sortedCategories.map(cat => {
-                  const theme = getCategoryTheme(cat.id)
-                  const count = toolCountByCategory.get(cat.id) ?? 0
-                  if (!count) return null
-                  return (
-                    <button type='button' key={cat.id}
-                      className={`category-pill themed${activeCategory === cat.id ? ' active' : ''}`}
-                      style={{ '--pill-accent': theme.accent } as CSSProperties}
-                      onClick={() => startTransition(() => setActiveCat(cat.id))}>
-                      {cat.label} ({count})
-                    </button>
-                  )
-                })}
-              </>
-            )}
-          </div>
-          )}
         </section>
 
         {/* ── Directory ── */}
@@ -912,12 +763,12 @@ export default function AllToolsPage() {
               {/* Per request: NO grouped-by-category sections, NO "Most Popular" / "Top Tools",
                   NO "Recently used" pin, NO "Show more". One flat grid containing every
                   matching tool, intelligently sorted (relevance > personal usage > catalog rank).
-                  Category PILLS above remain — they filter the same flat grid, never hide tools. */}
+                  Everything stays visible in a single tools-first layout. */}
               {filteredTools.length === 0 && (
                 <article className='empty-state'>
                   <Search size={36} style={{ color: '#3bd0ff', marginBottom: '0.75rem', opacity: 0.5 }} />
                   <h3>No tools matched</h3>
-                  <p>Try a different keyword or browse all categories.</p>
+                  <p>Try a broader keyword or a shorter phrase.</p>
                   <button type='button' className='btn-secondary' onClick={clearSearch} style={{ marginTop: '0.75rem' }}>
                     Clear search
                   </button>

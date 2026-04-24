@@ -42,12 +42,10 @@ export default function HeroSection({
   socialLinks,
 }: HeroSectionProps) {
   const toolLabel = toolCount > 0 ? toolCount : 1200
+  const categoryLabel = categoryCount > 0 ? categoryCount : 61
 
   return (
     <section className='hero-v2'>
-      <div className='hero-v2-orb orb-a' />
-      <div className='hero-v2-orb orb-b' />
-      <div className='hero-v2-orb orb-c' />
       <div className='hero-v2-grid' />
 
       <div className='hero-v2-inner'>
@@ -99,7 +97,7 @@ export default function HeroSection({
             { label: 'Free Tools', value: toolLabel, suffix: '+', color: '#56a6ff' },
             { label: 'PDF Workflows', value: pdfCount || 128, suffix: '+', color: '#f472b6' },
             { label: 'Image Tools', value: imageCount || 195, suffix: '+', color: '#f59e0b' },
-            { label: 'No Signup', value: '0', suffix: '$', color: '#3ee58f' },
+            { label: 'Categories', value: categoryLabel, suffix: '+', color: '#3ee58f' },
           ].map((stat) => (
             <div
               key={stat.label}

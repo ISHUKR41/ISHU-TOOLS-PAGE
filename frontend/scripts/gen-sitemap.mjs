@@ -5,7 +5,11 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, "../public/sitemap.xml");
-const SITE = "https://ishutools.com";
+const SITE = (
+  process.env.VITE_SITE_URL ||
+  process.env.PUBLIC_SITE_URL ||
+  "https://ishutools.fun"
+).replace(/\/$/, "");
 const BACKEND =
   process.env.SITEMAP_BACKEND || "https://ishu-tools-page.onrender.com";
 
@@ -75,3 +79,4 @@ async function fetchJson(url, timeoutMs = 12000) {
   writeFileSync(OUT, lines.join("\n") + "\n");
   console.log(`[sitemap] wrote ${slugs.length + cats.length + 2} URLs → ${OUT}`);
 })();
+

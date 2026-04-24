@@ -121,6 +121,10 @@ const TOOLS_LIST_TTL = 5 * 60 * 1000 // 5 minutes
 let runtimeCapCache: { data: RuntimeCapabilities; ts: number } | null = null
 const RUNTIME_CAP_TTL = 30 * 60 * 1000 // 30 minutes
 
+// ─── Global popularity cache ───
+let popularityCache: { data: Record<string, number>; ts: number } | null = null
+const POPULARITY_TTL = 2 * 60 * 1000 // 2 minutes
+
 // ─── In-flight deduplication ───
 const IN_FLIGHT: Map<string, Promise<ToolDefinition>> = new Map()
 const IN_FLIGHT_LISTS: Map<string, Promise<ToolDefinition[]>> = new Map()
@@ -238,6 +242,23 @@ export async function fetchRuntimeCapabilities(): Promise<RuntimeCapabilities> {
   const data: RuntimeCapabilities = await res.json()
   runtimeCapCache = { data, ts: Date.now() }
   return data
+}
+
+export async function fetchPopularityMap(): Promise<Record<string, number>> {
+  if (popularityCache && Date.now() - popularityCache.ts < POPULARITY_TTL) {
+    return popularityCache.data
+  }
+
+  try {
+    const res = await fetchWithRetry(`${API_BASE_URL}/api/popularity`, {}, { maxRetries: 1, timeoutMs: 12000 })
+    if (!res.ok) throw await readError(res)
+    const payload = await res.json() as { counts?: Record<string, number> }
+    const counts = payload.counts && typeof payload.counts === 'object' ? payload.counts : {}
+    popularityCache = { data: counts, ts: Date.now() }
+    return counts
+  } catch {
+    return {}
+  }
 }
 
 export async function checkHealth(): Promise<boolean> {

@@ -22,6 +22,7 @@ import SiteShell from '../../components/layout/SiteShell'
 import ToolIcon from '../../components/tools/ToolIcon'
 import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../../types/tools'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
+import { SITE_FALLBACK_URL, SITE_OG_IMAGE, SITE_URL, toSiteUrl } from '../../lib/siteConfig'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
 import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
@@ -122,7 +123,7 @@ export default function ToolPage() {
     setToolError(null)
     if (fallback) {
       const seo = getToolSEO(fallback.slug, fallback.title, fallback.description, fallback.category)
-      const toolUrl = `https://ishutools.com/tools/${fallback.slug}`
+      const toolUrl = toSiteUrl(`/tools/${fallback.slug}`)
       document.title = seo.title
       applyDocumentBranding(
         seo.title,
@@ -131,6 +132,12 @@ export default function ToolPage() {
       )
       upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
       upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: toolUrl })
+      upsertMeta('link[rel="alternate"][data-alt="vercel-mirror"]', {
+        rel: 'alternate',
+        href: `${SITE_FALLBACK_URL}/tools/${fallback.slug}`,
+        hreflang: 'x-default',
+        'data-alt': 'vercel-mirror',
+      })
     }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
     // Reset all run-related state when switching tools
@@ -181,7 +188,7 @@ export default function ToolPage() {
           getCategoryTheme(detail.category).accent,
         )
 
-        const toolUrl = `https://ishutools.com/tools/${detail.slug}`
+        const toolUrl = toSiteUrl(`/tools/${detail.slug}`)
         const keywordText = seo.keywords.join(', ')
 
         upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
@@ -212,16 +219,22 @@ export default function ToolPage() {
         upsertMeta('meta[name="ai:audience"]', { name: 'ai:audience', content: 'students, professionals, indian users, global' })
         upsertMeta('meta[name="author"]', { name: 'author', content: 'Ishu Kumar — ISHU TOOLS' })
         upsertMeta('meta[name="creator"]', { name: 'creator', content: 'Ishu Kumar' })
-        upsertMeta('meta[name="publisher"]', { name: 'publisher', content: 'ISHU TOOLS — ishutools.com' })
+        upsertMeta('meta[name="publisher"]', { name: 'publisher', content: 'ISHU TOOLS — ishutools.fun' })
         upsertMeta('meta[name="category"]', { name: 'category', content: detail.category })
         upsertMeta('link[rel="canonical"]', { rel: 'canonical', href: toolUrl })
+        upsertMeta('link[rel="alternate"][data-alt="vercel-mirror"]', {
+          rel: 'alternate',
+          href: `${SITE_FALLBACK_URL}/tools/${detail.slug}`,
+          hreflang: 'x-default',
+          'data-alt': 'vercel-mirror',
+        })
         // Open Graph — full set for social sharing
         upsertMeta('meta[property="og:title"]', { property: 'og:title', content: seo.title })
         upsertMeta('meta[property="og:description"]', { property: 'og:description', content: seo.description })
         upsertMeta('meta[property="og:url"]', { property: 'og:url', content: toolUrl })
         upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
         upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ISHU TOOLS' })
-        upsertMeta('meta[property="og:image"]', { property: 'og:image', content: 'https://ishutools.com/og-image.png' })
+        upsertMeta('meta[property="og:image"]', { property: 'og:image', content: SITE_OG_IMAGE })
         upsertMeta('meta[property="og:image:width"]', { property: 'og:image:width', content: '1200' })
         upsertMeta('meta[property="og:image:height"]', { property: 'og:image:height', content: '630' })
         upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: `${detail.title} — ISHU TOOLS Free Online Tool` })
@@ -232,7 +245,7 @@ export default function ToolPage() {
         upsertMeta('meta[name="twitter:creator"]', { name: 'twitter:creator', content: '@ISHU_IITP' })
         upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: seo.title })
         upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: seo.description })
-        upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: 'https://ishutools.com/og-image.png' })
+        upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: SITE_OG_IMAGE })
         upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: `${detail.title} — ISHU TOOLS` })
         // Article metadata for rich snippets
         upsertMeta('meta[property="article:author"]', { property: 'article:author', content: 'https://www.linkedin.com/in/ishu-kumar-5a0940281/' })
@@ -269,9 +282,9 @@ export default function ToolPage() {
           '@context': 'https://schema.org',
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: 'https://ishutools.com/' },
-            { '@type': 'ListItem', position: 2, name: 'All Tools', item: 'https://ishutools.com/tools' },
-            { '@type': 'ListItem', position: 3, name: getCategoryTheme(detail.category).label || detail.category, item: `https://ishutools.com/category/${detail.category}` },
+            { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: `${SITE_URL}/` },
+            { '@type': 'ListItem', position: 2, name: 'All Tools', item: toSiteUrl('/tools') },
+            { '@type': 'ListItem', position: 3, name: getCategoryTheme(detail.category).label || detail.category, item: toSiteUrl(`/category/${detail.category}`) },
             { '@type': 'ListItem', position: 4, name: detail.title, item: toolUrl },
           ],
         })
@@ -291,7 +304,7 @@ export default function ToolPage() {
           name: seo.title,
           description: seo.description,
           inLanguage: 'en-IN',
-          isPartOf: { '@type': 'WebSite', url: 'https://ishutools.com', name: 'ISHU TOOLS' },
+          isPartOf: { '@type': 'WebSite', url: SITE_URL, name: 'ISHU TOOLS' },
           about: { '@type': 'Thing', name: detail.title, description: detail.description },
           author: {
             '@type': 'Person',
@@ -331,7 +344,7 @@ export default function ToolPage() {
           ],
           teaches: detail.description,
           keywords: seo.keywords.slice(0, 50).join(', '),
-          provider: { '@type': 'Organization', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
+          provider: { '@type': 'Organization', name: 'ISHU TOOLS', url: SITE_URL },
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'INR', availability: 'https://schema.org/InStock' },
         })
         document.head.appendChild(learnScript)
@@ -409,6 +422,11 @@ export default function ToolPage() {
   }, [downloadUrl])
 
   const fields = useMemo(() => (tool ? getToolFields(tool.slug) : []), [tool])
+  const formFields = useMemo(() => fields.filter((field) => field.type !== 'file'), [fields])
+  const fileAccept = useMemo(
+    () => fields.find((field) => field.type === 'file' && field.accept)?.accept,
+    [fields],
+  )
   const toolTheme = useMemo(
     () => (tool ? getCategoryTheme(tool.category) : getCategoryTheme('pdf-core')),
     [tool],
@@ -435,13 +453,13 @@ export default function ToolPage() {
 
   useEffect(() => {
     const defaults: Record<string, string> = {}
-    for (const field of fields) {
+    for (const field of formFields) {
       if (field.defaultValue !== undefined) {
         defaults[field.name] = field.defaultValue
       }
     }
     setPayloadState(defaults)
-  }, [fields])
+  }, [formFields])
 
 
   const onDrop = useCallback(
@@ -524,12 +542,21 @@ export default function ToolPage() {
       return
     }
 
+    const missingField = formFields.find((field) => {
+      if (!field.required) return false
+      return !String(payloadState[field.name] || '').trim()
+    })
+    if (missingField) {
+      setRunError(`Please fill ${missingField.label} before running this tool.`)
+      return
+    }
+
     try {
       setRunning(true)
       startProgressSimulation()
 
       const payload: Record<string, unknown> = {}
-      for (const field of fields) {
+      for (const field of formFields) {
         const rawValue = payloadState[field.name]
         if (rawValue !== undefined && rawValue !== '') {
           payload[field.name] = normalizePayloadValue(rawValue, field.type)
@@ -640,7 +667,7 @@ export default function ToolPage() {
   // ─── Auto-save text payload inputs to localStorage per tool ───
   // Restore on revisit so the user never loses their work
   useEffect(() => {
-    if (!slug || !fields.length) return
+    if (!slug || !formFields.length) return
     try {
       const saved = localStorage.getItem(`tool-input:${slug}`)
       if (saved) {
@@ -652,10 +679,10 @@ export default function ToolPage() {
     } catch {
       /* ignore parse errors */
     }
-  }, [slug, fields.length])
+  }, [slug, formFields.length])
 
   useEffect(() => {
-    if (!slug || !fields.length) return
+    if (!slug || !formFields.length) return
     // debounce write
     const t = setTimeout(() => {
       try {
@@ -672,7 +699,7 @@ export default function ToolPage() {
       }
     }, 400)
     return () => clearTimeout(t)
-  }, [payloadState, slug, fields.length])
+  }, [payloadState, slug, formFields.length])
 
   if (toolLoading) {
     return (
@@ -802,7 +829,7 @@ export default function ToolPage() {
                           : {}
                       }
                     >
-                      <input {...getInputProps()} />
+                      <input {...getInputProps(fileAccept ? { accept: fileAccept } : {})} />
                       {isDragActive ? (
                         <div className='dropzone-content dragging'>
                           <Upload size={28} style={{ color: toolTheme.accent }} />
@@ -823,7 +850,10 @@ export default function ToolPage() {
                             <p className='dropzone-title'>
                               Drag &amp; drop file{tool.accepts_multiple ? 's' : ''} here
                             </p>
-                            <p className='dropzone-hint'>or click to browse from your device</p>
+                            <p className='dropzone-hint'>
+                              or click to browse from your device
+                              {fileAccept ? ` (${fileAccept})` : ''}
+                            </p>
                           </div>
                         </div>
                       ) : (
@@ -891,18 +921,22 @@ export default function ToolPage() {
                   </div>
                 )}
 
-                {fields.length > 0 && (
+                {formFields.length > 0 && (
                   <div className='field-grid'>
-                    {fields.map((field) => (
+                    {formFields.map((field) => (
                       <label
                         key={field.name}
                         className={`field-block ${field.type === 'textarea' ? 'full-span' : ''}`}
                       >
-                        <span>{field.label}</span>
+                        <span>
+                          {field.label}
+                          {field.required && <em className='field-required'>*</em>}
+                        </span>
                         {field.type === 'textarea' ? (
                           <textarea
-                            rows={6}
+                            rows={field.rows ?? 6}
                             placeholder={field.placeholder}
+                            required={field.required}
                             value={payloadState[field.name] || ''}
                             onChange={(event) =>
                               setPayloadState((prev) => ({
@@ -914,6 +948,7 @@ export default function ToolPage() {
                         ) : field.type === 'select' ? (
                           <select
                             value={payloadState[field.name] || field.defaultValue || ''}
+                            required={field.required}
                             onChange={(event) =>
                               setPayloadState((prev) => ({
                                 ...prev,
@@ -930,8 +965,14 @@ export default function ToolPage() {
                         ) : /url|link/i.test(field.name) ? (
                           <div className='input-with-paste'>
                             <input
-                              type={field.type}
+                              type={/url/i.test(field.name) ? 'url' : field.type}
                               placeholder={field.placeholder}
+                              required={field.required}
+                              min={field.min}
+                              max={field.max}
+                              step={field.step}
+                              inputMode={field.type === 'number' ? 'decimal' : undefined}
+                              autoComplete='off'
                               value={payloadState[field.name] || ''}
                               onChange={(event) =>
                                 setPayloadState((prev) => ({
@@ -962,6 +1003,12 @@ export default function ToolPage() {
                           <input
                             type={field.type}
                             placeholder={field.placeholder}
+                            required={field.required}
+                            min={field.min}
+                            max={field.max}
+                            step={field.step}
+                            inputMode={field.type === 'number' ? 'decimal' : undefined}
+                            autoComplete='off'
                             value={payloadState[field.name] || ''}
                             onChange={(event) =>
                               setPayloadState((prev) => ({
@@ -971,8 +1018,10 @@ export default function ToolPage() {
                             }
                           />
                         )}
-                        {field.placeholder && field.type === 'textarea' && (
-                          <small className='field-hint'>{field.placeholder}</small>
+                        {(field.help || field.hint || (field.placeholder && field.type === 'textarea')) && (
+                          <small className='field-hint'>
+                            {field.help || field.hint || field.placeholder}
+                          </small>
                         )}
                         {field.name === 'cookies' && (
                           <details className='cookies-help'>
@@ -1198,7 +1247,7 @@ export default function ToolPage() {
               <h2>About {tool.title} — Free Online Tool</h2>
               <p>
                 {tool.title} is a free online tool by <strong>ISHU TOOLS</strong> (Indian Student Hub University Tools).
-                {tool.description} No signup, no watermark, no limits — completely free for students, professionals,
+                {tool.description} No signup, no watermark — completely free for students, professionals,
                 and everyone. Process your files securely and download results instantly.
               </p>
 
@@ -1222,7 +1271,7 @@ export default function ToolPage() {
                 <li><strong>Privacy Focused</strong> — Files are automatically deleted after processing</li>
                 <li><strong>Fast Processing</strong> — Results generated in seconds</li>
                 <li><strong>Works on All Devices</strong> — Mobile, tablet, laptop, desktop compatible</li>
-                <li><strong>Unlimited Usage</strong> — No daily limits or file count restrictions</li>
+                <li><strong>Practical Usage</strong> — Designed for fast everyday workflows on mobile and desktop</li>
               </ul>
 
               <h3>Why Choose ISHU TOOLS for {tool.title}?</h3>

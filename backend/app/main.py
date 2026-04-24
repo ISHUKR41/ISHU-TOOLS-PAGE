@@ -2,18 +2,21 @@ from collections import defaultdict, OrderedDict
 from datetime import date
 import hashlib
 import json
+import os
 import time
 from pathlib import Path
 import importlib.util
 import platform
 import shutil
+from threading import Lock
 from typing import Annotated, Any
 
-from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, Body, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 
+from .config import STORAGE_DIR
 from .models import ToolDefinition
 from .registry import CATEGORIES, TOOLS
 from .tools.handlers import HANDLERS, create_job_workspace, get_soffice_binary, parse_payload, save_uploads
@@ -23,6 +26,9 @@ app = FastAPI(
     version="1.0.0",
     description="Backend API for ISHU TOOLS document and image operations.",
 )
+
+SITE_BASE_URL = os.getenv("PUBLIC_SITE_URL", "https://ishutools.fun").rstrip("/")
+SITE_FALLBACK_URL = os.getenv("FALLBACK_SITE_URL", "https://ishutools.vercel.app").rstrip("/")
 
 # ── Simple in-memory rate limiter ──────────────────────────────────────────
 # Allows up to 60 requests per minute per IP on the execute endpoint
@@ -48,6 +54,118 @@ def _check_rate_limit(ip: str) -> None:
             headers={"Retry-After": "60"},
         )
     _rate_buckets[ip].append(now)
+
+
+# ── Global popularity telemetry (persistent) ───────────────────────────────
+_TOOL_SLUGS = {tool.slug for tool in TOOLS}
+_POPULARITY_FILE = STORAGE_DIR / "tool_popularity.json"
+_popularity_lock = Lock()
+
+
+def _load_popularity_store() -> tuple[dict[str, int], int, str]:
+    if not _POPULARITY_FILE.exists():
+        return {}, 0, ""
+
+    try:
+        raw = json.loads(_POPULARITY_FILE.read_text(encoding="utf-8"))
+        counts_raw = raw.get("counts", {}) if isinstance(raw, dict) else {}
+        counts: dict[str, int] = {}
+        for slug, value in (counts_raw.items() if isinstance(counts_raw, dict) else []):
+            if slug in _TOOL_SLUGS:
+                try:
+                    parsed = int(value)
+                except Exception:
+                    parsed = 0
+                if parsed > 0:
+                    counts[slug] = parsed
+        total = int(raw.get("total_events", sum(counts.values()))) if isinstance(raw, dict) else sum(counts.values())
+        updated = str(raw.get("updated_at", "")) if isinstance(raw, dict) else ""
+        return counts, max(total, 0), updated
+    except Exception:
+        return {}, 0, ""
+
+
+_tool_popularity, _popularity_total, _popularity_updated_at = _load_popularity_store()
+
+
+def _persist_popularity_store() -> None:
+    payload = {
+        "counts": _tool_popularity,
+        "total_events": _popularity_total,
+        "updated_at": _popularity_updated_at,
+    }
+    tmp = _POPULARITY_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload, ensure_ascii=True, separators=(",", ":")), encoding="utf-8")
+    tmp.replace(_POPULARITY_FILE)
+
+
+def _record_tool_visit(slug: str) -> tuple[int, int]:
+    global _popularity_total, _popularity_updated_at
+    with _popularity_lock:
+        next_count = (_tool_popularity.get(slug, 0) + 1)
+        _tool_popularity[slug] = next_count
+        _popularity_total += 1
+        _popularity_updated_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        _persist_popularity_store()
+        return next_count, _popularity_total
+
+
+def _popularity_snapshot() -> tuple[dict[str, int], int, str]:
+    with _popularity_lock:
+        return dict(_tool_popularity), _popularity_total, _popularity_updated_at
+
+
+def _query_score(tool: ToolDefinition, query: str, popularity_map: dict[str, int]) -> int:
+    tokens = [token for token in query.split() if token]
+    title = tool.title.lower()
+    slug = tool.slug.lower()
+    desc = tool.description.lower()
+    tags = " ".join(tool.tags).lower()
+    haystack = f"{title} {slug} {desc} {tags}"
+
+    if tokens and not all(token in haystack for token in tokens):
+        return -1
+
+    score = 0
+    if title == query:
+        score += 1000
+    elif title.startswith(query):
+        score += 550
+    elif query in title:
+        score += 260
+
+    if slug == query:
+        score += 850
+    elif slug.startswith(query):
+        score += 230
+    elif query in slug:
+        score += 140
+
+    if query in tags:
+        score += 120
+    if query in desc:
+        score += 80
+
+    for token in tokens:
+        if token in title:
+            score += 45
+        if token in slug:
+            score += 24
+        if token in tags:
+            score += 18
+        if token in desc:
+            score += 7
+
+    score += min(120, popularity_map.get(tool.slug, 0))
+    score += min(80, int(tool.popularity_rank or 0))
+    return score
+
+
+def _catalog_score(tool: ToolDefinition, popularity_map: dict[str, int]) -> float:
+    global_count = popularity_map.get(tool.slug, 0)
+    global_boost = min(220.0, 18.0 * (global_count + 1) ** 0.5)
+    static_rank = float(tool.popularity_rank or 0)
+    return global_boost + static_rank
 
 
 # ── In-memory LRU cache for text-only tool results ────────────────────────
@@ -140,7 +258,7 @@ def health() -> dict[str, str]:
 @app.get("/sitemap.xml", response_class=Response)
 def sitemap_xml() -> Response:
     today = date.today().strftime("%Y-%m-%d")
-    base = "https://ishutools.com"
+    base = SITE_BASE_URL
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
@@ -194,7 +312,7 @@ def sitemap_xml() -> Response:
 
 @app.get("/robots.txt", response_class=Response)
 def robots_txt() -> Response:
-    content = """# ISHU TOOLS — robots.txt
+    content = f"""# ISHU TOOLS — robots.txt
 # We welcome traditional search engines AND modern AI search engines.
 # AI crawlers (ChatGPT, Claude, Perplexity, Gemini, Copilot, etc.) may index and cite our tools.
 
@@ -288,7 +406,8 @@ User-agent: MistralAI-User
 Allow: /
 
 # ─── Sitemaps ───
-Sitemap: https://ishutools.com/sitemap.xml
+Sitemap: {SITE_BASE_URL}/sitemap.xml
+Sitemap: {SITE_FALLBACK_URL}/sitemap.xml
 
 # ─── AI assistant index (LLMs.txt standard) ───
 # https://llmstxt.org/
@@ -304,7 +423,7 @@ def llms_txt() -> Response:
     Helps AI assistants like ChatGPT, Claude, Perplexity, and Gemini quickly
     understand and cite ISHU TOOLS in their answers.
     """
-    base = "https://ishutools.com"
+    base = SITE_BASE_URL
     seen_cats: set[str] = set()
     cat_lines: list[str] = []
     for cat in CATEGORIES:
@@ -321,6 +440,7 @@ def llms_txt() -> Response:
 
 - **Site name**: ISHU TOOLS
 - **URL**: {base}
+- **Mirror URL**: {SITE_FALLBACK_URL}
 - **Creator**: Ishu Kumar (IIT Patna)
 - **Total tools**: {len(TOOLS)}+ unique handlers across {len(seen_cats)}+ categories
 - **Pricing**: 100% free, no signup, no watermark, no installation
@@ -376,7 +496,7 @@ def llms_full_txt() -> Response:
     Lists every tool with slug, title, category, and description in a compact
     format optimized for LLM ingestion and citation.
     """
-    base = "https://ishutools.com"
+    base = SITE_BASE_URL
     lines: list[str] = []
     lines.append("# ISHU TOOLS — Full tool index for AI assistants")
     lines.append("")
@@ -461,19 +581,67 @@ def list_tools(category: str | None = None, q: str | None = None) -> Response:
     if category:
         records = [tool for tool in records if tool.category == category]
 
+    popularity_map, _, _ = _popularity_snapshot()
+
     if q:
         query = q.lower().strip()
-        records = [
-            tool
-            for tool in records
-            if query in tool.title.lower()
-            or query in tool.description.lower()
-            or any(query in tag.lower() for tag in tool.tags)
-        ]
+        scored: list[tuple[int, ToolDefinition]] = []
+        for tool in records:
+            score = _query_score(tool, query, popularity_map)
+            if score >= 0:
+                scored.append((score, tool))
+        scored.sort(key=lambda item: (-item[0], item[1].title.lower()))
+        records = [tool for _, tool in scored]
+    else:
+        records.sort(key=lambda tool: (-_catalog_score(tool, popularity_map), tool.title.lower()))
 
     data = [tool.model_dump() for tool in records]
     cache_header = _CACHE_CONTROL_STATIC if not q else "no-store"
     return JSONResponse(content=data, headers={"Cache-Control": cache_header})
+
+
+@app.get("/api/popularity")
+def tool_popularity() -> Response:
+    counts, total_events, updated_at = _popularity_snapshot()
+    top_items = sorted(counts.items(), key=lambda item: item[1], reverse=True)[:250]
+    payload = {
+        "status": "ok",
+        "total_events": total_events,
+        "updated_at": updated_at,
+        "counts": counts,
+        "top": [{"slug": slug, "count": count} for slug, count in top_items],
+    }
+    return JSONResponse(
+        content=payload,
+        headers={"Cache-Control": "public, max-age=60, stale-while-revalidate=30"},
+    )
+
+
+@app.post("/api/popularity/visit")
+def track_tool_visit(
+    request: Request,
+    payload: dict[str, Any] = Body(default={}),
+) -> Response:
+    slug = str(payload.get("slug", "")).strip().lower()
+    if not slug:
+        raise HTTPException(status_code=422, detail="Field 'slug' is required.")
+    if slug not in _TOOL_SLUGS:
+        raise HTTPException(status_code=404, detail="Tool not found")
+
+    client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or \
+                (request.client.host if request.client else "unknown")
+    _check_rate_limit(client_ip)
+
+    count, total_events = _record_tool_visit(slug)
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "slug": slug,
+            "count": count,
+            "total_events": total_events,
+        },
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.get("/api/tools/{slug}")

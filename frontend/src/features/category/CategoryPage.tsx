@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 
 import SiteShell from '../../components/layout/SiteShell'
 import { useCatalogData } from '../../hooks/useCatalogData'
+import { SITE_OG_IMAGE, SITE_URL, toSiteUrl } from '../../lib/siteConfig'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolIcon from '../../components/tools/ToolIcon'
 
@@ -45,7 +46,7 @@ export default function CategoryPage() {
     const catLower = category.label.toLowerCase()
     const title = `Free ${category.label} Online — ${categoryTools.length}+ Tools by Ishu Kumar | ISHU TOOLS`
     const desc = `${category.description} Explore ${categoryTools.length}+ free ${catLower} on ISHU TOOLS by Ishu Kumar — for Indian students, creators, developers, and professionals. No signup, no watermark, 100% free. India's best free ${catLower}.`
-    const categoryUrl = `https://ishutools.com/category/${categoryId}`
+    const categoryUrl = toSiteUrl(`/category/${categoryId}`)
     const toolNames = categoryTools.slice(0, 20).map((tool) => tool.title)
 
     applyDocumentBranding(title, desc, theme.accent)
@@ -87,7 +88,7 @@ export default function CategoryPage() {
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: categoryUrl })
     upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
     upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ISHU TOOLS' })
-    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: 'https://ishutools.com/og-image.png' })
+    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: SITE_OG_IMAGE })
     upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: 'en_IN' })
     // Twitter
     upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
@@ -95,7 +96,7 @@ export default function CategoryPage() {
     upsertMeta('meta[name="twitter:creator"]', { name: 'twitter:creator', content: '@ISHU_IITP' })
     upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
     upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: desc.substring(0, 300) })
-    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: 'https://ishutools.com/og-image.png' })
+    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: SITE_OG_IMAGE })
 
     const existingJsonLd = document.getElementById('category-jsonld')
     if (existingJsonLd) existingJsonLd.remove()
@@ -118,10 +119,10 @@ export default function CategoryPage() {
         publisher: {
           '@type': 'Organization',
           name: 'ISHU TOOLS',
-          url: 'https://ishutools.com',
-          logo: { '@type': 'ImageObject', url: 'https://ishutools.com/logo.png' },
+          url: SITE_URL,
+          logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
         },
-        isPartOf: { '@type': 'WebSite', name: 'ISHU TOOLS', url: 'https://ishutools.com' },
+        isPartOf: { '@type': 'WebSite', name: 'ISHU TOOLS', url: SITE_URL },
         mainEntity: {
           '@type': 'ItemList',
           name: `${category.label} Tools — ISHU TOOLS`,
@@ -130,7 +131,7 @@ export default function CategoryPage() {
             '@type': 'ListItem',
             position: index + 1,
             name: tool.title,
-            url: `https://ishutools.com/tools/${tool.slug}`,
+            url: toSiteUrl(`/tools/${tool.slug}`),
           })),
         },
       },
@@ -138,8 +139,8 @@ export default function CategoryPage() {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: 'https://ishutools.com' },
-          { '@type': 'ListItem', position: 2, name: 'All Categories', item: 'https://ishutools.com/categories' },
+          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'All Categories', item: toSiteUrl('/tools') },
           { '@type': 'ListItem', position: 3, name: category.label, item: categoryUrl },
         ],
       },

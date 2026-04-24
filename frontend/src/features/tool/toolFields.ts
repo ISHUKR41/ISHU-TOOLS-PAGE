@@ -1,4 +1,4 @@
-export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select'
+export type ToolFieldType = 'text' | 'number' | 'textarea' | 'password' | 'select' | 'file'
 
 export interface ToolField {
   name: string
@@ -7,6 +7,15 @@ export interface ToolField {
   placeholder?: string
   defaultValue?: string
   options?: Array<{ label: string; value: string }>
+  accept?: string
+  min?: number | string
+  max?: number | string
+  step?: number | string
+  rows?: number
+  help?: string
+  hint?: string
+  required?: boolean
+  multiple?: boolean
 }
 
 const sharedLanguageOptions = [
@@ -22,6 +31,8 @@ const booleanOptions = [
   { label: 'Yes', value: 'true' },
   { label: 'No', value: 'false' },
 ]
+
+const fieldOverrideKey = (slug: string) => slug
 
 export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'merge-pdf': [
@@ -2323,7 +2334,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'ip', label: 'IP Address (optional)', type: 'text', placeholder: 'Leave empty to check your own IP, or enter any IP...' },
   ],
   'dns-lookup': [
-    { name: 'domain', label: 'Domain Name', type: 'text', placeholder: 'e.g. google.com, youtube.com, ishutools.com' },
+    { name: 'domain', label: 'Domain Name', type: 'text', placeholder: 'e.g. google.com, youtube.com, ishutools.fun' },
   ],
   'whois-lookup': [
     { name: 'domain', label: 'Domain Name', type: 'text', placeholder: 'e.g. google.com, amazon.com' },
@@ -2885,7 +2896,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     },
   ],
   'url-validator': [
-    { name: 'url', label: 'URL to Validate', type: 'text', placeholder: 'Enter URL to validate, e.g. https://ishutools.com...' },
+    { name: 'url', label: 'URL to Validate', type: 'text', placeholder: 'Enter URL to validate, e.g. https://ishutools.fun...' },
   ],
   'color-blindness-simulator': [
     { name: 'color', label: 'Hex Color Code', type: 'text', defaultValue: '#3bd0ff', placeholder: 'Enter hex color, e.g. #FF5733 or #3bd0ff...' },
@@ -3381,7 +3392,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   // ── 2026 Image Format Converter Pack ──
   // To PNG
   'jpg-to-png':   [{ name: 'file', label: 'Upload JPG/JPEG File',  type: 'file', accept: 'image/jpeg,image/*' }],
-  'jpeg-to-png':  [{ name: 'file', label: 'Upload JPEG File',      type: 'file', accept: 'image/jpeg,image/*' }],
+  ...{ [fieldOverrideKey('jpeg-to-png')]: [{ name: 'file', label: 'Upload JPEG File',      type: 'file', accept: 'image/jpeg,image/*' }] },
   'webp-to-png':  [{ name: 'file', label: 'Upload WebP File',      type: 'file', accept: 'image/webp,image/*' }],
   'bmp-to-png':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
   'gif-to-png':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
@@ -3390,11 +3401,11 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
   'ico-to-png':   [{ name: 'file', label: 'Upload ICO File',       type: 'file', accept: 'image/x-icon,image/*' }],
   'heic-to-png':  [{ name: 'file', label: 'Upload HEIC File',      type: 'file', accept: 'image/heic,image/heif,image/*' }],
   // To JPG
-  'png-to-jpg':   [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
-  'png-to-jpeg':  [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }],
-  'bmp-to-jpg':   [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }],
-  'gif-to-jpg':   [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }],
-  'tiff-to-jpg':  [{ name: 'file', label: 'Upload TIFF File',      type: 'file', accept: 'image/tiff,image/*' }],
+  ...{ [fieldOverrideKey('png-to-jpg')]: [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }] },
+  ...{ [fieldOverrideKey('png-to-jpeg')]: [{ name: 'file', label: 'Upload PNG File',       type: 'file', accept: 'image/png,image/*' }] },
+  ...{ [fieldOverrideKey('bmp-to-jpg')]: [{ name: 'file', label: 'Upload BMP File',       type: 'file', accept: 'image/bmp,image/*' }] },
+  ...{ [fieldOverrideKey('gif-to-jpg')]: [{ name: 'file', label: 'Upload GIF File',       type: 'file', accept: 'image/gif,image/*' }] },
+  ...{ [fieldOverrideKey('tiff-to-jpg')]: [{ name: 'file', label: 'Upload TIFF File',      type: 'file', accept: 'image/tiff,image/*' }] },
   'tif-to-jpg':   [{ name: 'file', label: 'Upload TIF File',       type: 'file', accept: 'image/tiff,image/*' }],
   'ico-to-jpg':   [{ name: 'file', label: 'Upload ICO File',       type: 'file', accept: 'image/x-icon,image/*' }],
   'svg-to-jpg':   [{ name: 'file', label: 'Upload SVG File',       type: 'file', accept: 'image/svg+xml,image/*' }],
@@ -4544,9 +4555,9 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
     { name: 'deadline_days', label: 'Delivery Timeline (days)', type: 'number', defaultValue: '30', placeholder: 'e.g. 30' },
   ],
   'privacy-policy-generator': [
-    { name: 'website', label: 'Website / App URL', type: 'text', placeholder: 'e.g. ishutools.com' },
+    { name: 'website', label: 'Website / App URL', type: 'text', placeholder: 'e.g. ishutools.fun' },
     { name: 'company', label: 'Company / Your Name', type: 'text', placeholder: 'e.g. Ishu Tools' },
-    { name: 'email', label: 'Privacy Contact Email', type: 'text', placeholder: 'e.g. privacy@ishutools.com' },
+    { name: 'email', label: 'Privacy Contact Email', type: 'text', placeholder: 'e.g. privacy@ishutools.fun' },
     { name: 'country', label: 'Country', type: 'text', defaultValue: 'India', placeholder: 'e.g. India' },
     { name: 'analytics', label: 'Use Analytics (Google Analytics etc.)?', type: 'select', defaultValue: 'yes',
       options: [{ label: 'Yes', value: 'yes' }, { label: 'No', value: 'no' }]},
@@ -4961,7 +4972,7 @@ Object.assign(TOOL_FIELDS, {
     { name: 'has_header', label: 'First Row is Header?', type: 'select', defaultValue: 'true', options: booleanOptions },
   ],
   'email-extractor': [
-    { name: 'text', label: 'Text', type: 'textarea', defaultValue: 'Contact ishu@example.com and support@ishutools.com for help.', placeholder: 'Paste text containing emails...' },
+    { name: 'text', label: 'Text', type: 'textarea', defaultValue: 'Contact ishu@example.com and support@ishutools.fun for help.', placeholder: 'Paste text containing emails...' },
   ],
   'phone-number-extractor': [
     { name: 'text', label: 'Text', type: 'textarea', defaultValue: 'Call +91 98765 43210 or 011-2345-6789 today.', placeholder: 'Paste text containing phone numbers...' },
@@ -4972,8 +4983,8 @@ Object.assign(TOOL_FIELDS, {
     { name: 'top_n', label: 'Top Keywords', type: 'number', defaultValue: '20', placeholder: 'e.g. 20' },
   ],
   'robots-txt-generator': [
-    { name: 'site_url', label: 'Site URL', type: 'text', defaultValue: 'https://ishutools.com', placeholder: 'https://example.com' },
-    { name: 'sitemap_url', label: 'Sitemap URL', type: 'text', defaultValue: 'https://ishutools.com/sitemap.xml', placeholder: 'https://example.com/sitemap.xml' },
+    { name: 'site_url', label: 'Site URL', type: 'text', defaultValue: 'https://ishutools.fun', placeholder: 'https://example.com' },
+    { name: 'sitemap_url', label: 'Sitemap URL', type: 'text', defaultValue: 'https://ishutools.fun/sitemap.xml', placeholder: 'https://example.com/sitemap.xml' },
     { name: 'allow', label: 'Allow Paths', type: 'textarea', defaultValue: '/', placeholder: 'One path per line' },
     { name: 'disallow', label: 'Disallow Paths', type: 'textarea', defaultValue: '/api/\\n/admin/', placeholder: 'One path per line' },
     { name: 'crawl_delay', label: 'Crawl Delay', type: 'text', placeholder: 'Optional, e.g. 1' },
@@ -4985,7 +4996,7 @@ Object.assign(TOOL_FIELDS, {
     { name: 'max_length', label: 'Max Description Length', type: 'number', defaultValue: '155', placeholder: '120-180' },
   ],
   'utm-builder': [
-    { name: 'url', label: 'Website URL', type: 'text', defaultValue: 'https://ishutools.com/tools', placeholder: 'https://example.com/page' },
+    { name: 'url', label: 'Website URL', type: 'text', defaultValue: 'https://ishutools.fun/tools', placeholder: 'https://example.com/page' },
     { name: 'source', label: 'UTM Source', type: 'text', defaultValue: 'newsletter', placeholder: 'google, instagram, newsletter' },
     { name: 'medium', label: 'UTM Medium', type: 'text', defaultValue: 'email', placeholder: 'cpc, social, email' },
     { name: 'campaign', label: 'UTM Campaign', type: 'text', defaultValue: 'student_tools_launch', placeholder: 'campaign name' },
@@ -5143,7 +5154,7 @@ Object.assign(TOOL_FIELDS, {
   'serp-snippet-preview': [
     { name: 'title', label: 'SEO Title', type: 'text', defaultValue: 'ISHU TOOLS - Free Online Tools', placeholder: 'Page title...' },
     { name: 'description', label: 'Meta Description', type: 'textarea', defaultValue: 'Use free online tools for students, developers, finance, SEO, images, PDF and more.', placeholder: 'Meta description...' },
-    { name: 'url', label: 'URL', type: 'text', defaultValue: 'https://ishutools.com/tools', placeholder: 'https://example.com/page' },
+    { name: 'url', label: 'URL', type: 'text', defaultValue: 'https://ishutools.fun/tools', placeholder: 'https://example.com/page' },
   ],
   'keyword-cluster-generator': [
     { name: 'keywords', label: 'Keywords', type: 'textarea', defaultValue: 'pdf merge\\nmerge pdf online\\ncompress pdf\\nimage compressor', placeholder: 'One keyword per line' },
@@ -5576,4 +5587,3 @@ TOOL_FIELDS['json-unescape'] = [
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }
-

@@ -218,7 +218,7 @@ def handle_compress_pdf_enhanced(files: list[Path], payload: dict[str, Any], out
                 stream_decode_level=pikepdf.StreamDecodeLevel.generalized,
                 object_stream_mode=pikepdf.ObjectStreamMode.generate,
                 recompress_flate=True,
-                normalize_content=True,
+                normalize_content=not fast_web,
                 linearize=fast_web,
             )
     elif strip_metadata:

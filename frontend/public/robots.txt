@@ -11,8 +11,8 @@ Disallow: /health
 Disallow: /_vite/
 
 # Sitemaps
-Sitemap: https://ishutools.com/sitemap.xml
-Sitemap: https://ishutools.in/sitemap.xml
+Sitemap: https://ishutools.fun/sitemap.xml
+Sitemap: https://ishutools.vercel.app/sitemap.xml
 
 # AI assistant index — see /llms.txt (https://llmstxt.org)
 

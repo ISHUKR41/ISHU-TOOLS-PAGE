@@ -13,7 +13,7 @@ if str(ROOT_DIR) not in sys.path:
 
 from backend.app.registry import CATEGORIES, TOOLS
 
-BASE_URL = "https://ishutools.com"
+BASE_URL = "https://ishutools.fun"
 DIST_DIR = Path("frontend/dist")
 PUBLIC_DIR = Path("frontend/public")
 INDEX_FILE = DIST_DIR / "index.html"
@@ -159,13 +159,13 @@ def head_block(title: str, description: str, keywords: list[str], url: str, json
     <meta property="og:url" content="{esc(url)}" />
     <meta property="og:title" content="{esc(title)}" />
     <meta property="og:description" content="{esc(description)}" />
-    <meta property="og:image" content="https://ishutools.com/og-image.png" />
+    <meta property="og:image" content="https://ishutools.fun/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@ISHU_IITP" />
     <meta name="twitter:creator" content="@ISHU_IITP" />
     <meta name="twitter:title" content="{esc(title)}" />
     <meta name="twitter:description" content="{esc(description)}" />
-    <meta name="twitter:image" content="https://ishutools.com/og-image.png" />
+    <meta name="twitter:image" content="https://ishutools.fun/og-image.png" />
     <meta name="theme-color" content="#03060e" />
     <meta name="application-name" content="ISHU TOOLS" />
     <meta name="apple-mobile-web-app-title" content="ISHU TOOLS" />
@@ -292,3 +292,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import Fuse from 'fuse.js'
 import {
@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
+import { fetchPopularityMap } from '../../api/toolsApi'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
@@ -159,7 +160,7 @@ function CreatorSection() {
           <p style={{ marginTop: '0.6rem', color: 'var(--muted)', fontSize: '0.93rem' }}>
             From the frustration of hitting paywalls and file limits on iLovePDF, SmallPDF, and similar
             platforms, ISHU TOOLS was born — 1,200+ tools, all free, all day, every day.
-            <strong> ishutools.com</strong> — the Indian Student Hub for digital tools.
+            <strong> ishutools.fun</strong> — the Indian Student Hub for digital tools.
           </p>
           <div className='creator-links'>
             {socialLinks.map((l) => (
@@ -263,7 +264,7 @@ function AccordionFAQ() {
 }
 
 const SEO_KEYWORDS = [
-  'ishu tools', 'ishu kumar iit patna', 'indian student hub university tools', 'ishutools.com',
+  'ishu tools', 'ishu kumar iit patna', 'indian student hub university tools', 'ishutools.fun', 'ishutools.vercel.app',
   'merge pdf free', 'compress pdf online free', 'pdf to word online', 'word to pdf free',
   'compress image online', 'remove background free', 'resize image online', 'crop image free',
   'bmi calculator india', 'emi calculator india', 'sip calculator india', 'gst calculator india',
@@ -316,6 +317,7 @@ function ToolSkeleton() {
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
+  const [globalPopularity, setGlobalPopularity] = useState<Record<string, number>>({})
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
@@ -512,6 +514,31 @@ export default function HomePage() {
   // Tools you've actually opened bubble above untouched ones with the same popularity_rank.
   const usageSnapshot = useMemo<Record<string, number>>(() => loadUsage(), [])
 
+  useEffect(() => {
+    let mounted = true
+    void fetchPopularityMap()
+      .then((counts) => {
+        if (mounted) setGlobalPopularity(counts)
+      })
+      .catch(() => {
+        // Ignore popularity fetch failures; local ranking still works.
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  const rankBoost = useCallback((tool: { slug: string; popularity_rank?: number }) => {
+    const localVisits = usageSnapshot[tool.slug] ?? 0
+    const globalVisits = globalPopularity[tool.slug] ?? 0
+    const staticRank = tool.popularity_rank ?? 0
+
+    const localScore = Math.log2(localVisits + 1) * 25 + localVisits * 1.3
+    const globalScore = Math.log2(globalVisits + 1) * 16 + Math.min(220, globalVisits) * 0.6
+    const staticScore = staticRank * 0.45
+    return localScore + globalScore + staticScore
+  }, [globalPopularity, usageSnapshot])
+
   // Fuse.js index — built once per `tools` change. Used ONLY as a typo-tolerant
   // safety net: when our exact-match scoring path returns 0 hits (or very few),
   // we ask Fuse to find the closest matches by edit distance. This catches
@@ -542,9 +569,9 @@ export default function HomePage() {
       // We add log(visits + 1) * 25 so 1 visit ≈ +17 rank, 10 visits ≈ +60, 100 ≈ +115 — never
       // overpowering a truly hot tool, but enough to surface "the 5 things this user actually opens".
       return [...tools].sort((a, b) => {
-        const ua = Math.log((usageSnapshot[a.slug] ?? 0) + 1) * 25
-        const ub = Math.log((usageSnapshot[b.slug] ?? 0) + 1) * 25
-        return ((b.popularity_rank ?? 0) + ub) - ((a.popularity_rank ?? 0) + ua)
+        const delta = rankBoost(b) - rankBoost(a)
+        if (delta !== 0) return delta
+        return a.title.localeCompare(b.title)
       })
     }
     const rawTerms = q.split(/\s+/).filter(Boolean)
@@ -591,7 +618,7 @@ export default function HomePage() {
       }
       if (!matchedAll) continue
       // Add small popularity bonus so ties favor heavily-used tools.
-      score += Math.min(50, tool.popularity_rank ?? 0)
+      score += Math.min(120, rankBoost(tool) * 0.2)
       scored.push({ tool, score })
     }
     scored.sort((a, b) => b.score - a.score || ((b.tool.popularity_rank ?? 0) - (a.tool.popularity_rank ?? 0)))
@@ -613,7 +640,7 @@ export default function HomePage() {
     }
 
     return scored.map((s) => s.tool)
-  }, [debouncedQuery, tools, SEARCH_SYNONYMS, usageSnapshot, fuse])
+  }, [debouncedQuery, tools, SEARCH_SYNONYMS, rankBoost, fuse])
 
   const totalVisibleTools = filteredTools.length
 
@@ -724,8 +751,8 @@ export default function HomePage() {
                 </div>
                 <p>
                   {isSearching
-                    ? 'Ranked by relevance, your usage, and daily popularity. Press Esc to clear.'
-                    : 'Daily-use tools surface first. No hidden tools, no “show more” — every single tool is here.'}
+                    ? 'Ranked by relevance, your usage, and daily demand.'
+                    : 'Daily-use tools surface first in one complete, visible directory.'}
                 </p>
               </header>
               <div className='tool-grid'>

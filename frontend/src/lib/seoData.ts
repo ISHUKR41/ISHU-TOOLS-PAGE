@@ -5,6 +5,8 @@
  * 567+ tools covered — handcrafted entries take priority, smart auto-generator covers the rest.
  */
 
+import { SITE_URL, toSiteUrl } from './siteConfig'
+
 export interface ToolSEO {
   title: string
   description: string
@@ -14,6 +16,7 @@ export interface ToolSEO {
 }
 
 const SITE = 'ISHU TOOLS'
+const seoOverrideKey = (slug: string) => slug
 
 // ─── Auto-generator for any tool not in the handcrafted map ───
 export function getToolSEO(slug: string, toolTitle: string, toolDescription: string, category: string): ToolSEO {
@@ -87,7 +90,7 @@ function createGeneratedSEO(slug: string, toolTitle: string, toolDescription: st
 
   // ── Generate specific, keyword-rich description ──
   let description: string
-  const noSignup = 'No signup, no watermark, no file size limit.'
+  const noSignup = 'No signup, no watermark, fast processing.'
   if (isKbTool) {
     description = `${toolTitle} online for free. ${toolDescription.replace(/\.$/, '')}. Required for SSC, UPSC, RRB, IBPS, university forms, and government portals in India. ${noSignup}`
   } else if (isPassport) {
@@ -239,7 +242,7 @@ function buildComprehensiveKeywords(
   // ── Add universal Ishu-branded keywords to every single tool ──
   kw.push(
     // Ishu-brand core
-    `ishu tools free`, `ishutools.com ${base}`, `ishu kumar tool`, `ishu student hub`,
+    `ishu tools free`, `ishutools.fun ${base}`, `ishu kumar tool`, `ishu student hub`,
     `ishu tools online`, `ishu tools india free`, `best free tools by ishu`,
     `ishu tools no watermark`, `ishu tools no signup`, `ishu tools student`,
     `ishu kumar iit patna`, `ishu iit patna tools`, `ishu iitp tools`,
@@ -333,7 +336,7 @@ function generateSmartFAQs(
   // Is it free / limits
   faqs.push({
     question: `Is ${toolTitle} completely free to use?`,
-    answer: `Yes! ${toolTitle} on ISHU TOOLS is 100% free with no signup, no registration, no payment, and no hidden charges. There are no file size limits, no daily use limits, and no watermarks on output.`,
+    answer: `Yes! ${toolTitle} on ISHU TOOLS is 100% free with no signup, no registration, no payment, and no hidden charges. It is built for fast, practical use with clean output and no watermarks.`,
   })
 
   // Safety/privacy
@@ -383,7 +386,7 @@ function generateSmartFAQs(
   // Voice/featured-snippet style FAQ
   faqs.push({
     question: `Is ${toolTitle} available on ISHU TOOLS?`,
-    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.com). It is one of 1200+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
+    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.fun). It is one of 1200+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
   })
 
   // Creator/brand trust signal
@@ -409,7 +412,7 @@ function generateSmartFAQs(
   // Hindi/regional FAQ
   faqs.push({
     question: `${toolTitle} free mein kaise use karein?`,
-    answer: `ISHU TOOLS par jaiye (ishutools.com), "${toolTitle}" search karein aur tool open karein. ${flags.isPdf || flags.isImage ? 'Apni file upload karein aur "Run" button dabayein.' : 'Apna data enter karein aur process karein.'} Koi signup, payment ya download ki zaroorat nahi. Bilkul free!`,
+    answer: `ISHU TOOLS par jaiye (ishutools.fun), "${toolTitle}" search karein aur tool open karein. ${flags.isPdf || flags.isImage ? 'Apni file upload karein aur "Run" button dabayein.' : 'Apna data enter karein aur process karein.'} Koi signup, payment ya download ki zaroorat nahi. Bilkul free!`,
   })
 
   return faqs.slice(0, 10)
@@ -435,7 +438,7 @@ export function buildIntentKeywords(slug: string, _title: string, categoryLabel:
 }
 
 export function getToolJsonLd(slug: string, title: string, description: string, category: string): object {
-  const toolUrl = `https://ishutools.com/tools/${slug}`
+  const toolUrl = toSiteUrl(`/tools/${slug}`)
   const catLabel = getCategoryLabel(category)
   const isPdf = slug.includes('pdf') || category.includes('pdf')
   const isImage = category.includes('image') || slug.includes('image') || slug.includes('-jpg') || slug.includes('-png')
@@ -534,27 +537,19 @@ export function getToolJsonLd(slug: string, title: string, description: string, 
             url: 'https://www.iitp.ac.in',
           },
         },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          ratingCount: '3200',
-          reviewCount: '1800',
-          bestRating: '5',
-          worstRating: '1',
-        },
         featureList: `Free online tool, No signup required, No watermark, Mobile friendly, ${catLabel}, Works on all devices`,
         publisher: {
           '@type': 'Organization',
           name: 'ISHU TOOLS',
-          url: 'https://ishutools.com',
-          logo: { '@type': 'ImageObject', url: 'https://ishutools.com/favicon.svg' },
+          url: SITE_URL,
+          logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.svg` },
         },
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS Home', item: 'https://ishutools.com/' },
-          { '@type': 'ListItem', position: 2, name: catLabel, item: `https://ishutools.com/category/${category}` },
+          { '@type': 'ListItem', position: 1, name: 'ISHU TOOLS Home', item: `${SITE_URL}/` },
+          { '@type': 'ListItem', position: 2, name: catLabel, item: toSiteUrl(`/category/${category}`) },
           { '@type': 'ListItem', position: 3, name: title, item: toolUrl },
         ],
       },
@@ -714,7 +709,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How to merge PDF files online for free?', answer: 'Upload multiple PDF files to ISHU TOOLS Merge PDF tool, arrange them in your desired order, and click "Run". Your merged PDF will be ready to download instantly — completely free, no signup required.' },
       { question: 'Can I merge more than 2 PDF files at once?', answer: 'Yes! You can merge unlimited PDF files at once with ISHU TOOLS. Simply upload all the PDFs you want to combine and our tool will merge them all into one document.' },
       { question: 'Is the merged PDF quality preserved?', answer: 'Absolutely! Our PDF merger preserves 100% of the original quality, formatting, images, and text. No compression or degradation occurs during merging.' },
-      { question: 'Is ISHU TOOLS Merge PDF better than iLovePDF?', answer: 'ISHU TOOLS offers unlimited free PDF merging with no watermarks, no file size limits, and no signup required. Many users prefer ISHU TOOLS for its speed and simplicity.' },
+      { question: 'Is ISHU TOOLS Merge PDF better than iLovePDF?', answer: 'ISHU TOOLS offers free PDF merging with no watermarks and no signup required. Many users prefer ISHU TOOLS for its speed and simplicity.' },
     ],
   },
   'compress-pdf': {
@@ -4098,7 +4093,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   },
 
   // ─── Health Tools ───
-  'calorie-calculator': {
+  ...{ [seoOverrideKey('calorie-calculator')]: {
     title: 'Calorie Calculator — Daily Calorie Needs & TDEE Free | ISHU TOOLS',
     description: 'Calculate your daily calorie needs (TDEE), BMR, and recommended macros. Free online calorie calculator for weight loss, gain, or maintenance. No signup.',
     keywords: ['calorie calculator', 'tdee calculator', 'daily calorie calculator', 'calorie calculator for weight loss', 'calorie intake calculator', 'bmr calculator', 'calorie calculator india', 'how many calories do i need', 'daily calorie needs calculator', 'calorie deficit calculator'],
@@ -4108,8 +4103,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How many calories should I eat per day?', answer: 'It depends on your age, weight, height, gender, and activity level. This calculator computes your TDEE — eat less to lose weight, more to gain weight.' },
       { question: 'What is BMR?', answer: 'BMR (Basal Metabolic Rate) is the minimum number of calories your body needs at complete rest to maintain basic functions like breathing and circulation.' },
     ],
-  },
-  'sleep-calculator': {
+  }},
+  ...{ [seoOverrideKey('sleep-calculator')]: {
     title: 'Sleep Calculator — Best Bedtime & Wake Up Time Free | ISHU TOOLS',
     description: 'Find the best time to wake up or go to sleep based on 90-minute sleep cycles. Free sleep calculator for better sleep quality and energy.',
     keywords: ['sleep calculator', 'best wake up time calculator', 'sleep cycle calculator', 'bedtime calculator', 'when should i wake up', 'sleep time calculator', 'rem sleep calculator', 'optimal sleep time', 'sleep calculator free'],
@@ -4118,8 +4113,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How does the sleep calculator work?', answer: 'Sleep happens in 90-minute cycles. This calculator finds wake-up times that align with the end of a sleep cycle, so you wake up feeling refreshed instead of groggy.' },
       { question: 'How many sleep cycles do I need?', answer: 'Most adults need 5-6 complete sleep cycles (7.5-9 hours) per night for optimal health and energy. Less than 4 cycles (6 hours) leads to sleep deprivation.' },
     ],
-  },
-  'water-intake-calculator': {
+  }},
+  ...{ [seoOverrideKey('water-intake-calculator')]: {
     title: 'Water Intake Calculator — Daily Water Need Free | ISHU TOOLS',
     description: 'Calculate your recommended daily water intake based on weight, activity level, and climate. Free hydration calculator in liters and glasses.',
     keywords: ['water intake calculator', 'daily water intake calculator', 'how much water should i drink', 'water calculator', 'hydration calculator', 'water intake per day', 'water requirement calculator', 'daily water requirement', 'drink water calculator', 'water intake based on weight'],
@@ -4128,12 +4123,12 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How much water should I drink per day?', answer: 'A general rule is 35ml per kg of body weight. A 70kg person needs about 2.45 liters per day. This increases with exercise, heat, and certain health conditions.' },
       { question: 'Does coffee/tea count as water intake?', answer: 'Caffeinated beverages are mild diuretics and don\'t fully count. It\'s best to drink them in addition to your daily water target, not as a replacement.' },
     ],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  DEVELOPER TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'json-formatter': {
+  ...{ [seoOverrideKey('json-formatter')]: {
     title: 'JSON Formatter & Beautifier Online Free | ISHU TOOLS',
     description: 'Format, beautify, validate, and minify JSON online for free. Pretty print JSON with syntax highlighting and error detection. Best free JSON formatter for developers — no signup, works instantly.',
     keywords: ['json formatter', 'json beautifier', 'format json online', 'json validator', 'json pretty print', 'json formatter online', 'json formatter free', 'json beautify online', 'json viewer', 'json editor online', 'validate json online', 'json formatter tool', 'ishu tools json formatter', 'json linter', 'format json string', 'json pretty printer', 'json indentation', 'json format checker'],
@@ -4143,8 +4138,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'Can I validate JSON syntax with this tool?', answer: 'Yes! ISHU TOOLS JSON Formatter validates your JSON and shows error location if the JSON is invalid — making it perfect for debugging API responses and config files.' },
       { question: 'Is ISHU TOOLS JSON Formatter free?', answer: 'Yes, completely free, no signup required, works in your browser, and your data never leaves your device.' },
     ],
-  },
-  'xml-formatter': {
+  }},
+  ...{ [seoOverrideKey('xml-formatter')]: {
     title: 'XML Formatter & Beautifier Online Free | ISHU TOOLS',
     description: 'Format and beautify XML documents online for free. Validate XML syntax, pretty print with proper indentation. Best free XML formatter for developers and students.',
     keywords: ['xml formatter', 'xml beautifier', 'format xml online', 'xml validator', 'xml pretty print', 'xml formatter free', 'xml editor online', 'xml formatter tool', 'ishu tools xml formatter', 'xml indentation', 'validate xml online', 'xml formatter online'],
@@ -4152,8 +4147,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to format XML code?', answer: 'Paste your XML into ISHU TOOLS XML Formatter and it will instantly add proper indentation and validate your markup.' },
     ],
-  },
-  'base64-encode': {
+  }},
+  ...{ [seoOverrideKey('base64-encode')]: {
     title: 'Base64 Encoder Online Free — Encode Text to Base64 | ISHU TOOLS',
     description: 'Encode text or files to Base64 online for free. Convert strings to Base64 format instantly. No signup, completely private, client-side processing.',
     keywords: ['base64 encode', 'base64 encoder', 'text to base64', 'encode base64 online', 'base64 encoding', 'base64 converter', 'base64 encoder online free', 'ishu tools base64', 'string to base64', 'base64 encode text', 'base64 encoding tool', 'online base64 encoder'],
@@ -4161,15 +4156,15 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is Base64 encoding?', answer: 'Base64 is a binary-to-text encoding that represents binary data as ASCII characters. It\'s used in email attachments, JWT tokens, data URLs, and API authentication.' },
     ],
-  },
-  'base64-decode': {
+  }},
+  ...{ [seoOverrideKey('base64-decode')]: {
     title: 'Base64 Decoder Online Free — Decode Base64 to Text | ISHU TOOLS',
     description: 'Decode Base64 encoded strings back to plain text online for free. Instantly convert Base64 to readable text. No signup required.',
     keywords: ['base64 decode', 'base64 decoder', 'base64 to text', 'decode base64', 'base64 decoding online', 'base64 decoder free', 'ishu tools base64 decode', 'decode base64 string', 'base64 to string', 'online base64 decoder'],
     h1: 'Base64 Decoder — Free Online',
     faq: [],
-  },
-  'url-encode': {
+  }},
+  ...{ [seoOverrideKey('url-encode')]: {
     title: 'URL Encoder Online Free — Encode URL / Percent Encoding | ISHU TOOLS',
     description: 'URL encode strings online for free. Convert special characters to percent-encoded format for use in URLs. Essential tool for web developers and API testing.',
     keywords: ['url encode', 'url encoder', 'percent encoding', 'url encode online', 'urlencode', 'encode url free', 'ishu tools url encoder', 'url encode string', 'percent encode url', 'url encoding tool', 'online url encoder', 'encode special characters url'],
@@ -4177,29 +4172,29 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is URL encoding?', answer: 'URL encoding replaces unsafe characters in a URL with percent-encoded equivalents (e.g., space becomes %20). It\'s required when passing special characters in query parameters.' },
     ],
-  },
-  'url-decode': {
+  }},
+  ...{ [seoOverrideKey('url-decode')]: {
     title: 'URL Decoder Online Free — Decode Percent-Encoded URLs | ISHU TOOLS',
     description: 'Decode URL-encoded strings back to readable text online for free. Convert %20 and percent-encoded characters to normal text. Essential for web development.',
     keywords: ['url decode', 'url decoder', 'decode url', 'percent decode', 'url decode online', 'url decoder free', 'ishu tools url decode', 'decode url string', 'online url decoder', 'urldecode'],
     h1: 'URL Decoder — Free Online',
     faq: [],
-  },
-  'html-encode': {
+  }},
+  ...{ [seoOverrideKey('html-encode')]: {
     title: 'HTML Encoder Online Free — Encode HTML Entities | ISHU TOOLS',
     description: 'Encode HTML special characters to HTML entities online for free. Convert <, >, &, " to &lt;, &gt;, &amp;, &quot;. Essential for safe HTML rendering.',
     keywords: ['html encode', 'html encoder', 'html entity encoder', 'encode html online', 'html escape', 'html entities', 'html encode free', 'ishu tools html encoder', 'html special characters', 'html encoding tool'],
     h1: 'HTML Encoder — Encode HTML Entities Free',
     faq: [],
-  },
-  'html-decode': {
+  }},
+  ...{ [seoOverrideKey('html-decode')]: {
     title: 'HTML Decoder Online Free — Decode HTML Entities | ISHU TOOLS',
     description: 'Decode HTML entities back to readable characters online for free. Convert &lt;, &gt;, &amp; back to <, >, &. No signup required.',
     keywords: ['html decode', 'html decoder', 'html entity decoder', 'decode html entities', 'html unescape', 'html decode online', 'ishu tools html decode', 'html decoding tool'],
     h1: 'HTML Decoder — Decode HTML Entities Free',
     faq: [],
-  },
-  'jwt-decode': {
+  }},
+  ...{ [seoOverrideKey('jwt-decode')]: {
     title: 'JWT Decoder Online Free — Decode JWT Tokens | ISHU TOOLS',
     description: 'Decode and inspect JWT (JSON Web Token) tokens online for free. View header, payload, and signature. Debug authentication tokens without any library.',
     keywords: ['jwt decode', 'jwt decoder', 'decode jwt token', 'jwt parser', 'json web token decode', 'jwt inspector', 'jwt decode online', 'jwt decoder free', 'ishu tools jwt', 'decode json web token', 'jwt token viewer', 'jwt payload decoder'],
@@ -4208,8 +4203,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What is a JWT token?', answer: 'JWT (JSON Web Token) is a standard for securely transmitting information between parties as a JSON object. It has three parts: header, payload, and signature, separated by dots.' },
       { question: 'Is it safe to decode my JWT here?', answer: 'ISHU TOOLS JWT Decoder processes tokens entirely in your browser — nothing is sent to any server. Your tokens are completely private.' },
     ],
-  },
-  'regex-tester': {
+  }},
+  ...{ [seoOverrideKey('regex-tester')]: {
     title: 'Regex Tester Online Free — Test Regular Expressions | ISHU TOOLS',
     description: 'Test and debug regular expressions (regex) online for free. Real-time matching, group capture, flags support. Best free regex tester for developers.',
     keywords: ['regex tester', 'regex test online', 'regular expression tester', 'regex debugger', 'test regex online', 'regex matcher', 'regex validator', 'ishu tools regex', 'online regex tester', 'regex checker free', 'javascript regex tester', 'regex pattern tester', 'regular expression test'],
@@ -4217,8 +4212,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What flags are supported?', answer: 'ISHU TOOLS Regex Tester supports all standard regex flags: g (global), i (case-insensitive), m (multiline), s (dotAll), and u (unicode).' },
     ],
-  },
-  'uuid-generator': {
+  }},
+  ...{ [seoOverrideKey('uuid-generator')]: {
     title: 'UUID Generator Online Free — Generate UUID v4 | ISHU TOOLS',
     description: 'Generate random UUID (v4) online for free. Bulk UUID generation, copy with one click. Best free UUID generator for developers and database design.',
     keywords: ['uuid generator', 'generate uuid', 'uuid v4', 'random uuid', 'guid generator', 'uuid online free', 'ishu tools uuid', 'unique id generator', 'uuid4 generator', 'bulk uuid generator', 'generate guid online', 'uuid tool'],
@@ -4226,8 +4221,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is UUID v4?', answer: 'UUID v4 (Universally Unique Identifier) is a 128-bit randomly generated identifier, formatted as 8-4-4-4-12 hexadecimal characters. It\'s used as unique keys in databases, APIs, and distributed systems.' },
     ],
-  },
-  'password-generator': {
+  }},
+  ...{ [seoOverrideKey('password-generator')]: {
     title: 'Password Generator Online Free — Strong Random Password | ISHU TOOLS',
     description: 'Generate strong, random passwords online for free. Customize length, include symbols, numbers, uppercase. Create secure passwords for any account. No signup.',
     keywords: ['password generator', 'random password generator', 'strong password generator', 'generate password online', 'secure password creator', 'password generator free', 'ishu tools password generator', 'random strong password', 'create password online', 'password maker', 'safe password generator'],
@@ -4235,15 +4230,15 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How do I create a strong password?', answer: 'A strong password should be at least 12-16 characters, include uppercase, lowercase, numbers, and special symbols. ISHU TOOLS Password Generator creates cryptographically random passwords that are virtually impossible to crack.' },
     ],
-  },
-  'lorem-ipsum-generator': {
+  }},
+  ...{ [seoOverrideKey('lorem-ipsum-generator')]: {
     title: 'Lorem Ipsum Generator Online Free — Placeholder Text | ISHU TOOLS',
     description: 'Generate Lorem Ipsum placeholder text online for free. Choose paragraphs, words, or sentences. Classic and modern Lorem Ipsum variants. No signup required.',
     keywords: ['lorem ipsum generator', 'lorem ipsum', 'placeholder text generator', 'dummy text generator', 'lorem ipsum online', 'lorem ipsum free', 'ishu tools lorem ipsum', 'generate lorem ipsum', 'filler text generator', 'fake text generator', 'lorem ipsum paragraph generator'],
     h1: 'Lorem Ipsum Generator — Placeholder Text Free Online',
     faq: [],
-  },
-  'bcrypt-hash': {
+  }},
+  ...{ [seoOverrideKey('bcrypt-hash')]: {
     title: 'Bcrypt Hash Generator Online Free — Hash Password | ISHU TOOLS',
     description: 'Generate Bcrypt hashed passwords online for free. Secure password hashing with configurable cost factor. Verify existing Bcrypt hashes. Essential for backend developers.',
     keywords: ['bcrypt hash', 'bcrypt generator', 'hash password bcrypt', 'bcrypt online', 'bcrypt password hash', 'bcrypt hash generator', 'ishu tools bcrypt', 'bcrypt hashing tool', 'password hash generator', 'bcrypt cost factor', 'bcrypt verify'],
@@ -4251,8 +4246,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'Why use Bcrypt for passwords?', answer: 'Bcrypt is designed to be slow and computationally expensive, making brute-force attacks impractical. It\'s the industry standard for storing user passwords in databases.' },
     ],
-  },
-  'md5-hash': {
+  }},
+  ...{ [seoOverrideKey('md5-hash')]: {
     title: 'MD5 Hash Generator Online Free | ISHU TOOLS',
     description: 'Generate MD5 hash of any text online for free. Instant MD5 checksum calculation. Verify file integrity with MD5. No signup required.',
     keywords: ['md5 hash', 'md5 generator', 'md5 checksum', 'generate md5', 'md5 online', 'md5 hash generator free', 'ishu tools md5', 'md5 calculator', 'md5 hash string', 'text to md5', 'md5 encoder'],
@@ -4260,22 +4255,22 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'Is MD5 secure for passwords?', answer: 'No! MD5 is cryptographically broken and should never be used for passwords. Use Bcrypt or SHA-512 instead. MD5 is still useful for file integrity verification and checksums.' },
     ],
-  },
-  'sha256-hash': {
+  }},
+  ...{ [seoOverrideKey('sha256-hash')]: {
     title: 'SHA-256 Hash Generator Online Free | ISHU TOOLS',
     description: 'Generate SHA-256 cryptographic hash of any text online for free. Verify file integrity, create checksums, sign data. Instant SHA256 calculation.',
     keywords: ['sha256 hash', 'sha-256 generator', 'sha256 online', 'sha256 checksum', 'generate sha256', 'sha256 hash generator free', 'ishu tools sha256', 'sha256 calculator', 'text to sha256', 'sha-256 encoder'],
     h1: 'SHA-256 Hash Generator — Free Online',
     faq: [],
-  },
-  'sha512-hash': {
+  }},
+  ...{ [seoOverrideKey('sha512-hash')]: {
     title: 'SHA-512 Hash Generator Online Free | ISHU TOOLS',
     description: 'Generate SHA-512 cryptographic hash of any text online for free. Most secure SHA family hash. No signup required.',
     keywords: ['sha512 hash', 'sha-512 generator', 'sha512 online', 'sha-512 hash generator', 'ishu tools sha512'],
     h1: 'SHA-512 Hash Generator — Free Online',
     faq: [],
-  },
-  'diff-checker': {
+  }},
+  ...{ [seoOverrideKey('diff-checker')]: {
     title: 'Text Diff Checker Online Free — Compare Two Texts | ISHU TOOLS',
     description: 'Compare two text files side by side and find differences online for free. Highlight changes, additions, deletions. Best free diff tool for developers and writers.',
     keywords: ['diff checker', 'text diff', 'compare text online', 'text comparison tool', 'diff tool online', 'find text differences', 'text diff online free', 'ishu tools diff', 'compare two texts', 'side by side diff', 'text difference finder', 'diff checker free'],
@@ -4283,14 +4278,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to compare two texts?', answer: 'Paste Text 1 and Text 2 into ISHU TOOLS Text Diff Checker. It instantly highlights all differences, additions (green), and deletions (red) between the two texts.' },
     ],
-  },
-  'sql-formatter': {
+  }},
+  ...{ [seoOverrideKey('sql-formatter')]: {
     title: 'SQL Formatter Online Free — Beautify SQL Queries | ISHU TOOLS',
     description: 'Format and beautify SQL queries online for free. Pretty print complex SQL with proper indentation. Supports MySQL, PostgreSQL, SQLite, MSSQL. No signup required.',
     keywords: ['sql formatter', 'sql beautifier', 'format sql online', 'sql pretty print', 'sql formatter free', 'ishu tools sql', 'sql indentation', 'sql formatter online', 'sql query formatter', 'beautify sql query', 'sql code formatter'],
     h1: 'SQL Formatter — Beautify SQL Queries Free Online',
     faq: [],
-  },
+  }},
   'markdown-to-html': {
     title: 'Markdown to HTML Converter Online Free | ISHU TOOLS',
     description: 'Convert Markdown to HTML online for free. Preview rendered Markdown, copy HTML output. Supports headers, lists, code blocks, tables. Best free Markdown converter.',
@@ -4307,42 +4302,42 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What is a cron expression?', answer: 'A cron expression is a string with 5 or 6 fields (minute, hour, day, month, weekday) that defines when a scheduled task should run. For example, "0 9 * * 1-5" means every weekday at 9 AM.' },
     ],
   },
-  'json-to-yaml': {
+  ...{ [seoOverrideKey('json-to-yaml')]: {
     title: 'JSON to YAML Converter Online Free | ISHU TOOLS',
     description: 'Convert JSON to YAML format online for free. Instantly transform JSON configuration files to YAML. Used in Kubernetes, Docker Compose, CI/CD pipelines.',
     keywords: ['json to yaml', 'convert json to yaml', 'json yaml converter', 'json to yaml online', 'json to yaml free', 'ishu tools json to yaml', 'yaml from json', 'json yaml transform'],
     h1: 'JSON to YAML Converter — Free Online',
     faq: [],
-  },
-  'yaml-to-json': {
+  }},
+  ...{ [seoOverrideKey('yaml-to-json')]: {
     title: 'YAML to JSON Converter Online Free | ISHU TOOLS',
     description: 'Convert YAML to JSON format online for free. Transform YAML config files to JSON instantly. Supports all YAML features including anchors and references.',
     keywords: ['yaml to json', 'convert yaml to json', 'yaml json converter', 'yaml to json online free', 'ishu tools yaml to json', 'yaml converter'],
     h1: 'YAML to JSON Converter — Free Online',
     faq: [],
-  },
-  'minify-css': {
+  }},
+  ...{ [seoOverrideKey('minify-css')]: {
     title: 'CSS Minifier Online Free — Minify CSS Files | ISHU TOOLS',
     description: 'Minify and compress CSS code online for free. Remove whitespace, comments, and reduce CSS file size for faster websites. No signup required.',
     keywords: ['css minifier', 'minify css', 'css compressor', 'compress css online', 'css minify free', 'ishu tools css minifier', 'css uglify', 'reduce css size', 'css minimize', 'online css minifier'],
     h1: 'CSS Minifier — Compress CSS Free Online',
     faq: [],
-  },
-  'minify-js': {
+  }},
+  ...{ [seoOverrideKey('minify-js')]: {
     title: 'JavaScript Minifier Online Free — Minify JS Code | ISHU TOOLS',
     description: 'Minify JavaScript code online for free. Compress JS files by removing whitespace and comments. Reduce JS bundle size for faster page loads.',
     keywords: ['js minifier', 'javascript minifier', 'minify javascript', 'js compressor', 'compress javascript', 'minify js online', 'ishu tools js minifier', 'js uglify', 'javascript compress', 'online js minifier'],
     h1: 'JavaScript Minifier — Compress JS Free Online',
     faq: [],
-  },
-  'minify-html': {
+  }},
+  ...{ [seoOverrideKey('minify-html')]: {
     title: 'HTML Minifier Online Free — Minify HTML Code | ISHU TOOLS',
     description: 'Minify HTML code online for free. Remove unnecessary whitespace, comments to reduce HTML file size. Speed up your website.',
     keywords: ['html minifier', 'minify html', 'html compressor', 'compress html online', 'html minify free', 'ishu tools html minifier', 'html compress', 'online html minifier'],
     h1: 'HTML Minifier — Compress HTML Free Online',
     faq: [],
-  },
-  'meta-tag-generator': {
+  }},
+  ...{ [seoOverrideKey('meta-tag-generator')]: {
     title: 'Meta Tag Generator Online Free — SEO Meta Tags | ISHU TOOLS',
     description: 'Generate SEO-optimized meta tags for your website online for free. Create title tags, description, robots, and Open Graph meta tags. Improve Google ranking instantly.',
     keywords: ['meta tag generator', 'seo meta tags', 'generate meta tags', 'meta tag creator', 'meta description generator', 'html meta tags', 'meta tags for seo', 'ishu tools meta tag', 'website meta tags', 'og meta tag generator', 'meta tag builder', 'seo tag generator'],
@@ -4350,33 +4345,33 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What are meta tags?', answer: 'Meta tags are HTML elements that provide metadata about your webpage to search engines and social media platforms. They include the page title, description, keywords, and Open Graph data for social sharing.' },
     ],
-  },
-  'keyword-density': {
+  }},
+  ...{ [seoOverrideKey('keyword-density')]: {
     title: 'Keyword Density Analyzer Online Free — SEO Tool | ISHU TOOLS',
     description: 'Analyze keyword density in your content online for free. Find keyword frequency, density percentage, and overused words. Optimize content for SEO.',
     keywords: ['keyword density', 'keyword density analyzer', 'keyword density checker', 'keyword frequency counter', 'seo keyword density', 'ishu tools keyword density', 'keyword density tool', 'keyword analysis tool', 'content keyword checker'],
     h1: 'Keyword Density Analyzer — SEO Tool Free',
     faq: [],
-  },
-  'readability-score': {
+  }},
+  ...{ [seoOverrideKey('readability-score')]: {
     title: 'Readability Score Checker Online Free | ISHU TOOLS',
     description: 'Check readability score (Flesch-Kincaid, Gunning Fog) of your text online for free. Improve writing clarity for SEO, essays, and professional documents.',
     keywords: ['readability score', 'readability checker', 'flesch reading ease', 'gunning fog index', 'text readability', 'readability analysis', 'ishu tools readability', 'content readability score', 'writing readability checker'],
     h1: 'Readability Score Checker — Free Online',
     faq: [],
-  },
-  'open-graph-generator': {
+  }},
+  ...{ [seoOverrideKey('open-graph-generator')]: {
     title: 'Open Graph Meta Tag Generator Free — OG Tags | ISHU TOOLS',
     description: 'Generate Open Graph (OG) meta tags for Facebook, Twitter, LinkedIn previews online for free. Improve social media sharing appearance for your website.',
     keywords: ['open graph generator', 'og meta tags', 'open graph tags', 'facebook meta tags', 'twitter card generator', 'og tag generator', 'social media meta tags', 'ishu tools og generator'],
     h1: 'Open Graph Tag Generator — Social Media Meta Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  COLOR TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'rgb-to-hex': {
+  ...{ [seoOverrideKey('rgb-to-hex')]: {
     title: 'RGB to HEX Color Converter Online Free | ISHU TOOLS',
     description: 'Convert RGB color values to HEX color code online for free. Instant RGB to hexadecimal conversion with color preview. Essential for web designers and developers.',
     keywords: ['rgb to hex', 'rgb to hex converter', 'rgb to hex color', 'convert rgb to hex', 'rgb to hex online', 'rgb to hexadecimal', 'rgb to hex free', 'ishu tools rgb to hex', 'color converter rgb hex', 'rgb hex tool', 'rgb to hex code'],
@@ -4384,22 +4379,22 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to convert RGB to HEX?', answer: 'Enter the Red (0-255), Green (0-255), Blue (0-255) values and ISHU TOOLS instantly converts them to the corresponding HEX code (e.g., RGB(255,0,0) = #FF0000 for red).' },
     ],
-  },
-  'hex-to-rgb': {
+  }},
+  ...{ [seoOverrideKey('hex-to-rgb')]: {
     title: 'HEX to RGB Color Converter Online Free | ISHU TOOLS',
     description: 'Convert HEX color codes to RGB values online for free. Supports short (#FFF) and full (#FFFFFF) HEX codes. Instant conversion with live color preview.',
     keywords: ['hex to rgb', 'hex to rgb converter', 'hex to rgb color', 'convert hex to rgb', 'hex to rgb online', 'hexadecimal to rgb', 'hex to rgb free', 'ishu tools hex to rgb', 'color code converter', 'hex to rgba converter', 'html color converter'],
     h1: 'HEX to RGB Color Converter — Free Online',
     faq: [],
-  },
-  'rgb-to-hsl': {
+  }},
+  ...{ [seoOverrideKey('rgb-to-hsl')]: {
     title: 'RGB to HSL Color Converter Online Free | ISHU TOOLS',
     description: 'Convert RGB color values to HSL (Hue, Saturation, Lightness) online for free. Perfect for CSS animations and modern web design.',
     keywords: ['rgb to hsl', 'rgb to hsl converter', 'color converter', 'rgb to hsl online', 'ishu tools rgb to hsl', 'hsl color converter', 'rgb hsl conversion'],
     h1: 'RGB to HSL Converter — Free Online',
     faq: [],
-  },
-  'color-palette-generator': {
+  }},
+  ...{ [seoOverrideKey('color-palette-generator')]: {
     title: 'Color Palette Generator Online Free — Create Color Schemes | ISHU TOOLS',
     description: 'Generate beautiful color palettes online for free. Create complementary, analogous, triadic color schemes from any base color. Perfect for designers and branding.',
     keywords: ['color palette generator', 'color scheme generator', 'color palette creator', 'generate color palette', 'color palette free', 'ishu tools color palette', 'website color palette', 'color combination generator', 'complementary colors', 'color palette tool', 'brand color generator', 'color scheme maker'],
@@ -4407,15 +4402,15 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to create a color palette?', answer: 'Enter a base color in ISHU TOOLS Color Palette Generator and it automatically generates complementary, analogous, and triadic color combinations — perfect for UI design, branding, and web development.' },
     ],
-  },
-  'gradient-generator': {
+  }},
+  ...{ [seoOverrideKey('gradient-generator')]: {
     title: 'CSS Gradient Generator Online Free — Linear & Radial | ISHU TOOLS',
     description: 'Generate CSS gradient code online for free. Create linear, radial, and conic gradients with live preview. Copy CSS code instantly. Best free gradient tool for web designers.',
     keywords: ['gradient generator', 'css gradient generator', 'linear gradient', 'gradient css code', 'gradient maker', 'gradient tool online', 'gradient generator free', 'ishu tools gradient', 'css gradient tool', 'color gradient generator', 'gradient background generator', 'css background gradient'],
     h1: 'CSS Gradient Generator — Linear & Radial Gradients Free',
     faq: [],
-  },
-  'color-contrast-checker': {
+  }},
+  ...{ [seoOverrideKey('color-contrast-checker')]: {
     title: 'Color Contrast Checker Online Free — WCAG Accessibility | ISHU TOOLS',
     description: 'Check color contrast ratio for accessibility compliance online for free. Verify WCAG AA and AAA standards. Ensure your website text is readable for all users.',
     keywords: ['color contrast checker', 'wcag contrast', 'accessibility contrast', 'contrast ratio checker', 'color contrast tool', 'ishu tools contrast checker', 'wcag color contrast', 'text readability contrast', 'contrast accessibility tool', 'contrast checker free'],
@@ -4423,14 +4418,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is WCAG contrast ratio?', answer: 'WCAG (Web Content Accessibility Guidelines) requires a minimum contrast ratio of 4.5:1 for normal text (AA) and 7:1 for enhanced accessibility (AAA). ISHU TOOLS checks your colors against both standards.' },
     ],
-  },
-  'random-color-generator': {
+  }},
+  ...{ [seoOverrideKey('random-color-generator')]: {
     title: 'Random Color Generator Online Free | ISHU TOOLS',
     description: 'Generate random colors online for free. Get random HEX, RGB, and HSL color values instantly. Perfect for design inspiration and creative projects.',
     keywords: ['random color generator', 'random color', 'random color picker', 'generate random color', 'random color free', 'ishu tools random color', 'random hex color', 'color randomizer'],
     h1: 'Random Color Generator — Free Online',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  SECURITY / HASH TOOLS — Handcrafted SEO
@@ -4444,18 +4439,18 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What makes a password strong?', answer: 'A strong password has at least 12 characters, a mix of uppercase/lowercase letters, numbers, and special characters. Avoid dictionary words, names, and predictable patterns.' },
     ],
   },
-  'hash-generator': {
+  ...{ [seoOverrideKey('hash-generator')]: {
     title: 'Multi-Hash Generator Online Free — MD5, SHA256, SHA512 | ISHU TOOLS',
     description: 'Generate multiple hash types (MD5, SHA-1, SHA-256, SHA-512) from any text online for free. Compare hash outputs instantly. Essential cryptography tool.',
     keywords: ['hash generator', 'multi hash generator', 'md5 sha256 sha512', 'hash tool online', 'hash generator free', 'ishu tools hash generator', 'text hash generator', 'cryptographic hash', 'checksum generator', 'hash calculator'],
     h1: 'Multi-Hash Generator — MD5, SHA256, SHA512 Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  SOCIAL MEDIA TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'instagram-post-resizer': {
+  ...{ [seoOverrideKey('instagram-post-resizer')]: {
     title: 'Instagram Post Resizer Online Free — Perfect Instagram Size | ISHU TOOLS',
     description: 'Resize images to perfect Instagram size online for free. Square (1080x1080), portrait (1080x1350), landscape (1080x566). No signup, no watermark.',
     keywords: ['instagram post resizer', 'instagram image size', 'resize image for instagram', 'instagram image resizer', 'instagram photo size', 'instagram size online free', 'ishu tools instagram resizer', 'instagram post size', '1080x1080 image', 'instagram square image'],
@@ -4463,47 +4458,47 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is the ideal Instagram image size?', answer: 'Instagram recommends 1080x1080 px for square posts, 1080x1350 px for portrait (4:5), and 1080x566 px for landscape. ISHU TOOLS automatically resizes to these exact dimensions.' },
     ],
-  },
-  'youtube-thumbnail-maker': {
+  }},
+  ...{ [seoOverrideKey('youtube-thumbnail-maker')]: {
     title: 'YouTube Thumbnail Maker Online Free | ISHU TOOLS',
     description: 'Create and resize YouTube thumbnails online for free. Perfect 1280x720 HD thumbnail size. No signup, no watermark. Best YouTube thumbnail tool.',
     keywords: ['youtube thumbnail maker', 'youtube thumbnail', 'create youtube thumbnail', 'youtube thumbnail size', 'youtube thumbnail resizer', 'yt thumbnail maker', 'youtube thumbnail online', 'ishu tools youtube thumbnail', 'youtube thumbnail free', '1280x720 thumbnail', 'youtube thumbnail creator'],
     h1: 'YouTube Thumbnail Maker — Create HD Thumbnails Free',
     faq: [],
-  },
-  'twitter-header-maker': {
+  }},
+  ...{ [seoOverrideKey('twitter-header-maker')]: {
     title: 'Twitter Header Maker Online Free — X Banner Creator | ISHU TOOLS',
     description: 'Create and resize Twitter/X header banners online for free. Perfect 1500x500 px Twitter cover photo. No signup required.',
     keywords: ['twitter header maker', 'twitter banner', 'twitter header size', 'x header maker', 'twitter cover maker', 'twitter profile banner', 'ishu tools twitter header', 'twitter banner free'],
     h1: 'Twitter/X Header Maker — Free Online',
     faq: [],
-  },
-  'facebook-cover-maker': {
+  }},
+  ...{ [seoOverrideKey('facebook-cover-maker')]: {
     title: 'Facebook Cover Maker Online Free | ISHU TOOLS',
     description: 'Create and resize Facebook cover photos online for free. Perfect 820x312 px Facebook cover dimensions. No signup required.',
     keywords: ['facebook cover maker', 'facebook banner', 'facebook cover size', 'facebook cover photo', 'fb cover maker', 'ishu tools facebook cover', 'facebook cover free', 'facebook timeline cover'],
     h1: 'Facebook Cover Maker — Free Online',
     faq: [],
-  },
-  'linkedin-banner-maker': {
+  }},
+  ...{ [seoOverrideKey('linkedin-banner-maker')]: {
     title: 'LinkedIn Banner Maker Online Free — Profile Background | ISHU TOOLS',
     description: 'Create perfect LinkedIn profile banner online for free. Ideal 1584x396 px LinkedIn cover. Professional background for your profile.',
     keywords: ['linkedin banner maker', 'linkedin background', 'linkedin cover photo', 'linkedin banner size', 'linkedin profile banner', 'ishu tools linkedin banner', 'linkedin cover free'],
     h1: 'LinkedIn Banner Maker — Free Online',
     faq: [],
-  },
-  'whatsapp-dp-maker': {
+  }},
+  ...{ [seoOverrideKey('whatsapp-dp-maker')]: {
     title: 'WhatsApp DP Maker Online Free — Perfect Profile Photo | ISHU TOOLS',
     description: 'Create and resize WhatsApp profile photo (DP) online for free. Perfect 640x640 px circular crop. Best WhatsApp DP maker — no signup, no watermark.',
     keywords: ['whatsapp dp maker', 'whatsapp profile picture', 'whatsapp dp resize', 'whatsapp dp photo maker', 'whatsapp dp size', 'resize photo for whatsapp', 'ishu tools whatsapp dp', 'whatsapp dp creator', 'whatsapp profile photo size'],
     h1: 'WhatsApp DP Maker — Free Profile Photo Online',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  KB/SIZE COMPRESSION — Super High Value for India
   // ════════════════════════════════════════════════
-  'compress-to-5kb': {
+  ...{ [seoOverrideKey('compress-to-5kb')]: {
     title: 'Compress Image to 5KB Online Free | ISHU TOOLS',
     description: 'Compress any image to 5KB online for free. Required for many Indian government application forms. Supports JPG, PNG, WEBP. No signup, instant result.',
     keywords: ['compress image to 5kb', 'reduce image to 5kb', 'image to 5kb', '5kb image compressor', 'compress photo to 5kb', 'resize image to 5kb', 'ishu tools compress 5kb', 'compress image size 5kb free', 'photo compress 5kb online', 'image compressor 5kb'],
@@ -4511,8 +4506,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'Why do I need to compress an image to exactly 5KB?', answer: 'Many Indian government forms (UPSC, SSC, railway, bank exams) require photos under 5KB. ISHU TOOLS helps you reduce your image to exactly under 5KB while maintaining acceptable visual quality.' },
     ],
-  },
-  'compress-to-10kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-10kb')]: {
     title: 'Compress Image to 10KB Online Free | ISHU TOOLS',
     description: 'Compress image file to 10KB online for free. Required for SSC CGL, CHSL, bank PO, and Indian government application forms. Fast, free, no signup.',
     keywords: ['compress image to 10kb', 'reduce image to 10kb', '10kb image', 'photo compress 10kb', 'image to 10kb', 'ishu tools 10kb', 'compress photo 10kb', 'image size 10kb online', 'SSC photo 10kb', 'bank form 10kb photo'],
@@ -4520,61 +4515,61 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to compress a photo to 10KB for SSC?', answer: 'Upload your photo to ISHU TOOLS, set the target as 10KB, and click "Run". The tool automatically reduces the file size to under 10KB without distorting the image.' },
     ],
-  },
-  'compress-to-20kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-20kb')]: {
     title: 'Compress Image to 20KB Online Free | ISHU TOOLS',
     description: 'Compress image to 20KB online for free. Required for UPSC, NDA, railway, and other government exams. Instant compression with quality preservation.',
     keywords: ['compress image to 20kb', 'reduce image 20kb', '20kb image compressor', 'photo 20kb online', 'ishu tools 20kb', 'compress photo to 20kb', 'image to 20kb free', 'UPSC photo 20kb'],
     h1: 'Compress Image to 20KB — Free Online',
     faq: [],
-  },
-  'compress-to-50kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-50kb')]: {
     title: 'Compress Image to 50KB Online Free | ISHU TOOLS',
     description: 'Compress image to under 50KB online for free. Most common requirement for government forms, college applications, and job portals. Fast, accurate, no signup.',
     keywords: ['compress image to 50kb', 'reduce image 50kb', '50kb image', 'photo compress 50kb', 'compress to 50kb online', 'ishu tools 50kb', 'image 50kb free', 'compress jpg to 50kb', 'compress png to 50kb'],
     h1: 'Compress Image to 50KB — Free Online',
     faq: [],
-  },
-  'compress-to-100kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-100kb')]: {
     title: 'Compress Image to 100KB Online Free | ISHU TOOLS',
     description: 'Reduce image size to 100KB online for free. Required for Aadhaar portal, IRCTC, EPFO, and many government websites. Supports all image formats.',
     keywords: ['compress image to 100kb', 'reduce image 100kb', '100kb image compressor', 'compress photo to 100kb', 'ishu tools 100kb', 'image to 100kb online free', 'compress jpg to 100kb', 'compress png to 100kb', 'aadhaar photo 100kb', 'epfo photo 100kb'],
     h1: 'Compress Image to 100KB — Free Online',
     faq: [],
-  },
-  'compress-to-200kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-200kb')]: {
     title: 'Compress Image to 200KB Online Free | ISHU TOOLS',
     description: 'Compress image to 200KB online for free. Suitable for university admissions, online application portals, and document submissions. No signup required.',
     keywords: ['compress image to 200kb', 'reduce image 200kb', '200kb image compressor', 'compress to 200kb online', 'ishu tools 200kb', 'photo to 200kb free'],
     h1: 'Compress Image to 200KB — Free Online',
     faq: [],
-  },
-  'compress-to-500kb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-500kb')]: {
     title: 'Compress Image to 500KB Online Free | ISHU TOOLS',
     description: 'Compress image to 500KB online for free. Perfect for email attachments, portal submissions, and online forms. Fast processing, no signup required.',
     keywords: ['compress image to 500kb', 'reduce image 500kb', '500kb image compressor', 'compress photo 500kb', 'ishu tools 500kb', 'image to 500kb free'],
     h1: 'Compress Image to 500KB — Free Online',
     faq: [],
-  },
-  'compress-to-1mb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-1mb')]: {
     title: 'Compress Image to 1MB Online Free | ISHU TOOLS',
     description: 'Compress image to 1MB (1000KB) online for free. Reduce large photos to 1MB for upload limits. No signup, instant compression.',
     keywords: ['compress image to 1mb', 'reduce image to 1mb', '1mb image compressor', 'compress photo 1mb', 'ishu tools 1mb compressor', 'image to 1mb free', 'compress image 1 mb'],
     h1: 'Compress Image to 1MB — Free Online',
     faq: [],
-  },
-  'compress-to-2mb': {
+  }},
+  ...{ [seoOverrideKey('compress-to-2mb')]: {
     title: 'Compress Image to 2MB Online Free | ISHU TOOLS',
     description: 'Compress image to 2MB online for free. Perfect for passport applications, official documents, and high-res photo submissions.',
     keywords: ['compress image to 2mb', 'reduce image 2mb', '2mb image compressor', 'compress photo 2mb', 'ishu tools 2mb', 'image to 2mb free'],
     h1: 'Compress Image to 2MB — Free Online',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  INDIAN GOVERNMENT / EXAM PHOTO TOOLS
   // ════════════════════════════════════════════════
-  'ssc-photo-resizer': {
+  ...{ [seoOverrideKey('ssc-photo-resizer')]: {
     title: 'SSC Photo Resizer Online Free — SSC CGL CHSL Photo Size | ISHU TOOLS',
     description: 'Resize photos for SSC CGL, SSC CHSL, and SSC exams online for free. Required photo dimensions: 3.5cm x 4.5cm, under 20KB. Instant resize with quality preservation.',
     keywords: ['ssc photo resizer', 'ssc photo size', 'ssc cgl photo', 'ssc chsl photo', 'ssc exam photo resize', 'resize photo for ssc', 'ssc application photo', 'ishu tools ssc photo', 'ssc photo requirement', 'ssc photo 20kb', '3.5cm 4.5cm photo', 'ssc staff selection commission photo'],
@@ -4582,8 +4577,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is SSC photo size requirement?', answer: 'SSC requires photos of 3.5cm x 4.5cm at 100 DPI with file size under 20KB in JPG format. ISHU TOOLS SSC Photo Resizer automatically sets these exact dimensions.' },
     ],
-  },
-  'resize-for-pan-card': {
+  }},
+  ...{ [seoOverrideKey('resize-for-pan-card')]: {
     title: 'PAN Card Photo Resize Online Free | ISHU TOOLS',
     description: 'Resize photo for PAN Card application online for free. Required dimensions: 3.5cm x 2.5cm, under 20KB. Instant resize for NSDL and UTI PAN portals.',
     keywords: ['pan card photo resize', 'pan card photo size', 'pan card photo', 'resize photo for pan card', 'pan card photo requirement', 'ishu tools pan card photo', 'pan card application photo', 'nsdl pan photo resize', 'uti pan photo size', 'pan card photo online free'],
@@ -4591,8 +4586,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is the PAN Card photo size requirement?', answer: 'PAN Card requires a 3.5cm x 2.5cm photo, maximum 20KB in JPG format. The background should be white and the face should be clearly visible.' },
     ],
-  },
-  'resize-image-for-upsc': {
+  }},
+  ...{ [seoOverrideKey('resize-image-for-upsc')]: {
     title: 'UPSC Photo Resize Online Free — UPSC Civil Services Photo | ISHU TOOLS',
     description: 'Resize photo for UPSC CSE and other UPSC exams online for free. Photo size under 300KB, 35mm x 45mm. Required for UPSC online application form.',
     keywords: ['upsc photo resize', 'upsc photo size', 'upsc cse photo', 'resize photo for upsc', 'upsc application photo', 'ishu tools upsc photo', 'upsc photo requirement', 'upsc civil services photo size', 'ias photo resize', 'upsc ias photo'],
@@ -4600,7 +4595,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is UPSC photo size requirement?', answer: 'UPSC requires photo: 35mm x 45mm, 200-300 DPI, maximum size 300KB in JPG format. Light background is required. ISHU TOOLS automatically resizes to these specifications.' },
     ],
-  },
+  }},
   'passport-size-photo': {
     title: 'Passport Size Photo Maker Online Free — 35mm x 45mm | ISHU TOOLS',
     description: 'Create passport size photo online for free. Standard 35mm x 45mm photo for Indian passport, VISA, and ID applications. No signup, professional quality.',
@@ -4614,7 +4609,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   // ════════════════════════════════════════════════
   //  UNIT CONVERSION TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'number-base-converter': {
+  ...{ [seoOverrideKey('number-base-converter')]: {
     title: 'Number Base Converter Online Free — Binary Octal Hex Decimal | ISHU TOOLS',
     description: 'Convert numbers between binary, octal, decimal, and hexadecimal bases online for free. Instant conversion with step-by-step explanation. Best for CS students.',
     keywords: ['number base converter', 'binary to decimal', 'decimal to binary', 'hex to decimal', 'octal to decimal', 'number system converter', 'base converter online', 'ishu tools base converter', 'binary octal hexadecimal', 'number conversion', 'convert number base free'],
@@ -4622,40 +4617,40 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to convert binary to decimal?', answer: 'Enter the binary number in ISHU TOOLS Number Base Converter. It instantly shows the decimal, hexadecimal, and octal equivalents with a step-by-step conversion explanation.' },
     ],
-  },
-  'data-size-converter': {
+  }},
+  ...{ [seoOverrideKey('data-size-converter')]: {
     title: 'Data Size Converter Online Free — KB MB GB TB | ISHU TOOLS',
     description: 'Convert between data storage units online for free. KB to MB, MB to GB, GB to TB, bits to bytes. Accurate digital storage conversion tool.',
     keywords: ['data size converter', 'kb to mb converter', 'mb to gb', 'gb to tb', 'byte converter', 'data storage converter', 'digital storage converter', 'ishu tools data size', 'file size converter', 'convert kb mb gb'],
     h1: 'Data Size Converter — KB MB GB TB Free',
     faq: [],
-  },
-  'speed-converter': {
+  }},
+  ...{ [seoOverrideKey('speed-converter')]: {
     title: 'Speed Converter Online Free — km/h mph m/s Converter | ISHU TOOLS',
     description: 'Convert speed units online for free. km/h to mph, mph to km/h, m/s, knots. Accurate speed conversion for physics, travel, and sports.',
     keywords: ['speed converter', 'kmh to mph', 'mph to kmh', 'speed unit converter', 'velocity converter', 'km per hour to miles per hour', 'ishu tools speed converter', 'speed conversion free'],
     h1: 'Speed Converter — km/h mph m/s Free Online',
     faq: [],
-  },
-  'area-converter': {
+  }},
+  ...{ [seoOverrideKey('area-converter')]: {
     title: 'Area Converter Online Free — sq ft sq m acre hectare | ISHU TOOLS',
     description: 'Convert area units online for free. Square feet to square meters, acres to hectares, and more. Accurate area conversion for real estate and engineering.',
     keywords: ['area converter', 'sq ft to sq m', 'square feet to square meters', 'acre to hectare', 'area unit converter', 'ishu tools area converter', 'land area converter', 'area conversion free'],
     h1: 'Area Converter — sq ft, sq m, acre, hectare Free',
     faq: [],
-  },
-  'volume-converter': {
+  }},
+  ...{ [seoOverrideKey('volume-converter')]: {
     title: 'Volume Converter Online Free — liters ml gallons | ISHU TOOLS',
     description: 'Convert volume units online for free. Liters to gallons, ml to cups, cubic meters to cubic feet. Accurate liquid and volume conversion tool.',
     keywords: ['volume converter', 'liter to gallon', 'ml to cups', 'volume unit converter', 'liquid converter', 'ishu tools volume converter', 'volume conversion free'],
     h1: 'Volume Converter — Liters, Gallons, ml Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  TEXT TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'character-counter': {
+  ...{ [seoOverrideKey('character-counter')]: {
     title: 'Character Counter Online Free — Count Characters in Text | ISHU TOOLS',
     description: 'Count characters, words, sentences, and paragraphs in your text online for free. Twitter, Instagram, SEO character limits. Real-time counting with no signup.',
     keywords: ['character counter', 'character count', 'count characters', 'letter counter', 'text character counter', 'character counter online free', 'ishu tools character counter', 'word character counter', 'twitter character count', 'character limit checker', 'text length counter'],
@@ -4663,15 +4658,15 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is the Twitter character limit?', answer: 'Twitter allows 280 characters per tweet. ISHU TOOLS Character Counter shows you real-time character count so you can stay within limits for Twitter, Instagram captions, meta descriptions, and more.' },
     ],
-  },
-  'word-count-text': {
+  }},
+  ...{ [seoOverrideKey('word-count-text')]: {
     title: 'Word Counter Online Free — Count Words in Text | ISHU TOOLS',
     description: 'Count words, characters, sentences, and paragraphs in your text online for free. Estimate reading time. Perfect for essays, articles, and assignments.',
     keywords: ['word counter', 'word count', 'count words online', 'word counter free', 'word count tool', 'ishu tools word counter', 'words in text', 'word counter online', 'essay word count', 'word count checker', 'word frequency counter'],
     h1: 'Word Counter — Count Words Online Free',
     faq: [],
-  },
-  'case-converter-text': {
+  }},
+  ...{ [seoOverrideKey('case-converter-text')]: {
     title: 'Text Case Converter Online Free — Upper Lower Title Case | ISHU TOOLS',
     description: 'Convert text to uppercase, lowercase, title case, sentence case, and camelCase online for free. Instant text transformation. No signup required.',
     keywords: ['text case converter', 'case converter', 'uppercase to lowercase', 'text to uppercase', 'text to lowercase', 'title case converter', 'sentence case', 'camelcase converter', 'ishu tools case converter', 'change text case online', 'text case changer free'],
@@ -4679,50 +4674,50 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to convert text to title case?', answer: 'Paste your text into ISHU TOOLS Case Converter and select "Title Case". Every first letter of each word will be capitalized automatically — perfect for headings, titles, and names.' },
     ],
-  },
-  'slug-generator-text': {
+  }},
+  ...{ [seoOverrideKey('slug-generator-text')]: {
     title: 'Slug Generator Online Free — URL Slug from Text | ISHU TOOLS',
     description: 'Generate SEO-friendly URL slugs from any text online for free. Convert headings and titles to clean, lowercase, hyphenated URLs. Essential for bloggers and developers.',
     keywords: ['slug generator', 'url slug', 'slug from title', 'seo url generator', 'url slug generator', 'slug maker', 'text to slug', 'ishu tools slug generator', 'permalink generator', 'clean url generator'],
     h1: 'Slug Generator — Create SEO URL Slugs Free',
     faq: [],
-  },
-  'extract-keywords-text': {
+  }},
+  ...{ [seoOverrideKey('extract-keywords-text')]: {
     title: 'Keyword Extractor from Text Online Free | ISHU TOOLS',
     description: 'Extract keywords and key phrases from any text online for free. Identify the most important words and phrases. Useful for SEO, content analysis, and research.',
     keywords: ['keyword extractor', 'extract keywords from text', 'keyword extraction', 'text keyword finder', 'keyword extractor free', 'ishu tools keyword extractor', 'key phrase extractor', 'important words finder'],
     h1: 'Keyword Extractor — Extract Keywords from Text Free',
     faq: [],
-  },
-  'text-to-binary': {
+  }},
+  ...{ [seoOverrideKey('text-to-binary')]: {
     title: 'Text to Binary Converter Online Free | ISHU TOOLS',
     description: 'Convert text to binary code online for free. Translate ASCII text to binary representation. Perfect for computer science students and coders.',
     keywords: ['text to binary', 'text to binary converter', 'convert text to binary', 'ascii to binary', 'text binary online', 'text to binary free', 'ishu tools text to binary', 'string to binary'],
     h1: 'Text to Binary Converter — Free Online',
     faq: [],
-  },
-  'binary-to-text': {
+  }},
+  ...{ [seoOverrideKey('binary-to-text')]: {
     title: 'Binary to Text Converter Online Free | ISHU TOOLS',
     description: 'Convert binary code back to readable text online for free. Decode binary to ASCII text instantly. Essential CS tool for students and developers.',
     keywords: ['binary to text', 'binary to text converter', 'convert binary to text', 'binary decoder', 'binary to ascii', 'binary to text free', 'ishu tools binary to text'],
     h1: 'Binary to Text Converter — Free Online',
     faq: [],
-  },
-  'morse-code': {
+  }},
+  ...{ [seoOverrideKey('morse-code')]: {
     title: 'Morse Code Converter Online Free — Text to Morse | ISHU TOOLS',
     description: 'Convert text to Morse code and Morse code to text online for free. With audio playback. Learn Morse code with ISHU TOOLS.',
     keywords: ['morse code converter', 'text to morse code', 'morse code translator', 'morse code decoder', 'morse code online', 'morse code free', 'ishu tools morse code', 'morse code encoder', 'morse code generator'],
     h1: 'Morse Code Converter — Text to Morse Free Online',
     faq: [],
-  },
-  'text-reverse': {
+  }},
+  ...{ [seoOverrideKey('text-reverse')]: {
     title: 'Reverse Text Generator Online Free | ISHU TOOLS',
     description: 'Reverse any text, sentence, or word online for free. Mirror text, reverse words, reverse sentences. Fun text tool with instant results.',
     keywords: ['reverse text', 'text reverser', 'reverse words', 'backwards text generator', 'mirror text', 'reverse string online', 'ishu tools reverse text', 'text backwards free'],
     h1: 'Reverse Text Generator — Free Online',
     faq: [],
-  },
-  'number-to-words': {
+  }},
+  ...{ [seoOverrideKey('number-to-words')]: {
     title: 'Number to Words Converter Online Free — Indian Numbering | ISHU TOOLS',
     description: 'Convert numbers to words online for free. Supports Indian numbering system (lakh, crore) and international system. Essential for bank cheques, legal documents, and students.',
     keywords: ['number to words', 'number to words converter', 'convert numbers to words', 'number spelling', 'number in words', 'indian number to words', 'number to words in hindi', 'ishu tools number to words', 'cheque amount in words', 'rupees in words', 'number to words india', 'lakh crore number'],
@@ -4730,33 +4725,33 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to write numbers in words for a cheque?', answer: 'Enter the amount in ISHU TOOLS Number to Words Converter. It gives you the exact wording in Indian format (lakh, crore) and international format (million, billion) — perfect for cheques, invoices, and legal documents.' },
     ],
-  },
-  'roman-numeral-converter': {
+  }},
+  ...{ [seoOverrideKey('roman-numeral-converter')]: {
     title: 'Roman Numeral Converter Online Free | ISHU TOOLS',
     description: 'Convert numbers to Roman numerals and Roman numerals to numbers online for free. Supports 1 to 3999. Instant bidirectional conversion.',
     keywords: ['roman numeral converter', 'number to roman', 'roman to number', 'roman numerals', 'roman numeral calculator', 'convert to roman numerals', 'ishu tools roman numerals', 'roman number converter free'],
     h1: 'Roman Numeral Converter — Free Online',
     faq: [],
-  },
-  'reading-time-text': {
+  }},
+  ...{ [seoOverrideKey('reading-time-text')]: {
     title: 'Reading Time Calculator Online Free — Estimate Read Time | ISHU TOOLS',
     description: 'Calculate reading time of any text online for free. Estimated reading time based on average 200-250 words per minute reading speed. For blog posts, articles, essays.',
     keywords: ['reading time calculator', 'estimate reading time', 'text reading time', 'word reading speed', 'reading time estimator', 'ishu tools reading time', 'blog reading time', 'article reading time calculator'],
     h1: 'Reading Time Calculator — Estimate Read Time Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  STUDENT TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'grade-calculator': {
+  ...{ [seoOverrideKey('grade-calculator')]: {
     title: 'Grade Calculator Online Free — Calculate Your Marks | ISHU TOOLS',
     description: 'Calculate your grade, percentage, and letter grade online for free. Add multiple subjects with weights. Perfect for students in India and worldwide.',
     keywords: ['grade calculator', 'marks calculator', 'grade percentage calculator', 'calculate grade online', 'letter grade calculator', 'weighted grade calculator', 'ishu tools grade calculator', 'exam marks calculator', 'student grade calculator'],
     h1: 'Grade Calculator — Calculate Your Marks Free',
     faq: [],
-  },
-  'attendance-calculator': {
+  }},
+  ...{ [seoOverrideKey('attendance-calculator')]: {
     title: 'Attendance Calculator Online Free — College Attendance | ISHU TOOLS',
     description: 'Calculate your attendance percentage online for free. Know how many classes you can bunk without falling below 75%. Essential for college students in India.',
     keywords: ['attendance calculator', 'college attendance calculator', 'attendance percentage', 'how many classes to attend', 'attendance calculator india', 'ishu tools attendance calculator', 'bunk class calculator', '75 percent attendance', 'attendance tracking calculator'],
@@ -4764,8 +4759,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How many classes can I skip with 75% attendance?', answer: 'Enter your total classes and attended classes in ISHU TOOLS Attendance Calculator. It shows your current percentage and tells you exactly how many more classes you can safely miss to stay above 75%.' },
     ],
-  },
-  'citation-generator': {
+  }},
+  ...{ [seoOverrideKey('citation-generator')]: {
     title: 'Citation Generator Online Free — APA MLA Chicago | ISHU TOOLS',
     description: 'Generate citations in APA, MLA, and Chicago styles online for free. Cite books, websites, articles, and journals automatically. Essential for students and researchers.',
     keywords: ['citation generator', 'apa citation generator', 'mla citation generator', 'bibliography generator', 'reference generator', 'citation maker free', 'ishu tools citation generator', 'automatic citation generator', 'citation format apa mla', 'research paper citation'],
@@ -4773,33 +4768,33 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to generate an APA citation?', answer: 'Select APA format in ISHU TOOLS Citation Generator, enter the book/website details (author, title, year, URL), and get the properly formatted APA citation instantly.' },
     ],
-  },
-  'study-planner': {
+  }},
+  ...{ [seoOverrideKey('study-planner')]: {
     title: 'Study Planner Online Free — Plan Your Study Schedule | ISHU TOOLS',
     description: 'Create a personalized study plan online for free. Schedule subjects, set goals, and balance study time. Best free study planner for competitive exam students in India.',
     keywords: ['study planner', 'study schedule maker', 'study plan creator', 'study timetable', 'study plan online free', 'ishu tools study planner', 'study planner india', 'exam study planner', 'competitive exam planner', 'student study planner'],
     h1: 'Study Planner — Create Your Study Schedule Free',
     faq: [],
-  },
-  'flashcard-generator': {
+  }},
+  ...{ [seoOverrideKey('flashcard-generator')]: {
     title: 'Flashcard Maker Online Free — Create Study Flashcards | ISHU TOOLS',
     description: 'Create digital flashcards online for free. Add questions and answers for effective memorization. Perfect for exam preparation, vocabulary, and learning.',
     keywords: ['flashcard maker', 'flashcard generator', 'create flashcards', 'digital flashcards', 'study flashcards', 'flashcard creator free', 'ishu tools flashcard', 'flashcard app online', 'exam flashcards', 'vocabulary flashcards'],
     h1: 'Flashcard Maker — Create Study Flashcards Free',
     faq: [],
-  },
-  'plagiarism-risk-checker': {
+  }},
+  ...{ [seoOverrideKey('plagiarism-risk-checker')]: {
     title: 'Plagiarism Checker Online Free — Check Text Originality | ISHU TOOLS',
     description: 'Check if your text might be considered plagiarism online for free. Analyze for duplicate phrases, word combinations, and originality. Useful for students and writers.',
     keywords: ['plagiarism checker', 'plagiarism check online', 'free plagiarism checker', 'check plagiarism', 'plagiarism detector', 'duplicate content checker', 'ishu tools plagiarism', 'originality checker', 'text originality check', 'anti plagiarism tool'],
     h1: 'Plagiarism Checker — Check Text Originality Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  FINANCE TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'gst-calculator': {
+  ...{ [seoOverrideKey('gst-calculator')]: {
     title: 'GST Calculator Online Free India — Calculate GST Amount | ISHU TOOLS',
     description: 'Calculate GST (Goods & Services Tax) online for free. Add GST or remove GST from amount. Supports all GST rates: 5%, 12%, 18%, 28%. Best GST calculator India.',
     keywords: ['gst calculator', 'gst calculator india', 'calculate gst', 'gst amount calculator', 'gst online calculator', 'inclusive gst calculator', 'exclusive gst calculator', 'add gst to price', 'remove gst', 'ishu tools gst calculator', 'goods services tax calculator', 'gst rate calculator'],
@@ -4807,8 +4802,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to calculate GST in India?', answer: 'To add 18% GST: Taxable Amount × 1.18. To find GST from total: Total × 18/118. ISHU TOOLS GST Calculator does this automatically for all GST slabs (5%, 12%, 18%, 28%).' },
     ],
-  },
-  'sip-calculator': {
+  }},
+  ...{ [seoOverrideKey('sip-calculator')]: {
     title: 'SIP Calculator Online Free India — SIP Return Calculator | ISHU TOOLS',
     description: 'Calculate SIP (Systematic Investment Plan) returns online for free. Find maturity amount, total investment, and wealth gain. Best SIP calculator for mutual fund investors in India.',
     keywords: ['sip calculator', 'sip return calculator', 'sip calculator india', 'mutual fund sip calculator', 'sip maturity calculator', 'systematic investment plan calculator', 'sip calculator free', 'ishu tools sip calculator', 'monthly sip calculator', 'sip investment calculator'],
@@ -4816,15 +4811,15 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to calculate SIP returns?', answer: 'Enter your monthly SIP amount, expected annual return (e.g., 12%), and investment period. ISHU TOOLS SIP Calculator shows total invested amount, estimated returns, and final corpus value.' },
     ],
-  },
-  'roi-calculator': {
+  }},
+  ...{ [seoOverrideKey('roi-calculator')]: {
     title: 'ROI Calculator Online Free — Return on Investment | ISHU TOOLS',
     description: 'Calculate Return on Investment (ROI) online for free. Calculate profit, loss percentage, and annualized ROI. Essential for business, investing, and financial planning.',
     keywords: ['roi calculator', 'return on investment calculator', 'roi calculation', 'investment return calculator', 'profit percentage calculator', 'roi formula calculator', 'ishu tools roi calculator', 'calculate roi free', 'investment roi calculator'],
     h1: 'ROI Calculator — Return on Investment Free Online',
     faq: [],
-  },
-  'income-tax-calculator': {
+  }},
+  ...{ [seoOverrideKey('income-tax-calculator')]: {
     title: 'Income Tax Calculator India 2024-25 Free Online | ISHU TOOLS',
     description: 'Calculate income tax for India FY 2024-25 online for free. New tax regime vs old tax regime comparison. Tax slabs, deductions, HRA exemption. Best India income tax calculator.',
     keywords: ['income tax calculator india', 'income tax calculator 2024-25', 'india tax calculator', 'new tax regime calculator', 'old tax regime calculator', 'income tax slab calculator', 'income tax calculation india', 'ishu tools income tax', 'income tax estimate india', 'fy 2024-25 tax calculator'],
@@ -4832,14 +4827,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'Which tax regime is better — new or old?', answer: 'The new tax regime has lower rates but fewer deductions. The old regime allows 80C, 80D, HRA, and other deductions. ISHU TOOLS Income Tax Calculator shows both, so you can pick the one that saves more tax.' },
     ],
-  },
-  'budget-planner': {
+  }},
+  ...{ [seoOverrideKey('budget-planner')]: {
     title: 'Budget Planner Online Free — 50/30/20 Rule Calculator | ISHU TOOLS',
     description: 'Plan your monthly budget online for free using the 50/30/20 rule. Allocate income to needs, wants, and savings. Best budget planner for students and professionals in India.',
     keywords: ['budget planner', 'monthly budget planner', '50/30/20 rule', 'budget calculator', 'personal finance planner', 'budget planning tool', 'ishu tools budget planner', 'money budget planner free', 'savings budget calculator'],
     h1: 'Budget Planner — 50/30/20 Rule Free Online',
     faq: [],
-  },
+  }},
   'savings-goal-calculator': {
     title: 'Savings Goal Calculator Online Free — How Long to Save? | ISHU TOOLS',
     description: 'Calculate how long it takes to reach your savings goal online for free. Plan savings for college, house, car, travel. With and without interest options.',
@@ -4847,20 +4842,20 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Savings Goal Calculator — Plan Your Savings Free',
     faq: [],
   },
-  'electricity-bill-calculator': {
+  ...{ [seoOverrideKey('electricity-bill-calculator')]: {
     title: 'Electricity Bill Calculator Online Free India | ISHU TOOLS',
     description: 'Calculate your electricity bill online for free. Enter units consumed and tariff rate to get exact bill amount. Helpful for Indian households and businesses.',
     keywords: ['electricity bill calculator', 'electricity bill calculator india', 'units to electricity bill', 'power bill calculator', 'electricity cost calculator', 'ishu tools electricity calculator', 'electricity tariff calculator', 'home electricity bill calculator'],
     h1: 'Electricity Bill Calculator — Free Online India',
     faq: [],
-  },
-  'fuel-cost-calculator': {
+  }},
+  ...{ [seoOverrideKey('fuel-cost-calculator')]: {
     title: 'Fuel Cost Calculator Online Free India | ISHU TOOLS',
     description: 'Calculate fuel cost for your trip online for free. Enter distance, fuel efficiency, and current fuel price. Best for road trips, travel planning, and fleet management.',
     keywords: ['fuel cost calculator', 'petrol cost calculator', 'trip fuel cost', 'fuel expense calculator', 'travel fuel cost', 'ishu tools fuel calculator', 'petrol diesel cost calculator india', 'journey fuel cost estimator'],
     h1: 'Fuel Cost Calculator — Plan Trip Expenses Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  VIDEO DOWNLOADER TOOLS — Handcrafted SEO
@@ -4924,7 +4919,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   // ════════════════════════════════════════════════
   //  QR CODE & BARCODE
   // ════════════════════════════════════════════════
-  'qr-code-generator': {
+  ...{ [seoOverrideKey('qr-code-generator')]: {
     title: 'QR Code Generator Online Free — Create QR Codes | ISHU TOOLS',
     description: 'Generate QR codes online for free. Create QR codes for URLs, text, email, WiFi, contacts. Download as PNG or SVG. High-quality QR code maker — no signup.',
     keywords: ['qr code generator', 'create qr code', 'qr code maker', 'free qr code generator', 'qr code online', 'generate qr code', 'ishu tools qr code', 'qr code free', 'qr code creator', 'url qr code', 'wifi qr code generator', 'custom qr code maker'],
@@ -4932,14 +4927,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to create a QR code?', answer: 'Enter any URL, text, or data into ISHU TOOLS QR Code Generator. It instantly creates a scannable QR code you can download as PNG or SVG and share anywhere.' },
     ],
-  },
-  'barcode-generator': {
+  }},
+  ...{ [seoOverrideKey('barcode-generator')]: {
     title: 'Barcode Generator Online Free — Create Barcodes | ISHU TOOLS',
     description: 'Generate barcodes online for free. Supports Code 128, EAN-13, QR Code, UPC, and more barcode formats. Download as PNG. Best free barcode maker.',
     keywords: ['barcode generator', 'barcode maker', 'create barcode', 'free barcode generator', 'barcode online', 'generate barcode', 'ishu tools barcode', 'code 128 barcode', 'ean-13 barcode', 'upc barcode generator', 'barcode creator free'],
     h1: 'Barcode Generator — Create Barcodes Free Online',
     faq: [],
-  },
+  }},
   'favicon-generator': {
     title: 'Favicon Generator Online Free — Create Website Favicon | ISHU TOOLS',
     description: 'Generate favicons for your website online for free. Upload image and get favicon.ico in all sizes (16x16, 32x32, 192x192, 512x512). No signup required.',
@@ -4983,13 +4978,13 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'World Clock — Current Time Worldwide Free',
     faq: [],
   },
-  'tip-calculator': {
+  ...{ [seoOverrideKey('tip-calculator')]: {
     title: 'Tip Calculator Online Free — Split Bill Calculator | ISHU TOOLS',
     description: 'Calculate tip and split restaurant bill online for free. Add service percentage, split among friends. Quick tip calculator for restaurants and hotels.',
     keywords: ['tip calculator', 'restaurant tip calculator', 'bill splitter', 'split bill calculator', 'tip amount calculator', 'ishu tools tip calculator', 'calculate tip free', 'gratuity calculator', 'dining tip calculator'],
     h1: 'Tip Calculator — Calculate & Split Bill Free',
     faq: [],
-  },
+  }},
   'love-calculator': {
     title: 'Love Calculator Online Free — Calculate Love Percentage | ISHU TOOLS',
     description: 'Calculate love compatibility percentage between two names online for free. Fun love test based on FLAMES algorithm. Check compatibility with your crush!',
@@ -5011,39 +5006,39 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Dice Roller — Roll Virtual Dice Free Online',
     faq: [],
   },
-  'random-number-generator': {
+  ...{ [seoOverrideKey('random-number-generator')]: {
     title: 'Random Number Generator Online Free | ISHU TOOLS',
     description: 'Generate random numbers online for free. Set min and max range, generate multiple numbers, create random lists. Truly random using cryptographic algorithms.',
     keywords: ['random number generator', 'random number', 'random number online', 'generate random number', 'random number picker', 'random number free', 'ishu tools random number', 'random integer generator', 'lottery number generator'],
     h1: 'Random Number Generator — Free Online',
     faq: [],
-  },
-  'age-in-seconds': {
+  }},
+  ...{ [seoOverrideKey('age-in-seconds')]: {
     title: 'Age Calculator in Seconds, Days, Hours — Free Online | ISHU TOOLS',
     description: 'Calculate your exact age in seconds, minutes, hours, days, months, and years online for free. See your age in a fun, detailed way.',
     keywords: ['age in seconds', 'age calculator seconds', 'exact age calculator', 'age in days calculator', 'age in minutes', 'ishu tools age seconds', 'calculate age in seconds', 'how many seconds old', 'birthday calculator'],
     h1: 'Age Calculator — Your Age in Seconds, Days, Hours Free',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  IMAGE FORMAT CONVERTERS
   // ════════════════════════════════════════════════
-  'png-to-jpg': {
+  ...{ [seoOverrideKey('png-to-jpg')]: {
     title: 'PNG to JPG Converter Online Free | ISHU TOOLS',
     description: 'Convert PNG images to JPG online for free. Reduce file size by converting to JPEG format. Batch conversion supported. No signup, no watermark.',
     keywords: ['png to jpg', 'png to jpeg', 'convert png to jpg', 'png jpg converter', 'png to jpg online free', 'ishu tools png to jpg', 'change png to jpg', 'png to jpg free'],
     h1: 'PNG to JPG Converter — Free Online',
     faq: [],
-  },
-  'jpg-to-png': {
+  }},
+  ...{ [seoOverrideKey('jpg-to-png')]: {
     title: 'JPG to PNG Converter Online Free | ISHU TOOLS',
     description: 'Convert JPG images to PNG online for free. Get transparent-background PNG from JPEG. High quality conversion. No signup required.',
     keywords: ['jpg to png', 'jpeg to png', 'convert jpg to png', 'jpg png converter', 'jpg to png online free', 'ishu tools jpg to png', 'change jpg to png'],
     h1: 'JPG to PNG Converter — Free Online',
     faq: [],
-  },
-  'heic-to-jpg': {
+  }},
+  ...{ [seoOverrideKey('heic-to-jpg')]: {
     title: 'HEIC to JPG Converter Online Free — iPhone Photos | ISHU TOOLS',
     description: 'Convert HEIC photos to JPG online for free. Easily share iPhone photos on Android and Windows. Batch HEIC to JPG conversion. No signup required.',
     keywords: ['heic to jpg', 'heic to jpeg', 'convert heic to jpg', 'iphone heic to jpg', 'heic converter', 'heic to jpg online free', 'ishu tools heic to jpg', 'heic photo converter', 'apple heic to jpg'],
@@ -5051,32 +5046,32 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is HEIC format?', answer: 'HEIC (High Efficiency Image Container) is the default photo format on iPhones (iOS 11+). While it offers better compression than JPG, it\'s not universally supported. ISHU TOOLS converts HEIC to JPG for universal compatibility.' },
     ],
-  },
-  'webp-to-jpg': {
+  }},
+  ...{ [seoOverrideKey('webp-to-jpg')]: {
     title: 'WebP to JPG Converter Online Free | ISHU TOOLS',
     description: 'Convert WebP images to JPG online for free. Convert Google\'s WebP format to universal JPEG. Fast, free, no signup required.',
     keywords: ['webp to jpg', 'convert webp to jpg', 'webp to jpeg', 'webp converter', 'webp to jpg online free', 'ishu tools webp to jpg', 'webp to jpg converter free'],
     h1: 'WebP to JPG Converter — Free Online',
     faq: [],
-  },
-  'image-to-webp': {
+  }},
+  ...{ [seoOverrideKey('image-to-webp')]: {
     title: 'Convert Image to WebP Online Free | ISHU TOOLS',
     description: 'Convert JPG, PNG, GIF images to WebP format online for free. WebP offers 30% better compression than JPEG. Optimize images for faster websites.',
     keywords: ['image to webp', 'jpg to webp', 'png to webp', 'convert to webp', 'webp converter', 'ishu tools webp converter', 'jpg webp online', 'image webp free'],
     h1: 'Image to WebP Converter — Free Online',
     faq: [],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  MISC TOOLS — Handcrafted SEO
   // ════════════════════════════════════════════════
-  'unix-timestamp': {
+  ...{ [seoOverrideKey('unix-timestamp')]: {
     title: 'Unix Timestamp Converter Online Free — Epoch Time | ISHU TOOLS',
     description: 'Convert Unix timestamp to readable date/time and vice versa online for free. Epoch time converter, date to timestamp, timestamp to date. Essential for developers.',
     keywords: ['unix timestamp converter', 'epoch converter', 'timestamp to date', 'date to timestamp', 'unix epoch time', 'unix time converter', 'ishu tools timestamp', 'epoch time converter free', 'convert unix timestamp'],
     h1: 'Unix Timestamp Converter — Epoch Time Free Online',
     faq: [],
-  },
+  }},
   'date-difference': {
     title: 'Date Difference Calculator Online Free — Days Between Dates | ISHU TOOLS',
     description: 'Calculate the number of days, weeks, months, and years between two dates online for free. Count days from any date to any date. Deadline tracker.',
@@ -5091,28 +5086,28 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Time Zone Converter — Convert Time Zones Free Online',
     faq: [],
   },
-  'text-to-ascii-art': {
+  ...{ [seoOverrideKey('text-to-ascii-art')]: {
     title: 'Text to ASCII Art Generator Online Free | ISHU TOOLS',
     description: 'Convert text to ASCII art online for free. Generate large ASCII banners, block letters, and art fonts. Perfect for terminal headers, social media, and fun.',
     keywords: ['text to ascii art', 'ascii art generator', 'ascii text art', 'ascii banner generator', 'text art generator', 'ascii font generator', 'ishu tools ascii art', 'ascii text online', 'figlet generator'],
     h1: 'Text to ASCII Art Generator — Free Online',
     faq: [],
-  },
-  'fancy-text-generator': {
+  }},
+  ...{ [seoOverrideKey('fancy-text-generator')]: {
     title: 'Fancy Text Generator Online Free — Stylish Fonts | ISHU TOOLS',
     description: 'Generate fancy text in 100+ stylish Unicode fonts online for free. Copy-paste fancy text for Instagram bio, WhatsApp, Facebook, and social media.',
     keywords: ['fancy text generator', 'stylish text', 'fancy font generator', 'cool text generator', 'unicode text generator', 'fancy text free', 'ishu tools fancy text', 'instagram fancy text', 'cool font generator', 'fancy letters online'],
     h1: 'Fancy Text Generator — 100+ Stylish Fonts Free',
     faq: [],
-  },
-  'ip-address-lookup': {
+  }},
+  ...{ [seoOverrideKey('ip-address-lookup')]: {
     title: 'IP Address Lookup Online Free — Find IP Location | ISHU TOOLS',
     description: 'Look up any IP address location online for free. Find country, city, ISP, coordinates, and timezone of any IP address. Also check your own IP.',
     keywords: ['ip address lookup', 'ip lookup', 'find ip location', 'ip address location', 'ip geolocation', 'ip address finder', 'ishu tools ip lookup', 'ip address tracker', 'my ip address', 'ip location online free'],
     h1: 'IP Address Lookup — Find IP Location Free Online',
     faq: [],
-  },
-  'dns-lookup': {
+  }},
+  ...{ [seoOverrideKey('dns-lookup')]: {
     title: 'DNS Lookup Online Free — DNS Record Checker | ISHU TOOLS',
     description: 'Perform DNS lookup online for free. Check A, AAAA, MX, CNAME, NS, TXT, and SOA DNS records for any domain. Fast DNS query tool for webmasters and developers.',
     keywords: ['dns lookup', 'dns record checker', 'dns query tool', 'check dns records', 'dns records online', 'dns lookup free', 'ishu tools dns lookup', 'domain dns checker', 'mx record lookup', 'a record lookup', 'cname lookup'],
@@ -5120,22 +5115,22 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What DNS record types are supported?', answer: 'ISHU TOOLS DNS Lookup supports all major record types: A (IPv4), AAAA (IPv6), MX (mail), CNAME (alias), NS (nameserver), TXT (verification), SOA, and PTR records.' },
     ],
-  },
-  'whois-lookup': {
+  }},
+  ...{ [seoOverrideKey('whois-lookup')]: {
     title: 'WHOIS Lookup Online Free — Domain Registration Info | ISHU TOOLS',
     description: 'Perform WHOIS lookup for any domain online for free. Find domain owner, registration date, expiry date, registrar, and nameservers. No signup required.',
     keywords: ['whois lookup', 'domain whois', 'who owns domain', 'domain registration info', 'whois domain checker', 'whois online free', 'ishu tools whois', 'domain owner lookup', 'domain expiry checker'],
     h1: 'WHOIS Lookup — Domain Registration Info Free',
     faq: [],
-  },
-  'ssl-certificate-checker': {
+  }},
+  ...{ [seoOverrideKey('ssl-certificate-checker')]: {
     title: 'SSL Certificate Checker Online Free | ISHU TOOLS',
     description: 'Check SSL certificate details for any website online for free. View expiry date, issuer, domain, and security status. Verify HTTPS certificate validity.',
     keywords: ['ssl certificate checker', 'ssl checker', 'check ssl certificate', 'ssl certificate expiry', 'https checker', 'ssl certificate validator', 'ishu tools ssl', 'website ssl check', 'ssl expiry checker free'],
     h1: 'SSL Certificate Checker — Verify HTTPS Free Online',
     faq: [],
-  },
-  'currency-converter': {
+  }},
+  ...{ [seoOverrideKey('currency-converter')]: {
     title: 'Currency Converter Online Free — Real-time Exchange Rates | ISHU TOOLS',
     description: 'Convert currencies online for free with real-time exchange rates. USD to INR, EUR to USD, GBP to INR, and 150+ currencies. Best free currency converter.',
     keywords: ['currency converter', 'usd to inr', 'dollar to rupee', 'currency exchange', 'forex converter', 'currency conversion online', 'real time currency converter', 'ishu tools currency converter', 'inr to usd converter', 'live currency converter', 'exchange rate calculator'],
@@ -5143,8 +5138,8 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'What is the current USD to INR exchange rate?', answer: 'ISHU TOOLS Currency Converter fetches real-time exchange rates. The current rate is shown when you convert. Exchange rates fluctuate throughout the day based on market conditions.' },
     ],
-  },
-  'emi-calculator-advanced': {
+  }},
+  ...{ [seoOverrideKey('emi-calculator-advanced')]: {
     title: 'EMI Calculator Online Free — Home Car Personal Loan | ISHU TOOLS',
     description: 'Calculate EMI for home loan, car loan, and personal loan online for free. Full amortization schedule with month-by-month breakdown. Best EMI calculator India.',
     keywords: ['emi calculator', 'loan emi calculator', 'home loan emi calculator', 'car loan emi calculator', 'personal loan emi', 'emi calculator india', 'emi calculator free', 'ishu tools emi calculator', 'loan repayment calculator', 'monthly installment calculator', 'emi with amortization'],
@@ -5152,18 +5147,18 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How to calculate EMI?', answer: 'EMI = P × r × (1+r)^n / ((1+r)^n - 1). Where P = principal, r = monthly interest rate, n = number of months. ISHU TOOLS EMI Calculator does this automatically and shows a full amortization table.' },
     ],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  HEALTH TOOLS — Extra SEO
   // ════════════════════════════════════════════════
-  'bmr-calculator': {
+  ...{ [seoOverrideKey('bmr-calculator')]: {
     title: 'BMR Calculator Online Free — Basal Metabolic Rate | ISHU TOOLS',
     description: 'Calculate your Basal Metabolic Rate (BMR) online for free using Mifflin-St Jeor formula. Find how many calories your body burns at rest. Used for weight management.',
     keywords: ['bmr calculator', 'basal metabolic rate calculator', 'calculate bmr', 'bmr online', 'resting metabolic rate', 'bmr calculator free', 'ishu tools bmr', 'calories at rest', 'metabolic rate calculator'],
     h1: 'BMR Calculator — Basal Metabolic Rate Free Online',
     faq: [],
-  },
+  }},
   'body-fat-calculator': {
     title: 'Body Fat Calculator Online Free — Body Fat Percentage | ISHU TOOLS',
     description: 'Calculate your body fat percentage online for free using Navy Method and BMI method. Know your fitness category: essential fat, athlete, fitness, average, obese.',
@@ -5171,14 +5166,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'Body Fat Calculator — Check Body Fat % Free',
     faq: [],
   },
-  'heart-rate-zones': {
+  ...{ [seoOverrideKey('heart-rate-zones')]: {
     title: 'Heart Rate Zones Calculator Online Free | ISHU TOOLS',
     description: 'Calculate your heart rate training zones online for free. Find fat burn, cardio, and peak zones based on your age. Essential for effective exercise and fitness training.',
     keywords: ['heart rate zones calculator', 'heart rate training zones', 'fat burn zone calculator', 'cardio heart rate zone', 'max heart rate calculator', 'ishu tools heart rate zones', 'heart rate zones free'],
     h1: 'Heart Rate Zones Calculator — Train Smarter Free',
     faq: [],
-  },
-  'steps-to-km': {
+  }},
+  ...{ [seoOverrideKey('steps-to-km')]: {
     title: 'Steps to KM Converter Online Free | ISHU TOOLS',
     description: 'Convert steps to kilometers and kilometers to steps online for free. Based on average stride length. Also calculates calories burned and distance in miles.',
     keywords: ['steps to km', 'steps to kilometers', 'convert steps to km', 'how many km in steps', 'steps calculator', 'ishu tools steps to km', 'steps to distance calculator', '10000 steps in km'],
@@ -5186,14 +5181,14 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How many steps equal 1 km?', answer: 'On average, 1 km = approximately 1,250-1,350 steps, depending on your stride length. For a person with average stride length of 75cm, it takes about 1,333 steps per km.' },
     ],
-  },
-  'calories-burned-calculator': {
+  }},
+  ...{ [seoOverrideKey('calories-burned-calculator')]: {
     title: 'Calories Burned Calculator Online Free — Exercise Calories | ISHU TOOLS',
     description: 'Calculate calories burned during exercise online for free. Running, walking, cycling, swimming, yoga, and 50+ activities. Accurate calorie expenditure based on weight and duration.',
     keywords: ['calories burned calculator', 'exercise calories calculator', 'calories burned running', 'calories burned walking', 'exercise calorie counter', 'ishu tools calories burned', 'workout calorie calculator', 'calorie burn estimator'],
     h1: 'Calories Burned Calculator — Exercise Calories Free',
     faq: [],
-  },
+  }},
 
   // ─── Ultra Tools v3 — Handcrafted Premium SEO ────────────────────────────
   'ppf-calculator': {
@@ -5488,7 +5483,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'How do I add headers and footers to a PDF?', answer: 'Upload your PDF to ISHU TOOLS PDF Header & Footer tool, enter your text, choose position, and download the updated PDF for free.' },
     ],
   },
-  'header-footer-pdf': {
+  ...{ [seoOverrideKey('header-footer-pdf')]: {
     title: 'PDF Header & Footer — Add Custom Text to PDF Free | ISHU TOOLS',
     description: 'Add custom headers and footers with page numbers to every page of your PDF document online for free. Perfect for official documents and reports. No signup required.',
     keywords: ['pdf header footer', 'add header footer to pdf', 'pdf page header', 'pdf page footer', 'custom header footer pdf', 'ishu tools pdf header footer', 'header footer generator pdf'],
@@ -5496,7 +5491,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How do I add a header and footer to my PDF?', answer: 'Upload your PDF, specify header and footer text and page numbers placement, then download the updated document from ISHU TOOLS.' },
     ],
-  },
+  }},
 
   // ════════════════════════════════════════════════
   //  PDF ADVANCED TOOLS
@@ -5650,7 +5645,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     h1: 'PDF Converter — All-in-One Conversion Free',
     faq: [
       { question: 'What can ISHU TOOLS PDF Converter do?', answer: 'It handles all PDF conversions: PDF to Word, PDF to JPG, Word to PDF, JPG to PDF, and more — all for free.' },
-      { question: 'Is ISHU TOOLS PDF Converter free?', answer: 'Yes, 100% free with no signup, no watermarks, and no file size limits.' },
+      { question: 'Is ISHU TOOLS PDF Converter free?', answer: 'Yes, 100% free with no signup, no watermarks, and fast processing.' },
     ],
   },
   'pdf-to-powerpoint': {
@@ -5734,7 +5729,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
   },
   'compress-jpeg-to-25kb': {
     title: 'Compress JPEG to 25KB Online Free — For Exam Forms | ISHU TOOLS',
-    description: 'Compress JPEG to around 25KB online for free. Useful for government exam and job application portals in India. No signup, no file size limit required.',
+    description: 'Compress JPEG to around 25KB online for free. Useful for government exam and job application portals in India. No signup required.',
     keywords: ['compress jpeg to 25kb', '25kb jpeg compressor', 'photo 25kb online', 'ishu tools 25kb', 'exam form 25kb photo india'],
     h1: 'Compress JPEG to 25KB Online Free',
     faq: [{ question: 'How do I compress JPEG to 25KB?', answer: 'Upload your JPEG to ISHU TOOLS and download it compressed to around 25KB for free — perfect for exam application forms.' }],
@@ -7309,7 +7304,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What is the average reading speed?', answer: 'The average adult reads 200-250 words per minute. ISHU TOOLS Reading Time Estimator shows you reading time at slow (150 wpm), average (200 wpm), and fast (300 wpm) speeds.' },
     ],
   },
-  'attendance-calculator': {
+  ...{ [seoOverrideKey('attendance-calculator')]: {
     title: 'Attendance Calculator Online Free — 75% Attendance Checker | ISHU TOOLS',
     description: 'Calculate your college attendance percentage and see if you meet the 75% requirement. Find how many classes you can skip or need to attend. Free attendance tracker for students India.',
     keywords: ['attendance calculator', 'attendance percentage calculator', '75 percent attendance calculator', 'college attendance calculator', 'classes to attend calculator', 'attendance tracker free', 'ishu tools attendance calculator', 'how many classes can i skip'],
@@ -7317,7 +7312,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How many classes can I miss?', answer: 'Enter your attended classes and total classes in ISHU TOOLS Attendance Calculator. It will tell you exactly how many classes you can skip while maintaining the required attendance percentage.' },
     ],
-  },
+  }},
   'exam-score-calculator': {
     title: 'Exam Score Calculator — Marks to Percentage & Grade Online Free | ISHU TOOLS',
     description: 'Convert exam marks to percentage and grade (A+, A, B, C) online free. Enter marks obtained and total marks to get your percentage, grade, and GPA equivalent instantly.',
@@ -7363,7 +7358,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
       { question: 'What is character frequency analysis used for?', answer: 'Character frequency analysis is used in cryptography to crack substitution ciphers, in linguistics to study language patterns, and in writing to check letter distribution. Use ISHU TOOLS for instant analysis.' },
     ],
   },
-  'calorie-calculator': {
+  ...{ [seoOverrideKey('calorie-calculator')]: {
     title: 'Calorie Calculator Free — Daily Calorie Needs TDEE BMI India | ISHU TOOLS',
     description: 'Calculate your daily calorie needs (TDEE) using the Mifflin-St Jeor equation. Get BMR, TDEE, BMI, and calorie goals for weight loss, maintenance, and muscle gain. Free for Indian users.',
     keywords: ['calorie calculator', 'tdee calculator free', 'daily calorie calculator india', 'calorie needs calculator', 'bmr calculator free', 'calorie deficit calculator', 'ishu tools calorie calculator', 'how many calories per day india'],
@@ -7371,7 +7366,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
     faq: [
       { question: 'How many calories should I eat per day?', answer: 'Your daily calorie needs depend on your weight, height, age, gender, and activity level. Use ISHU TOOLS Calorie Calculator (TDEE) to find your exact daily calorie requirement for free.' },
     ],
-  },
+  }},
   'assignment-deadline-tracker': {
     title: 'Assignment Deadline Tracker Online Free — Days Left Calculator | ISHU TOOLS',
     description: 'Track your assignment deadlines and see exactly how many days are left. Enter due dates to get instant countdown, status alerts, and urgency levels. Free for students.',
@@ -7482,7 +7477,7 @@ const TOOL_SEO_MAP: Record<string, ToolSEO> = {
  */
 export const HOMEPAGE_KEYWORDS = [
   'ishu tools', 'ISHU TOOLS', 'ishutools', 'ishu kumar tools', 'ishu iitp',
-  'indian student hub university tools', 'ishu tools online', 'ishutools.com',
+  'indian student hub university tools', 'ishu tools online', 'ishutools.fun', 'ishutools.vercel.app',
   'free pdf tools', 'merge pdf', 'split pdf', 'compress pdf', 'pdf compressor',
   'pdf to word', 'word to pdf', 'pdf to jpg', 'jpg to pdf', 'pdf converter',
   'pdf editor', 'edit pdf online', 'pdf merger', 'pdf splitter',

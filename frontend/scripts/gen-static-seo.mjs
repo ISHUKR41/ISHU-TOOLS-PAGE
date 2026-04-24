@@ -12,10 +12,12 @@
  * What this script does:
  *   1. Loads the tool catalog from the backend (with sitemap.xml fallback).
  *   2. Reads dist/index.html as a template.
- *   3. For each tool slug, writes dist/tools/<slug>/index.html with
+ *   3. For each tool slug, writes dist/tools/<slug>/index.html and
+ *      dist/tools/<slug>.html with
  *      <title>, <meta description>, <link canonical>, og:*, twitter:* REWRITTEN
  *      to that tool's unique values.
- *   4. Same for each category at dist/category/<slug>/index.html.
+ *   4. Same for each category at dist/category/<slug>/index.html and
+ *      dist/category/<slug>.html.
  *
  * Vercel will serve the file-system match before falling back to the SPA rewrite,
  * so /tools/merge-pdf returns merge-pdf-specific HTML on the first byte.
@@ -29,7 +31,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = resolve(__dirname, "../dist");
 const TEMPLATE = resolve(DIST, "index.html");
 const SITEMAP = resolve(__dirname, "../public/sitemap.xml");
-const SITE = "https://ishutools.com";
+const SITE = (
+  process.env.VITE_SITE_URL ||
+  process.env.PUBLIC_SITE_URL ||
+  "https://ishutools.fun"
+).replace(/\/$/, "");
 const BACKEND =
   process.env.SEO_BACKEND ||
   process.env.SITEMAP_BACKEND ||
@@ -91,10 +97,11 @@ function buildToolSEO(slug, label = "", desc = "", category = "") {
   else if (isImage) title = `${t} Online Free — Fast Image Tool | ${SITE_NAME}`;
   else title = `${t} Online Free | ${SITE_NAME}`;
 
-  let description = `${t} online for free. ${d.replace(/\.$/, "")}. No signup, no watermark, no file size limit. Works on mobile and desktop.`;
+  let description = `${t} online for free. ${d.replace(/\.$/, "")}. No signup, no watermark, fast processing. Works on mobile and desktop.`;
   if (description.length > 300) description = description.slice(0, 297) + "...";
 
-  return { title, description };
+  const keywords = buildKeywords(slug, t, c);
+  return { title, description, keywords };
 }
 
 function buildCategorySEO(catId, catLabel = "", catDesc = "") {
@@ -102,7 +109,33 @@ function buildCategorySEO(catId, catLabel = "", catDesc = "") {
   const title = `${label} — Free Online Tools | ${SITE_NAME}`;
   let description = `${label} on ${SITE_NAME}. ${(catDesc || "Free online tools, no signup required.").replace(/\.$/, "")}. Fast, accurate, mobile-friendly — built for students and professionals.`;
   if (description.length > 300) description = description.slice(0, 297) + "...";
-  return { title, description };
+  const keywords = buildKeywords(catId, label, catId);
+  return { title, description, keywords };
+}
+
+function buildKeywords(slug, title, category = "") {
+  const base = title.toLowerCase().replace(/[^\w\s-]/g, " ").replace(/\s+/g, " ").trim();
+  const categoryText = titleCase(category || "online-tools").toLowerCase();
+  return [
+    title,
+    `${title} online`,
+    `${title} free`,
+    `${title} no signup`,
+    `${title} no watermark`,
+    `${base} tool`,
+    `${base} online free`,
+    `${slug.replace(/-/g, " ")} tool`,
+    `${categoryText} tools`,
+    "ISHU TOOLS",
+    "ishutools.fun",
+    "free online tools",
+    "Indian student tools",
+  ]
+    .map((keyword) => String(keyword).trim())
+    .filter(Boolean)
+    .filter((keyword, index, arr) => arr.findIndex((item) => item.toLowerCase() === keyword.toLowerCase()) === index)
+    .slice(0, 18)
+    .join(", ");
 }
 
 // ─── JSON-LD structured data builder (per page) ───
@@ -125,7 +158,6 @@ function buildToolJsonLd({ slug, title, description, url, category }) {
     operatingSystem: "Any (Web)",
     browserRequirements: "Requires JavaScript. Works in modern browsers.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "1284" },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE },
   };
   const breadcrumbs = {
@@ -149,7 +181,7 @@ function buildToolJsonLd({ slug, title, description, url, category }) {
         name: `Is ${software.name} free?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Yes — ${software.name} on ISHU TOOLS is 100% free. No signup, no watermark, no file size limits, no daily caps.`,
+          text: `Yes — ${software.name} on ISHU TOOLS is 100% free. No signup, no watermark, and no installation required.`,
         },
       },
       {
@@ -196,11 +228,46 @@ function buildCategoryJsonLd({ id, title, description, url }) {
   return [node(collection), node(breadcrumbs)].join("\n");
 }
 
+function buildAllToolsJsonLd({ title, description, url, tools = [] }) {
+  const node = (obj) =>
+    `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE}/tools?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+  const collection = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title.replace(/ \| ISHU TOOLS$/, ""),
+    description,
+    url,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: tools.length,
+      itemListElement: tools.slice(0, 100).map((tool, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: tool.title || tool.label || titleCase(tool.slug || tool.id || "tool"),
+        url: `${SITE}/tools/${tool.slug || tool.id}`,
+      })),
+    },
+  };
+  return [node(website), node(collection)].join("\n");
+}
+
 // ─── HTML template patcher ───
-function patchTemplate(template, { title, description, url, jsonLd }) {
+function patchTemplate(template, { title, description, url, keywords, jsonLd }) {
   const T = escapeHtml(title);
   const D = escapeAttr(description);
   const U = escapeAttr(url);
+  const K = escapeAttr(keywords || "");
   let out = template;
   // <title>
   out = out.replace(/<title>[\s\S]*?<\/title>/, `<title>${T}</title>`);
@@ -213,6 +280,12 @@ function patchTemplate(template, { title, description, url, jsonLd }) {
     /<link\s+rel="canonical"[^>]*\/>/,
     `<link rel="canonical" href="${U}" />`,
   );
+  if (K) {
+    out = out.replace(
+      /<meta\s+name="keywords"[^>]*\/>/,
+      `<meta name="keywords" content="${K}" />`,
+    );
+  }
   // OG
   out = out.replace(
     /<meta\s+property="og:title"[^>]*\/>/,
@@ -242,9 +315,20 @@ function patchTemplate(template, { title, description, url, jsonLd }) {
 }
 
 function writePage(routePath, html) {
-  const out = resolve(DIST, "." + routePath, "index.html");
-  mkdirSync(dirname(out), { recursive: true });
-  writeFileSync(out, html);
+  const cleanPath = routePath.replace(/^\/+/, "");
+  const directoryOut = resolve(DIST, "." + routePath, "index.html");
+  mkdirSync(dirname(directoryOut), { recursive: true });
+  writeFileSync(directoryOut, html);
+
+  // Also write a clean-URL HTML sibling. Vercel's cleanUrls and explicit
+  // rewrites can then serve /tools/merge-pdf from /tools/merge-pdf.html before
+  // the SPA fallback. Keeping both formats makes local preview, Vercel, and
+  // static hosts more crawler-friendly without changing the React route.
+  if (cleanPath) {
+    const htmlOut = resolve(DIST, `${cleanPath}.html`);
+    mkdirSync(dirname(htmlOut), { recursive: true });
+    writeFileSync(htmlOut, html);
+  }
 }
 
 async function fetchJson(url, timeoutMs = 12000) {
@@ -304,7 +388,13 @@ function fallbackSlugsFromSitemap() {
       url,
       category: tool.category || "",
     });
-    const html = patchTemplate(template, { title: seo.title, description: seo.description, url, jsonLd });
+    const html = patchTemplate(template, {
+      title: seo.title,
+      description: seo.description,
+      url,
+      keywords: seo.keywords,
+      jsonLd,
+    });
     writePage(`/tools/${slug}`, html);
     toolsWritten++;
   }
@@ -316,18 +406,34 @@ function fallbackSlugsFromSitemap() {
     const seo = buildCategorySEO(id, cat.label, cat.description);
     const url = `${SITE}/category/${id}`;
     const jsonLd = buildCategoryJsonLd({ id, title: seo.title, description: seo.description, url });
-    const html = patchTemplate(template, { title: seo.title, description: seo.description, url, jsonLd });
+    const html = patchTemplate(template, {
+      title: seo.title,
+      description: seo.description,
+      url,
+      keywords: seo.keywords,
+      jsonLd,
+    });
     writePage(`/category/${id}`, html);
     catsWritten++;
   }
 
   // /tools (all-tools) page
+  const allTitle = `All 1247+ Free Online Tools — Smart Sorted Directory | ${SITE_NAME}`;
+  const allDescription = `Every tool on ${SITE_NAME} in one smart-sorted list — daily-use tools first. PDF, image, video, code, math, finance, health & more. No signup, no watermark.`;
   const all = patchTemplate(template, {
-    title: `All 1247+ Free Online Tools — Smart Sorted Directory | ${SITE_NAME}`,
-    description: `Every tool on ${SITE_NAME} in one smart-sorted list — daily-use tools first. PDF, image, video, code, math, finance, health & more. No signup, no watermark.`,
+    title: allTitle,
+    description: allDescription,
     url: `${SITE}/tools`,
+    keywords: buildKeywords("all-tools", "All Free Online Tools", "tools"),
+    jsonLd: buildAllToolsJsonLd({
+      title: allTitle,
+      description: allDescription,
+      url: `${SITE}/tools`,
+      tools,
+    }),
   });
   writePage("/tools", all);
 
   console.log(`[seo] wrote ${toolsWritten} tool pages + ${catsWritten} category pages + 1 all-tools page → dist/`);
 })();
+

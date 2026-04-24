@@ -103,10 +103,13 @@ export function useCatalogData() {
         setError(null)
 
         const saveCache = () => writeCatalogCache(uniqueCategories, uniqueTools)
-        if ('requestIdleCallback' in window) {
-          window.requestIdleCallback(saveCache, { timeout: 1200 })
+        const requestIdleCallback = (window as typeof window & {
+          requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number
+        }).requestIdleCallback
+        if (typeof requestIdleCallback === 'function') {
+          requestIdleCallback(saveCache, { timeout: 1200 })
         } else {
-          window.setTimeout(saveCache, 0)
+          globalThis.setTimeout(saveCache, 0)
         }
       } catch (err) {
         if (!mounted) return

@@ -1396,6 +1396,12 @@ h3 {
   font-weight: 600;
 }
 
+.field-required {
+  color: #ff8a8a;
+  font-style: normal;
+  margin-left: 4px;
+}
+
 .field-block input,
 .field-block textarea,
 .field-block select {

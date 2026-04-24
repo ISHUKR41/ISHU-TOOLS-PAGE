@@ -6,10 +6,36 @@
  * components NOT also export non-component values.
  */
 
+import { API_BASE_URL } from '../api/config'
+
 export const FAVORITES_KEY = 'ishu_fav_tools'
 export const RECENT_KEY = 'ishu_recent_tools'
 export const USAGE_KEY = 'ishu_tool_usage_v1'
 export const MAX_RECENT = 12
+const REMOTE_VISIT_ENDPOINT = `${API_BASE_URL}/api/popularity/visit`
+
+function sendVisitTelemetry(slug: string) {
+  if (!slug || typeof window === 'undefined') return
+
+  const body = JSON.stringify({ slug })
+  try {
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([body], { type: 'application/json' })
+      if (navigator.sendBeacon(REMOTE_VISIT_ENDPOINT, blob)) return
+    }
+
+    void fetch(REMOTE_VISIT_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      // Ignore telemetry network failures.
+    })
+  } catch {
+    // Ignore telemetry failures in restricted browser modes.
+  }
+}
 
 export function loadFavorites(): Set<string> {
   try { return new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]')) }
@@ -41,4 +67,6 @@ export function trackToolVisit(slug: string) {
     u[slug] = (u[slug] ?? 0) + 1
     localStorage.setItem(USAGE_KEY, JSON.stringify(u))
   } catch { /* ignore */ }
+
+  sendVisitTelemetry(slug)
 }

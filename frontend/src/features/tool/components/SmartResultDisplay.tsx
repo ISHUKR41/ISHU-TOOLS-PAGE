@@ -273,10 +273,10 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
   if (data.result && Array.isArray(data.result) && Array.isArray((data.result as unknown[][])[0])) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {data.matrix1 && Array.isArray(data.matrix1) && (
+        {Array.isArray(data.matrix1) && (
           <MatrixRenderer matrix={data.matrix1 as number[][]} label="Matrix A" accent={accent} />
         )}
-        {data.matrix2 && Array.isArray(data.matrix2) && (
+        {Array.isArray(data.matrix2) && (
           <MatrixRenderer matrix={data.matrix2 as number[][]} label="Matrix B" accent={accent} />
         )}
         <MatrixRenderer matrix={data.result as number[][]} label={`Result (${String(data.operation || 'output')})`} accent={accent} />
@@ -421,7 +421,9 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
     const ipKeys = ['ip', 'city', 'region', 'country', 'postal', 'latitude', 'longitude', 'timezone', 'isp', 'currency']
     return (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        {ipKeys.map(k => data[k] && <DataCard key={k} label={k} value={data[k]} accent={accent} />)}
+        {ipKeys.map(k => data[k] !== undefined && data[k] !== null && data[k] !== '' && (
+          <DataCard key={k} label={k} value={data[k]} accent={accent} />
+        ))}
       </div>
     )
   }
@@ -533,7 +535,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
             </div>
           </div>
         ))}
-        {data.tip && (
+        {Boolean(data.tip) && (
           <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 10, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
             {String(data.tip)}
           </div>
@@ -552,7 +554,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           <DataCard label="Weight Loss (−500)" value={`${(data.weight_loss as number)?.toLocaleString()} kcal`} accent={accent} />
           <DataCard label="Weight Gain (+500)" value={`${(data.weight_gain as number)?.toLocaleString()} kcal`} accent={accent} />
         </div>
-        {data.macros && typeof data.macros === 'object' && (
+        {typeof data.macros === 'object' && data.macros !== null && (
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Recommended Macros</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
@@ -586,7 +588,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
             1 {String(data.from)} = {String(data.rate)} {String(data.to)} · 1 {String(data.to)} = {String(data.inverse_rate)} {String(data.from)}
           </div>
-          {data.note && <div style={{ fontSize: 12, color: '#f59e0b', marginTop: 8 }}>⚠️ {String(data.note)}</div>}
+          {Boolean(data.note) && <div style={{ fontSize: 12, color: '#f59e0b', marginTop: 8 }}>⚠️ {String(data.note)}</div>}
         </div>
       </div>
     )
@@ -663,7 +665,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <DataCard label="Next Prime" value={(data.next_prime as number)?.toLocaleString()} accent={accent} />
-          {data.prime_factors && (data.prime_factors as number[]).length > 0 && (
+          {Array.isArray(data.prime_factors) && (data.prime_factors as number[]).length > 0 && (
             <DataCard label="Prime Factors" value={(data.prime_factors as number[]).join(' × ')} accent={accent} />
           )}
         </div>
@@ -770,7 +772,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
             </div>
           ))}
         </div>
-        {data.note && (
+        {Boolean(data.note) && (
           <div style={{ padding: '10px 14px', background: 'rgba(255,165,0,0.1)', border: '1px solid rgba(255,165,0,0.2)', borderRadius: 8, fontSize: 12, color: '#f59e0b' }}>
             ⚠️ {String(data.note)}
           </div>
@@ -798,7 +800,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
             {String(data.masked)}
           </div>
         </div>
-        {data.note && (
+        {Boolean(data.note) && (
           <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
             ℹ️ {String(data.note)}
           </div>
@@ -834,7 +836,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           <DataCard label="Sentences" value={data.sentence_count} accent={accent} />
           <DataCard label="Characters" value={(data.text_length as number)?.toLocaleString()} accent={accent} />
         </div>
-        {data.note && (
+        {Boolean(data.note) && (
           <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
             ℹ️ {String(data.note)}
           </div>
@@ -856,7 +858,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
             <CodeResultRenderer text={css} label={label} />
           </div>
         ))}
-        {data.tailwind_hint && (
+        {Boolean(data.tailwind_hint) && (
           <div style={{ padding: '10px 14px', background: 'rgba(59,208,255,0.08)', border: '1px solid rgba(59,208,255,0.2)', borderRadius: 8, fontSize: 13, color: '#3bd0ff' }}>
             🎨 {String(data.tailwind_hint)}
           </div>
@@ -885,7 +887,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           <div style={{ width: 120, height: 60, borderRadius: 12, background: 'rgba(255,255,255,0.12)', boxShadow: String(data.box_shadow_css) }} />
         </div>
         <CodeResultRenderer text={`box-shadow: ${String(data.box_shadow_css)};`} label="CSS Code" />
-        {data.tailwind_hint && (
+        {Boolean(data.tailwind_hint) && (
           <div style={{ padding: '10px 14px', background: 'rgba(59,208,255,0.08)', border: '1px solid rgba(59,208,255,0.2)', borderRadius: 8, fontSize: 13, color: '#3bd0ff' }}>
             🎨 {String(data.tailwind_hint)}
           </div>
@@ -937,7 +939,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
         <div style={{ textAlign: 'center', padding: '20px', borderRadius: 16, border: `2px solid ${isValid ? '#3ee58f40' : '#ff6b6b40'}`, background: isValid ? 'rgba(62,229,143,0.06)' : 'rgba(255,107,107,0.06)' }}>
           <div style={{ fontSize: 40, lineHeight: 1 }}>{isValid ? '✅' : '❌'}</div>
           <div style={{ fontWeight: 800, fontSize: 18, marginTop: 8, color: isValid ? '#3ee58f' : '#ff6b6b' }}>
-            {data.gstin || data.pan}
+            {String(data.gstin ?? data.pan ?? '')}
           </div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 4 }}>{String(data.validation_message || (isValid ? 'Valid' : 'Invalid'))}</div>
         </div>
@@ -959,7 +961,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
         <div style={{ textAlign: 'center', padding: '24px', borderRadius: 16, border: `2px solid ${isPositive ? '#3ee58f40' : '#ff6b6b40'}`, background: isPositive ? 'rgba(62,229,143,0.05)' : 'rgba(255,107,107,0.05)' }}>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Net Worth</div>
           <div style={{ fontWeight: 900, fontSize: 36, color: isPositive ? '#3ee58f' : '#ff6b6b', marginTop: 4 }}>{String(data.formatted_net_worth || `₹${netWorth.toLocaleString()}`)}</div>
-          {data.financial_health && <div style={{ marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{String(data.financial_health)}</div>}
+          {Boolean(data.financial_health) && <div style={{ marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{String(data.financial_health)}</div>}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <div style={{ padding: '16px', borderRadius: 12, background: 'rgba(62,229,143,0.06)', border: '1px solid rgba(62,229,143,0.15)' }}>
@@ -1153,7 +1155,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           <DataCard label="Years of Service" value={String(data.years_of_service)} accent={accent} />
           <DataCard label="Last Basic + DA" value={`₹${Number(data.last_basic_da).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`} accent={accent} />
           {data.covered !== undefined && <DataCard label="Gratuity Act Covered" value={data.covered ? 'Yes' : 'No'} accent={accent} />}
-          {data.formula_used && <DataCard label="Formula" value={data.formula_used} accent={accent} />}
+          {data.formula_used !== undefined && <DataCard label="Formula" value={data.formula_used} accent={accent} />}
         </div>
       </div>
     )
@@ -1226,7 +1228,7 @@ export default function SmartResultDisplay({ data, accent = '#3bd0ff' }: SmartRe
           </div>
         </div>
       ))}
-      {data.note && (
+      {Boolean(data.note) && (
         <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
           ℹ️ {String(data.note)}
         </div>

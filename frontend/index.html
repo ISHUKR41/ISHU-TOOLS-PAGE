@@ -65,7 +65,7 @@
       a{color:inherit;text-decoration:none}
       button,input,textarea,select{font:inherit}
       img,svg{max-width:100%;height:auto;vertical-align:middle}
-      h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);letter-spacing:-0.04em}
+      h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);letter-spacing:0}
       button,[role=button]{touch-action:manipulation}
 
       /* ── App loader — shown before React hydrates (modern) ── */
@@ -115,9 +115,9 @@
         width:36px;height:36px;border-radius:10px;flex-shrink:0;
         background:linear-gradient(135deg,#3bd0ff,#4df0b5);
         display:flex;align-items:center;justify-content:center;
-        font-size:0.82rem;font-weight:800;color:#030f14;letter-spacing:-0.02em;
+        font-size:0.82rem;font-weight:800;color:#030f14;letter-spacing:0;
       }
-      .brand-lockup strong{display:block;font-size:0.92rem;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-0.01em}
+      .brand-lockup strong{display:block;font-size:0.92rem;font-weight:700;color:#fff;line-height:1.1;letter-spacing:0}
       .brand-lockup small{display:block;font-size:0.66rem;color:var(--muted);font-weight:400;letter-spacing:0.01em}
       /* Desktop nav pills */
       .nav-links{display:flex;align-items:center;gap:0.35rem}
@@ -199,7 +199,7 @@
       }
       .hero-v2-title{
         font-family:var(--font-display);font-size:clamp(3.5rem,7vw,7rem);
-        font-weight:800;line-height:0.9;letter-spacing:-0.05em;margin:0;color:#fff;text-wrap:balance;
+        font-weight:800;line-height:0.9;letter-spacing:0;margin:0;color:#fff;text-wrap:balance;
       }
       .hero-v2-title .accent-gradient{
         background:linear-gradient(120deg,#4ad4ff 0%,#4df0b5 55%,#a78bfa 100%);
@@ -239,7 +239,7 @@
         display:block;font-family:var(--font-display);font-size:1.7rem;font-weight:800;
         background:linear-gradient(120deg,#fff 40%,var(--stat-color,#3bd0ff));
         -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-        letter-spacing:-0.04em;
+        letter-spacing:0;
       }
       .stat-label{display:block;font-size:0.78rem;color:var(--muted);margin-top:0.2rem;font-weight:500}
       /* Ticker — min-height holds space */
@@ -272,14 +272,7 @@
         border-radius:999px;background:rgba(255,255,255,0.025);
         border:1px solid rgba(160,190,255,0.09);color:var(--muted);font-size:0.74rem;font-weight:500;
       }
-      /* Hero background orbs — CSS-only, no JS needed */
-      .hero-v2-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(90px)}
-      .hero-v2 .orb-a{width:28rem;height:28rem;top:-10rem;left:-8rem;background:rgba(56,130,255,0.28);animation:orb-drift-a 12s ease-in-out infinite alternate}
-      .hero-v2 .orb-b{width:22rem;height:22rem;bottom:-8rem;right:-6rem;background:rgba(52,255,183,0.22);animation:orb-drift-b 14s ease-in-out infinite alternate}
-      .hero-v2 .orb-c{width:16rem;height:16rem;top:40%;left:50%;transform:translateX(-50%);background:rgba(167,139,250,0.12);animation:orb-drift-c 10s ease-in-out infinite alternate}
-      @keyframes orb-drift-a{from{transform:translate(0,0) scale(1)}to{transform:translate(3rem,2rem) scale(1.12)}}
-      @keyframes orb-drift-b{from{transform:translate(0,0) scale(1)}to{transform:translate(-2rem,-3rem) scale(1.08)}}
-      @keyframes orb-drift-c{from{transform:translateX(-50%) scale(0.9);opacity:.5}to{transform:translateX(-50%) scale(1.1);opacity:1}}
+      .hero-v2-orb{display:none}
       .hero-v2-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(150,180,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(150,180,255,0.06) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.6) 20%,rgba(0,0,0,0.6) 80%,transparent 100%)}
 
       @media(max-width:900px){
@@ -358,37 +351,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Same-origin API preconnect (production) — saves DNS+TCP+TLS on first call -->
-    <link rel="dns-prefetch" href="https://ishutools.com" />
-    <link rel="dns-prefetch" href="https://api.ishutools.com" />
-    <link rel="preconnect" href="https://api.ishutools.com" crossorigin />
+    <link rel="dns-prefetch" href="https://ishutools.fun" />
+    <link rel="dns-prefetch" href="https://api.ishutools.fun" />
+    <link rel="preconnect" href="https://api.ishutools.fun" crossorigin />
 
     <!-- Primary SEO -->
     <title>ISHU TOOLS – Indian Student Hub University Tools | 1200+ Free PDF, Image, Developer & Student Tools by Ishu Kumar</title>
     <meta name="description" content="ISHU TOOLS by Ishu Kumar — 1200+ free online tools for Indian students and professionals. Merge PDF, compress images, OCR, JSON formatter, BMI calculator, SIP calculator, UPI QR, video downloader & more. No signup, no watermark, 100% free. India's best free tools website." />
-    <meta name="keywords" content="ISHU TOOLS, Indian Student Hub University Tools, ishu tools, ishutools, ishu kumar, ishu kumar tools, ishutools.com, best free tools india, student tools online, free online tools india, ishu student hub, tools by ishu, ishu iit patna, ishu iitp tools, free PDF tools, merge PDF online free, compress PDF free, split PDF online, PDF to Word free, Word to PDF converter, PDF to JPG converter, JPG to PDF converter, OCR PDF tool, image compressor online, resize image online free, compress image online, crop image free, remove background online free, compress photo for government form, compress photo for SSC UPSC RRB IBPS, passport photo maker online, passport size photo online india, resize photo for exam application, photo size reducer india, JSON formatter online, Base64 encoder decoder, URL encoder, UUID generator, MD5 hash generator, SHA256 generator, regex tester online, password generator, QR code generator, barcode generator, BMI calculator india, percentage calculator online, age calculator, EMI calculator india, loan calculator, SIP calculator india, mutual fund calculator, UPI QR generator, income tax calculator india 2025, CGPA to percentage converter, attendance calculator college, FD calculator india, video downloader online, youtube video downloader, youtube to mp3 converter, instagram video downloader, word counter, character counter, case converter, text reverser, color picker online, HEX to RGB converter, unit converter online, temperature converter, binary converter, developer tools online free, math calculator online, text tools online, student productivity tools, free tools for students india, tools kaise use kare, free mai tools use karo" />
+    <meta name="keywords" content="ISHU TOOLS, Indian Student Hub University Tools, ishu tools, ishutools, ishu kumar, ishu kumar tools, ishutools.fun, best free tools india, student tools online, free online tools india, ishu student hub, tools by ishu, ishu iit patna, ishu iitp tools, free PDF tools, merge PDF online free, compress PDF free, split PDF online, PDF to Word free, Word to PDF converter, PDF to JPG converter, JPG to PDF converter, OCR PDF tool, image compressor online, resize image online free, compress image online, crop image free, remove background online free, compress photo for government form, compress photo for SSC UPSC RRB IBPS, passport photo maker online, passport size photo online india, resize photo for exam application, photo size reducer india, JSON formatter online, Base64 encoder decoder, URL encoder, UUID generator, MD5 hash generator, SHA256 generator, regex tester online, password generator, QR code generator, barcode generator, BMI calculator india, percentage calculator online, age calculator, EMI calculator india, loan calculator, SIP calculator india, mutual fund calculator, UPI QR generator, income tax calculator india 2025, CGPA to percentage converter, attendance calculator college, FD calculator india, video downloader online, youtube video downloader, youtube to mp3 converter, instagram video downloader, word counter, character counter, case converter, text reverser, color picker online, HEX to RGB converter, unit converter online, temperature converter, binary converter, developer tools online free, math calculator online, text tools online, student productivity tools, free tools for students india, tools kaise use kare, free mai tools use karo" />
     <meta name="author" content="Ishu Kumar" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="bingbot" content="index, follow" />
-    <link rel="canonical" href="https://ishutools.com/" />
+    <link rel="canonical" href="https://ishutools.fun/" />
 
     <!-- Language & Region -->
     <meta name="language" content="English" />
     <meta name="geo.region" content="IN" />
     <meta name="geo.country" content="IN" />
-    <link rel="alternate" hreflang="en" href="https://ishutools.com/" />
-    <link rel="alternate" hreflang="hi" href="https://ishutools.com/" />
-    <link rel="alternate" hreflang="x-default" href="https://ishutools.com/" />
+    <link rel="alternate" hreflang="en" href="https://ishutools.fun/" />
+    <link rel="alternate" hreflang="hi" href="https://ishutools.fun/" />
+    <link rel="alternate" hreflang="x-default" href="https://ishutools.fun/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ishutools.com/" />
+    <meta property="og:url" content="https://ishutools.fun/" />
     <meta property="og:title" content="ISHU TOOLS by Ishu Kumar – 1200+ Free Online Tools for Indian Students & Professionals" />
     <meta property="og:description" content="India's best free online tool platform by Ishu Kumar. 1200+ tools: Merge PDF, compress images, OCR, JSON formatter, BMI calculator, SIP calculator, UPI QR, video downloader & much more. No signup, no watermark." />
     <meta property="og:site_name" content="ISHU TOOLS" />
     <meta property="og:locale" content="en_IN" />
     <meta property="og:locale:alternate" content="hi_IN" />
-    <meta property="og:image" content="https://ishutools.com/og-image.png" />
+    <meta property="og:image" content="https://ishutools.fun/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="ISHU TOOLS — 1200+ Free Online Tools by Ishu Kumar" />
@@ -400,7 +393,7 @@
     <meta name="twitter:creator" content="@ISHU_IITP" />
     <meta name="twitter:title" content="ISHU TOOLS – 1200+ Free Online Tools by Ishu Kumar" />
     <meta name="twitter:description" content="India's best free tools: Merge PDF, compress images, OCR, JSON formatter, BMI & SIP calculators, UPI QR, video downloader & 1200+ more. No signup, no watermark. Created by Ishu Kumar." />
-    <meta name="twitter:image" content="https://ishutools.com/og-image.png" />
+    <meta name="twitter:image" content="https://ishutools.fun/og-image.png" />
     <meta name="twitter:image:alt" content="ISHU TOOLS — 1200+ Free Online Tools" />
     <meta name="twitter:label1" content="Tools Available" />
     <meta name="twitter:data1" content="1200+" />
@@ -412,10 +405,10 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "@id": "https://ishutools.com/#website",
+      "@id": "https://ishutools.fun/#website",
       "name": "ISHU TOOLS",
       "alternateName": ["Indian Student Hub University Tools", "Ishu Tools", "IshuTools", "ISHU TOOLS by Ishu Kumar"],
-      "url": "https://ishutools.com",
+      "url": "https://ishutools.fun",
       "description": "1200+ free online tools for Indian students and professionals — PDF, Image, Developer, Math, Text & AI tools by Ishu Kumar. No signup, no watermark.",
       "inLanguage": ["en", "hi"],
       "copyrightHolder": {"@type": "Person", "name": "Ishu Kumar"},
@@ -424,14 +417,14 @@
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://ishutools.com/tools?q={search_term_string}"
+            "urlTemplate": "https://ishutools.fun/tools?q={search_term_string}"
           },
           "query-input": "required name=search_term_string"
         },
         {
           "@type": "ViewAction",
           "name": "View All Tools",
-          "target": "https://ishutools.com/tools"
+          "target": "https://ishutools.fun/tools"
         }
       ]
     }
@@ -442,10 +435,10 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "@id": "https://ishutools.com/#webapp",
+      "@id": "https://ishutools.fun/#webapp",
       "name": "ISHU TOOLS",
       "alternateName": ["Indian Student Hub University Tools", "Ishu Tools", "IshuTools", "ISHU TOOLS India"],
-      "url": "https://ishutools.com",
+      "url": "https://ishutools.fun",
       "description": "1200+ free online tools for Indian students & professionals — PDF, Image, Developer, Math, Text & AI tools by Ishu Kumar. No signup, no watermark, 100% free.",
       "applicationCategory": "UtilitiesApplication",
       "applicationSubCategory": ["PDF Tools", "Image Tools", "Developer Tools", "Student Tools", "Calculator Tools"],
@@ -464,7 +457,7 @@
       },
       "author": {
         "@type": "Person",
-        "@id": "https://ishutools.com/#author",
+        "@id": "https://ishutools.fun/#author",
         "name": "Ishu Kumar",
         "url": "https://www.linkedin.com/in/ishu-kumar-5a0940281/",
         "sameAs": [
@@ -493,7 +486,7 @@
         "worstRating": "1"
       },
       "featureList": "PDF Tools, Image Tools, Developer Tools, Math Calculators, Text Tools, AI Tools, Unit Converters, Color Tools, Security Tools, Finance Calculators, Health Calculators, Video Tools, Social Media Tools, SEO Tools",
-      "screenshot": "https://ishutools.com/og-image.png",
+      "screenshot": "https://ishutools.fun/og-image.png",
       "dateCreated": "2024-01-01",
       "dateModified": "2026-04-19"
     }
@@ -504,13 +497,13 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "@id": "https://ishutools.com/#organization",
+      "@id": "https://ishutools.fun/#organization",
       "name": "ISHU TOOLS",
       "alternateName": "Indian Student Hub University Tools",
-      "url": "https://ishutools.com",
+      "url": "https://ishutools.fun",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://ishutools.com/favicon.svg",
+        "url": "https://ishutools.fun/favicon.svg",
         "width": 512,
         "height": 512
       },
@@ -545,12 +538,12 @@
     {
       "@context": "https://schema.org",
       "@type": "Person",
-      "@id": "https://ishutools.com/#author",
+      "@id": "https://ishutools.fun/#author",
       "name": "Ishu Kumar",
       "givenName": "Ishu",
       "familyName": "Kumar",
       "url": "https://www.linkedin.com/in/ishu-kumar-5a0940281/",
-      "image": "https://ishutools.com/favicon.svg",
+      "image": "https://ishutools.fun/favicon.svg",
       "jobTitle": "Software Developer & Student Tool Creator",
       "description": "Ishu Kumar is a student at IIT Patna and the creator of ISHU TOOLS — India's largest free online tool platform with 1200+ tools for students and professionals.",
       "knowsAbout": ["PDF Tools", "Image Processing", "Web Development", "JavaScript", "Python", "React", "FastAPI", "SEO", "Student Tools"],
@@ -576,7 +569,7 @@
       "worksFor": {
         "@type": "Organization",
         "name": "ISHU TOOLS",
-        "url": "https://ishutools.com"
+        "url": "https://ishutools.fun"
       }
     }
     </script>
@@ -590,21 +583,21 @@
       "description": "1200+ free online tools organized across 50 categories by Ishu Kumar at ISHU TOOLS.",
       "numberOfItems": 50,
       "itemListElement": [
-        {"@type": "ListItem", "position": 1, "name": "Free PDF Tools Online — Merge, Split, Compress, Convert", "url": "https://ishutools.com/category/pdf-core"},
-        {"@type": "ListItem", "position": 2, "name": "Free Image Tools Online — Compress, Resize, Remove Background", "url": "https://ishutools.com/category/image-core"},
-        {"@type": "ListItem", "position": 3, "name": "Free Developer Tools Online — JSON, Base64, Regex, UUID", "url": "https://ishutools.com/category/developer-tools"},
-        {"@type": "ListItem", "position": 4, "name": "Free Math Calculators Online — BMI, EMI, SIP, Scientific", "url": "https://ishutools.com/category/math-tools"},
-        {"@type": "ListItem", "position": 5, "name": "Free Text Tools Online — Word Counter, Case Converter", "url": "https://ishutools.com/category/text-ops"},
-        {"@type": "ListItem", "position": 6, "name": "Free Student Tools Online — Attendance, CGPA, Exam Countdown", "url": "https://ishutools.com/category/student-tools"},
-        {"@type": "ListItem", "position": 7, "name": "Free Unit Converters Online — Length, Temperature, Weight", "url": "https://ishutools.com/category/conversion-tools"},
-        {"@type": "ListItem", "position": 8, "name": "Free Color Tools Online — Picker, HEX to RGB, Gradients", "url": "https://ishutools.com/category/color-tools"},
-        {"@type": "ListItem", "position": 9, "name": "Free Security Tools Online — Hash, Encrypt, Password Generator", "url": "https://ishutools.com/category/security-tools"},
-        {"@type": "ListItem", "position": 10, "name": "Free Finance Calculators — SIP, FD, Income Tax, EMI India", "url": "https://ishutools.com/category/finance-tools"},
-        {"@type": "ListItem", "position": 11, "name": "Free Health Calculators — BMI, BMR, Calorie, Water India", "url": "https://ishutools.com/category/health-tools"},
-        {"@type": "ListItem", "position": 12, "name": "Free Social Media Tools — Resize for Instagram, YouTube", "url": "https://ishutools.com/category/social-media"},
-        {"@type": "ListItem", "position": 13, "name": "Free SEO Tools Online — Meta Generator, Keyword Density", "url": "https://ishutools.com/category/seo-tools"},
-        {"@type": "ListItem", "position": 14, "name": "Free Image Effects Tools — Blur, Grayscale, Pixelate", "url": "https://ishutools.com/category/image-effects"},
-        {"@type": "ListItem", "position": 15, "name": "Free PDF Security Tools — Protect, Unlock, Encrypt PDF", "url": "https://ishutools.com/category/pdf-security"}
+        {"@type": "ListItem", "position": 1, "name": "Free PDF Tools Online — Merge, Split, Compress, Convert", "url": "https://ishutools.fun/category/pdf-core"},
+        {"@type": "ListItem", "position": 2, "name": "Free Image Tools Online — Compress, Resize, Remove Background", "url": "https://ishutools.fun/category/image-core"},
+        {"@type": "ListItem", "position": 3, "name": "Free Developer Tools Online — JSON, Base64, Regex, UUID", "url": "https://ishutools.fun/category/developer-tools"},
+        {"@type": "ListItem", "position": 4, "name": "Free Math Calculators Online — BMI, EMI, SIP, Scientific", "url": "https://ishutools.fun/category/math-tools"},
+        {"@type": "ListItem", "position": 5, "name": "Free Text Tools Online — Word Counter, Case Converter", "url": "https://ishutools.fun/category/text-ops"},
+        {"@type": "ListItem", "position": 6, "name": "Free Student Tools Online — Attendance, CGPA, Exam Countdown", "url": "https://ishutools.fun/category/student-tools"},
+        {"@type": "ListItem", "position": 7, "name": "Free Unit Converters Online — Length, Temperature, Weight", "url": "https://ishutools.fun/category/conversion-tools"},
+        {"@type": "ListItem", "position": 8, "name": "Free Color Tools Online — Picker, HEX to RGB, Gradients", "url": "https://ishutools.fun/category/color-tools"},
+        {"@type": "ListItem", "position": 9, "name": "Free Security Tools Online — Hash, Encrypt, Password Generator", "url": "https://ishutools.fun/category/security-tools"},
+        {"@type": "ListItem", "position": 10, "name": "Free Finance Calculators — SIP, FD, Income Tax, EMI India", "url": "https://ishutools.fun/category/finance-tools"},
+        {"@type": "ListItem", "position": 11, "name": "Free Health Calculators — BMI, BMR, Calorie, Water India", "url": "https://ishutools.fun/category/health-tools"},
+        {"@type": "ListItem", "position": 12, "name": "Free Social Media Tools — Resize for Instagram, YouTube", "url": "https://ishutools.fun/category/social-media"},
+        {"@type": "ListItem", "position": 13, "name": "Free SEO Tools Online — Meta Generator, Keyword Density", "url": "https://ishutools.fun/category/seo-tools"},
+        {"@type": "ListItem", "position": 14, "name": "Free Image Effects Tools — Blur, Grayscale, Pixelate", "url": "https://ishutools.fun/category/image-effects"},
+        {"@type": "ListItem", "position": 15, "name": "Free PDF Security Tools — Protect, Unlock, Encrypt PDF", "url": "https://ishutools.fun/category/pdf-security"}
       ]
     }
     </script>
@@ -636,7 +629,7 @@
           "name": "Is ISHU TOOLS free to use?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes! ISHU TOOLS is 100% free to use. All 1200+ tools are available without any signup, registration, or payment. There are no watermarks, no daily limits, no file size limits, and no hidden charges. Created by Ishu Kumar as a gift to Indian students."
+            "text": "Yes! ISHU TOOLS is 100% free to use. All 1200+ tools are available without any signup, registration, or payment. There are no watermarks or hidden charges, and the tools are built for fast everyday use. Created by Ishu Kumar as a gift to Indian students."
           }
         },
         {
@@ -729,13 +722,13 @@
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [
-        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ishutools.com/"},
-        {"@type": "ListItem", "position": 2, "name": "All Tools", "item": "https://ishutools.com/tools"},
-        {"@type": "ListItem", "position": 3, "name": "PDF Tools", "item": "https://ishutools.com/category/pdf-core"},
-        {"@type": "ListItem", "position": 4, "name": "Image Tools", "item": "https://ishutools.com/category/image-core"},
-        {"@type": "ListItem", "position": 5, "name": "Developer Tools", "item": "https://ishutools.com/category/developer-tools"},
-        {"@type": "ListItem", "position": 6, "name": "Calculators", "item": "https://ishutools.com/category/math-tools"},
-        {"@type": "ListItem", "position": 7, "name": "Text Tools", "item": "https://ishutools.com/category/text-ops"}
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ishutools.fun/"},
+        {"@type": "ListItem", "position": 2, "name": "All Tools", "item": "https://ishutools.fun/tools"},
+        {"@type": "ListItem", "position": 3, "name": "PDF Tools", "item": "https://ishutools.fun/category/pdf-core"},
+        {"@type": "ListItem", "position": 4, "name": "Image Tools", "item": "https://ishutools.fun/category/image-core"},
+        {"@type": "ListItem", "position": 5, "name": "Developer Tools", "item": "https://ishutools.fun/category/developer-tools"},
+        {"@type": "ListItem", "position": 6, "name": "Calculators", "item": "https://ishutools.fun/category/math-tools"},
+        {"@type": "ListItem", "position": 7, "name": "Text Tools", "item": "https://ishutools.fun/category/text-ops"}
       ]
     }
     </script>
@@ -822,8 +815,9 @@
           <li><a href="/tools/youtube-to-mp3">YouTube to MP3 — Convert YouTube to audio free</a></li>
         </ul>
         <p>Created by <strong>Ishu Kumar</strong> (IIT Patna) — <a href="https://www.linkedin.com/in/ishu-kumar-5a0940281/">LinkedIn</a> | <a href="https://x.com/ISHU_IITP">X (Twitter)</a> | <a href="https://www.instagram.com/ishukr10">Instagram @ishukr10</a></p>
-        <p>ISHU TOOLS — ishutools.com — India's best free online tool platform. Ishu Kumar tools. Indian Student Hub University Tools.</p>
+        <p>ISHU TOOLS — ishutools.fun — India's best free online tool platform. Ishu Kumar tools. Indian Student Hub University Tools.</p>
       </div>
     </noscript>
   </body>
 </html>
+
