@@ -32,7 +32,7 @@ outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "/home/runner/workspace/.venv/bin/python backend/run.py"
+args = "python backend/run.py"
 waitForPort = 8000
 
 [[workflows.workflow]]
@@ -50,10 +50,6 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 8000
-externalPort = 8000
 
 [deployment]
 deploymentTarget = "autoscale"
