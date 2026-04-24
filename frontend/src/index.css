@@ -12005,3 +12005,91 @@ html {
   will-change: scroll-position;
   transform: translateZ(0);
 }
+/* ═══════════════════════════════════════════════════
+   BRAND-LOCKUP: centered + fully responsive (all devices)
+   ═══════════════════════════════════════════════════ */
+.brand-lockup {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.7rem;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.brand-lockup > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.brand-lockup strong,
+.brand-lockup small {
+  display: block !important;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.brand-lockup strong {
+  font-size: clamp(0.95rem, 2.4vw, 1.18rem);
+}
+
+.brand-lockup small {
+  font-size: clamp(0.62rem, 1.6vw, 0.78rem);
+  margin-top: 0.18rem;
+  letter-spacing: 0.01em;
+}
+
+/* Make the header brand block centered within its slot on small screens */
+@media (max-width: 720px) {
+  .site-nav-inner .brand-lockup {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .brand-lockup small {
+    white-space: normal;
+    max-width: 60vw;
+  }
+}
+
+/* Footer brand: also center the subtitle */
+.footer-brand .brand-lockup,
+.footer-brand > div {
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO KICKER PILL — center on every device, fully responsive
+   ═══════════════════════════════════════════════════ */
+.hero-kicker-pill {
+  justify-self: center !important;
+  align-self: center;
+  margin-inline: auto !important;
+  width: max-content;
+  max-width: min(92vw, 30rem);
+  text-align: center;
+  white-space: normal;
+  word-break: keep-all;
+  font-size: clamp(0.6rem, 1.8vw, 0.78rem);
+  padding: clamp(0.32rem, 1.2vw, 0.5rem) clamp(0.65rem, 2.5vw, 1rem);
+  line-height: 1.25;
+}
+
+.hero-kicker-pill > span {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .hero-kicker-pill {
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    max-width: 90vw;
+  }
+}
