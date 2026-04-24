@@ -1,6 +1,38 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-23 — round 10) — FULL CATALOG SCAN: 0 crashes / 1247 tools
+## Latest Update (2026-04-24) — Migration to Replit + production performance pass
+
+### Migration completed
+- Installed `nodejs-20` and `python-3.12` modules.
+- Backend: ~60 Python packages installed (FastAPI, Uvicorn, OpenCV, pikepdf, PyMuPDF, rembg, yt-dlp, WeasyPrint, etc.). 1315 handlers register cleanly on boot.
+- Frontend: `npm install` clean, Vite 8 (rolldown) production build verified.
+- Workflows configured: `Backend API` (`python backend/run.py` :8000) and `Start application` (`npm --prefix frontend run dev` :5000).
+- Production preview HTML returned in 15 ms; pre-rendered SEO pages generated for all 1247 tools + 61 categories on every build.
+
+### Production performance pass
+- Added `frontend/src/lib/prefetchTool.ts` — idempotent hover/focus/touch prefetch helper that warms `ToolPage`, `tool-fields` and `seo-data` chunks plus the per-tool API definition during browser idle time. `ToolCard` wires it on `mouseenter`, `touchstart` and `Link.onFocus`. Net effect: clicking a card from the home grid lands on a fully-hydrated tool page with no spinner.
+- Cleaned up `vite.config.ts` `manualChunks`: `data/catalogFallback` → `catalog-fallback`, `components/layout/SiteShell` (and `AnimatedBackdrop`) → `site-shell`. Killed the misleading 463 KB chunk that Rollup had been naming `ToolIcon`.
+
+### Build report (after pass)
+| Chunk            | Before  | After  |
+| ---------------- | ------- | ------ |
+| ToolIcon         | 463 KB  | 23 KB  |
+| vendor-react     | 227 KB  | 179 KB |
+| vendor-icons     | 24 KB   | 13 KB  |
+| site-shell       | (mixed) | 79 KB  |
+| catalog-fallback | (mixed) | 421 KB |
+| HomePage         | 30 KB   | 31 KB (+1 KB for prefetch helper) |
+
+### What was already in place (verified, no changes needed)
+- HomePage: no Categories / Most Popular / Show More sections, smart popularity+usage sort, Fuse.js + bilingual synonym map (Hindi/Hinglish: jodo, karo, banao …) + edit-distance fuzzy fallback, `/` to focus, Esc to clear, marketing sections hidden during search.
+- ToolPage SEO: title, description, keywords, robots, full AI-bot meta (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Google-Extended`, …), OpenGraph, Twitter card, canonical, JSON-LD tool + FAQ, `ai-summary` meta. `seoData.ts` has full `TOOL_SEO_MAP` + `createGeneratedSEO` fallback for every slug.
+- `.tool-card` CSS already uses `content-visibility: auto` + `contain: layout style` — gives near-virtualization for the 1247-card grid for free.
+- `vercel.json` proxies `/api/*` and `/health` to the Render backend (`https://ishu-tools-page.onrender.com`, verified 200 in 0.11 s) and falls back to `index.html` for SPA routes.
+- Sitemap script (`scripts/gen-sitemap.mjs`) and SEO prerender script (`scripts/gen-static-seo.mjs`) both run on every build.
+
+---
+
+## Update (2026-04-23 — round 10) — FULL CATALOG SCAN: 0 crashes / 1247 tools
 
 **Scanned every single tool with a 20-thread parallel sweep using a kitchen-sink payload + PNG fixture. Found and fixed the last 2 real crashes plus 28 misclassified file-validation issues.**
 

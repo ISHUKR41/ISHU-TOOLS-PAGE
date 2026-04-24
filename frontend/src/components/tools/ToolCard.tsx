@@ -1,8 +1,10 @@
 import { ArrowUpRight } from 'lucide-react'
+import { useCallback } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { ToolDefinition } from '../../types/tools'
+import { prefetchToolRoute } from '../../lib/prefetchTool'
 import ToolIcon from './ToolIcon'
 
 type ToolCardProps = {
@@ -21,12 +23,25 @@ const INPUT_KIND_LABELS: Record<string, { label: string; icon: string }> = {
 export default function ToolCard({ tool, categoryLabel, accentColor }: ToolCardProps) {
   const inputKind = INPUT_KIND_LABELS[tool.input_kind] || INPUT_KIND_LABELS.text
 
+  // ─── Hover/focus/touch prefetch ────────────────────────────────────────
+  // Warms the ToolPage chunk + tool definition in the background so the
+  // click navigation feels instant. Idempotent — only fires once per slug.
+  const handlePrefetch = useCallback(() => {
+    prefetchToolRoute(tool.slug)
+  }, [tool.slug])
+
   return (
     <article
       className='tool-card'
       style={{ '--tool-accent': accentColor || '#3bd0ff' } as CSSProperties}
+      onMouseEnter={handlePrefetch}
+      onTouchStart={handlePrefetch}
     >
-      <Link to={`/tools/${tool.slug}`} className='tool-card-link'>
+      <Link
+        to={`/tools/${tool.slug}`}
+        className='tool-card-link'
+        onFocus={handlePrefetch}
+      >
         <div className='tool-card-header'>
           <span className='tool-icon-wrap'>
             <ToolIcon slug={tool.slug} className='tool-icon' />

@@ -71,6 +71,23 @@ export default defineConfig({
           if (id.includes('features/tool/toolFields')) {
             return 'tool-fields'
           }
+          // ── Catalog fallback (offline tool list, ~480KB) — used by
+          //    HomePage AND ToolPage. Splitting it out gives both pages a
+          //    cacheable shared chunk and stops it from inflating the
+          //    HomePage entry. ────────────────────────────────────────────
+          if (id.includes('data/catalogFallback')) {
+            return 'catalog-fallback'
+          }
+          // ── Site shell + nav mega-menu — large hard-coded link list
+          //    shared across every route. Naming it explicitly keeps the
+          //    build report readable (was previously named after the first
+          //    file Rollup happened to encounter). ──────────────────────
+          if (
+            id.includes('components/layout/SiteShell') ||
+            id.includes('components/layout/AnimatedBackdrop')
+          ) {
+            return 'site-shell'
+          }
           if (id.includes('node_modules/')) {
             return 'vendor-misc'
           }
