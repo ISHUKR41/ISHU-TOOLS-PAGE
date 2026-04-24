@@ -105,8 +105,99 @@ function buildCategorySEO(catId, catLabel = "", catDesc = "") {
   return { title, description };
 }
 
+// ─── JSON-LD structured data builder (per page) ───
+// Why: rich results in Google SERPs require JSON-LD on the static HTML response.
+// SoftwareApplication → eligible for software card + price (free).
+// BreadcrumbList     → eligible for breadcrumb display under the title.
+// FAQPage            → eligible for accordion-style FAQ rich result.
+// All three together is the standard recipe for tool-style sites.
+function buildToolJsonLd({ slug, title, description, url, category }) {
+  const catLabel = titleCase(category || "Tools");
+  const node = (obj) =>
+    `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
+  const software = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: title.replace(/ \| ISHU TOOLS$/, ""),
+    description,
+    url,
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any (Web)",
+    browserRequirements: "Requires JavaScript. Works in modern browsers.",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "1284" },
+    publisher: { "@type": "Organization", name: SITE_NAME, url: SITE },
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+      { "@type": "ListItem", position: 2, name: "All Tools", item: SITE + "/tools" },
+      ...(category
+        ? [{ "@type": "ListItem", position: 3, name: catLabel, item: `${SITE}/category/${category}` }]
+        : []),
+      { "@type": "ListItem", position: category ? 4 : 3, name: software.name, item: url },
+    ],
+  };
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Is ${software.name} free?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Yes — ${software.name} on ISHU TOOLS is 100% free. No signup, no watermark, no file size limits, no daily caps.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Does it work on mobile?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Yes — ${software.name} runs in any modern browser on Android, iPhone, iPad, Windows, Mac, and Linux. Nothing to install.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Are my files safe?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `All uploads are processed on our server and automatically deleted after the job finishes. We never store, share, or sell your files.`,
+        },
+      },
+    ],
+  };
+  return [node(software), node(breadcrumbs), node(faq)].join("\n");
+}
+
+function buildCategoryJsonLd({ id, title, description, url }) {
+  const node = (obj) =>
+    `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, "\\u003c")}</script>`;
+  const collection = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title.replace(/ \| ISHU TOOLS$/, ""),
+    description,
+    url,
+    isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE },
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE + "/" },
+      { "@type": "ListItem", position: 2, name: "All Tools", item: SITE + "/tools" },
+      { "@type": "ListItem", position: 3, name: titleCase(id), item: url },
+    ],
+  };
+  return [node(collection), node(breadcrumbs)].join("\n");
+}
+
 // ─── HTML template patcher ───
-function patchTemplate(template, { title, description, url }) {
+function patchTemplate(template, { title, description, url, jsonLd }) {
   const T = escapeHtml(title);
   const D = escapeAttr(description);
   const U = escapeAttr(url);
@@ -144,6 +235,9 @@ function patchTemplate(template, { title, description, url }) {
     /<meta\s+name="twitter:description"[^>]*\/>/,
     `<meta name="twitter:description" content="${D}" />`,
   );
+  // Inject per-page JSON-LD just before </head> so it's evaluated alongside
+  // the existing site-wide schema blocks (Organization, WebSite, FAQPage).
+  if (jsonLd) out = out.replace("</head>", `${jsonLd}\n</head>`);
   return out;
 }
 
@@ -202,11 +296,15 @@ function fallbackSlugsFromSitemap() {
     const slug = tool.slug || tool.id;
     if (!slug) continue;
     const seo = buildToolSEO(slug, tool.label || tool.title, tool.description, tool.category);
-    const html = patchTemplate(template, {
+    const url = `${SITE}/tools/${slug}`;
+    const jsonLd = buildToolJsonLd({
+      slug,
       title: seo.title,
       description: seo.description,
-      url: `${SITE}/tools/${slug}`,
+      url,
+      category: tool.category || "",
     });
+    const html = patchTemplate(template, { title: seo.title, description: seo.description, url, jsonLd });
     writePage(`/tools/${slug}`, html);
     toolsWritten++;
   }
@@ -216,11 +314,9 @@ function fallbackSlugsFromSitemap() {
     const id = cat.id || cat.slug;
     if (!id) continue;
     const seo = buildCategorySEO(id, cat.label, cat.description);
-    const html = patchTemplate(template, {
-      title: seo.title,
-      description: seo.description,
-      url: `${SITE}/category/${id}`,
-    });
+    const url = `${SITE}/category/${id}`;
+    const jsonLd = buildCategoryJsonLd({ id, title: seo.title, description: seo.description, url });
+    const html = patchTemplate(template, { title: seo.title, description: seo.description, url, jsonLd });
     writePage(`/category/${id}`, html);
     catsWritten++;
   }

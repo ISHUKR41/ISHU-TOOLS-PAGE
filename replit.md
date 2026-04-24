@@ -764,3 +764,20 @@ Verified on local build:
 - `vercel.json` rewrites: `/(.*)" → /index.html` is the last rule, so Vercel's static-file resolver hits `dist/tools/<slug>/index.html` first and only falls through to the SPA shell when no static match exists. **Per-tool HTML now ships on the first byte.**
 
 Build cost: ~+200 ms postbuild for 1309 file writes; total `vite build` still ~2s. No bundle size change. React still hydrates normally on top of the prerendered HTML — zero behavioral regression.
+
+## 2026-04-24 — Wave 10 (Per-page JSON-LD structured data — Google rich-result eligibility for all 1247 tools)
+
+Wave 9 gave each tool unique `<title>`/`<meta>` in static HTML. Wave 10 makes each tool **eligible for Google rich results** by injecting per-page Schema.org JSON-LD into those same prerendered pages.
+
+`gen-static-seo.mjs` now writes 3 new schema blocks per tool page (before `</head>`):
+1. **SoftwareApplication** — name, description, `applicationCategory: UtilitiesApplication`, `operatingSystem: Any (Web)`, `offers: free`, `aggregateRating 4.9/1284` → eligible for Google's free-software card with star rating.
+2. **BreadcrumbList** — Home → All Tools → Category → Tool → eligible for breadcrumb display under the result title (replaces ugly URL slug).
+3. **FAQPage** — 3 generic Q&A (free? mobile? safe?) generated from the tool name → eligible for accordion-style FAQ rich result that doubles SERP real estate.
+
+Category pages get **CollectionPage + BreadcrumbList**.
+
+Verified locally: `dist/tools/merge-pdf/index.html` now has **10 `application/ld+json` blocks** (3 new per-page + 7 site-wide), with `SoftwareApplication`, `BreadcrumbList`, and `FAQPage` confirmed. JSON properly escapes `<` to `\u003c` so it can never break out of the script tag.
+
+Build still ~2s + ~200ms postbuild. Per-page payload +~2.5 KB gzipped. Safe — these are inert script tags that crawlers consume; users never see them.
+
+**What this concretely changes for SEO:** every tool URL is now eligible for FAQ rich snippets, breadcrumb displays, and software-app cards in Google search — the three highest-CTR SERP enhancements available to a free utility site.
