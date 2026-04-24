@@ -710,13 +710,79 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
     return primary
 
 
+def _vimeo_player_config_fallback(url: str, job_dir: Path, quality_hint: str | None):
+    """No-auth Vimeo fallback: hit player.vimeo.com/video/{id}/config (used by Vimeo's own
+    embed player). Returns JSON with `request.files.progressive` — direct mp4 URLs."""
+    import re as _re
+    import httpx as _httpx
+    m = _re.search(r"vimeo\.com/(?:video/)?(\d+)", url)
+    if not m:
+        return None
+    vid = m.group(1)
+    cfg_url = f"https://player.vimeo.com/video/{vid}/config"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36",
+        "Referer": "https://player.vimeo.com/",
+    }
+    try:
+        r = _httpx.get(cfg_url, headers=headers, timeout=20)
+        if r.status_code != 200:
+            return None
+        data = r.json()
+    except Exception:
+        return None
+    progressive = (((data.get("request") or {}).get("files") or {}).get("progressive") or [])
+    if not progressive:
+        return None
+    # Sort by height desc, then optionally pick by quality_hint
+    progressive.sort(key=lambda f: f.get("height", 0), reverse=True)
+    pick = progressive[0]
+    if quality_hint:
+        target = {"low": 360, "medium": 480, "high": 720, "best": 9999}.get(quality_hint.lower(), 9999)
+        for f in progressive:
+            if f.get("height", 0) <= target:
+                pick = f
+                break
+    media_url = pick.get("url")
+    if not media_url:
+        return None
+    title = ((data.get("video") or {}).get("title") or f"vimeo_{vid}")[:80]
+    safe = _re.sub(r'[^\w\s.-]', '', title).strip()[:60] or f"vimeo_{vid}"
+    out = job_dir / f"{safe}.mp4"
+    try:
+        with _httpx.stream("GET", media_url, timeout=120, headers=headers, follow_redirects=True) as v:
+            if v.status_code != 200:
+                return None
+            with open(out, "wb") as fh:
+                for chunk in v.iter_bytes(chunk_size=64 * 1024):
+                    fh.write(chunk)
+    except Exception:
+        return None
+    if not out.exists() or out.stat().st_size < 5000:
+        return None
+    size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded: {title} ({pick.get('height', '?')}p, {size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4",
+    )
+
+
 def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Vimeo video URL.", data={"error": "No URL"})
     if "vimeo.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Vimeo URL.", data={"error": "Not Vimeo"})
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    if primary.kind == "file":
+        return primary
+    fb = _vimeo_player_config_fallback(url, job_dir, payload.get("quality"))
+    if fb is not None:
+        return fb
+    return primary
 
 
 def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:

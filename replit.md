@@ -688,3 +688,14 @@ Per-tool dynamic SEO meta tags are already wired through `getToolSEO`/`getToolJs
 
 ### Honest scope note
 Four platforms now have proper public-API fallbacks (IG + TikTok from earlier waves, plus Twitter/X + Facebook + Reddit + Pinterest from this wave). The remaining downloaders (Vimeo, Dailymotion, Bilibili, Rumble, Twitch, Snapchat, Threads, LinkedIn, SoundCloud) still rely on yt-dlp alone — they tend to work fine because those platforms don't aggressively block scrapers. Worth revisiting only if specific tools start failing.
+
+## 2026-04-24 — Wave 4 (sitemap completeness + Vimeo fallback)
+
+- **CRITICAL SEO FIX — sitemap now covers every tool**: previous `frontend/public/sitemap.xml` had only 883 of 1247 tool URLs (364 tools were invisible to Google). Wrote a generator script that reads the live `/api/tools` catalog and emits a fresh `sitemap.xml` with **all 1247 tools + 61 categories + home + /tools = 1310 URLs total**. High-priority slugs (PDF core, image core, all popular downloaders, JSON/base64/QR, BMI/EMI/SIP/GST, common unit converters, word counter, etc.) get priority 0.95, the rest 0.86.
+- **Vimeo downloader real fix** (`video_extra_handlers.py`): added `_vimeo_player_config_fallback()` that hits `player.vimeo.com/video/{id}/config` (Vimeo's own embed-player endpoint) and pulls direct mp4 from `request.files.progressive`. Smoke-tested live → downloaded 5.78 MB mp4 at 360p from a public Vimeo. Honors quality hint (low/medium/high/best). Same yt-dlp-first → fallback chain pattern as the other downloaders.
+- Decided NOT to add SoundCloud fallback: the only no-auth path requires scraping a `client_id` from their JS bundles, which Soundcloud rotates and breaks fragile fallbacks. yt-dlp handles it well.
+- Backend healthy after restart, all 1247 tools load, no import errors.
+
+### Running totals after Wave 4
+- Downloaders with no-auth public-API fallbacks beyond yt-dlp: **Instagram, TikTok, Twitter/X, Facebook, Reddit, Pinterest, Vimeo** (7 platforms, all live-tested).
+- Sitemap coverage: **1000f 1247 tools** (was 71
