@@ -565,6 +565,67 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
     return result  # return original yt-dlp error message
 
 
+def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """No-auth fallback for public tweets via Twitter's syndication CDN.
+
+    `cdn.syndication.twimg.com/tweet-result` is the public endpoint Twitter
+    uses to embed tweets on third-party sites. It returns full JSON including
+    `mediaDetails[].video_info.variants[]` (mp4 + m3u8) for any public tweet
+    without authentication.
+    """
+    import re as _re
+    m = _re.search(r"/status(?:es)?/(\d+)", url)
+    if not m:
+        return None
+    tweet_id = m.group(1)
+    # Random token (any value works) — required parameter
+    api = (
+        f"https://cdn.syndication.twimg.com/tweet-result"
+        f"?id={tweet_id}&token=ishu&lang=en"
+    )
+    try:
+        r = httpx.get(api, timeout=20, follow_redirects=True,
+                      headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+        if r.status_code != 200:
+            return None
+        data = r.json()
+    except Exception:
+        return None
+    media = data.get("mediaDetails") or []
+    video_url = None
+    is_video = False
+    for m_ in media:
+        vi = m_.get("video_info") or {}
+        variants = [v for v in (vi.get("variants") or []) if v.get("content_type") == "video/mp4"]
+        if variants:
+            best = max(variants, key=lambda v: v.get("bitrate", 0) or 0)
+            video_url = best.get("url")
+            is_video = True
+            break
+        if not video_url and m_.get("media_url_https"):
+            video_url = m_["media_url_https"]
+    if not video_url:
+        return None
+    try:
+        v = httpx.get(video_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+    except Exception:
+        return None
+    ext = "mp4" if is_video else (video_url.rsplit(".", 1)[-1].split("?")[0][:4] or "jpg")
+    out = job_dir / f"twitter_{tweet_id}.{ext}"
+    out.write_bytes(v.content)
+    size_mb = round(len(v.content) / 1024 / 1024, 2)
+    user = (data.get("user") or {}).get("screen_name", "")
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded tweet {('video' if is_video else 'media')}{' by @'+user if user else ''} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4" if is_video else "image/jpeg",
+    )
+
+
 def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
@@ -572,7 +633,66 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
     cookies = payload.get("cookies") or payload.get("cookies_text")
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
+    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+    fallback = _twitter_syndication_fallback(url, job_dir)
+    if fallback is not None:
+        return fallback
+    return primary
+
+
+def _facebook_html_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """No-auth fallback for public Facebook videos.
+
+    Facebook's public mobile/desktop pages embed `hd_src`/`sd_src` (or
+    `playable_url`/`playable_url_quality_hd`) in inline JSON. We fetch the
+    page with a desktop UA and grep those out.
+    """
+    import re as _re
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    try:
+        r = httpx.get(url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        html = r.text
+    except Exception:
+        return None
+    patterns = [
+        r'"playable_url_quality_hd":"([^"]+)"',
+        r'"playable_url":"([^"]+)"',
+        r'"hd_src":"([^"]+)"',
+        r'"sd_src":"([^"]+)"',
+        r'"browser_native_hd_url":"([^"]+)"',
+        r'"browser_native_sd_url":"([^"]+)"',
+    ]
+    media_url = None
+    for pat in patterns:
+        m = _re.search(pat, html)
+        if m:
+            media_url = m.group(1).encode("utf-8").decode("unicode_escape")
+            break
+    if not media_url:
+        return None
+    try:
+        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers=headers)
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+    except Exception:
+        return None
+    out = job_dir / "facebook_video.mp4"
+    out.write_bytes(v.content)
+    size_mb = round(len(v.content) / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded Facebook video ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4",
+    )
 
 
 def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -581,7 +701,13 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
     if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
-    return _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    if primary.kind == "file":
+        return primary
+    fallback = _facebook_html_fallback(url, job_dir)
+    if fallback is not None:
+        return fallback
+    return primary
 
 
 def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:

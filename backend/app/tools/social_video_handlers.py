@@ -134,16 +134,130 @@ def _yt_dlp_info(url: str) -> dict:
 
 # ─── Pinterest Downloader ─────────────────────────────────────────────────────
 
+def _pinterest_html_fallback(url: str, job_dir: Path):
+    """No-auth Pinterest fallback: scrape og:video / og:image from the public pin page."""
+    import re as _re
+    import httpx as _httpx
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    try:
+        r = _httpx.get(url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        html = r.text
+    except Exception:
+        return None
+    media_url = None
+    is_video = False
+    for pat in (r'<meta[^>]+property="og:video"[^>]+content="([^"]+)"',
+                r'"video_list":\s*\{[^}]*"V_HLSV4"[^}]*"url":"([^"]+)"',
+                r'"contentUrl":"(https://[^"]+\.mp4[^"]*)"'):
+        m = _re.search(pat, html)
+        if m:
+            media_url = m.group(1).encode("utf-8").decode("unicode_escape")
+            is_video = True
+            break
+    if not media_url:
+        m = _re.search(r'<meta[^>]+property="og:image"[^>]+content="([^"]+)"', html)
+        if m:
+            media_url = m.group(1)
+    if not media_url:
+        return None
+    if media_url.endswith(".m3u8"):
+        return None  # let yt-dlp handle HLS
+    try:
+        v = _httpx.get(media_url, timeout=60, follow_redirects=True, headers=headers)
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+    except Exception:
+        return None
+    ext = "mp4" if is_video else (media_url.rsplit(".", 1)[-1].split("?")[0][:4].lower() or "jpg")
+    out = job_dir / f"pinterest_pin.{ext}"
+    out.write_bytes(v.content)
+    size_mb = round(len(v.content) / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded Pinterest {'video' if is_video else 'image'} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4" if is_video else f"image/{ext if ext != 'jpg' else 'jpeg'}",
+    )
+
+
 def _handle_pinterest_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
         return ExecutionResult(kind="json", message="Please paste a Pinterest URL.", data={"error": "No URL"})
     if "pinterest.com" not in url and "pin.it" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Pinterest URL (pinterest.com or pin.it).", data={"error": "Not Pinterest"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _pinterest_html_fallback(url, job_dir)
+    if fb is not None:
+        return fb
+    return primary
 
 
 # ─── Reddit Downloader ────────────────────────────────────────────────────────
+
+def _reddit_json_fallback(url: str, job_dir: Path):
+    """No-auth Reddit fallback: append .json to any post URL → public JSON
+    with `media.reddit_video.fallback_url` (mp4)."""
+    import re as _re
+    import httpx as _httpx
+    clean = url.split("?")[0].rstrip("/")
+    json_url = clean + ".json"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; ISHU-tools/1.0)",
+        "Accept": "application/json",
+    }
+    try:
+        r = _httpx.get(json_url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        data = r.json()
+    except Exception:
+        return None
+    media_url = None
+    title = "reddit"
+    try:
+        post = data[0]["data"]["children"][0]["data"]
+        title = (post.get("title") or "reddit")[:80]
+        media = post.get("media") or {}
+        rv = (media.get("reddit_video") or post.get("secure_media", {}).get("reddit_video") or {})
+        media_url = rv.get("fallback_url")
+        if not media_url and post.get("preview"):
+            rvp = ((post["preview"].get("reddit_video_preview")) or {})
+            media_url = rvp.get("fallback_url")
+        if not media_url and post.get("url_overridden_by_dest", "").endswith((".mp4", ".jpg", ".png", ".gif")):
+            media_url = post["url_overridden_by_dest"]
+    except Exception:
+        return None
+    if not media_url:
+        return None
+    media_url = media_url.split("?")[0]
+    try:
+        v = _httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+    except Exception:
+        return None
+    ext = media_url.rsplit(".", 1)[-1][:4].lower() if "." in media_url else "mp4"
+    safe = _re.sub(r'[^\w\s.-]', '', title).strip()[:60] or "reddit"
+    out = job_dir / f"{safe}.{ext}"
+    out.write_bytes(v.content)
+    size_mb = round(len(v.content) / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded: {title} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4" if ext == "mp4" else f"image/{ext}",
+    )
+
 
 def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
@@ -151,7 +265,13 @@ def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Reddit post URL.", data={"error": "No URL"})
     if "reddit.com" not in url and "redd.it" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Reddit URL.", data={"error": "Not Reddit"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _reddit_json_fallback(url, job_dir)
+    if fb is not None:
+        return fb
+    return primary
 
 
 # ─── Twitch Clip Downloader ───────────────────────────────────────────────────

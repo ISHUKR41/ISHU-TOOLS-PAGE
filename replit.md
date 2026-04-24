@@ -677,3 +677,14 @@ fold. Typecheck is clean.
 
 ### Still on the multi-wave roadmap
 Per-tool dynamic SEO meta tags are already wired through `getToolSEO`/`getToolJsonLd` in `ToolPage.tsx` for every one of the 1247 tools (auto-generated when no explicit entry). Continuing waves needed: (a) sweep more broken-tool fixes (similar to IG), (b) tighten search synonyms with per-category ontology, (c) split `index.css` into route-scoped CSS for faster TTI on mobile.
+
+## 2026-04-24 — Wave 3 (broken-downloader sweep)
+
+- **Twitter/X downloader real fix** (`video_extra_handlers.py`): added `_twitter_syndication_fallback()` that uses Twitter's public `cdn.syndication.twimg.com/tweet-result` endpoint (the same one Twitter itself serves to embeds). Returns full mediaDetails with mp4 variants for any public tweet, no auth. **Smoke-tested live** against `elonmusk/status/1585341984679469056` → pulled 2.99 MB mp4 cleanly. Wired in as: yt-dlp first → syndication fallback → original error.
+- **Facebook downloader real fix**: added `_facebook_html_fallback()` that fetches the public FB page with a desktop UA and regex-extracts `playable_url_quality_hd` / `playable_url` / `hd_src` / `sd_src` / `browser_native_*_url` from the inline JSON. Same yt-dlp-first → fallback chain.
+- **Reddit downloader real fix** (`social_video_handlers.py`): added `_reddit_json_fallback()` using Reddit's built-in `<post-url>.json` endpoint → pulls `media.reddit_video.fallback_url` (mp4) or preview/url-overridden-by-dest for images/gifs. Public, no auth, no API key.
+- **Pinterest downloader real fix**: added `_pinterest_html_fallback()` that scrapes `og:video` / `video_list V_HLSV4` / `contentUrl` mp4 URLs from the public pin page, falls back to `og:image` for image pins.
+- All 1247 tools still load cleanly after restart (verified `/health` 200 + `/api/tools` returns full catalog).
+
+### Honest scope note
+Four platforms now have proper public-API fallbacks (IG + TikTok from earlier waves, plus Twitter/X + Facebook + Reddit + Pinterest from this wave). The remaining downloaders (Vimeo, Dailymotion, Bilibili, Rumble, Twitch, Snapchat, Threads, LinkedIn, SoundCloud) still rely on yt-dlp alone — they tend to work fine because those platforms don't aggressively block scrapers. Worth revisiting only if specific tools start failing.
