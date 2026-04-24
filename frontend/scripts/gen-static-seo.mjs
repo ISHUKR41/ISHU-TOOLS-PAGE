@@ -1,0 +1,237 @@
+#!/usr/bin/env node
+/**
+ * gen-static-seo.mjs — postbuild prerender for per-tool & per-category SEO.
+ *
+ * Why: ISHU TOOLS is a Vite SPA. By default Vercel serves the same dist/index.html
+ * for every route, so Google sees the SAME <title>/<meta description>/<canonical>
+ * on /tools/merge-pdf, /tools/compress-pdf, /tools/bmi-calculator, etc.
+ * That kills per-tool ranking even though ToolPage.tsx injects unique tags
+ * client-side (Googlebot does eventually render JS, but the static HTML signals
+ * are weaker and slower to index).
+ *
+ * What this script does:
+ *   1. Loads the tool catalog from the backend (with sitemap.xml fallback).
+ *   2. Reads dist/index.html as a template.
+ *   3. For each tool slug, writes dist/tools/<slug>/index.html with
+ *      <title>, <meta description>, <link canonical>, og:*, twitter:* REWRITTEN
+ *      to that tool's unique values.
+ *   4. Same for each category at dist/category/<slug>/index.html.
+ *
+ * Vercel will serve the file-system match before falling back to the SPA rewrite,
+ * so /tools/merge-pdf returns merge-pdf-specific HTML on the first byte.
+ * The React app still hydrates normally on top.
+ */
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DIST = resolve(__dirname, "../dist");
+const TEMPLATE = resolve(DIST, "index.html");
+const SITEMAP = resolve(__dirname, "../public/sitemap.xml");
+const SITE = "https://ishutools.com";
+const BACKEND =
+  process.env.SEO_BACKEND ||
+  process.env.SITEMAP_BACKEND ||
+  "https://ishu-tools-page.onrender.com";
+
+if (!existsSync(TEMPLATE)) {
+  console.warn(`[seo] dist/index.html not found at ${TEMPLATE} — skipping (build first)`);
+  process.exit(0);
+}
+
+const escapeHtml = (s = "") =>
+  String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+const escapeAttr = escapeHtml;
+
+const titleCase = (s) =>
+  s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+const SITE_NAME = "ISHU TOOLS";
+
+// ─── SEO generator (mirrors frontend/src/lib/seoData.ts createGeneratedSEO) ───
+function buildToolSEO(slug, label = "", desc = "", category = "") {
+  const t = (label || titleCase(slug)).trim();
+  const d = (desc || `${t} — fast, accurate, free online.`).trim();
+  const c = String(category || "");
+  const lower = slug.toLowerCase();
+
+  const isPdf = lower.includes("pdf") || c.includes("pdf");
+  const isImage =
+    c.includes("image") ||
+    c === "format-lab" ||
+    lower.includes("image") ||
+    lower.includes("-jpg") ||
+    lower.includes("-png") ||
+    lower.includes("-webp");
+  const isCalc =
+    c === "math-tools" ||
+    c === "finance-tools" ||
+    c === "health-tools" ||
+    lower.includes("calculator") ||
+    lower.includes("-calc");
+  const isConvert = lower.includes("-to-") || c === "unit-converter" || c === "conversion-tools";
+  const isCompress = lower.includes("compress") || lower.includes("minify");
+  const isOCR = lower.includes("ocr") || lower.includes("-to-text");
+  const isDev = c === "developer-tools" || c === "code-tools" || c === "format-lab";
+
+  let title;
+  if (isCompress && isPdf) title = `${t} — Reduce PDF Size Online Free | ${SITE_NAME}`;
+  else if (isCompress && isImage) title = `${t} — Reduce Image Size Free Online | ${SITE_NAME}`;
+  else if (isOCR) title = `${t} — Extract Text Online Free | ${SITE_NAME}`;
+  else if (isCalc) title = `${t} — Free Online Calculator | ${SITE_NAME}`;
+  else if (isDev) title = `${t} Online — Free Developer Tool | ${SITE_NAME}`;
+  else if (isConvert) title = `${t} Online Free — Fast Converter | ${SITE_NAME}`;
+  else if (isPdf) title = `${t} Online Free — Fast PDF Tool | ${SITE_NAME}`;
+  else if (isImage) title = `${t} Online Free — Fast Image Tool | ${SITE_NAME}`;
+  else title = `${t} Online Free | ${SITE_NAME}`;
+
+  let description = `${t} online for free. ${d.replace(/\.$/, "")}. No signup, no watermark, no file size limit. Works on mobile and desktop.`;
+  if (description.length > 300) description = description.slice(0, 297) + "...";
+
+  return { title, description };
+}
+
+function buildCategorySEO(catId, catLabel = "", catDesc = "") {
+  const label = catLabel || titleCase(catId);
+  const title = `${label} — Free Online Tools | ${SITE_NAME}`;
+  let description = `${label} on ${SITE_NAME}. ${(catDesc || "Free online tools, no signup required.").replace(/\.$/, "")}. Fast, accurate, mobile-friendly — built for students and professionals.`;
+  if (description.length > 300) description = description.slice(0, 297) + "...";
+  return { title, description };
+}
+
+// ─── HTML template patcher ───
+function patchTemplate(template, { title, description, url }) {
+  const T = escapeHtml(title);
+  const D = escapeAttr(description);
+  const U = escapeAttr(url);
+  let out = template;
+  // <title>
+  out = out.replace(/<title>[\s\S]*?<\/title>/, `<title>${T}</title>`);
+  // basic + canonical
+  out = out.replace(
+    /<meta\s+name="description"[^>]*\/>/,
+    `<meta name="description" content="${D}" />`,
+  );
+  out = out.replace(
+    /<link\s+rel="canonical"[^>]*\/>/,
+    `<link rel="canonical" href="${U}" />`,
+  );
+  // OG
+  out = out.replace(
+    /<meta\s+property="og:title"[^>]*\/>/,
+    `<meta property="og:title" content="${T}" />`,
+  );
+  out = out.replace(
+    /<meta\s+property="og:description"[^>]*\/>/,
+    `<meta property="og:description" content="${D}" />`,
+  );
+  out = out.replace(
+    /<meta\s+property="og:url"[^>]*\/>/,
+    `<meta property="og:url" content="${U}" />`,
+  );
+  // Twitter
+  out = out.replace(
+    /<meta\s+name="twitter:title"[^>]*\/>/,
+    `<meta name="twitter:title" content="${T}" />`,
+  );
+  out = out.replace(
+    /<meta\s+name="twitter:description"[^>]*\/>/,
+    `<meta name="twitter:description" content="${D}" />`,
+  );
+  return out;
+}
+
+function writePage(routePath, html) {
+  const out = resolve(DIST, "." + routePath, "index.html");
+  mkdirSync(dirname(out), { recursive: true });
+  writeFileSync(out, html);
+}
+
+async function fetchJson(url, timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+function fallbackSlugsFromSitemap() {
+  if (!existsSync(SITEMAP)) return { tools: [], cats: [] };
+  const xml = readFileSync(SITEMAP, "utf8");
+  const tools = [...xml.matchAll(/\/tools\/([^<]+?)</g)].map((m) => ({ slug: m[1] }));
+  const cats = [...xml.matchAll(/\/category\/([^<]+?)</g)].map((m) => ({ id: m[1] }));
+  return { tools, cats };
+}
+
+(async () => {
+  const template = readFileSync(TEMPLATE, "utf8");
+
+  let tools = [];
+  let categories = [];
+  try {
+    [tools, categories] = await Promise.all([
+      fetchJson(`${BACKEND}/api/tools`),
+      fetchJson(`${BACKEND}/api/categories`),
+    ]);
+    console.log(`[seo] fetched ${tools.length} tools + ${categories.length} categories from ${BACKEND}`);
+  } catch (e) {
+    console.warn(`[seo] backend unreachable (${e.message}); falling back to sitemap.xml`);
+    const fb = fallbackSlugsFromSitemap();
+    tools = fb.tools;
+    categories = fb.cats;
+    console.log(`[seo] sitemap fallback: ${tools.length} tools + ${categories.length} categories`);
+  }
+
+  if (!tools.length && !categories.length) {
+    console.warn("[seo] no tools or categories — nothing to prerender");
+    process.exit(0);
+  }
+
+  let toolsWritten = 0;
+  for (const tool of tools) {
+    const slug = tool.slug || tool.id;
+    if (!slug) continue;
+    const seo = buildToolSEO(slug, tool.label || tool.title, tool.description, tool.category);
+    const html = patchTemplate(template, {
+      title: seo.title,
+      description: seo.description,
+      url: `${SITE}/tools/${slug}`,
+    });
+    writePage(`/tools/${slug}`, html);
+    toolsWritten++;
+  }
+
+  let catsWritten = 0;
+  for (const cat of categories) {
+    const id = cat.id || cat.slug;
+    if (!id) continue;
+    const seo = buildCategorySEO(id, cat.label, cat.description);
+    const html = patchTemplate(template, {
+      title: seo.title,
+      description: seo.description,
+      url: `${SITE}/category/${id}`,
+    });
+    writePage(`/category/${id}`, html);
+    catsWritten++;
+  }
+
+  // /tools (all-tools) page
+  const all = patchTemplate(template, {
+    title: `All 1247+ Free Online Tools — Smart Sorted Directory | ${SITE_NAME}`,
+    description: `Every tool on ${SITE_NAME} in one smart-sorted list — daily-use tools first. PDF, image, video, code, math, finance, health & more. No signup, no watermark.`,
+    url: `${SITE}/tools`,
+  });
+  writePage("/tools", all);
+
+  console.log(`[seo] wrote ${toolsWritten} tool pages + ${catsWritten} category pages + 1 all-tools page → dist/`);
+})();

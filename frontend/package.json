@@ -7,6 +7,7 @@
     "dev": "vite",
     "prebuild": "node scripts/gen-sitemap.mjs",
     "build": "vite build",
+    "postbuild": "node scripts/gen-static-seo.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

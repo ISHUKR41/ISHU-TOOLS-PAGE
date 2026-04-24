@@ -747,3 +747,20 @@ Fixes shipped:
 - Production build re-verified: 2.75s clean, AllToolsPage chunk dropped from 22 → 21.89 kB, sitemap regenerated.
 
 Note on the user's screenshot: the grouped sections (`PDF Core 11 tools`, `Unit Converters 156 tools`, etc.) are from the **previous deployed version on Vercel** — not the current local code. Once they redeploy, the flat layout already shipped in Waves 1–5 will be live.
+
+## 2026-04-24 — Wave 9 (Build-time per-tool SEO prerender — touches all 1247 tools)
+
+The biggest remaining SEO gap on a Vite SPA: every URL serves the same `dist/index.html`, so Googlebot sees the **same `<title>` / `<meta description>` / `<canonical>` on the raw HTML response** for `/tools/merge-pdf`, `/tools/compress-pdf`, `/tools/bmi-calculator`, etc. ToolPage.tsx already injects unique tags client-side, but those signals are slower/weaker than static HTML for ranking.
+
+Fix shipped — `frontend/scripts/gen-static-seo.mjs` (postbuild step, wired in `package.json`):
+- Fetches catalog from backend (`/api/tools` + `/api/categories`); falls back to sitemap.xml slugs if backend is unreachable during Vercel build.
+- Reads `dist/index.html` as template, regex-rewrites `<title>`, `<meta name="description">`, `<link rel="canonical">`, `og:title/description/url`, `twitter:title/description` to per-tool values.
+- Writes `dist/tools/<slug>/index.html` for every one of the 1247 tools, plus `dist/category/<id>/index.html` for all 61 categories, plus `dist/tools/index.html` for the all-tools page.
+- SEO logic mirrors `frontend/src/lib/seoData.ts` (PDF/image/calculator/converter/OCR/dev variants) so static and client-side meta agree.
+
+Verified on local build:
+- Build output: **`[seo] wrote 1247 tool pages + 61 category pages + 1 all-tools page → dist/`**
+- `dist/tools/merge-pdf/index.html` confirmed: `<title>Merge PDF Online Free — Fast PDF Tool | ISHU TOOLS</title>` + matching description, canonical, OG.
+- `vercel.json` rewrites: `/(.*)" → /index.html` is the last rule, so Vercel's static-file resolver hits `dist/tools/<slug>/index.html` first and only falls through to the SPA shell when no static match exists. **Per-tool HTML now ships on the first byte.**
+
+Build cost: ~+200 ms postbuild for 1309 file writes; total `vite build` still ~2s. No bundle size change. React still hydrates normally on top of the prerendered HTML — zero behavioral regression.
