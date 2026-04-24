@@ -716,6 +716,30 @@
     <!-- Sitemap reference -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
+    <!-- Performance: warm up the API connection so the first tool run is faster -->
+    <link rel="dns-prefetch" href="https://ishutools-backend.onrender.com" />
+    <link rel="preconnect" href="https://ishutools-backend.onrender.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- WebSite + SearchAction → Google sitelinks search box on brand SERPs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ISHU TOOLS",
+      "alternateName": "Indian Student Hub University Tools",
+      "url": "https://ishutools.fun/",
+      "inLanguage": ["en-IN", "en", "hi"],
+      "publisher": { "@type": "Organization", "name": "ISHU TOOLS", "url": "https://ishutools.fun/" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://ishutools.fun/tools?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Structured Data — BreadcrumbList -->
     <script type="application/ld+json">
     {

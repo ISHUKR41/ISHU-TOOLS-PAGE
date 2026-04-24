@@ -650,52 +650,82 @@ def handle_percentage_calculator_improved(files, payload, output_dir):
 
 
 def handle_scientific_calculator_improved(files, payload, output_dir):
-    """More accurate scientific calculator with safe eval"""
-    expr = str(payload.get("text", ""))
-    
-    # Sanitize: only allow safe mathematical operations
-    safe_expr = expr
-    
-    # Replace common math functions
-    replacements = {
-        "sqrt": "math.sqrt", "sin": "math.sin", "cos": "math.cos", "tan": "math.tan",
-        "asin": "math.asin", "acos": "math.acos", "atan": "math.atan",
-        "log": "math.log10", "ln": "math.log", "log2": "math.log2",
-        "abs": "abs", "ceil": "math.ceil", "floor": "math.floor",
-        "pi": "math.pi", "PI": "math.pi", "e": "math.e", "E": "math.e",
-        "^": "**", "×": "*", "÷": "/",
-        "fact": "math.factorial", "factorial": "math.factorial",
-        "pow": "math.pow", "exp": "math.exp",
-        "rad": "math.radians", "deg": "math.degrees",
-        "round": "round",
-    }
-    
-    for old, new in replacements.items():
-        safe_expr = safe_expr.replace(old, new)
-    
-    # Security: only allow safe characters
-    allowed = set("0123456789.+-*/() ,math.sqrtcosintaleogbf2pPIEecirundwxp")
-    if not all(c in allowed or c.isalpha() or c in "._" for c in safe_expr.replace(" ", "")):
-        return ExecutionResult(kind="json", message="Unsafe expression", data={"error": "Only mathematical expressions allowed"})
-    
+    """Scientific calculator with safe eval, flexible field names."""
+    # Accept many possible field names so any frontend / API caller works.
+    raw = ""
+    for key in ("expression", "expr", "formula", "text", "input", "value", "equation", "calculation"):
+        v = payload.get(key)
+        if v not in (None, ""):
+            raw = str(v).strip()
+            break
+
+    if not raw:
+        return ExecutionResult(
+            kind="json",
+            message="Enter an expression like 2+3*4, sin(30), or sqrt(16).",
+            data={"error": "Please enter a math expression."},
+        )
+
+    # Word-boundary aware token replacement for math functions.
+    # Order matters: replace longer tokens first so `asin` isn't broken by `sin`.
+    token_map = [
+        ("π", "math.pi"), ("×", "*"), ("÷", "/"), ("−", "-"), ("^", "**"),
+        ("factorial", "math.factorial"), ("asin", "math.asin"), ("acos", "math.acos"),
+        ("atan", "math.atan"), ("sinh", "math.sinh"), ("cosh", "math.cosh"),
+        ("tanh", "math.tanh"), ("sqrt", "math.sqrt"), ("cbrt", "math.cbrt"),
+        ("log10", "math.log10"), ("log2", "math.log2"), ("log", "math.log10"),
+        ("ln", "math.log"), ("sin", "math.sin"), ("cos", "math.cos"),
+        ("tan", "math.tan"), ("ceil", "math.ceil"), ("floor", "math.floor"),
+        ("exp", "math.exp"), ("rad", "math.radians"), ("deg", "math.degrees"),
+        ("pow", "math.pow"), ("fact", "math.factorial"),
+        ("pi", "math.pi"), ("PI", "math.pi"), ("E", "math.e"),
+    ]
+    safe_expr = raw
+    import re
+    for token, repl in token_map:
+        # Only replace if not already preceded by `math.` (idempotent).
+        pattern = r"(?<!math\.)(?<![A-Za-z_])" + re.escape(token) + r"(?![A-Za-z0-9_])"
+        safe_expr = re.sub(pattern, repl, safe_expr)
+    # Bare `e` → math.e (only when standalone, not in `exp`, `math.e`, `1e5`).
+    safe_expr = re.sub(r"(?<![A-Za-z0-9_.])e(?![A-Za-z0-9_])", "math.e", safe_expr)
+
+    # Strict whitelist after substitution.
+    if not re.fullmatch(r"[\s0-9eE.+\-*/%(),math\.a-zA-Z_]+", safe_expr):
+        return ExecutionResult(
+            kind="json",
+            message="Unsafe expression. Only math is allowed.",
+            data={"error": "Only mathematical expressions are allowed."},
+        )
+
     try:
-        result = eval(safe_expr, {"__builtins__": {}, "math": math, "abs": abs, "round": round, "int": int, "float": float})
-        
+        result = eval(  # noqa: S307 — sandboxed below
+            safe_expr,
+            {"__builtins__": {}},
+            {"math": math, "abs": abs, "round": round, "int": int, "float": float, "min": min, "max": max},
+        )
         if isinstance(result, float):
             if result == int(result) and abs(result) < 1e15:
                 display = str(int(result))
             else:
-                display = f"{result:.10g}"
+                display = f"{result:.12g}"
         else:
             display = str(result)
-        
-        return ExecutionResult(kind="json", message=f"= {display}", data={
-            "text": f"{expr} = {display}",
-            "result": result,
-            "expression": expr,
-        })
+        return ExecutionResult(
+            kind="json",
+            message=f"= {display}",
+            data={
+                "text": f"{raw} = {display}",
+                "result": result if isinstance(result, (int, float)) else display,
+                "expression": raw,
+                "display": display,
+            },
+        )
+    except ZeroDivisionError:
+        return ExecutionResult(kind="json", message="Cannot divide by zero.", data={"error": "Division by zero", "expression": raw})
+    except SyntaxError:
+        return ExecutionResult(kind="json", message="Invalid expression. Check brackets and operators.", data={"error": "Syntax error", "expression": raw})
     except Exception as e:
-        return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e), "expression": expr})
+        return ExecutionResult(kind="json", message=f"Could not evaluate: {e}", data={"error": str(e), "expression": raw})
 
 
 def handle_compound_interest(files, payload, output_dir):

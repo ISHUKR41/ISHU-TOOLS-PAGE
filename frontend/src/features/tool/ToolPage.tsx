@@ -25,6 +25,7 @@ import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentat
 import { SITE_FALLBACK_URL, SITE_OG_IMAGE, SITE_URL, toSiteUrl } from '../../lib/siteConfig'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
+import ToolActions from '../../components/tool/ToolActions'
 import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
 import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
@@ -349,6 +350,31 @@ export default function ToolPage() {
         })
         document.head.appendChild(learnScript)
 
+        // ── HowTo JSON-LD — Google shows step-by-step rich result for "how to ..." queries ──
+        const existingHowTo = document.getElementById('tool-howto-jsonld')
+        if (existingHowTo) existingHowTo.remove()
+        const howToScript = document.createElement('script')
+        howToScript.id = 'tool-howto-jsonld'
+        howToScript.type = 'application/ld+json'
+        howToScript.textContent = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'HowTo',
+          name: `How to use ${detail.title}`,
+          description: `Step-by-step guide to use ${detail.title} on ISHU TOOLS — free, no signup, works on any device.`,
+          totalTime: 'PT1M',
+          estimatedCost: { '@type': 'MonetaryAmount', currency: 'INR', value: '0' },
+          supply: [{ '@type': 'HowToSupply', name: detail.input_kind === 'files' || detail.input_kind === 'mixed' ? 'Your file' : 'Your text or input value' }],
+          tool: [{ '@type': 'HowToTool', name: 'Any modern web browser' }],
+          step: [
+            { '@type': 'HowToStep', position: 1, name: `Open ${detail.title}`, text: `Visit this page — no signup, no install needed.`, url: toolUrl },
+            { '@type': 'HowToStep', position: 2, name: detail.input_kind === 'files' || detail.input_kind === 'mixed' ? 'Upload your file' : 'Enter your input', text: detail.input_kind === 'files' || detail.input_kind === 'mixed' ? 'Drag & drop your file or click to browse. Multiple files are supported where applicable.' : 'Paste your text or fill the required fields.' },
+            { '@type': 'HowToStep', position: 3, name: 'Adjust options', text: 'Pick output format, quality, or any settings shown on the page.' },
+            { '@type': 'HowToStep', position: 4, name: 'Run the tool', text: 'Click "Run" — processing starts instantly. Most jobs finish in a few seconds.' },
+            { '@type': 'HowToStep', position: 5, name: 'Download or copy', text: 'Download the result file or copy the output text. Your files are deleted from our server immediately after.' },
+          ],
+        })
+        document.head.appendChild(howToScript)
+
         // ── Question JSON-LD pool — direct citation targets for ChatGPT/Perplexity/Gemini ──
         const existingQ = document.getElementById('tool-question-jsonld')
         if (existingQ) existingQ.remove()
@@ -402,6 +428,7 @@ export default function ToolPage() {
       document.getElementById('tool-breadcrumb-jsonld')?.remove()
       document.getElementById('tool-speakable-jsonld')?.remove()
       document.getElementById('tool-learning-jsonld')?.remove()
+      document.getElementById('tool-howto-jsonld')?.remove()
       document.getElementById('tool-question-jsonld')?.remove()
     }
   }, [slug])
@@ -783,6 +810,14 @@ export default function ToolPage() {
                       ))}
                     </div>
                   )}
+                  <ToolActions
+                    slug={tool.slug}
+                    title={tool.title}
+                    description={tool.description}
+                    url={typeof window !== 'undefined' ? `${SITE_URL}/tools/${tool.slug}` : `${SITE_FALLBACK_URL}/tools/${tool.slug}`}
+                    accent={toolTheme.accent}
+                  />
+                  
                 </div>
               </div>
 

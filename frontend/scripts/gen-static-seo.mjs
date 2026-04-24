@@ -202,7 +202,25 @@ function buildToolJsonLd({ slug, title, description, url, category }) {
       },
     ],
   };
-  return [node(software), node(breadcrumbs), node(faq)].join("\n");
+  // HowTo schema → Google shows a step-by-step rich result for "how to ..." queries.
+  const howTo = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `How to use ${software.name}`,
+    description: `Step-by-step guide to use ${software.name} on ISHU TOOLS — free, no signup.`,
+    totalTime: "PT1M",
+    estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "0" },
+    supply: [{ "@type": "HowToSupply", name: "Your file or text input" }],
+    tool: [{ "@type": "HowToTool", name: "Any modern web browser" }],
+    step: [
+      { "@type": "HowToStep", position: 1, name: `Open ${software.name}`, text: `Visit ${url} on any device. No signup needed.`, url },
+      { "@type": "HowToStep", position: 2, name: "Add your input", text: `Upload your file or paste your text — drag & drop is supported.` },
+      { "@type": "HowToStep", position: 3, name: "Adjust options", text: "Pick output format, quality, or other options shown on the page." },
+      { "@type": "HowToStep", position: 4, name: "Run the tool", text: 'Click "Run" — processing starts instantly on the server.' },
+      { "@type": "HowToStep", position: 5, name: "Download result", text: "Download the output file or copy the result text. Files are deleted from the server right after." },
+    ],
+  };
+  return [node(software), node(breadcrumbs), node(faq), node(howTo)].join("\n");
 }
 
 function buildCategoryJsonLd({ id, title, description, url }) {
