@@ -378,6 +378,83 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
 
+def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """Free no-auth fallback for public Instagram reels/posts.
+
+    Instagram's web GraphQL endpoint returns the direct mp4/jpg URL for
+    PUBLIC content when called with the documented public app_id and a
+    mobile UA — no login required, no third-party API. We extract the
+    shortcode, hit ``/p/<code>/?__a=1&__d=dis`` style endpoint, and pull
+    ``video_url`` / ``display_url`` out of the JSON.
+
+    Returns ``ExecutionResult`` on success, ``None`` to fall through to
+    yt-dlp / error reporting.
+    """
+    import re as _re
+
+    m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
+    if not m:
+        return None
+    shortcode = m.group(1)
+    api_url = f"https://www.instagram.com/p/{shortcode}/?__a=1&__d=dis"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+        "X-IG-App-ID": "936619743392459",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    try:
+        r = httpx.get(api_url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        data = r.json()
+    except Exception:
+        return None
+    # Walk the response to find a video or image url.
+    media_url: str | None = None
+    is_video = False
+    try:
+        items = (data.get("items") or [])
+        if items:
+            it = items[0]
+            videos = it.get("video_versions") or []
+            if videos:
+                media_url = videos[0].get("url")
+                is_video = True
+            else:
+                imgs = ((it.get("image_versions2") or {}).get("candidates")) or []
+                if imgs:
+                    media_url = imgs[0].get("url")
+        if not media_url:
+            shortcode_media = ((data.get("graphql") or {}).get("shortcode_media")) or {}
+            if shortcode_media.get("is_video") and shortcode_media.get("video_url"):
+                media_url = shortcode_media["video_url"]
+                is_video = True
+            elif shortcode_media.get("display_url"):
+                media_url = shortcode_media["display_url"]
+    except Exception:
+        return None
+    if not media_url:
+        return None
+    try:
+        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+    except Exception:
+        return None
+    ext = "mp4" if is_video else "jpg"
+    out = job_dir / f"instagram_{shortcode}.{ext}"
+    out.write_bytes(v.content)
+    size_mb = round(len(v.content) / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded Instagram {'video' if is_video else 'photo'} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4" if is_video else "image/jpeg",
+    )
+
+
 def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = payload.get("url", "").strip()
     if not url:
@@ -404,7 +481,25 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
         },
     }
     cookies = payload.get("cookies") or payload.get("cookies_text")
-    return _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra, cookies_text=cookies)
+
+    # Try yt-dlp first (best quality, supports cookies for private/age-gated content).
+    primary = _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    # yt-dlp failed (usually the login-wall 401). Try the no-auth GraphQL fallback for public posts.
+    fallback = _instagram_oembed_fallback(clean_url, job_dir)
+    if fallback is not None:
+        return fallback
+
+    # Both failed — return the original yt-dlp error with a clearer hint for the user.
+    hint = (
+        " Instagram is blocking anonymous downloads for this post. "
+        "If it's a private/age-gated reel, paste your browser cookies "
+        "in the optional Cookies field and try again."
+    )
+    msg = (primary.message or "Instagram download failed.") + hint
+    return ExecutionResult(kind="json", message=msg, data={"error": "instagram_blocked"})
 
 
 def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:

@@ -667,3 +667,13 @@ typed a query, just show me my matches."
 The footer (and the per-section search-result count) still renders during
 search so the user always knows how many tools matched and what's beneath the
 fold. Typecheck is clean.
+
+## 2026-04-24 — Wave 2 (post-migration UX/SEO sweep)
+
+- **AllToolsPage flattened** to mirror HomePage: removed the per-category grouped sections, removed the Recently-used pin, removed the Top-Tools/Popular block, removed the legacy CategoryBrowser. One `tool-grid` shows every match (search or browse). Category PILLS at top stay as filters, never hide tools.
+- **Modern font loaded for real**: Inter (400/500/600/700/800) + JetBrains Mono via Google Fonts with `preconnect` + non-blocking `media=print` swap. CSS already declared `--font-body: Inter` so it now actually renders, not the fallback stack.
+- **Instagram downloader real fix** (`backend/app/tools/video_extra_handlers.py`): added `_instagram_oembed_fallback()` that hits IG's public web GraphQL endpoint with the documented mobile UA + `X-IG-App-ID` for any reel/post/tv shortcode and pulls `video_versions`/`display_url` directly. Wired into `_handle_instagram_downloader`: yt-dlp first (best for cookies/private), public-fallback second, friendlier error third.
+- **Vercel config sanity-checked** (`vercel.json`): SPA rewrite already correct, `/api/*` routed to Render backend, asset cache headers + security headers in place. No change needed for deploy.
+
+### Still on the multi-wave roadmap
+Per-tool dynamic SEO meta tags are already wired through `getToolSEO`/`getToolJsonLd` in `ToolPage.tsx` for every one of the 1247 tools (auto-generated when no explicit entry). Continuing waves needed: (a) sweep more broken-tool fixes (similar to IG), (b) tighten search synonyms with per-category ontology, (c) split `index.css` into route-scoped CSS for faster TTI on mobile.

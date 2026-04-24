@@ -887,10 +887,10 @@ export default function AllToolsPage() {
 
           {!loading && !error && !showFavorites && (
             <>
-              {/* Removed: FeaturedSection ("Top Tools used by everyone") + PopularStrip ("Most Popular") — tools are the priority. */}
-              {showRecent && (
-                <RecentSection recentSlugs={recentSlugs} allTools={tools} favorites={favorites} onToggleFav={onToggleFav} viewMode={viewMode} />
-              )}
+              {/* Per request: NO grouped-by-category sections, NO "Most Popular" / "Top Tools",
+                  NO "Recently used" pin, NO "Show more". One flat grid containing every
+                  matching tool, intelligently sorted (relevance > personal usage > catalog rank).
+                  Category PILLS above remain — they filter the same flat grid, never hide tools. */}
               {filteredTools.length === 0 && (
                 <article className='empty-state'>
                   <Search size={36} style={{ color: '#3bd0ff', marginBottom: '0.75rem', opacity: 0.5 }} />
@@ -901,44 +901,32 @@ export default function AllToolsPage() {
                   </button>
                 </article>
               )}
-              {isSearching && filteredTools.length > 0 && (
-                <p className='search-result-count'>
-                  Found <strong>{filteredTools.length}</strong> tool{filteredTools.length !== 1 ? 's' : ''} for "<em>{deferredQuery}</em>"
-                  {' '}— sorted by relevance.
-                </p>
+
+              {filteredTools.length > 0 && (
+                <>
+                  <p className='search-result-count'>
+                    {isSearching ? (
+                      <>Found <strong>{filteredTools.length}</strong> tool{filteredTools.length !== 1 ? 's' : ''} for &ldquo;<em>{deferredQuery}</em>&rdquo; — sorted by relevance &amp; your usage.</>
+                    ) : (
+                      <>Showing <strong>{filteredTools.length.toLocaleString()}</strong> tool{filteredTools.length !== 1 ? 's' : ''}{activeCategory !== 'all' ? <> in <em>{categories.find(c => c.id === activeCategory)?.label ?? activeCategory}</em></> : null} — daily-use tools surface first.</>
+                    )}
+                  </p>
+                  <section className='category-section all-tools-flat-section'>
+                    <div className={`tool-grid cv-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
+                      {filteredTools.map(tool => (
+                        <ToolCardCompact
+                          key={tool.slug}
+                          tool={tool}
+                          theme={getCategoryTheme(tool.category)}
+                          favorites={favorites}
+                          onToggleFav={onToggleFav}
+                          viewMode={viewMode}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                </>
               )}
-
-              {/* ── Flat ranked search results — ALL matches, no cap, virtualized via content-visibility ── */}
-              {isSearching && filteredTools.length > 0 && (
-                <section className='category-section search-results-section'>
-                  <div className={`tool-grid cv-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
-                    {filteredTools.map(tool => (
-                      <ToolCardCompact
-                        key={tool.slug}
-                        tool={tool}
-                        theme={getCategoryTheme(tool.category)}
-                        favorites={favorites}
-                        onToggleFav={onToggleFav}
-                        viewMode={viewMode}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {!isSearching && groupedSections.map(({ category, tools: catTools }) => (
-                <AnimatedSection
-                  key={category.id}
-                  category={category}
-                  catTools={catTools}
-                  theme={getCategoryTheme(category.id)}
-                  favorites={favorites}
-                  onToggleFav={onToggleFav}
-                  viewMode={viewMode}
-                />
-              ))}
-
-              {/* Removed: CategoryBrowser panel — tools are the priority, categories are still accessible via filter chips at top. */}
             </>
           )}
         </section>
