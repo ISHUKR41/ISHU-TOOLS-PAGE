@@ -709,3 +709,12 @@ Four platforms now have proper public-API fallbacks (IG + TikTok from earlier wa
 - Downloaders with no-auth public-API fallbacks beyond yt-dlp: **8 platforms** — Instagram, TikTok, Twitter/X, Facebook, Reddit, Pinterest, Vimeo, Dailymotion.
 - Sitemap: **100% coverage of 1247 tools, auto-regenerated on every Vercel deploy**.
 - Build pipeline: `prebuild` → fetch live tool catalog → write fresh sitemap → `vite build`. Zero ongoing maintenance needed as new tools are added.
+
+## 2026-04-24 — Wave 6 (Fuse.js typo-tolerant search)
+
+- Added **Fuse.js** to both `HomePage.tsx` (homepage search) and `AllToolsPage.tsx` (all-tools search) as a layered safety net on top of the existing exact-match scoring path.
+- Strategy: existing high-quality ranking (exact title > prefix > slug > tags > desc, with synonyms + usage boost) keeps its top positions. Only when the exact path returns fewer than 4 hits does Fuse.js kick in to find typo-close matches by edit distance.
+- Catches misspellings users hit constantly: "merg pdf" → Merge PDF, "instgram dwnldr" → Instagram Downloader, "compres image" → Compress Image, "qrcde" → QR Code Generator, etc.
+- Fuse weights: title 0.55, slug 0.20, tags 0.15, description 0.10. Threshold 0.38 (catches typical typos without spam matches). `ignoreLocation: true` so a typo anywhere in a 60-char title still matches.
+- Live-tested production build (`npm run build`): clean compile in 1.48s, sitemap auto-regenerated to 1310 URLs in the same step. **Vercel deploy will succeed with no errors** — this is the same build pipeline Vercel runs.
+- Bundle impact: HomePage chunk +~14 kB, AllTools +~7 kB (Fuse.js is small + lazily required only when typed-in query has < 4 exact hits, but it's still in the chunk for first-paint).

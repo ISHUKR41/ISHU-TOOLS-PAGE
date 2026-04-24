@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
+import Fuse from 'fuse.js'
 import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
@@ -511,6 +512,29 @@ export default function HomePage() {
   // Tools you've actually opened bubble above untouched ones with the same popularity_rank.
   const usageSnapshot = useMemo<Record<string, number>>(() => loadUsage(), [])
 
+  // Fuse.js index — built once per `tools` change. Used ONLY as a typo-tolerant
+  // safety net: when our exact-match scoring path returns 0 hits (or very few),
+  // we ask Fuse to find the closest matches by edit distance. This catches
+  // "merg pdf" → Merge PDF, "instgram dwnld" → Instagram Downloader, etc.
+  // without polluting the precise ranking that already works for clean queries.
+  const fuse = useMemo(
+    () =>
+      new Fuse(tools, {
+        keys: [
+          { name: 'title', weight: 0.55 },
+          { name: 'slug', weight: 0.20 },
+          { name: 'tags', weight: 0.15 },
+          { name: 'description', weight: 0.10 },
+        ],
+        threshold: 0.38,        // 0 = exact, 1 = anything; 0.38 catches typical typos
+        ignoreLocation: true,   // match anywhere in field
+        minMatchCharLength: 2,
+        includeScore: true,
+        useExtendedSearch: false,
+      }),
+    [tools],
+  )
+
   const filteredTools = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase()
     if (!q) {
@@ -571,8 +595,25 @@ export default function HomePage() {
       scored.push({ tool, score })
     }
     scored.sort((a, b) => b.score - a.score || ((b.tool.popularity_rank ?? 0) - (a.tool.popularity_rank ?? 0)))
+
+    // Typo-tolerance safety net: if fewer than 4 results, ask Fuse to find
+    // close matches by edit distance and append any tools we missed. This
+    // saves users from getting a "no results" screen because of one typo
+    // ("merg pdf", "instgram dwnld", "compres image"). Existing high-quality
+    // matches keep their top positions; Fuse hits go at the bottom.
+    if (scored.length < 4 && q.length >= 2) {
+      const seen = new Set(scored.map((s) => s.tool.slug))
+      const fuseHits = fuse.search(q, { limit: 12 })
+      for (const hit of fuseHits) {
+        if (!seen.has(hit.item.slug)) {
+          scored.push({ tool: hit.item, score: -1 - (hit.score ?? 0) })
+          seen.add(hit.item.slug)
+        }
+      }
+    }
+
     return scored.map((s) => s.tool)
-  }, [debouncedQuery, tools, SEARCH_SYNONYMS, usageSnapshot])
+  }, [debouncedQuery, tools, SEARCH_SYNONYMS, usageSnapshot, fuse])
 
   const totalVisibleTools = filteredTools.length
 

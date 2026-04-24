@@ -1,5 +1,6 @@
 import { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState, useCallback, memo } from 'react'
 import type { CSSProperties } from 'react'
+import Fuse from 'fuse.js'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Search, ArrowRight, Star, Clock, TrendingUp, Grid3X3, List, X,
@@ -745,6 +746,32 @@ export default function AllToolsPage() {
     }
 
     scored.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
+
+    // Typo-tolerance safety net: when the exact-match path returns very few
+    // hits, fall back to Fuse.js fuzzy search so misspellings still find tools.
+    if (scored.length < 4 && raw.length >= 2) {
+      const seen = new Set(scored.map(s => s.tool.slug))
+      const pool = activeCategory === 'all' ? tools : tools.filter(inCat)
+      const fuse = new Fuse(pool, {
+        keys: [
+          { name: 'title', weight: 0.55 },
+          { name: 'slug', weight: 0.20 },
+          { name: 'tags', weight: 0.15 },
+          { name: 'description', weight: 0.10 },
+        ],
+        threshold: 0.38,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        includeScore: true,
+      })
+      for (const hit of fuse.search(raw, { limit: 12 })) {
+        if (!seen.has(hit.item.slug)) {
+          scored.push({ tool: hit.item, score: -1 - (hit.score ?? 0) })
+          seen.add(hit.item.slug)
+        }
+      }
+    }
+
     return scored.map(s => s.tool)
   }, [activeCategory, deferredQuery, tools, sortBy, usageMap])
 
