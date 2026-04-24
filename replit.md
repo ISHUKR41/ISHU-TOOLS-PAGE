@@ -781,3 +781,11 @@ Verified locally: `dist/tools/merge-pdf/index.html` now has **10 `application/ld
 Build still ~2s + ~200ms postbuild. Per-page payload +~2.5 KB gzipped. Safe — these are inert script tags that crawlers consume; users never see them.
 
 **What this concretely changes for SEO:** every tool URL is now eligible for FAQ rich snippets, breadcrumb displays, and software-app cards in Google search — the three highest-CTR SERP enhancements available to a free utility site.
+
+## Wave 11 — Instagram Downloader Hardened (2026-04-24)
+- 3 IG endpoints tried in order (shortcode API + 2 GraphQL variants)
+- Stronger browser-like headers (Sec-Fetch-*, Origin, Referer, X-ASBD-ID, X-IG-WWW-Claim)
+- 1x retry on 429 rate limit
+- Parses new IG response shapes (xdt_shortcode_media, video_versions)
+- Actionable error message: explicitly tells user which Chrome extension to use for cookies
+- File: backend/app/tools/video_extra_handlers.py (lines 384-547)

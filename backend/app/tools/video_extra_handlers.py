@@ -384,31 +384,59 @@ def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | Non
     Instagram's web GraphQL endpoint returns the direct mp4/jpg URL for
     PUBLIC content when called with the documented public app_id and a
     mobile UA — no login required, no third-party API. We extract the
-    shortcode, hit ``/p/<code>/?__a=1&__d=dis`` style endpoint, and pull
+    shortcode, hit several public endpoints in order, and pull
     ``video_url`` / ``display_url`` out of the JSON.
 
     Returns ``ExecutionResult`` on success, ``None`` to fall through to
     yt-dlp / error reporting.
     """
     import re as _re
+    import time as _time
 
     m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
     if not m:
         return None
     shortcode = m.group(1)
-    api_url = f"https://www.instagram.com/p/{shortcode}/?__a=1&__d=dis"
+    # Try multiple public endpoints in order. Different endpoints break at
+    # different times — keeping several gives us better real-world reliability.
+    candidates = [
+        f"https://www.instagram.com/api/v1/media/shortcode/{shortcode}/",
+        f"https://www.instagram.com/p/{shortcode}/?__a=1&__d=dis",
+        f"https://www.instagram.com/reel/{shortcode}/?__a=1&__d=dis",
+    ]
     headers = {
         "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
         "X-IG-App-ID": "936619743392459",
+        "X-ASBD-ID": "198387",
+        "X-IG-WWW-Claim": "0",
         "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        "Origin": "https://www.instagram.com",
+        "Referer": f"https://www.instagram.com/p/{shortcode}/",
     }
-    try:
-        r = httpx.get(api_url, headers=headers, timeout=20, follow_redirects=True)
-        if r.status_code != 200:
-            return None
-        data = r.json()
-    except Exception:
+    data = None
+    for api_url in candidates:
+        for attempt in range(2):  # one retry on transient 429
+            try:
+                r = httpx.get(api_url, headers=headers, timeout=20, follow_redirects=True)
+                if r.status_code == 429:
+                    _time.sleep(1.0)
+                    continue
+                if r.status_code != 200:
+                    break
+                try:
+                    data = r.json()
+                    break
+                except Exception:
+                    break
+            except Exception:
+                break
+        if data:
+            break
+    if not data:
         return None
     # Walk the response to find a video or image url.
     media_url: str | None = None
@@ -426,12 +454,24 @@ def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | Non
                 if imgs:
                     media_url = imgs[0].get("url")
         if not media_url:
-            shortcode_media = ((data.get("graphql") or {}).get("shortcode_media")) or {}
+            shortcode_media = (
+                (data.get("graphql") or {}).get("shortcode_media")
+                or (data.get("data") or {}).get("xdt_shortcode_media")
+                or data.get("media")
+                or {}
+            )
             if shortcode_media.get("is_video") and shortcode_media.get("video_url"):
                 media_url = shortcode_media["video_url"]
                 is_video = True
+            elif shortcode_media.get("video_versions"):
+                media_url = shortcode_media["video_versions"][0].get("url")
+                is_video = True
             elif shortcode_media.get("display_url"):
                 media_url = shortcode_media["display_url"]
+            elif shortcode_media.get("image_versions2"):
+                cands = (shortcode_media["image_versions2"] or {}).get("candidates") or []
+                if cands:
+                    media_url = cands[0].get("url")
     except Exception:
         return None
     if not media_url:
@@ -492,14 +532,16 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if fallback is not None:
         return fallback
 
-    # Both failed — return the original yt-dlp error with a clearer hint for the user.
-    hint = (
-        " Instagram is blocking anonymous downloads for this post. "
-        "If it's a private/age-gated reel, paste your browser cookies "
-        "in the optional Cookies field and try again."
+    # Both failed — return a clear, actionable message.
+    msg = (
+        "Instagram blocked this download. This usually means: "
+        "(1) the post is private or age-restricted, or "
+        "(2) Instagram is rate-limiting our server's IP. "
+        "Fix: open instagram.com in your browser (logged in), export cookies "
+        "(use the 'Get cookies.txt LOCALLY' Chrome extension), and paste the "
+        "contents into the Cookies field below. Public reels usually work without cookies."
     )
-    msg = (primary.message or "Instagram download failed.") + hint
-    return ExecutionResult(kind="json", message=msg, data={"error": "instagram_blocked"})
+    return ExecutionResult(kind="json", message=msg, data={"error": "instagram_blocked", "yt_dlp_error": primary.message})
 
 
 def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
