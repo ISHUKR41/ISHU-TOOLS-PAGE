@@ -285,6 +285,67 @@ def _handle_twitch_downloader(files: list[Path], payload: dict[str, Any], job_di
     return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
 
 
+# ─── Generic og:video meta-tag fallback ───────────────────────────────────────
+# Many platforms (LinkedIn public posts, Rumble, Streamable, BitChute, Odysee,
+# Kick, etc.) embed the direct mp4 URL in standard OpenGraph meta tags so that
+# Facebook/Twitter/WhatsApp/Discord can render preview cards. We can use the
+# same data — no auth, no API keys — when yt-dlp's extractor breaks.
+def _og_meta_video_fallback(url: str, job_dir: Path, platform_label: str = "video"):
+    import re as _re
+    import httpx as _httpx
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    try:
+        r = _httpx.get(url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        html = r.text
+    except Exception:
+        return None
+    media_url = None
+    for pat in (
+        r'<meta[^>]+property=["\']og:video:secure_url["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+property=["\']og:video:url["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+property=["\']og:video["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+name=["\']twitter:player:stream["\'][^>]+content=["\']([^"\']+)["\']',
+        r'"contentUrl"\s*:\s*"(https?://[^"]+\.mp4[^"]*)"',
+        r'"video[Uu]rl"\s*:\s*"(https?://[^"]+\.mp4[^"]*)"',
+    ):
+        m = _re.search(pat, html)
+        if m:
+            media_url = m.group(1).encode("utf-8", "ignore").decode("unicode_escape", "ignore")
+            media_url = media_url.replace("&amp;", "&")
+            break
+    if not media_url or media_url.endswith(".m3u8"):
+        return None
+    try:
+        with _httpx.stream("GET", media_url, timeout=120, follow_redirects=True, headers=headers) as v:
+            if v.status_code != 200:
+                return None
+            ctype = v.headers.get("content-type", "")
+            if "html" in ctype.lower():
+                return None
+            slug = _re.sub(r"[^a-zA-Z0-9]+", "_", platform_label.lower()).strip("_") or "video"
+            out = job_dir / f"{slug}.mp4"
+            with open(out, "wb") as fh:
+                for chunk in v.iter_bytes(chunk_size=64 * 1024):
+                    fh.write(chunk)
+    except Exception:
+        return None
+    if not out.exists() or out.stat().st_size < 5000:
+        return None
+    size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"Downloaded {platform_label} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4",
+    )
+
+
 # ─── LinkedIn Video Downloader ────────────────────────────────────────────────
 
 def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -293,11 +354,15 @@ def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a LinkedIn video post URL.", data={"error": "No URL"})
     if "linkedin.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid LinkedIn URL.", data={"error": "Not LinkedIn"})
-    # LinkedIn requires auth for most videos - return friendly message
-    result = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
-    if result.kind == "json" and "error" in (result.data or {}):
-        return ExecutionResult(kind="json", message="LinkedIn requires login for most videos. For public videos, paste the direct share URL.", data=result.data)
-    return result
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _og_meta_video_fallback(url, job_dir, "LinkedIn video")
+    if fb is not None:
+        return fb
+    if primary.kind == "json" and "error" in (primary.data or {}):
+        return ExecutionResult(kind="json", message="LinkedIn requires login for most videos. For public posts, paste the direct share URL — and Boost users may still see a 401 because LinkedIn blocks unauthenticated downloads.", data=primary.data)
+    return primary
 
 
 # ─── Bilibili Downloader ──────────────────────────────────────────────────────
@@ -308,7 +373,11 @@ def _handle_bilibili_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Bilibili video URL.", data={"error": "No URL"})
     if "bilibili.com" not in url and "b23.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Bilibili URL.", data={"error": "Not Bilibili"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _og_meta_video_fallback(url, job_dir, "Bilibili video")
+    return fb if fb is not None else primary
 
 
 # ─── Rumble Downloader ────────────────────────────────────────────────────────
@@ -319,7 +388,11 @@ def _handle_rumble_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Rumble video URL.", data={"error": "No URL"})
     if "rumble.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Rumble URL.", data={"error": "Not Rumble"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _og_meta_video_fallback(url, job_dir, "Rumble video")
+    return fb if fb is not None else primary
 
 
 # ─── SoundCloud Downloader ────────────────────────────────────────────────────

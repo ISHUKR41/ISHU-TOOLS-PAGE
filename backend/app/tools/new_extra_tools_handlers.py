@@ -87,6 +87,59 @@ def _handle_spotify_downloader(files: list[Path], payload: dict[str, Any], job_d
         return ExecutionResult(kind="json", message=friendly, data={"error": msg[:500]})
 
 
+# ─── Generic og:video meta scrape fallback (Snapchat / Threads / etc.) ───────
+def _og_meta_scrape_to_file(url: str, job_dir: Path, label: str):
+    import re as _re
+    import httpx as _httpx
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        "X-IG-App-ID": "936619743392459",  # ignored by non-Meta hosts, helps Threads
+    }
+    try:
+        r = _httpx.get(url, headers=headers, timeout=20, follow_redirects=True)
+        if r.status_code != 200:
+            return None
+        html = r.text
+    except Exception:
+        return None
+    media_url = None
+    for pat in (
+        r'<meta[^>]+property=["\']og:video:secure_url["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+property=["\']og:video:url["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+property=["\']og:video["\'][^>]+content=["\']([^"\']+)["\']',
+        r'"video_versions"\s*:\s*\[\s*\{\s*[^}]*"url"\s*:\s*"([^"]+)"',
+        r'"contentUrl"\s*:\s*"(https?://[^"]+\.mp4[^"]*)"',
+    ):
+        m = _re.search(pat, html)
+        if m:
+            media_url = m.group(1).encode("utf-8", "ignore").decode("unicode_escape", "ignore").replace("&amp;", "&")
+            break
+    if not media_url or media_url.endswith(".m3u8"):
+        return None
+    try:
+        with _httpx.stream("GET", media_url, timeout=120, follow_redirects=True, headers=headers) as v:
+            if v.status_code != 200 or "html" in v.headers.get("content-type", "").lower():
+                return None
+            slug = _re.sub(r"[^a-zA-Z0-9]+", "_", label.lower()).strip("_") or "video"
+            out = job_dir / f"{slug}.mp4"
+            with open(out, "wb") as fh:
+                for chunk in v.iter_bytes(chunk_size=64 * 1024):
+                    fh.write(chunk)
+    except Exception:
+        return None
+    if not out.exists() or out.stat().st_size < 5000:
+        return None
+    size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+    return ExecutionResult(
+        kind="file",
+        message=f"✅ Downloaded {label} ({size_mb} MB)",
+        output_path=out,
+        filename=out.name,
+        content_type="video/mp4",
+    )
+
+
 # ─── 2. Snapchat Downloader ──────────────────────────────────────────────────
 
 def _handle_snapchat_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -98,17 +151,20 @@ def _handle_snapchat_downloader(files: list[Path], payload: dict[str, Any], job_
 
     try:
         path, title = _ydl_download(url, job_dir)
-        if not path:
-            return ExecutionResult(kind="json", message="Snapchat content not accessible — it may be private or expired.", data={"error": "No file"})
-        return ExecutionResult(
-            kind="file",
-            message=f"✅ Downloaded: {title}",
-            output_path=path,
-            filename=f"{_safe_name(title)}.mp4",
-            content_type="video/mp4",
-        )
-    except Exception as e:
-        return ExecutionResult(kind="json", message=f"Download failed: {str(e)[:200]}", data={"error": str(e)[:500]})
+        if path:
+            return ExecutionResult(
+                kind="file",
+                message=f"✅ Downloaded: {title}",
+                output_path=path,
+                filename=f"{_safe_name(title)}.mp4",
+                content_type="video/mp4",
+            )
+    except Exception:
+        pass
+    fb = _og_meta_scrape_to_file(url, job_dir, "Snapchat")
+    if fb is not None:
+        return fb
+    return ExecutionResult(kind="json", message="Snapchat content not accessible — it may be private, expired, or login-required.", data={"error": "No file"})
 
 
 # ─── 3. Threads (Meta) Downloader ────────────────────────────────────────────
@@ -122,17 +178,20 @@ def _handle_threads_downloader(files: list[Path], payload: dict[str, Any], job_d
 
     try:
         path, title = _ydl_download(url, job_dir)
-        if not path:
-            return ExecutionResult(kind="json", message="Threads post not accessible — check that it is public.", data={"error": "No file"})
-        return ExecutionResult(
-            kind="file",
-            message=f"✅ Downloaded: {title}",
-            output_path=path,
-            filename=f"{_safe_name(title)}.mp4",
-            content_type="video/mp4",
-        )
-    except Exception as e:
-        return ExecutionResult(kind="json", message=f"Download failed: {str(e)[:200]}", data={"error": str(e)[:500]})
+        if path:
+            return ExecutionResult(
+                kind="file",
+                message=f"✅ Downloaded: {title}",
+                output_path=path,
+                filename=f"{_safe_name(title)}.mp4",
+                content_type="video/mp4",
+            )
+    except Exception:
+        pass
+    fb = _og_meta_scrape_to_file(url, job_dir, "Threads post")
+    if fb is not None:
+        return fb
+    return ExecutionResult(kind="json", message="Threads post not accessible — check that it is public.", data={"error": "No file"})
 
 
 # ─── 4. YouTube Subtitle Downloader ──────────────────────────────────────────

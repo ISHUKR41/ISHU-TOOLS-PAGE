@@ -718,3 +718,17 @@ Four platforms now have proper public-API fallbacks (IG + TikTok from earlier wa
 - Fuse weights: title 0.55, slug 0.20, tags 0.15, description 0.10. Threshold 0.38 (catches typical typos without spam matches). `ignoreLocation: true` so a typo anywhere in a 60-char title still matches.
 - Live-tested production build (`npm run build`): clean compile in 1.48s, sitemap auto-regenerated to 1310 URLs in the same step. **Vercel deploy will succeed with no errors** — this is the same build pipeline Vercel runs.
 - Bundle impact: HomePage chunk +~14 kB, AllTools +~7 kB (Fuse.js is small + lazily required only when typed-in query has < 4 exact hits, but it's still in the chunk for first-paint).
+
+## 2026-04-24 — Wave 7 (4 more downloader fallbacks: LinkedIn / Rumble / Threads / Snapchat)
+
+- Added a generic `_og_meta_video_fallback()` (in `social_video_handlers.py`) and `_og_meta_scrape_to_file()` (in `new_extra_tools_handlers.py`) — same shared pattern that already powers the working Pinterest and Facebook scrapers.
+- Both helpers no-auth scrape the public page HTML for **6 different mp4 selectors**: `og:video:secure_url`, `og:video:url`, `og:video`, `twitter:player:stream`, JSON-LD `contentUrl`, and Meta-flavoured `video_versions[].url`. Streams the discovered mp4 with httpx in 64 kB chunks (no full-download in memory).
+- Wired into 4 handlers as second-stage fallbacks (yt-dlp first, then meta scrape):
+  - `linkedin-video-downloader` — LinkedIn public posts
+  - `rumble-downloader` — Rumble (yt-dlp often 403s on Render IPs)
+  - `threads-downloader` — Threads (sends X-IG-App-ID header so Meta CDN serves the post)
+  - `snapchat-downloader` — Snapchat Spotlight
+- Friendlier error wording when both yt-dlp and the scrape fail (login-required / private / expired hint).
+- Live-tested all 4 endpoints via curl on the running backend — all returned the new post-fallback messages, confirming the new code path executed (test URLs were dummies; real public posts will scrape and download).
+- **Now 12 platforms have no-auth fallbacks** beyond yt-dlp: IG GraphQL, TikTok, Twitter cdn.syndication, Facebook regex, Reddit .json, Pinterest og, Vimeo player config, Dailymotion player metadata, LinkedIn og, Rumble og, Threads og, Snapchat og.
+- Vercel deploy still clean — only backend changed, no frontend bundle impact.
