@@ -595,15 +595,31 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
     if "tiktok.com" not in url and "vm.tiktok" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid TikTok URL.", data={"error": "Not TikTok"})
     cookies = payload.get("cookies") or payload.get("cookies_text")
-    # Try yt-dlp first (gives best quality + cookies support)
-    result = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")),
-                              extra_opts={"noplaylist": True}, cookies_text=cookies)
+    # Strip tracking params that sometimes confuse yt-dlp's TikTok extractor
+    clean_url = url.split("?")[0]
+    # Try yt-dlp first (gives best quality + cookies support).
+    # Mobile UA + Referer help avoid the "Unable to find video in feed" wall on cloud IPs.
+    tt_extra = {
+        "noplaylist": True,
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "Referer": "https://www.tiktok.com/",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    }
+    result = _yt_dlp_download(clean_url, job_dir, fmt=_format_for_quality(payload.get("quality")),
+                              extra_opts=tt_extra, cookies_text=cookies)
     if result.kind == "file":
         return result
-    # yt-dlp failed → try free no-auth fallback
-    fallback = _tikwm_fallback(url, job_dir)
+    # yt-dlp failed → try tikwm public mirror (no-auth, watermark-free)
+    fallback = _tikwm_fallback(clean_url, job_dir)
     if fallback:
         return fallback
+    # Try original URL too in case query params were needed
+    if clean_url != url:
+        fallback2 = _tikwm_fallback(url, job_dir)
+        if fallback2:
+            return fallback2
     return result  # return original yt-dlp error message
 
 
@@ -675,6 +691,12 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
     cookies = payload.get("cookies") or payload.get("cookies_text")
+    # Syndication CDN works without auth even when yt-dlp gets rate-limited on cloud IPs.
+    # Try it first when we don't have user cookies — it's faster and more reliable for public tweets.
+    if not cookies:
+        fast = _twitter_syndication_fallback(url, job_dir)
+        if fast is not None:
+            return fast
     primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
     if primary.kind == "file":
         return primary
@@ -743,12 +765,20 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Facebook video URL.", data={"error": "No URL"})
     if "facebook.com" not in url and "fb.watch" not in url and "fb.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Facebook URL.", data={"error": "Not Facebook"})
-    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")))
+    cookies = payload.get("cookies") or payload.get("cookies_text")
+    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
     if primary.kind == "file":
         return primary
+    # Try desktop HTML scrape
     fallback = _facebook_html_fallback(url, job_dir)
     if fallback is not None:
         return fallback
+    # Try mbasic.facebook.com — strips JS, often returns video tag directly
+    mbasic_url = url.replace("www.facebook.com", "mbasic.facebook.com").replace("//facebook.com", "//mbasic.facebook.com")
+    if mbasic_url != url:
+        fallback2 = _facebook_html_fallback(mbasic_url, job_dir)
+        if fallback2 is not None:
+            return fallback2
     return primary
 
 
