@@ -699,3 +699,13 @@ Four platforms now have proper public-API fallbacks (IG + TikTok from earlier wa
 ### Running totals after Wave 4
 - Downloaders with no-auth public-API fallbacks beyond yt-dlp: **Instagram, TikTok, Twitter/X, Facebook, Reddit, Pinterest, Vimeo** (7 platforms, all live-tested).
 - Sitemap coverage: **1000f 1247 tools** (was 71
+## 2026-04-24 — Wave 5 (auto-fresh sitemap + Dailymotion fallback)
+
+- **Auto-regenerating sitemap on every deploy** — added `frontend/scripts/gen-sitemap.mjs` (Node, no deps, uses native `fetch`) wired as `prebuild` in `frontend/package.json`. Every `vite build` (including every Vercel deploy) now hits the production backend `/api/tools`, regenerates `frontend/public/sitemap.xml` with all current tools/categories, and writes 1310+ URLs. If backend is unreachable at build time, it preserves the existing static sitemap (no breaking deploys). Live-tested locally → wrote 1310 URLs successfully.
+- **Dailymotion downloader fallback** (`video_extra_handlers.py`): added `_dailymotion_metadata_fallback()` that hits `dailymotion.com/player/metadata/video/{id}` (their own player's endpoint), parses the `qualities` dict, and downloads the highest progressive mp4 ≤ user's quality hint. Same yt-dlp-first → fallback chain. Some DRM-protected videos return None (correct behavior — falls through to original yt-dlp error path).
+- Backend healthy after restart, all 1247 tools load.
+
+### Running totals after Wave 5
+- Downloaders with no-auth public-API fallbacks beyond yt-dlp: **8 platforms** — Instagram, TikTok, Twitter/X, Facebook, Reddit, Pinterest, Vimeo, Dailymotion.
+- Sitemap: **100% coverage of 1247 tools, auto-regenerated on every Vercel deploy**.
+- Build pipeline: `prebuild` → fetch live tool catalog → write fresh sitemap → `vite build`. Zero ongoing maintenance needed as new tools are added.
