@@ -777,13 +777,8 @@ export default function AllToolsPage() {
 
   const isSearching   = deferredQuery.trim().length > 0
 
-  // Grouped category sections — ONLY when not searching (search shows flat ranked list)
-  const groupedSections = useMemo(() => {
-    if (isSearching) return []
-    return sortedCategories
-      .map(cat => ({ category: cat, tools: filteredTools.filter(t => t.category === cat.id) }))
-      .filter(e => e.tools.length > 0)
-  }, [sortedCategories, filteredTools, isSearching])
+  // No grouped-by-category sections (per user request — one flat smart-sorted grid).
+  // Category PILLS above remain as filters but never split the grid into sections.
 
   const showRecent    = activeCategory === 'all' && !isSearching && activeTab === 'all'
   const showFavorites = activeTab === 'favorites'
@@ -802,7 +797,7 @@ export default function AllToolsPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className='section-kicker'>Complete Library</span>
             <h1>All {loading ? '1,200' : tools.length.toLocaleString()}+ Free Online Tools</h1>
-            <p>Browse every tool across {loading ? '53' : categories.length} categories — find exactly what you need.</p>
+            <p>One smart-sorted list of every tool — daily-use tools surface first. Type to find anything in milliseconds.</p>
           </motion.div>
 
           <StatsBar toolCount={loading ? 1247 : tools.length} catCount={loading ? 53 : categories.length} favCount={favorites.size} />

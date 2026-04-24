@@ -97,9 +97,9 @@ export default function HeroSection({
         <div className='hero-v2-stats'>
           {[
             { label: 'Free Tools', value: toolLabel, suffix: '+', color: '#56a6ff' },
-            { label: 'Categories', value: categoryCount || 38, suffix: '', color: '#3ee58f' },
             { label: 'PDF Workflows', value: pdfCount || 128, suffix: '+', color: '#f472b6' },
             { label: 'Image Tools', value: imageCount || 195, suffix: '+', color: '#f59e0b' },
+            { label: 'No Signup', value: '0', suffix: '$', color: '#3ee58f' },
           ].map((stat) => (
             <div
               key={stat.label}

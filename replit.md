@@ -732,3 +732,18 @@ Four platforms now have proper public-API fallbacks (IG + TikTok from earlier wa
 - Live-tested all 4 endpoints via curl on the running backend — all returned the new post-fallback messages, confirming the new code path executed (test URLs were dummies; real public posts will scrape and download).
 - **Now 12 platforms have no-auth fallbacks** beyond yt-dlp: IG GraphQL, TikTok, Twitter cdn.syndication, Facebook regex, Reddit .json, Pinterest og, Vimeo player config, Dailymotion player metadata, LinkedIn og, Rumble og, Threads og, Snapchat og.
 - Vercel deploy still clean — only backend changed, no frontend bundle impact.
+
+## 2026-04-24 — Wave 8 (Cleanup leftover "Categories" leaks + dead code)
+
+User attached fresh screenshot text from production showing **"61 Categories" stat** in the hero AND grouping by category headers — even though Waves 1–5 supposedly flattened the layout. Investigation showed two real leaks:
+- `HeroSection.tsx:100` still rendered a `Categories` stat tile (that's the "61 Categories" the user keeps seeing).
+- `AllToolsPage.tsx:805` subtitle still said "Browse every tool across 53 categories…".
+- A `groupedSections` `useMemo` was still computed (line 781) but never rendered — pure dead code that hot-reload still recomputed on every keystroke.
+
+Fixes shipped:
+- Hero stats now show: **Free Tools / PDF Workflows / Image Tools / No Signup ($0)** — Categories stat fully replaced.
+- All-tools subtitle: **"One smart-sorted list of every tool — daily-use tools surface first. Type to find anything in milliseconds."**
+- Deleted the `groupedSections` dead memo (saves a wasted recomputation per render + makes the flat-grid intent explicit in code comments so it doesn't regress).
+- Production build re-verified: 2.75s clean, AllToolsPage chunk dropped from 22 → 21.89 kB, sitemap regenerated.
+
+Note on the user's screenshot: the grouped sections (`PDF Core 11 tools`, `Unit Converters 156 tools`, etc.) are from the **previous deployed version on Vercel** — not the current local code. Once they redeploy, the flat layout already shipped in Waves 1–5 will be live.
