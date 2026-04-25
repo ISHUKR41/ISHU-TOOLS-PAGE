@@ -113,6 +113,7 @@ async function fetchJson(url, timeoutMs = 12000) {
     `        xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
     `  <url><loc>${SITE}/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`,
     `  <url><loc>${SITE}/tools</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.97</priority></url>`,
+    `  <url><loc>${SITE}/scientific-calculator</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>`,
   ];
   for (const c of cats)
     lines.push(`  <url><loc>${SITE}/category/${c}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.92</priority></url>`);

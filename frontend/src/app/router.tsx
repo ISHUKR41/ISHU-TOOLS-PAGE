@@ -6,6 +6,7 @@ const HomePage     = lazy(() => import('../features/home/HomePage.tsx'))
 const ToolPage     = lazy(() => import('../features/tool/ToolPage.tsx'))
 const AllToolsPage = lazy(() => import('../features/tools/AllToolsPage.tsx'))
 const CategoryPage = lazy(() => import('../features/category/CategoryPage.tsx'))
+const ScientificCalculatorPage = lazy(() => import('../features/calculator/ScientificCalculatorPage.tsx'))
 
 /* ─── Page transition variants ──────────────────────────────
    Fade + subtle upward slide — feels like native iOS navigation.
@@ -28,7 +29,7 @@ function RouteContent() {
   const element = useRoutes([
     { path: '/',             element: <HomePage />     },
     { path: '/tools',        element: <AllToolsPage /> },
-    { path: '/scientific-calculator', element: <Navigate to='/tools/scientific-calculator' replace /> },
+    { path: '/scientific-calculator', element: <ScientificCalculatorPage /> },
     { path: '/tools/:slug',  element: <ToolPage />     },
     { path: '/category/:categoryId', element: <CategoryPage /> },
     { path: '*',             element: <Navigate to='/' replace /> },

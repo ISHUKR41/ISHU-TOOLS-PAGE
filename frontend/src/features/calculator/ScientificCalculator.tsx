@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { Copy, RotateCcw } from 'lucide-react'
+import { Copy, RotateCcw, History as HistoryIcon } from 'lucide-react'
 
 type AngleMode = 'DEG' | 'RAD'
 type CalcHistoryItem = {
@@ -9,7 +9,8 @@ type CalcHistoryItem = {
 }
 
 type ScientificCalculatorProps = {
-  accent: string
+  accent?: string
+  storageKey?: string
 }
 
 type Operator = {
@@ -20,61 +21,99 @@ type Operator = {
   apply: (a: number, b?: number) => number
 }
 
-const MAX_HISTORY = 12
+const MAX_HISTORY = 24
 const MAX_FACTORIAL = 170
 
+function safeDiv(a: number, b: number) {
+  if (b === 0) throw new Error('Cannot divide by zero')
+  return a / b
+}
+
+function safeMod(a: number, b: number) {
+  if (b === 0) throw new Error('Cannot mod by zero')
+  return a - Math.floor(a / b) * b
+}
+
+function nPr(n: number, r: number) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 0 || r < 0 || r > n) {
+    throw new Error('nPr needs whole numbers with n ≥ r ≥ 0')
+  }
+  let result = 1
+  for (let i = 0; i < r; i++) result *= n - i
+  return result
+}
+
+function nCr(n: number, r: number) {
+  if (!Number.isInteger(n) || !Number.isInteger(r) || n < 0 || r < 0 || r > n) {
+    throw new Error('nCr needs whole numbers with n ≥ r ≥ 0')
+  }
+  const k = Math.min(r, n - r)
+  let num = 1
+  let den = 1
+  for (let i = 0; i < k; i++) {
+    num *= n - i
+    den *= i + 1
+  }
+  return num / den
+}
+
 const OPERATORS: Record<string, Operator> = {
-  '+': { precedence: 2, associativity: 'left', arity: 2, apply: (a, b = 0) => a + b },
-  '-': { precedence: 2, associativity: 'left', arity: 2, apply: (a, b = 0) => a - b },
-  '*': { precedence: 3, associativity: 'left', arity: 2, apply: (a, b = 0) => a * b },
-  '/': {
-    precedence: 3,
-    associativity: 'left',
-    arity: 2,
-    apply: (a, b = 0) => {
-      if (b === 0) throw new Error('Cannot divide by zero')
-      return a / b
-    },
-  },
-  '^': { precedence: 5, associativity: 'right', arity: 2, apply: (a, b = 0) => Math.pow(a, b) },
-  'u-': { precedence: 4, associativity: 'right', arity: 1, apply: (a) => -a },
-  'u+': { precedence: 4, associativity: 'right', arity: 1, apply: (a) => a },
-  '%': { precedence: 6, associativity: 'left', arity: 1, postfix: true, apply: (a) => a / 100 },
-  '!': { precedence: 6, associativity: 'left', arity: 1, postfix: true, apply: factorial },
+  '+':   { precedence: 2, associativity: 'left',  arity: 2, apply: (a, b = 0) => a + b },
+  '-':   { precedence: 2, associativity: 'left',  arity: 2, apply: (a, b = 0) => a - b },
+  '*':   { precedence: 3, associativity: 'left',  arity: 2, apply: (a, b = 0) => a * b },
+  '/':   { precedence: 3, associativity: 'left',  arity: 2, apply: (a, b = 0) => safeDiv(a, b) },
+  'mod': { precedence: 3, associativity: 'left',  arity: 2, apply: (a, b = 0) => safeMod(a, b) },
+  'nPr': { precedence: 4, associativity: 'left',  arity: 2, apply: (a, b = 0) => nPr(a, b) },
+  'nCr': { precedence: 4, associativity: 'left',  arity: 2, apply: (a, b = 0) => nCr(a, b) },
+  '^':   { precedence: 5, associativity: 'right', arity: 2, apply: (a, b = 0) => Math.pow(a, b) },
+  'root':{ precedence: 5, associativity: 'right', arity: 2, apply: (a, b = 0) => {
+    if (b === 0) throw new Error('Root degree cannot be zero')
+    if (b < 0 && a === 0) throw new Error('0 to a negative power is undefined')
+    if (a < 0 && Number.isInteger(b) && b % 2 !== 0) return -Math.pow(-a, 1 / b)
+    if (a < 0) throw new Error('Even root of a negative number is not real')
+    return Math.pow(a, 1 / b)
+  } },
+  'u-':  { precedence: 6, associativity: 'right', arity: 1, apply: (a) => -a },
+  'u+':  { precedence: 6, associativity: 'right', arity: 1, apply: (a) => a },
+  '%':   { precedence: 7, associativity: 'left',  arity: 1, postfix: true, apply: (a) => a / 100 },
+  '!':   { precedence: 7, associativity: 'left',  arity: 1, postfix: true, apply: factorial },
 }
 
 const FUNCTIONS: Record<string, (value: number, angleMode: AngleMode) => number> = {
-  sin: (value, angleMode) => Math.sin(toRadians(value, angleMode)),
-  cos: (value, angleMode) => Math.cos(toRadians(value, angleMode)),
-  tan: (value, angleMode) => Math.tan(toRadians(value, angleMode)),
-  asin: (value, angleMode) => fromRadians(Math.asin(value), angleMode),
-  acos: (value, angleMode) => fromRadians(Math.acos(value), angleMode),
-  atan: (value, angleMode) => fromRadians(Math.atan(value), angleMode),
-  sinh: (value) => Math.sinh(value),
-  cosh: (value) => Math.cosh(value),
-  tanh: (value) => Math.tanh(value),
-  sqrt: (value) => {
-    if (value < 0) throw new Error('Square root needs a non-negative number')
-    return Math.sqrt(value)
+  sin:   (v, m) => Math.sin(toRadians(v, m)),
+  cos:   (v, m) => Math.cos(toRadians(v, m)),
+  tan:   (v, m) => Math.tan(toRadians(v, m)),
+  asin:  (v, m) => fromRadians(Math.asin(v), m),
+  acos:  (v, m) => fromRadians(Math.acos(v), m),
+  atan:  (v, m) => fromRadians(Math.atan(v), m),
+  sinh:  (v) => Math.sinh(v),
+  cosh:  (v) => Math.cosh(v),
+  tanh:  (v) => Math.tanh(v),
+  asinh: (v) => Math.asinh(v),
+  acosh: (v) => Math.acosh(v),
+  atanh: (v) => Math.atanh(v),
+  sqrt:  (v) => {
+    if (v < 0) throw new Error('√ needs a non-negative number')
+    return Math.sqrt(v)
   },
-  cbrt: (value) => Math.cbrt(value),
-  ln: (value) => {
-    if (value <= 0) throw new Error('ln needs a positive number')
-    return Math.log(value)
+  cbrt:  (v) => Math.cbrt(v),
+  ln:    (v) => {
+    if (v <= 0) throw new Error('ln needs a positive number')
+    return Math.log(v)
   },
-  log: (value) => {
-    if (value <= 0) throw new Error('log needs a positive number')
-    return Math.log10(value)
+  log:   (v) => {
+    if (v <= 0) throw new Error('log needs a positive number')
+    return Math.log10(v)
   },
-  log2: (value) => {
-    if (value <= 0) throw new Error('log2 needs a positive number')
-    return Math.log2(value)
+  log2:  (v) => {
+    if (v <= 0) throw new Error('log₂ needs a positive number')
+    return Math.log2(v)
   },
-  exp: (value) => Math.exp(value),
-  abs: (value) => Math.abs(value),
-  floor: (value) => Math.floor(value),
-  ceil: (value) => Math.ceil(value),
-  round: (value) => Math.round(value),
+  exp:   (v) => Math.exp(v),
+  abs:   (v) => Math.abs(v),
+  floor: (v) => Math.floor(v),
+  ceil:  (v) => Math.ceil(v),
+  round: (v) => Math.round(v),
 }
 
 const CONSTANTS: Record<string, number> = {
@@ -82,61 +121,95 @@ const CONSTANTS: Record<string, number> = {
   e: Math.E,
 }
 
+type KeyKind = 'memory' | 'function' | 'operator' | 'number' | 'control' | 'equals' | 'shift'
+type KeyTone = 'primary' | 'accent' | 'muted' | 'danger' | 'shift' | 'shift-active'
+
 type KeyDef = {
   label: string
-  kind?: 'memory' | 'function' | 'operator' | 'number' | 'control' | 'equals'
+  secondLabel?: string
+  kind?: KeyKind
   value?: string
+  secondValue?: string
   span?: number
-  tone?: 'primary' | 'accent' | 'muted' | 'danger'
+  tone?: KeyTone
+  hint?: string
 }
 
+/* ── Keypad layout: 6 columns × 9 rows = 54 keys.
+   Designed to mirror Casio fx-991 ergonomics: 2nd toggle top-left,
+   trig + log row, hyperbolic + power row, parens + memory row,
+   then the standard numeric keypad with operators on the right. */
 const KEYS: KeyDef[] = [
-  { label: 'MC', kind: 'memory', value: 'mc' },
-  { label: 'MR', kind: 'memory', value: 'mr' },
-  { label: 'M+', kind: 'memory', value: 'm+' },
-  { label: 'M-', kind: 'memory', value: 'm-' },
-  { label: 'DEG/RAD', kind: 'control', value: 'angle', tone: 'accent' },
-  { label: 'AC', kind: 'control', value: 'clearAll', tone: 'danger' },
-  { label: 'sin', kind: 'function', value: 'sin(' },
-  { label: 'cos', kind: 'function', value: 'cos(' },
-  { label: 'tan', kind: 'function', value: 'tan(' },
-  { label: 'asin', kind: 'function', value: 'asin(' },
-  { label: 'acos', kind: 'function', value: 'acos(' },
-  { label: 'atan', kind: 'function', value: 'atan(' },
-  { label: 'ln', kind: 'function', value: 'ln(' },
-  { label: 'log', kind: 'function', value: 'log(' },
-  { label: 'sqrt', kind: 'function', value: 'sqrt(' },
-  { label: 'x²', kind: 'operator', value: '^2' },
-  { label: 'xʸ', kind: 'operator', value: '^' },
-  { label: '!', kind: 'operator', value: '!' },
-  { label: 'π', kind: 'number', value: 'pi' },
-  { label: 'e', kind: 'number', value: 'e' },
-  { label: '(', kind: 'operator', value: '(' },
-  { label: ')', kind: 'operator', value: ')' },
-  { label: '%', kind: 'operator', value: '%' },
+  /* Row 1 — modifiers + memory */
+  { label: '2nd',    kind: 'shift',   value: 'second',     tone: 'shift',   hint: 'Toggle alternate functions' },
+  { label: 'DEG',    kind: 'control', value: 'angle',      tone: 'accent',  hint: 'Switch DEG / RAD' },
+  { label: 'MC',     kind: 'memory',  value: 'mc',         hint: 'Memory clear' },
+  { label: 'MR',     kind: 'memory',  value: 'mr',         hint: 'Memory recall' },
+  { label: 'M+',     kind: 'memory',  value: 'm+',         hint: 'Memory add' },
+  { label: 'M−',     kind: 'memory',  value: 'm-',         hint: 'Memory subtract' },
+
+  /* Row 2 — trig (with 2nd → inverse trig) */
+  { label: 'sin',    secondLabel: 'sin⁻¹',  kind: 'function', value: 'sin(',  secondValue: 'asin(' },
+  { label: 'cos',    secondLabel: 'cos⁻¹',  kind: 'function', value: 'cos(',  secondValue: 'acos(' },
+  { label: 'tan',    secondLabel: 'tan⁻¹',  kind: 'function', value: 'tan(',  secondValue: 'atan(' },
+  { label: 'ln',     secondLabel: 'eˣ',     kind: 'function', value: 'ln(',   secondValue: 'exp(' },
+  { label: 'log',    secondLabel: '10ˣ',    kind: 'function', value: 'log(',  secondValue: '10^' },
+  { label: 'log₂',   secondLabel: '2ˣ',     kind: 'function', value: 'log2(', secondValue: '2^' },
+
+  /* Row 3 — hyperbolic + powers */
+  { label: 'sinh',   secondLabel: 'sinh⁻¹', kind: 'function', value: 'sinh(', secondValue: 'asinh(' },
+  { label: 'cosh',   secondLabel: 'cosh⁻¹', kind: 'function', value: 'cosh(', secondValue: 'acosh(' },
+  { label: 'tanh',   secondLabel: 'tanh⁻¹', kind: 'function', value: 'tanh(', secondValue: 'atanh(' },
+  { label: '√',      secondLabel: 'x²',     kind: 'function', value: 'sqrt(', secondValue: '^2' },
+  { label: '∛',      secondLabel: 'x³',     kind: 'function', value: 'cbrt(', secondValue: '^3' },
+  { label: 'xʸ',     secondLabel: 'ʸ√x',    kind: 'operator', value: '^',     secondValue: 'root' },
+
+  /* Row 4 — parens, constants, modifiers */
+  { label: '(',      kind: 'operator', value: '(' },
+  { label: ')',      kind: 'operator', value: ')' },
+  { label: 'π',      kind: 'number',   value: 'pi' },
+  { label: 'e',      kind: 'number',   value: 'e' },
+  { label: '!',      kind: 'operator', value: '!' },
+  { label: '%',      kind: 'operator', value: '%' },
+
+  /* Row 5 — combinations + EE + extras + clear */
+  { label: 'nCr',    secondLabel: 'nPr',    kind: 'operator', value: 'nCr', secondValue: 'nPr' },
+  { label: 'mod',    kind: 'operator', value: 'mod' },
+  { label: 'EE',     kind: 'number',   value: 'e+',  hint: '×10ˣ exponent entry' },
+  { label: '|x|',    kind: 'function', value: 'abs(' },
+  { label: '1/x',    kind: 'function', value: 'reciprocal' },
+  { label: 'AC',     kind: 'control',  value: 'clearAll', tone: 'danger',  hint: 'Clear everything' },
+
+  /* Row 6 */
+  { label: '7', kind: 'number',   value: '7' },
+  { label: '8', kind: 'number',   value: '8' },
+  { label: '9', kind: 'number',   value: '9' },
+  { label: 'DEL', kind: 'control', value: 'backspace', tone: 'muted', hint: 'Delete last character' },
   { label: '÷', kind: 'operator', value: '/' },
-  { label: '7', kind: 'number', value: '7' },
-  { label: '8', kind: 'number', value: '8' },
-  { label: '9', kind: 'number', value: '9' },
   { label: '×', kind: 'operator', value: '*' },
-  { label: 'DEL', kind: 'control', value: 'backspace' },
-  { label: 'CE', kind: 'control', value: 'clearEntry' },
-  { label: '4', kind: 'number', value: '4' },
-  { label: '5', kind: 'number', value: '5' },
-  { label: '6', kind: 'number', value: '6' },
-  { label: '-', kind: 'operator', value: '-' },
-  { label: 'Ans', kind: 'number', value: 'Ans' },
-  { label: '+/-', kind: 'control', value: 'negate' },
-  { label: '1', kind: 'number', value: '1' },
-  { label: '2', kind: 'number', value: '2' },
-  { label: '3', kind: 'number', value: '3' },
+
+  /* Row 7 */
+  { label: '4', kind: 'number',   value: '4' },
+  { label: '5', kind: 'number',   value: '5' },
+  { label: '6', kind: 'number',   value: '6' },
+  { label: 'Ans', kind: 'number', value: 'Ans', hint: 'Last answer' },
+  { label: '−', kind: 'operator', value: '-' },
+  { label: '+/−', kind: 'control', value: 'negate', tone: 'muted' },
+
+  /* Row 8 */
+  { label: '1', kind: 'number',   value: '1' },
+  { label: '2', kind: 'number',   value: '2' },
+  { label: '3', kind: 'number',   value: '3' },
+  { label: 'CE', kind: 'control', value: 'clearEntry', tone: 'muted', hint: 'Clear current entry' },
   { label: '+', kind: 'operator', value: '+' },
-  { label: '=', kind: 'equals', value: '=', span: 2, tone: 'primary' },
-  { label: '0', kind: 'number', value: '0', span: 2 },
-  { label: '.', kind: 'number', value: '.' },
+  { label: '=', kind: 'equals',   value: '=', tone: 'primary', hint: 'Calculate' },
+
+  /* Row 9 — wide zero */
+  { label: '0',  kind: 'number', value: '0', span: 2 },
   { label: '00', kind: 'number', value: '00' },
-  { label: '1/x', kind: 'function', value: 'reciprocal' },
-  { label: 'C', kind: 'control', value: 'clearEntry' },
+  { label: '.',  kind: 'number', value: '.' },
+  { label: 'Hist', kind: 'control', value: 'toggleHistory', tone: 'muted', hint: 'Show / hide history' },
+  { label: '=', kind: 'equals',  value: '=', tone: 'primary' },
 ]
 
 function toRadians(value: number, angleMode: AngleMode) {
@@ -171,7 +244,8 @@ function normalizeExpression(input: string, answer: number) {
     .replace(/−/g, '-')
     .replace(/π/g, 'pi')
     .replace(/√/g, 'sqrt')
-    .replace(/\bAns\b/g, String(answer))
+    .replace(/∛/g, 'cbrt')
+    .replace(/\bAns\b/g, `(${answer})`)
     .trim()
 }
 
@@ -193,7 +267,25 @@ function tokenize(expression: string) {
         value += expression[i]
         i += 1
       }
-      if (!/^\d*\.?\d+$/.test(value)) throw new Error(`Invalid number "${value}"`)
+      // Scientific notation entry (1.5e3, 2e-5)
+      if (i < expression.length && (expression[i] === 'e' || expression[i] === 'E')) {
+        const ahead = expression[i + 1]
+        const aheadIsSign = ahead === '+' || ahead === '-'
+        const aheadIsDigit = ahead && /\d/.test(ahead)
+        if (aheadIsDigit || (aheadIsSign && /\d/.test(expression[i + 2] || ''))) {
+          value += 'e'
+          i += 1
+          if (aheadIsSign) {
+            value += expression[i]
+            i += 1
+          }
+          while (i < expression.length && /\d/.test(expression[i])) {
+            value += expression[i]
+            i += 1
+          }
+        }
+      }
+      if (Number.isNaN(Number(value))) throw new Error(`Invalid number "${value}"`)
       tokens.push(value)
       continue
     }
@@ -222,7 +314,7 @@ function tokenize(expression: string) {
 }
 
 function tokenIsNumber(token: string) {
-  return !Number.isNaN(Number(token))
+  return token !== '' && !Number.isNaN(Number(token))
 }
 
 function tokenStartsValue(token: string) {
@@ -380,18 +472,75 @@ function displayExpression(expression: string) {
     .replace(/\*/g, '×')
     .replace(/\//g, '÷')
     .replace(/\bpi\b/g, 'π')
+    .replace(/\bsqrt\b/g, '√')
+    .replace(/\bcbrt\b/g, '∛')
+    .replace(/\bnCr\b/g, ' nCr ')
+    .replace(/\bnPr\b/g, ' nPr ')
+    .replace(/\bmod\b/g, ' mod ')
+    .replace(/\broot\b/g, ' root ')
 }
 
-export default function ScientificCalculator({ accent }: ScientificCalculatorProps) {
-  const [expression, setExpression] = useState('sqrt(144)+2^3+sin(90)')
-  const [result, setResult] = useState('21')
+const HISTORY_STORAGE_KEY_DEFAULT = 'ishu:scientific-calc:history'
+
+function loadHistory(key: string): CalcHistoryItem[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(key)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter((item) => item && typeof item.expression === 'string' && typeof item.result === 'string')
+      .slice(0, MAX_HISTORY)
+  } catch {
+    return []
+  }
+}
+
+function saveHistory(key: string, history: CalcHistoryItem[]) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(key, JSON.stringify(history.slice(0, MAX_HISTORY)))
+  } catch {
+    /* storage may be unavailable (private mode, quota); ignore */
+  }
+}
+
+export default function ScientificCalculator({
+  accent = '#f59e0b',
+  storageKey = HISTORY_STORAGE_KEY_DEFAULT,
+}: ScientificCalculatorProps) {
+  const [expression, setExpression] = useState('')
+  const [result, setResult] = useState('0')
   const [angleMode, setAngleMode] = useState<AngleMode>('DEG')
-  const [answer, setAnswer] = useState(21)
+  const [answer, setAnswer] = useState(0)
   const [memory, setMemory] = useState(0)
-  const [history, setHistory] = useState<CalcHistoryItem[]>([])
+  const [secondShift, setSecondShift] = useState(false)
+  const [history, setHistory] = useState<CalcHistoryItem[]>(() => loadHistory(storageKey))
   const [error, setError] = useState<string | null>(null)
+  const [historyOpen, setHistoryOpen] = useState(true)
+  const justEvaluatedRef = useRef(false)
 
   const hasMemory = Math.abs(memory) > Number.EPSILON
+
+  /* Persist history whenever it changes */
+  useEffect(() => {
+    saveHistory(storageKey, history)
+  }, [history, storageKey])
+
+  /* Live result preview — quietly evaluate while typing.
+     Only updates the result if the expression parses cleanly,
+     so partial input never throws a visible error. */
+  const livePreview = useMemo(() => {
+    const trimmed = expression.trim()
+    if (!trimmed) return null
+    try {
+      const value = evaluateScientificExpression(trimmed, angleMode, answer)
+      return formatValue(value)
+    } catch {
+      return null
+    }
+  }, [expression, angleMode, answer])
 
   const calculate = useCallback((source = expression) => {
     try {
@@ -404,6 +553,7 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
         { expression: source, result: formatted },
         ...prev.filter((item) => item.expression !== source),
       ].slice(0, MAX_HISTORY))
+      justEvaluatedRef.current = true
       return value
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Invalid expression'
@@ -415,20 +565,38 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
   const append = useCallback((value: string) => {
     setError(null)
     setExpression((prev) => {
-      const next = prev === '0' ? '' : prev
-      return `${next}${value}`
+      // After "=", the next number-like input replaces the expression
+      // (matches how a real calculator behaves), but operators chain onto Ans.
+      if (justEvaluatedRef.current) {
+        justEvaluatedRef.current = false
+        const startsValue = /^[\d.]|^[a-zA-Z_(]/.test(value)
+        if (startsValue) return value
+        return `Ans${value}`
+      }
+      return `${prev}${value}`
     })
   }, [])
 
   const currentValue = useCallback(() => {
+    if (livePreview !== null) {
+      const num = Number(livePreview)
+      if (Number.isFinite(num)) return num
+    }
     const evaluated = calculate()
     if (evaluated !== null) return evaluated
     const parsed = Number(result)
     return Number.isFinite(parsed) ? parsed : 0
-  }, [calculate, result])
+  }, [calculate, result, livePreview])
 
   const handleKey = useCallback((key: KeyDef) => {
-    const value = key.value || key.label
+    const useSecond = secondShift && key.secondValue !== undefined
+    const value = (useSecond ? key.secondValue : key.value) || key.label
+    if (useSecond) setSecondShift(false)
+
+    if (key.kind === 'shift') {
+      setSecondShift((v) => !v)
+      return
+    }
     if (key.kind === 'equals') {
       calculate()
       return
@@ -446,6 +614,7 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
         setExpression('')
         setResult('0')
         setError(null)
+        setSecondShift(false)
         return
       }
       if (value === 'clearEntry') {
@@ -467,6 +636,9 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
         setExpression((prev) => prev ? `-(${prev})` : '-')
         setError(null)
       }
+      if (value === 'toggleHistory') {
+        setHistoryOpen((v) => !v)
+      }
       return
     }
     if (value === 'reciprocal') {
@@ -474,19 +646,61 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
       setError(null)
       return
     }
-    append(value)
-  }, [append, calculate, currentValue, memory, result])
 
+    /* Binary operators (mod, nCr, nPr, root) need spacing so the tokenizer
+       can parse them correctly between two values. */
+    if (value === 'mod' || value === 'nCr' || value === 'nPr' || value === 'root') {
+      append(` ${value} `)
+      return
+    }
+
+    append(value)
+  }, [append, calculate, currentValue, memory, result, secondShift])
+
+  /* Programmatic expression loader — listens for `ishu:calc:load`
+     events (used by the standalone page's example tiles) and feeds
+     the expression in directly so function names like sqrt(...) work. */
+  useEffect(() => {
+    function onLoad(event: Event) {
+      const detail = (event as CustomEvent<string>).detail
+      if (typeof detail !== 'string') return
+      setExpression(detail)
+      setError(null)
+      justEvaluatedRef.current = false
+      try {
+        const value = evaluateScientificExpression(detail, angleMode, answer)
+        setResult(formatValue(value))
+        setAnswer(value)
+        setHistory((prev) => [
+          { expression: detail, result: formatValue(value) },
+          ...prev.filter((item) => item.expression !== detail),
+        ].slice(0, MAX_HISTORY))
+        justEvaluatedRef.current = true
+      } catch {
+        /* leave the expression visible without overwriting the previous result */
+      }
+    }
+    window.addEventListener('ishu:calc:load', onLoad)
+    return () => window.removeEventListener('ishu:calc:load', onLoad)
+  }, [angleMode, answer])
+
+  /* Physical keyboard support — types digits/operators directly,
+     Enter/= evaluates, Backspace/Esc clears, F2 toggles 2nd. */
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null
-      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA') return
+      const tag = target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) return
+
       if (/^[0-9.]$/.test(event.key)) {
         event.preventDefault()
         append(event.key)
       } else if (['+', '-', '*', '/', '^', '(', ')', '%'].includes(event.key)) {
         event.preventDefault()
         append(event.key)
+      } else if (event.key === '!') {
+        event.preventDefault()
+        append('!')
       } else if (event.key === 'Enter' || event.key === '=') {
         event.preventDefault()
         calculate()
@@ -498,15 +712,23 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
         setExpression('')
         setResult('0')
         setError(null)
+      } else if (event.key === 'F2') {
+        event.preventDefault()
+        setSecondShift((v) => !v)
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [append, calculate])
 
-  const helperText = useMemo(() => (
-    `${angleMode} mode · ${hasMemory ? `Memory ${formatValue(memory)}` : 'Memory empty'} · supports sin, cos, tan, log, ln, sqrt, powers, factorial`
-  ), [angleMode, hasMemory, memory])
+  const helperText = useMemo(() => {
+    const parts: string[] = []
+    parts.push(`${angleMode} mode`)
+    parts.push(hasMemory ? `M = ${formatValue(memory)}` : 'M empty')
+    if (secondShift) parts.push('2nd active')
+    if (livePreview !== null && livePreview !== result) parts.push(`= ${livePreview}`)
+    return parts.join(' · ')
+  }, [angleMode, hasMemory, memory, secondShift, livePreview, result])
 
   async function copyResult() {
     try {
@@ -517,37 +739,59 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
   }
 
   return (
-    <section className='scientific-calculator-shell' style={{ '--calc-accent': accent } as CSSProperties}>
+    <section
+      className='scientific-calculator-shell'
+      style={{ '--calc-accent': accent } as CSSProperties}
+    >
       <div className='calc-device' aria-label='Scientific calculator'>
         <div className='calc-topbar'>
           <div>
             <span className='calc-brand'>ISHU SCIENTIFIC</span>
             <strong>fx-1200 Pro</strong>
           </div>
-          <span className='calc-mode'>{angleMode}</span>
+          <div className='calc-status'>
+            {secondShift && <span className='calc-pill calc-pill-shift'>2nd</span>}
+            {hasMemory && <span className='calc-pill calc-pill-mem'>M</span>}
+            <span className='calc-mode'>{angleMode}</span>
+          </div>
         </div>
 
         <div className='calc-display' aria-live='polite'>
-          <div className='calc-expression'>{displayExpression(expression) || '0'}</div>
+          <div className='calc-expression'>{displayExpression(expression) || ' '}</div>
           <div className={`calc-result${error ? ' is-error' : ''}`}>
-            {error || displayExpression(result)}
+            {error ? error : displayExpression(result)}
           </div>
           <p>{helperText}</p>
         </div>
 
-        <div className='calc-keypad'>
-          {KEYS.map((key, index) => (
-            <button
-              key={`${key.label}-${index}`}
-              type='button'
-              className={`calc-key ${key.kind || ''} ${key.tone || ''}`}
-              style={{ gridColumn: key.span ? `span ${key.span}` : undefined }}
-              onClick={() => handleKey(key)}
-              aria-label={key.label === 'DEL' ? 'Delete last character' : key.label}
-            >
-              {key.label === 'sqrt' ? '√' : key.label}
-            </button>
-          ))}
+        <div className={`calc-keypad${secondShift ? ' is-shifted' : ''}`}>
+          {KEYS.map((key, index) => {
+            const isShiftKey = key.kind === 'shift'
+            const showSecond = secondShift && key.secondLabel
+            const tone = isShiftKey
+              ? (secondShift ? 'shift-active' : 'shift')
+              : (key.tone || '')
+            const displayLabel = showSecond ? key.secondLabel : key.label
+            return (
+              <button
+                key={`${key.label}-${index}`}
+                type='button'
+                className={`calc-key ${key.kind || ''} ${tone}`.trim()}
+                style={{ gridColumn: key.span ? `span ${key.span}` : undefined }}
+                onClick={() => handleKey(key)}
+                title={key.hint || displayLabel}
+                aria-label={displayLabel}
+                aria-pressed={isShiftKey ? secondShift : undefined}
+              >
+                {key.secondLabel && (
+                  <span className={`calc-key-second${secondShift ? ' active' : ''}`}>
+                    {key.secondLabel}
+                  </span>
+                )}
+                <span className='calc-key-main'>{displayLabel}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -555,7 +799,7 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
         <div className='calc-actions-row'>
           <button type='button' onClick={copyResult} className='calc-mini-action'>
             <Copy size={14} />
-            Copy
+            Copy result
           </button>
           <button
             type='button'
@@ -564,6 +808,7 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
               setExpression('')
               setResult('0')
               setError(null)
+              setSecondShift(false)
             }}
             className='calc-mini-action'
           >
@@ -572,42 +817,55 @@ export default function ScientificCalculator({ accent }: ScientificCalculatorPro
           </button>
         </div>
 
-        <div className='calc-history'>
-          <h2>History</h2>
-          {history.length === 0 ? (
-            <p>No calculations yet.</p>
-          ) : (
-            history.map((item) => (
-              <button
-                key={`${item.expression}-${item.result}`}
-                type='button'
-                onClick={() => {
-                  setExpression(item.expression)
-                  setResult(item.result)
-                  setError(null)
-                }}
-              >
-                <span>{displayExpression(item.expression)}</span>
-                <strong>{displayExpression(item.result)}</strong>
-              </button>
-            ))
+        <div className={`calc-history${historyOpen ? '' : ' collapsed'}`}>
+          <h2>
+            <HistoryIcon size={14} />
+            <span className='calc-history-title'>History</span>
+            <button
+              type='button'
+              className='calc-history-toggle'
+              onClick={() => setHistoryOpen((v) => !v)}
+              aria-label={historyOpen ? 'Hide history' : 'Show history'}
+            >
+              {historyOpen ? 'Hide' : 'Show'}
+            </button>
+          </h2>
+          {historyOpen && (
+            history.length === 0 ? (
+              <p>Your last {MAX_HISTORY} calculations will be saved here.</p>
+            ) : (
+              history.map((item, index) => (
+                <button
+                  key={`${item.expression}-${item.result}-${index}`}
+                  type='button'
+                  onClick={() => {
+                    setExpression(item.expression)
+                    setResult(item.result)
+                    setAnswer(Number(item.result) || 0)
+                    setError(null)
+                    justEvaluatedRef.current = false
+                  }}
+                >
+                  <span>{displayExpression(item.expression)}</span>
+                  <strong>= {displayExpression(item.result)}</strong>
+                </button>
+              ))
+            )
           )}
         </div>
 
         <div className='calc-reference'>
-          <h2>Quick Reference</h2>
-          <div>
-            <span>Power</span><code>2^10</code>
-          </div>
-          <div>
-            <span>Square root</span><code>sqrt(144)</code>
-          </div>
-          <div>
-            <span>Trigonometry</span><code>sin(90)</code>
-          </div>
-          <div>
-            <span>Logarithm</span><code>ln(e)</code>
-          </div>
+          <h2>Quick reference</h2>
+          <div><span>Power</span><code>2^10</code></div>
+          <div><span>Square root</span><code>√(144)</code></div>
+          <div><span>Trigonometry</span><code>sin(90)</code></div>
+          <div><span>Inverse trig</span><code>asin(0.5)</code></div>
+          <div><span>Logarithm</span><code>log(1000)</code></div>
+          <div><span>Natural log</span><code>ln(e)</code></div>
+          <div><span>Combinations</span><code>5 nCr 2</code></div>
+          <div><span>Modulo</span><code>17 mod 5</code></div>
+          <div><span>Scientific</span><code>1.5e3</code></div>
+          <div><span>Use last answer</span><code>Ans + 1</code></div>
         </div>
       </aside>
     </section>

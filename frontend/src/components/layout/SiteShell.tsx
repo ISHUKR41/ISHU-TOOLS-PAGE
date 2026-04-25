@@ -78,7 +78,7 @@ const NAV_CATEGORIES: NavCategory[] = [
     links: [
       { to: '/tools/bmi-calculator', label: 'BMI Calculator' },
       { to: '/tools/percentage-calculator', label: 'Percentage Calc' },
-      { to: '/tools/scientific-calculator', label: 'Scientific Calc' },
+      { to: '/scientific-calculator', label: 'Scientific Calc' },
       { to: '/tools/compound-interest-calculator', label: 'Compound Interest' },
       { to: '/tools/gpa-calculator', label: 'GPA Calculator' },
       { to: '/tools/age-calculator', label: 'Age Calculator' },
@@ -219,7 +219,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <Link to='/tools/compress-pdf' className='nav-pill' onClick={() => setMegaOpen(false)}>Compress PDF</Link>
             <Link to='/tools/compress-image' className='nav-pill' onClick={() => setMegaOpen(false)}>Compress Image</Link>
             <Link to='/tools/remove-background' className='nav-pill' onClick={() => setMegaOpen(false)}>Remove BG</Link>
-            <Link to='/tools/scientific-calculator' className='nav-pill' onClick={() => setMegaOpen(false)}>Scientific</Link>
+            <Link to='/scientific-calculator' className='nav-pill' onClick={() => setMegaOpen(false)}>Scientific</Link>
 
             <div className='nav-mega-wrap' ref={megaRef}>
               <button
@@ -316,7 +316,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
                   { to: '/tools/qr-code-generator', label: 'QR Generator' },
                   { to: '/tools/bmi-calculator', label: 'BMI Calculator' },
                   { to: '/tools/percentage-calculator', label: 'Percentage Calc' },
-                  { to: '/tools/scientific-calculator', label: 'Scientific Calc' },
+                  { to: '/scientific-calculator', label: 'Scientific Calc' },
                   { to: '/tools/compound-interest-calculator', label: 'Compound Interest' },
                 ].map((link) => (
                   <Link key={link.to} to={link.to} className='mobile-nav-link' onClick={() => setMobileOpen(false)}>
@@ -435,7 +435,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <div className='footer-col'>
               <strong>Calculators</strong>
               <Link to='/tools/bmi-calculator'>BMI Calculator</Link>
-              <Link to='/tools/scientific-calculator'>Scientific Calculator</Link>
+              <Link to='/scientific-calculator'>Scientific Calculator</Link>
               <Link to='/tools/percentage-calculator'>Percentage Calculator</Link>
               <Link to='/tools/emi-calculator-advanced'>EMI Calculator India</Link>
               <Link to='/tools/gst-calculator-india'>GST Calculator India</Link>

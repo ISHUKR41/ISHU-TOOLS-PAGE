@@ -1,6 +1,34 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-24) — Migration to Replit + production performance pass
+## Latest Update (2026-04-25) — Standalone Scientific Calculator page
+
+A new **dedicated** `/scientific-calculator` route replaces the previous redirect-into-tool-page. The calculator is now a real product page with hero, 6×9 keypad upgrade, examples, FAQ, full SEO and pre-rendered HTML for crawlers.
+
+### New / changed files
+- `frontend/src/features/calculator/ScientificCalculatorPage.tsx` *(new)* — full standalone page with hero, badges, examples grid, keyboard shortcuts table, FAQ accordion, related-calculators block. Sets `<title>`, description, keywords, OG, Twitter, canonical and `SoftwareApplication` + `FAQPage` JSON-LD on mount via `applyDocumentBranding` + helper meta setters.
+- `frontend/src/features/calculator/ScientificCalculator.tsx` *(rewritten)* — Casio-fx-991-style keypad expanded to 54 keys across 9 rows. Adds:
+  - **2nd-function key** (top-left) with per-key `secondLabel` / `secondValue`. When active it swaps `sin/cos/tan ↔ asin/acos/atan`, `ln ↔ eˣ`, `log ↔ 10ˣ`, `log₂ ↔ 2ˣ`, `sinh/cosh/tanh ↔ asinh/acosh/atanh`, `√ ↔ x²`, `∛ ↔ x³`, `xʸ ↔ ʸ√x`, `nCr ↔ nPr`. Resets after one use.
+  - **Hyperbolic + inverse-hyperbolic** dedicated row.
+  - **EE** key for scientific-notation entry (tokenizer parses `1.5e3`, `2e-5`).
+  - **MOD, nCr, nPr, root** as binary operators wired into the precedence table (precedence 4 for combinatorics, 5 for `^`/`root`).
+  - **Live result preview** in the helper line (debounced via `useMemo`) — quietly evaluates while typing without showing errors for partial input.
+  - **Persistent history** in `localStorage` (key `ishu:scientific-calc:history`, last 24 entries), with a Hide/Show toggle.
+  - **Programmatic loader event** `window.dispatchEvent(new CustomEvent('ishu:calc:load', { detail: '<expr>' }))` lets the standalone page's example tiles inject expressions like `sqrt(3^2 + 4^2)` directly without going through the keyboard listener.
+  - Keyboard listener now also handles `F2` (toggle 2nd) and `Escape` (clear).
+- `frontend/src/app/router.tsx` — `/scientific-calculator` no longer redirects, it lazy-loads `ScientificCalculatorPage`. `/tools/scientific-calculator` still works (renders `ScientificCalculator` inside the tool-page chrome).
+- `frontend/src/components/layout/SiteShell.tsx` — every link to `/tools/scientific-calculator` (top-nav pill, mega-menu, footer) now points to `/scientific-calculator`.
+- `frontend/src/index.css` — appended `~340 lines`: `.calc-status / .calc-pill-shift / .calc-pill-mem / .calc-key.shift{,-active} / .calc-key-second{,active} / .calc-keypad.is-shifted` (in shifted state, `.function` and `.operator` keys hide their primary label and promote the secondary label to the main slot, mimicking 2nd-mode on a real Casio). Plus the entire `.sci-calc-page` block (hero, examples, shortcuts, FAQ, related grid).
+- `frontend/scripts/gen-static-seo.mjs` — adds a pre-render block for `/scientific-calculator` so `dist/scientific-calculator/index.html` ships with the proper `<title>`, description, keywords and `SoftwareApplication`+`FAQPage` JSON-LD on first byte.
+- `frontend/scripts/gen-sitemap.mjs` — adds `/scientific-calculator` to the sitemap with priority 0.95 / weekly.
+
+### Verification
+- `npx tsc --noEmit` — clean
+- `npm run build` — clean (16.92 kB Scientific Calculator chunk + new page chunk)
+- Pre-rendered `dist/scientific-calculator/index.html` confirmed to contain the new title, description, keywords and 7 JSON-LD blocks.
+
+---
+
+## Update (2026-04-24) — Migration to Replit + production performance pass
 
 ### Migration completed
 - Installed `nodejs-20` and `python-3.12` modules.

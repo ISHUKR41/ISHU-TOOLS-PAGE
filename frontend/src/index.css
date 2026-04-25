@@ -12383,3 +12383,453 @@ html {
     max-width: 90vw;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   SCIENTIFIC CALCULATOR — keypad polish + 2nd state
+   ═══════════════════════════════════════════════════ */
+.calc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.calc-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font: 800 0.62rem var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.calc-pill-shift {
+  color: #fff7d6;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--calc-accent) 80%, white), var(--calc-accent));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--calc-accent) 60%, transparent);
+}
+
+.calc-pill-mem {
+  color: #d6eaff;
+  background: rgba(56, 132, 255, 0.18);
+  border: 1px solid rgba(125, 178, 255, 0.32);
+}
+
+.calc-key {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+  padding: 0.55rem 0.3rem 0.45rem;
+}
+
+.calc-key-main {
+  display: block;
+  line-height: 1;
+}
+
+.calc-key-second {
+  position: absolute;
+  top: 0.22rem;
+  font: 700 0.58rem var(--font-mono);
+  color: color-mix(in srgb, var(--calc-accent) 70%, white);
+  opacity: 0.55;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.calc-key-second.active {
+  opacity: 1;
+  transform: scale(1.05);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--calc-accent) 55%, transparent);
+}
+
+.calc-key.shift {
+  color: #ffefb8;
+  background: linear-gradient(180deg, #4a3414, #281a07);
+  border: 1px solid color-mix(in srgb, var(--calc-accent) 40%, transparent);
+}
+
+.calc-key.shift-active {
+  color: #1a1100;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--calc-accent) 92%, white), var(--calc-accent));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--calc-accent) 60%, transparent),
+    0 0 22px color-mix(in srgb, var(--calc-accent) 40%, transparent),
+    0 3px 0 rgba(0, 0, 0, 0.46);
+}
+
+.calc-keypad.is-shifted .calc-key.function .calc-key-main,
+.calc-keypad.is-shifted .calc-key.operator .calc-key-main {
+  opacity: 0.55;
+}
+
+.calc-keypad.is-shifted .calc-key .calc-key-second {
+  opacity: 1;
+  color: #fff7d6;
+}
+
+.calc-keypad.is-shifted .calc-key.function .calc-key-second,
+.calc-keypad.is-shifted .calc-key.operator .calc-key-second {
+  position: static;
+  font-size: 0.92rem;
+  font-family: var(--font-display);
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.calc-keypad.is-shifted .calc-key.function .calc-key-main,
+.calc-keypad.is-shifted .calc-key.operator .calc-key-main {
+  display: none;
+}
+
+.calc-history h2,
+.calc-reference h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.calc-history-title {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.calc-history-toggle {
+  margin-left: auto;
+  padding: 0.18rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font: 700 0.66rem var(--font-mono);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.calc-history.collapsed h2 {
+  margin-bottom: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   STANDALONE PAGE: /scientific-calculator
+   ═══════════════════════════════════════════════════ */
+.sci-calc-page {
+  --sci-accent: #fbbf24;
+  min-height: 100vh;
+  padding: 1.2rem clamp(0.8rem, 3vw, 2.2rem) 4rem;
+  background:
+    radial-gradient(ellipse at 12% -10%, rgba(251, 191, 36, 0.14), transparent 45%),
+    radial-gradient(ellipse at 100% 0%, rgba(56, 189, 248, 0.10), transparent 55%);
+}
+
+.sci-calc-page-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.6rem;
+}
+
+.sci-calc-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: max-content;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted-strong);
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.sci-calc-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(-2px);
+}
+
+.sci-calc-hero {
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.6rem clamp(1rem, 3vw, 2rem);
+  border-radius: 22px;
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  background:
+    linear-gradient(135deg, rgba(34, 22, 8, 0.72), rgba(10, 14, 22, 0.88)),
+    radial-gradient(circle at 100% 0%, rgba(251, 191, 36, 0.16), transparent 55%);
+  overflow: hidden;
+}
+
+.sci-calc-hero-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.95), rgba(217, 119, 6, 0.95));
+  color: #1a1100;
+  box-shadow: 0 14px 32px rgba(251, 191, 36, 0.35);
+}
+
+.sci-calc-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: max-content;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.14);
+  color: #ffd87a;
+  font: 700 0.68rem var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sci-calc-hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4.4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.sci-calc-hero p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--muted-strong);
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.55;
+}
+
+.sci-calc-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.sci-calc-hero-badges span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted-strong);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.sci-calc-section {
+  padding: 1.4rem clamp(1rem, 2.6vw, 1.8rem);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sci-calc-section h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.sci-calc-section-lede {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.sci-calc-example-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.7rem;
+}
+
+.sci-calc-example {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(251, 191, 36, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.sci-calc-example:hover {
+  transform: translateY(-2px);
+  border-color: rgba(251, 191, 36, 0.45);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.06), rgba(255, 255, 255, 0.02));
+}
+
+.sci-calc-example-label {
+  display: block;
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.sci-calc-example code {
+  display: block;
+  color: #ffd87a;
+  font: 700 0.92rem var(--font-mono);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.sci-calc-example small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.sci-calc-shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.55rem;
+}
+
+.sci-calc-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sci-calc-shortcut kbd {
+  flex-shrink: 0;
+  padding: 0.28rem 0.6rem;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #283140, #111821);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  color: #ffd87a;
+  font: 700 0.78rem var(--font-mono);
+}
+
+.sci-calc-shortcut span {
+  color: var(--muted-strong);
+  font-size: 0.86rem;
+}
+
+.sci-calc-faq-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sci-calc-faq-item {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  transition: border-color 160ms ease;
+}
+
+.sci-calc-faq-item.open {
+  border-color: rgba(251, 191, 36, 0.32);
+}
+
+.sci-calc-faq-item button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.96rem;
+  text-align: left;
+}
+
+.sci-calc-faq-toggle {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(251, 191, 36, 0.16);
+  color: #ffd87a;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.sci-calc-faq-item p {
+  margin: 0;
+  padding: 0 1rem 1rem;
+  color: var(--muted-strong);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.sci-calc-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.7rem;
+}
+
+.sci-calc-related-card {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.sci-calc-related-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(125, 178, 255, 0.32);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sci-calc-related-card strong {
+  color: #fff;
+  font-size: 0.96rem;
+}
+
+.sci-calc-related-card span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.sci-calc-related-card--all {
+  border-color: rgba(251, 191, 36, 0.32);
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.08), rgba(255, 255, 255, 0.02));
+}
+
+@media (max-width: 720px) {
+  .sci-calc-hero {
+    padding: 1.2rem 1rem;
+  }
+  .sci-calc-section {
+    padding: 1.1rem 1rem;
+  }
+}

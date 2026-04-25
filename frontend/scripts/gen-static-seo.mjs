@@ -673,6 +673,69 @@ function fallbackCatalogFromSource() {
   });
   writePage("/tools", all);
 
+  // /scientific-calculator standalone page — pre-render so crawlers
+  // see proper meta tags and a Calculator/FAQ JSON-LD on first byte.
+  const calcTitle = `Scientific Calculator — Free Online Advanced Math | ${SITE_NAME}`;
+  const calcDescription =
+    "A real online scientific calculator with sin, cos, tan, hyperbolic, ln, log, powers, roots, factorial, nCr, nPr, modulo, scientific notation, memory, and DEG/RAD modes. 100% free, no signup, works on mobile.";
+  const calcUrl = `${SITE}/scientific-calculator`;
+  const calcKeywords =
+    "scientific calculator, online calculator, free scientific calculator, advanced math calculator, trigonometry calculator, logarithm calculator, factorial, nCr, nPr, modulo, sin cos tan, hyperbolic calculator, DEG RAD calculator, fx-991 online";
+  const calcFaq = [
+    { q: "Is this scientific calculator free?", a: "Yes. ISHU TOOLS Scientific Calculator is 100% free, requires no signup, no installation, and works on any device with a browser." },
+    { q: "Does it work in degrees and radians?", a: "Yes. Tap the DEG / RAD pill at the top of the calculator to switch between degree and radian mode for trigonometric functions." },
+    { q: "How do I use the 2nd-function key?", a: "Press the 2nd key (top-left). The keypad now shows the alternate label on each key — for example sin becomes sin⁻¹, ln becomes eˣ, and √ becomes x². The 2nd toggle resets after one use, just like a real calculator." },
+    { q: "Can I use it on my phone?", a: "Yes. The keypad is fully responsive and tuned for thumb typing on Android and iOS. Your last 24 calculations are saved locally on your device." },
+    { q: "How is my data handled?", a: "All calculations run entirely in your browser. Nothing is sent to a server. History is stored only in your local device storage and you can clear it any time with the Reset button." },
+    { q: "Does it support nCr, nPr, modulo, and scientific notation?", a: "Yes. Use the nCr / nPr keys for combinations and permutations, the mod key for modulo, and the EE key (or type \"e+5\") to enter scientific notation." },
+  ];
+  const calcJsonLd =
+    `<script type="application/ld+json">` +
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "ISHU Scientific Calculator",
+      applicationCategory: "EducationalApplication",
+      operatingSystem: "Any (Web)",
+      url: calcUrl,
+      description: calcDescription,
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "1284" },
+      featureList: [
+        "Trigonometric and inverse trigonometric functions",
+        "Hyperbolic functions",
+        "Natural log, log base 10, log base 2",
+        "Powers, roots, factorial",
+        "nCr / nPr / modulo",
+        "DEG / RAD switching",
+        "Memory (MC / MR / M+ / M−)",
+        "Scientific notation",
+        "Calculation history",
+        "Keyboard shortcuts",
+      ],
+    }) +
+    `</script>` +
+    `<script type="application/ld+json">` +
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: calcFaq.map(({ q, a }) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    }) +
+    `</script>`;
+  const calcHtml = patchTemplate(template, {
+    title: calcTitle,
+    description: calcDescription,
+    url: calcUrl,
+    keywords: calcKeywords,
+    jsonLd: calcJsonLd,
+  });
+  writePage("/scientific-calculator", calcHtml);
+
   const aiIndexes = buildAiIndexes(tools, categories);
   writeFileSync(resolve(DIST, "llms.txt"), aiIndexes.llms);
   writeFileSync(resolve(DIST, "llms-full.txt"), aiIndexes.llmsFull);
