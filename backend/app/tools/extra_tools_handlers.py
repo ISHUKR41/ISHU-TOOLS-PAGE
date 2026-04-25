@@ -65,11 +65,16 @@ def handle_text_to_binary(files, payload, output_dir):
 
 
 def handle_binary_to_text(files, payload, output_dir):
-    binary = str(payload.get("text", "")).strip()
+    binary = str(payload.get("text") or payload.get("input") or payload.get("data") or "").strip()
+    if not binary:
+        return ExecutionResult(kind="json", message="Error", data={"error": "No binary input provided. Paste binary like '01001000 01101001'."})
+    cleaned = binary.replace(",", " ").replace("\n", " ").replace("\t", " ")
+    if any(c.isalpha() for c in cleaned):
+        return ExecutionResult(kind="json", message="Error", data={"error": "This looks like regular text, not binary. Did you mean to use the Text-to-Binary tool?"})
     try:
-        bits = binary.replace(",", " ").split()
+        bits = [b for b in cleaned.split() if b]
         text = "".join(chr(int(b, 2)) for b in bits)
-        return ExecutionResult(kind="json", message="Binary converted to text", data={"text": text})
+        return ExecutionResult(kind="json", message="Binary converted to text", data={"text": text, "result": text})
     except Exception as e:
         return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
 
@@ -81,11 +86,16 @@ def handle_text_to_hex(files, payload, output_dir):
 
 
 def handle_hex_to_text(files, payload, output_dir):
-    hex_input = str(payload.get("text", "")).strip()
+    hex_input = str(payload.get("text") or payload.get("input") or payload.get("data") or "").strip()
+    if not hex_input:
+        return ExecutionResult(kind="json", message="Error", data={"error": "No hex input provided."})
+    cleaned = hex_input.replace("0x", "").replace("0X", "").replace(",", "").replace(" ", "").replace("\n", "")
+    valid = set("0123456789abcdefABCDEF")
+    if not all(c in valid for c in cleaned):
+        return ExecutionResult(kind="json", message="Error", data={"error": "This doesn't look like valid hex. Did you mean Text-to-Hex?"})
     try:
-        hex_vals = hex_input.replace("0x", "").replace(",", " ").split()
-        text = "".join(chr(int(h, 16)) for h in hex_vals)
-        return ExecutionResult(kind="json", message="Hex converted to text", data={"text": text})
+        text = bytes.fromhex(cleaned).decode("utf-8", errors="replace")
+        return ExecutionResult(kind="json", message="Hex converted to text", data={"text": text, "result": text})
     except Exception as e:
         return ExecutionResult(kind="json", message=f"Error: {e}", data={"error": str(e)})
 

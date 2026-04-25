@@ -23,7 +23,13 @@ def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult
 
 
 def _get_text(payload: dict[str, Any]) -> str:
-    return str(payload.get("text", "") or payload.get("input", "")).strip()
+    """Robust text extractor — accepts many common field name variants."""
+    for key in ("text", "input", "input_text", "data", "value", "string",
+                "content", "query", "message", "body", "raw"):
+        val = payload.get(key)
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    return ""
 
 
 def _safe_scientific_eval(expression: str, angle_mode: str = "rad") -> float:
@@ -371,8 +377,14 @@ def handle_cgpa_to_percentage(files, payload, output_dir) -> ExecutionResult:
 
 def handle_date_difference(files, payload, output_dir) -> ExecutionResult:
     """Calculate difference between two dates"""
-    date1_str = str(payload.get("text", "")).strip()
-    date2_str = str(payload.get("text2", "") or payload.get("date2", "")).strip()
+    date1_str = str(
+        payload.get("text") or payload.get("date1") or payload.get("from_date")
+        or payload.get("start_date") or payload.get("start") or payload.get("date") or ""
+    ).strip()
+    date2_str = str(
+        payload.get("text2") or payload.get("date2") or payload.get("to_date")
+        or payload.get("end_date") or payload.get("end") or ""
+    ).strip()
 
     if not date1_str:
         return _text_result({"error": "Provide at least one date (YYYY-MM-DD)"}, "Error")
@@ -540,11 +552,25 @@ def handle_hex_to_text(files, payload, output_dir) -> ExecutionResult:
     """Convert hexadecimal to text"""
     text = _get_text(payload)
     if not text:
-        return _text_result({"error": "No hex input provided"}, "Error")
+        return _text_result({"error": "No hex input provided. Paste hex like '48 69' or '4869'."}, "Error")
+    clean = text.replace(" ", "").replace("0x", "").replace("0X", "").replace(",", "").replace("\n", "")
+    valid = "0123456789abcdefABCDEF"
+    invalid = [c for c in clean if c not in valid]
+    if invalid:
+        return _text_result({
+            "error": "This doesn't look like valid hexadecimal. Did you mean to use the Text-to-Hex tool? Hex only allows 0–9 and A–F."
+        }, "Error")
+    if len(clean) % 2 != 0:
+        return _text_result({"error": "Hex string must have an even number of characters (each byte = 2 hex digits)."}, "Error")
     try:
-        clean = text.replace(" ", "").replace("0x", "").replace(",", "")
         decoded = bytes.fromhex(clean).decode("utf-8")
         return _text_result({"result": decoded}, "Hex converted to text")
+    except UnicodeDecodeError:
+        try:
+            decoded = bytes.fromhex(clean).decode("latin-1")
+            return _text_result({"result": decoded, "note": "Decoded as Latin-1 (input was not valid UTF-8)"}, "Hex converted to text")
+        except Exception as e:
+            return _text_result({"error": f"Could not decode hex bytes: {e}"}, "Error")
     except Exception as e:
         return _text_result({"error": f"Invalid hex: {e}"}, "Error")
 

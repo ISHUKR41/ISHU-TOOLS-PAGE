@@ -1043,14 +1043,29 @@ MEGA_NEW_HANDLERS["loan-emi-calculator"] = _handle_loan_emi_calculator
 
 def _handle_age_calculator_detailed(files, payload):
     """Calculate detailed age including days, months, weeks."""
-    from datetime import date
-    dob_str = str(payload.get("dob", "")).strip()
-    reference_str = str(payload.get("reference_date", "")).strip()
+    from datetime import date, datetime as _dt
+    dob_str = str(
+        payload.get("dob") or payload.get("date_of_birth") or payload.get("birth_date")
+        or payload.get("birthday") or payload.get("text") or payload.get("date")
+        or payload.get("input") or ""
+    ).strip()
+    reference_str = str(payload.get("reference_date") or payload.get("ref_date") or "").strip()
+
+    def _parse_flex(s: str):
+        if not s:
+            return None
+        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d", "%d %b %Y", "%d %B %Y"):
+            try:
+                return _dt.strptime(s, fmt).date()
+            except ValueError:
+                continue
+        return None
+
     try:
-        dob = date.fromisoformat(dob_str) if dob_str else None
+        dob = _parse_flex(dob_str)
         if dob is None:
-            return _err("Enter Date of Birth in YYYY-MM-DD format")
-        ref = date.fromisoformat(reference_str) if reference_str else date.today()
+            return _err("Enter Date of Birth (try formats: YYYY-MM-DD, DD/MM/YYYY, or DD-MM-YYYY)")
+        ref = _parse_flex(reference_str) or date.today()
         if dob > ref:
             return _err("Date of birth cannot be in the future")
         years = ref.year - dob.year - ((ref.month, ref.day) < (dob.month, dob.day))
@@ -1344,10 +1359,31 @@ MEGA_NEW_HANDLERS["unit-price-calculator"] = _handle_unit_price_calculator
 
 
 def _handle_days_between_dates(files, payload):
-    from datetime import date
+    from datetime import date, datetime as _dt
+    d1_raw = str(
+        payload.get("date1") or payload.get("from_date") or payload.get("start_date")
+        or payload.get("start") or payload.get("text") or payload.get("date") or ""
+    ).strip()
+    d2_raw = str(
+        payload.get("date2") or payload.get("to_date") or payload.get("end_date")
+        or payload.get("end") or payload.get("text2") or ""
+    ).strip()
+
+    def _parse_flex(s: str):
+        for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d"):
+            try:
+                return _dt.strptime(s, fmt).date()
+            except ValueError:
+                continue
+        return None
+
     try:
-        d1 = date.fromisoformat(str(payload.get("date1", "")).strip())
-        d2 = date.fromisoformat(str(payload.get("date2", "")).strip())
+        if not d1_raw or not d2_raw:
+            return _err("Provide both dates (try YYYY-MM-DD or DD/MM/YYYY)")
+        d1 = _parse_flex(d1_raw)
+        d2 = _parse_flex(d2_raw)
+        if not d1 or not d2:
+            return _err("Could not parse dates. Try YYYY-MM-DD format.")
         diff = abs((d2 - d1).days)
         weeks = diff // 7
         months_approx = diff / 30.44

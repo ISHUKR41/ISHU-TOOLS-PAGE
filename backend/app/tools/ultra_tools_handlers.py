@@ -435,11 +435,21 @@ def _handle_menstrual_cycle_calculator(files: list[Path], payload: dict[str, Any
 
 # ─── 8. Pregnancy Week Calculator ──────────────────────────────────────────
 def _handle_pregnancy_week_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    try:
-        lmp_str = str(payload.get("lmp_date", "")).strip()
-        lmp = datetime.strptime(lmp_str, "%Y-%m-%d").date()
-    except (ValueError, TypeError):
-        return _make_json({"error": "Please enter the first day of your Last Menstrual Period (LMP) in YYYY-MM-DD format."}, "Invalid date")
+    lmp_str = str(
+        payload.get("lmp_date") or payload.get("lmp") or payload.get("last_menstrual_period")
+        or payload.get("date") or payload.get("text") or payload.get("input") or ""
+    ).strip()
+    if not lmp_str:
+        return _make_json({"error": "Enter the first day of your Last Menstrual Period (LMP)."}, "Missing date")
+    lmp = None
+    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%m/%d/%Y", "%Y/%m/%d"):
+        try:
+            lmp = datetime.strptime(lmp_str, fmt).date()
+            break
+        except ValueError:
+            continue
+    if lmp is None:
+        return _make_json({"error": "Invalid date format. Try YYYY-MM-DD or DD/MM/YYYY."}, "Invalid date")
 
     today = date.today()
     days_pregnant = (today - lmp).days

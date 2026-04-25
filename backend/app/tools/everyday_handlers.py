@@ -23,7 +23,13 @@ def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult
 
 
 def _get_text(payload: dict[str, Any]) -> str:
-    return str(payload.get("text", "") or payload.get("input", "")).strip()
+    """Robust text extractor — accepts many common field name variants."""
+    for key in ("text", "input", "input_text", "data", "value", "string",
+                "content", "query", "message", "body", "raw"):
+        val = payload.get(key)
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    return ""
 
 
 # ============================================================================
@@ -116,17 +122,31 @@ def handle_average_calculator(files, payload, output_dir) -> ExecutionResult:
 def handle_number_base_converter(files, payload, output_dir) -> ExecutionResult:
     """Convert numbers between decimal, binary, octal, and hex"""
     text = _get_text(payload)
-    from_base = str(payload.get("from_base", "decimal")).lower()
+    from_base_raw = str(payload.get("from_base") or payload.get("base") or "decimal").lower().strip()
     if not text:
-        return _text_result({"error": "No number provided"}, "Error")
+        return _text_result({"error": "No number provided. Enter a number to convert."}, "Error")
 
-    base_map = {"binary": 2, "bin": 2, "octal": 8, "oct": 8, "decimal": 10, "dec": 10, "hexadecimal": 16, "hex": 16}
-    base = base_map.get(from_base, 10)
+    base_map = {
+        "binary": 2, "bin": 2, "2": 2,
+        "octal": 8, "oct": 8, "8": 8,
+        "decimal": 10, "dec": 10, "10": 10,
+        "hexadecimal": 16, "hex": 16, "16": 16,
+    }
+    base = base_map.get(from_base_raw, 10)
+    cleaned = text.strip().replace("0x", "").replace("0X", "").replace("0b", "").replace("0B", "").replace("0o", "").replace("0O", "")
+
+    valid_chars = {2: "01", 8: "01234567", 10: "0123456789", 16: "0123456789abcdefABCDEF"}
+    invalid = [c for c in cleaned if c not in valid_chars[base] and not c.isspace()]
+    if invalid:
+        base_name = {2: "binary", 8: "octal", 10: "decimal", 16: "hexadecimal"}[base]
+        return _text_result({
+            "error": f"'{text}' is not a valid {base_name} number. {base_name.capitalize()} only allows: {valid_chars[base]}"
+        }, "Error")
 
     try:
-        value = int(text.strip().replace("0x", "").replace("0b", "").replace("0o", ""), base)
+        value = int(cleaned.replace(" ", ""), base)
     except ValueError:
-        return _text_result({"error": f"Invalid number for base {base}"}, "Error")
+        return _text_result({"error": f"Invalid number for base {base}: '{text}'"}, "Error")
 
     return _text_result({
         "result": str(value),
@@ -324,13 +344,21 @@ def handle_text_to_binary(files, payload, output_dir) -> ExecutionResult:
 def handle_binary_to_text(files, payload, output_dir) -> ExecutionResult:
     text = _get_text(payload)
     if not text:
-        return _text_result({"error": "No binary input provided"}, "Error")
+        return _text_result({"error": "No binary input provided. Paste binary like '01001000 01101001'."}, "Error")
+    cleaned = text.strip().replace(",", " ").replace("\n", " ").replace("\t", " ")
+    if any(c.isalpha() for c in cleaned):
+        return _text_result({
+            "error": "This looks like regular text, not binary. Did you mean to use the Text-to-Binary tool? Binary input should only contain 0s, 1s, and spaces."
+        }, "Error")
+    bits = [b for b in cleaned.split(" ") if b]
+    if not bits:
+        return _text_result({"error": "No binary digits found. Paste 8-bit binary separated by spaces."}, "Error")
     try:
-        chars = [chr(int(b, 2)) for b in text.strip().split()]
+        chars = [chr(int(b, 2)) for b in bits]
         result = "".join(chars)
         return _text_result({"result": result, "characters": len(chars)}, "Binary converted to text")
     except ValueError:
-        return _text_result({"error": "Invalid binary format. Use space-separated 8-bit binary."}, "Error")
+        return _text_result({"error": "Invalid binary format. Use space-separated 8-bit binary like '01001000 01101001'."}, "Error")
 
 
 def handle_morse_code_encoder(files, payload, output_dir) -> ExecutionResult:
