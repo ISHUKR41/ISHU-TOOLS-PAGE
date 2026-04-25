@@ -1,5 +1,45 @@
 # ISHU TOOLS
 
+## Latest Update (2026-04-25 round 2) — Search + sort + Instagram UX
+
+**Goal:** make every common Hindi/Hinglish/exam query instantly resolve to the right tool, push student/everyday tools to the top of the home grid, and give the Instagram downloader a real recovery path when datacenter IPs are blocked.
+
+### Files changed
+- `frontend/src/lib/toolSearch.ts`
+  - **`DAILY_TOOL_BONUS` expanded from 31 → 80 entries** with weighted tiers covering: PDF core, image core, calculators (scientific/BMI/age/percentage/CGPA/marks/EMI/SIP/GST/income tax/simple-interest/compound-interest/discount), unit/currency converters, text/dev quick-use, the full SSC-style KB-photo-size set (20kb/50kb/100kb/200kb/500kb/1mb), image format pairs (png↔jpg, webp/heic→jpg), PDF utilities (rotate/unlock/protect/watermark/extract), social downloaders, exam companions (study-planner, exam-countdown, pomodoro, flashcard, plagiarism), date/time micro-tools, number bases.
+  - **`SEARCH_SYNONYMS` expanded from ~50 → ~110 entries**:
+    - More Hinglish/Hindi action words: `chhota` (small), `bada` (big), `kato` (cut), `ghumao` (rotate), `alag` (split), `milao` (mix), `tasveer` (photo).
+    - Casio aliases: `fx`, `fx-991`, `fx991`, `casio`, `991` → scientific calculator.
+    - Indian exam keywords as first-class synonyms: `ssc`, `upsc`, `rrb`, `ibps`, `jee`, `neet`, `cuet`, `gate`, `cat`, `upsssc`, `board`, `exam`, `aadhaar`/`aadhar`, `pan`, `passport`, `signature` → photo-size/compress/pdf chain.
+    - Format aliases: `jpeg`/`jpg`/`png`/`webp`/`heic` cross-mapped.
+    - Social aliases: `fb`/`facebook`, `twitter`/`x`/`tweet`, `tt`/`tiktok`, `shorts`/`reel`.
+    - Action aliases: `ocr` ↔ `image to text`/`extract text`/`scan`, `paraphrase` ↔ `rewrite`, `resume` ↔ `cv`/`biodata`.
+  - **Stopword filtering added** to `termsFromQuery`. A new `STOPWORDS` set drops English fillers (`the`, `for`, `best`, `free`, `online`, `tool`, …) and Hinglish particles (`ko`, `ka`, `ki`, `se`, `mein`, `wala`, `kaise`, `karo`, …) before scoring. Net effect: queries like `jpg ko pdf` now score as `jpg pdf` instead of being disqualified by the orphan word `ko`.
+- `backend/app/tools/video_extra_handlers.py` — `_handle_instagram_downloader` final fall-through error replaced with a step-by-step recovery message and a structured `data` payload (`fix_steps[]` + `help_url` to the Get-cookies-LOCALLY Chrome extension) so the frontend can render an actionable card instead of just an error string.
+
+### Verification
+- `npx tsc --noEmit` clean.
+- `npm run build` clean. Postbuild prerendered 1247 tool pages + 61 categories + AI indexes.
+- Programmatic search smoke test (real catalog of 1247 tools) — all 11 representative queries now resolve to the correct tool as the #1 hit:
+
+| Query                | Top hit                       |
+| -------------------- | ----------------------------- |
+| `ssc photo size`     | ssc-photo-resizer             |
+| `photo chhota`       | compress-image                |
+| `pdf jodo`           | merge-pdf                     |
+| `image kam`          | compress-image                |
+| `fx-991`             | scientific-calculator         |
+| `cgpa`               | cgpa-percentage-converter     |
+| `reels`              | instagram-reel-downloader     |
+| `jpg ko pdf`         | jpg-to-pdf                    |
+| `photo size 50kb`    | compress-image-to-50kb        |
+| `instagram saver`    | instagram-downloader          |
+
+- New top-12 (default sort, no query, no usage data): merge-pdf, compress-pdf, compress-image, jpg-to-pdf, pdf-to-jpg, pdf-to-word, split-pdf, word-to-pdf, remove-background, scientific-calculator, bmi-calculator, qr-code-generator. Exactly the student/everyday-first arrangement requested.
+- Tool-handler audit re-run with kitchen-sink payload over all 1247 endpoints (20-thread sweep): **0 broken** — backend remains stable from the prior 10 audit rounds.
+
+---
+
 ## Latest Update (2026-04-25) — Standalone Scientific Calculator page
 
 A new **dedicated** `/scientific-calculator` route replaces the previous redirect-into-tool-page. The calculator is now a real product page with hero, 6×9 keypad upgrade, examples, FAQ, full SEO and pre-rendered HTML for crawlers.

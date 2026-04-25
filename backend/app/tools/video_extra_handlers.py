@@ -604,13 +604,32 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if html_fallback is not None:
         return html_fallback
 
-    # Both failed — return a clear, actionable message.
+    # All three strategies failed — give the user a concrete recovery path.
     msg = (
-        "Instagram blocked this media URL. This usually means the post is private, age-restricted, "
-        "or Instagram is temporarily rate-limiting server requests. "
-        "Fix: paste your Instagram cookies in the optional Cookies field, or retry after 1-2 minutes."
+        "Instagram is blocking this download from our server (this happens with reels from accounts that require login, "
+        "or when Instagram rate-limits cloud IPs). "
+        "Quick fix: 1) Open instagram.com in Chrome and sign in. "
+        "2) Install the free 'Get cookies.txt LOCALLY' extension. "
+        "3) Click the extension on instagram.com → Export → copy the text. "
+        "4) Paste it into the Cookies field above and try again. "
+        "Public posts from large creators usually work without cookies on the second or third retry."
     )
-    return ExecutionResult(kind="json", message=msg, data={"error": "instagram_blocked", "yt_dlp_error": primary.message})
+    return ExecutionResult(
+        kind="json",
+        message=msg,
+        data={
+            "error": "instagram_blocked",
+            "yt_dlp_error": primary.message,
+            "fix_steps": [
+                "Sign in to instagram.com in your browser",
+                "Install the 'Get cookies.txt LOCALLY' Chrome extension",
+                "Export cookies on instagram.com",
+                "Paste the cookies text in the Cookies field above",
+                "Retry — it will now download as your account",
+            ],
+            "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
+        },
+    )
 
 
 def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
