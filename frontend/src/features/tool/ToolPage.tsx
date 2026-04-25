@@ -26,12 +26,48 @@ import { SITE_FALLBACK_URL, SITE_OG_IMAGE, SITE_URL, toSiteUrl } from '../../lib
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
 import ToolActions from '../../components/tool/ToolActions'
-import { getToolSEO, getToolJsonLd, getFaqJsonLd } from '../../lib/seoData'
+import type { ToolSEO } from '../../lib/seoData'
 import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
 import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 import { trackToolVisit } from '../../lib/usageTracker'
+
+// ─── Lazy-loaded per-tool SEO database (504 KB chunk) ─────────────────────────
+// Static-importing seoData would block the very first tool-page paint with
+// ~150 KB of gzipped JS that the prerendered HTML already covers (the static
+// .html files written by scripts/gen-static-seo.mjs ship every meta tag,
+// JSON-LD script, and FAQ inline). So we load the rich SEO database on idle
+// after first paint and use a lightweight inline fallback in the meantime —
+// the user never sees a delay, search crawlers still see complete SEO.
+let _seoModulePromise: Promise<typeof import('../../lib/seoData')> | null = null
+function loadSeoModule() {
+  if (!_seoModulePromise) _seoModulePromise = import('../../lib/seoData')
+  return _seoModulePromise
+}
+function fallbackToolSEO(slug: string, title: string, description: string, _category: string): ToolSEO {
+  const lower = title.toLowerCase()
+  const desc = description?.trim()
+  return {
+    title: `${title} — Free Online Tool | ISHU TOOLS`,
+    description: desc
+      ? `${desc} Free online ${lower} on ISHU TOOLS — no signup, no watermark, works on mobile and desktop.`
+      : `${title} on ISHU TOOLS — free online tool. No signup, no watermark, works on every device.`,
+    keywords: [
+      lower,
+      `${lower} online`,
+      `${lower} free`,
+      `free ${lower}`,
+      `${lower} no signup`,
+      slug.replace(/-/g, ' '),
+      'ishu tools',
+      'free online tool',
+      'no watermark',
+    ],
+    h1: title,
+    faq: [],
+  }
+}
 import ScientificCalculator from '../calculator/ScientificCalculator'
 
 function normalizePayloadValue(value: string, fieldType: string) {
@@ -97,6 +133,9 @@ export default function ToolPage() {
 
   const [tool, setTool] = useState<ToolDefinition | null>(() => initialTool)
   const [relatedTools, setRelatedTools] = useState<ToolDefinition[]>(() => findFallbackRelatedTools(initialTool))
+  // The 504 KB seoData chunk loads on idle after the tool UI renders. Until
+  // it lands, we use fallbackToolSEO so the page renders instantly.
+  const [seoMod, setSeoMod] = useState<typeof import('../../lib/seoData') | null>(null)
   const [toolLoading, setToolLoading] = useState(() => !initialTool)
   const [toolError, setToolError] = useState<string | null>(null)
   const [runtimeCapabilities, setRuntimeCapabilities] = useState<RuntimeCapabilities | null>(null)
@@ -124,7 +163,8 @@ export default function ToolPage() {
     setToolLoading(!fallback)
     setToolError(null)
     if (fallback) {
-      const seo = getToolSEO(fallback.slug, fallback.title, fallback.description, fallback.category)
+      const seoFn = seoMod?.getToolSEO ?? fallbackToolSEO
+      const seo = seoFn(fallback.slug, fallback.title, fallback.description, fallback.category)
       const toolUrl = toSiteUrl(`/tools/${fallback.slug}`)
       document.title = seo.title
       applyDocumentBranding(
@@ -170,17 +210,20 @@ export default function ToolPage() {
       try {
         setToolLoading(!fallback)
         const capabilitiesPromise = fetchRuntimeCapabilities().catch(() => null)
-        const detail = await fetchTool(currentSlug)
+        // Fetch tool detail + load the lazy SEO module in parallel — saves
+        // one network round-trip on the first tool-page navigation.
+        const [detail, seoModule] = await Promise.all([fetchTool(currentSlug), loadSeoModule()])
         if (!mounted) return
 
         setTool(detail)
         setToolError(null)
+        setSeoMod(seoModule)
         void capabilitiesPromise.then((capabilities) => {
           if (mounted) setRuntimeCapabilities(capabilities)
         })
 
         // ─── Per-tool SEO injection ───
-        const seo = getToolSEO(detail.slug, detail.title, detail.description, detail.category)
+        const seo = seoModule.getToolSEO(detail.slug, detail.title, detail.description, detail.category)
         
         // Set page title
         document.title = seo.title
@@ -260,7 +303,7 @@ export default function ToolPage() {
         const ldScript = document.createElement('script')
         ldScript.id = 'tool-jsonld'
         ldScript.type = 'application/ld+json'
-        ldScript.textContent = JSON.stringify(getToolJsonLd(detail.slug, detail.title, detail.description, detail.category))
+        ldScript.textContent = JSON.stringify(seoModule.getToolJsonLd(detail.slug, detail.title, detail.description, detail.category))
         document.head.appendChild(ldScript)
 
         // FAQ JSON-LD
@@ -270,7 +313,7 @@ export default function ToolPage() {
           const faqScript = document.createElement('script')
           faqScript.id = 'tool-faq-jsonld'
           faqScript.type = 'application/ld+json'
-          faqScript.textContent = JSON.stringify(getFaqJsonLd(seo.faq))
+          faqScript.textContent = JSON.stringify(seoModule.getFaqJsonLd(seo.faq))
           document.head.appendChild(faqScript)
         }
 
@@ -460,8 +503,12 @@ export default function ToolPage() {
     [tool],
   )
   const seo = useMemo(
-    () => (tool ? getToolSEO(tool.slug, tool.title, tool.description, tool.category) : null),
-    [tool],
+    () => {
+      if (!tool) return null
+      const fn = seoMod?.getToolSEO ?? fallbackToolSEO
+      return fn(tool.slug, tool.title, tool.description, tool.category)
+    },
+    [tool, seoMod],
   )
   const visibleSeoKeywords = useMemo(
     () => (
@@ -1256,10 +1303,11 @@ export default function ToolPage() {
               )}
             </AnimatePresence>
 
-            {/* FAQ Section for SEO */}
+            {/* FAQ Section for SEO — re-uses memoised `seo` so we don't
+                re-call getToolSEO on every render and don't disable lazy
+                loading by importing seoData here. */}
             {(() => {
-              const seo = getToolSEO(tool.slug, tool.title, tool.description, tool.category)
-              if (seo.faq.length === 0) return null
+              if (!seo || seo.faq.length === 0) return null
               return (
                 <motion.section
                   className='tool-faq-section'
