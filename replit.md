@@ -936,3 +936,26 @@ Build still ~2s + ~200ms postbuild. Per-page payload +~2.5 KB gzipped. Safe — 
 - Parses new IG response shapes (xdt_shortcode_media, video_versions)
 - Actionable error message: explicitly tells user which Chrome extension to use for cookies
 - File: backend/app/tools/video_extra_handlers.py (lines 384-547)
+
+## 2026-04-25 — Round 12 (popularity slug audit + age-calculator field tolerance)
+- Built /tmp/tool_audit.py (parallel sweep, semaphore=15) using correct endpoint `/api/tools/{slug}/execute` with `payload` form field.
+- Full sweep across all 1247 tools: **0 crashes, 0 missing handlers (501), 0 5xx, 0 timeouts**. ~80 "errors" in sweep are tools correctly rejecting kitchen-sink test garbage (e.g. Twitch downloader rejecting example.com URLs — correct behavior).
+- Discovered 26 ORPHANED entries in `_POPULARITY` dict (backend/app/registry.py:7311) — boost was wasted on slugs that don't exist. Mapped to real slugs:
+  - `case-converter` → `string-case-converter` + `case-converter-advanced`
+  - `text-reverser` → `text-reverse`
+  - `pdf-to-text` → `pdf-to-txt`
+  - `extract-pages-pdf` → `extract-pages`, `delete-pages-pdf` → `delete-pages`
+  - `pdf-page-numbers` → `add-page-numbers` + `page-numbers-pdf`
+  - `text-to-pdf` → `txt-to-pdf`
+  - `remove-duplicate-lines` → `deduplicate-lines-text`
+  - `find-and-replace` → `find-replace-text` + `regex-find-replace`
+  - `image-watermark` → `watermark-image`, `image-collage-maker` → `image-collage`
+  - `color-picker-from-image` → `image-color-picker`
+  - `heart-rate-zones-calculator` → `heart-rate-zones` + `heart-rate-calculator`
+  - `headline-generator` → `ai-headline-generator` + `headline-analyzer`
+  - `tip-calc` → `tip-calculator` + `restaurant-tip-calculator`
+  - Replaced phantom HTML/CSS/JS formatters with real `prettify-css`, `minify-html`, `minify-css`, `minify-js`, `json-prettify`, `yaml-formatter`, `format-sql`
+  - Dropped (no equivalent exists): `resize-image-in-kb`, `resize-photo-in-kb`, `compress-pdf-to-{100,200,500,1m}kb`, `reorder-pdf-pages`, `html-formatter`, `javascript-formatter`, `json-to-excel`
+- After fix: **471 popularity entries, 0 orphans** — every boost lands on a real tool.
+- Made `handle_age_calculator` (everyday_handlers.py:223) accept all common DOB field name variants: `text`, `date`, `dob`, `birth_date`, `birthday`, `date_of_birth`, `input_text`, `input` — verified all 3 new names return success.
+- Top-20 home grid now leads with student/normal-user staples: merge-pdf, compress-pdf, compress-image, pdf-to-word, word-to-pdf, kg-to-lbs, cm-to-inches, °C↔°F, decimal-to-binary, jpg-to-pdf, remove-background, video-to-mp3, split-pdf.

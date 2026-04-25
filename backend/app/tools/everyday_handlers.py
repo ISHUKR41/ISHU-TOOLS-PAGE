@@ -218,8 +218,13 @@ def handle_bmi_calculator(files, payload, output_dir) -> ExecutionResult:
 
 
 def handle_age_calculator(files, payload, output_dir) -> ExecutionResult:
-    """Calculate age from date of birth"""
-    dob_str = str(payload.get("text", "") or payload.get("date", "")).strip()
+    """Calculate age from date of birth (accepts text, date, dob, birth_date, birthday, date_of_birth)."""
+    dob_str = ""
+    for key in ("text", "date", "dob", "birth_date", "birthday", "date_of_birth", "input_text", "input"):
+        val = payload.get(key)
+        if val:
+            dob_str = str(val).strip()
+            break
     if not dob_str:
         return _text_result({"error": "Provide date of birth (YYYY-MM-DD)"}, "Error")
 
