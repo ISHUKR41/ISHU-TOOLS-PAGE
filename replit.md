@@ -1,5 +1,29 @@
 # ISHU TOOLS
 
+## Latest Update (2026-04-25 round 3) — Critical CSS color/font sync (zero FOSC)
+
+**Problem found:** the inlined critical CSS in `frontend/index.html` claimed to "mirror src/index.css EXACTLY" but actually used a different palette and font stack. On every first paint the page rendered with one accent (Apple blue `#007aff`, lighter panel, plain `Inter`) and then visibly shifted the moment the lazy stylesheet swapped in (`#4a9eff`, slightly darker panel, `Inter Variable`). Subtle but real "flash of restyled content" on every cold page load — including all 1247 prerendered tool pages.
+
+**Fix:** rewrote the critical-CSS `:root` block in `frontend/index.html` to be a byte-for-byte mirror of `src/index.css`:
+- `--bg-soft #0a0a0c → #080a10`
+- `--panel rgba(18,18,20,0.6) → rgba(14,16,22,0.72)` (also added `--panel-strong`)
+- `--panel-border 0.08 → 0.07`
+- `--text #f0f0f2 → #f0f2f5`, `--muted #a0a0a8 → #8b90a0`, `--muted-strong #c8c8cf → #c0c4d0`
+- `--accent #007aff → #4a9eff`, `--accent-2 #34c759 → #3ee58f`
+- `--shadow-md 0.4 → 0.38`, `--shadow-lg 0 24px 64px → 0 30px 60px`
+- Added missing tokens that were referenced but undefined at first paint: `--danger`, `--ok`, `--shadow-glow`, `--radius-sm/md/lg/xl`
+- Font stacks now lead with Variable fonts so glyph metrics match between first paint and lazy-loaded CSS: `'Inter Variable','Inter',...` (body) and `'Space Grotesk Variable','Space Grotesk',...` (display)
+
+**Verified:**
+- `npm run build` clean, postbuild prerendered 1247 tool pages + 61 categories + AI indexes
+- `dist/index.html` confirms synced values
+- Sitemap = 1,311 URLs (1247 tools + 61 categories + home + tools index + scientific-calculator)
+- Both `/scientific-calculator.html` and `/tools/scientific-calculator.html` present
+- Backend healthy: `/api/tools`, `/api/categories`, `/api/popularity` all 200
+- 0 broken tool handlers from the most recent kitchen-sink audit
+
+---
+
 ## Latest Update (2026-04-25 round 2) — Search + sort + Instagram UX
 
 **Goal:** make every common Hindi/Hinglish/exam query instantly resolve to the right tool, push student/everyday tools to the top of the home grid, and give the Instagram downloader a real recovery path when datacenter IPs are blocked.

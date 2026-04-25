@@ -20,19 +20,27 @@
       /* ── Box model reset ── */
       *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-      /* ── Design tokens — mirror :root in index.css exactly ── */
+      /* ── Design tokens — mirror :root in src/index.css EXACTLY (line-for-line). ──
+         If you change a value here you must change it in src/index.css too,
+         otherwise colours/shadows visibly shift the moment the lazy CSS loads. */
       :root{
         color-scheme:dark;
-        --bg:#000000;--bg-soft:#0a0a0c;
-        --panel:rgba(18,18,20,0.6);--panel-border:rgba(255,255,255,0.08);
-        --text:#f0f0f2;--muted:#a0a0a8;--muted-strong:#c8c8cf;
+        --bg:#000000;--bg-soft:#080a10;
+        --panel:rgba(14,16,22,0.72);--panel-strong:rgba(20,22,30,0.85);
+        --panel-border:rgba(255,255,255,0.07);
+        --text:#f0f2f5;--muted:#8b90a0;--muted-strong:#c0c4d0;
         --line:rgba(255,255,255,0.06);
-        --accent:#007aff;--accent-2:#34c759;
-        --shadow-md:0 12px 30px rgba(0,0,0,0.4);
-        --shadow-lg:0 24px 64px rgba(0,0,0,0.55);
-        /* Exact font stack from index.css — system fonts render instantly */
-        --font-body:'Inter','Inter Tight',-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-        --font-display:'Space Grotesk',-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        --accent:#4a9eff;--accent-2:#3ee58f;
+        --danger:#ff4757;--ok:#3ee58f;
+        --shadow-lg:0 30px 60px rgba(0,0,0,0.55);
+        --shadow-md:0 12px 30px rgba(0,0,0,0.38);
+        --shadow-glow:0 0 40px rgba(74,158,255,0.12);
+        --radius-sm:12px;--radius-md:18px;--radius-lg:24px;--radius-xl:32px;
+        /* Exact font stack from src/index.css — Variable fonts first so the
+           glyph metrics match between first paint and lazy-loaded CSS. */
+        --font-body:'Inter Variable','Inter',-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+        --font-display:'Space Grotesk Variable','Space Grotesk',-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+        --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
       }
 
       /* ── HTML base ── */
