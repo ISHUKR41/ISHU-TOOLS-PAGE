@@ -22,6 +22,8 @@ import json
 import math
 import random
 import re
+import shutil
+import subprocess
 import secrets
 import socket
 import string
@@ -41,35 +43,59 @@ from .handlers import coerce_quality
 
 # ─── Shared yt-dlp options ────────────────────────────────────────────────────
 
-_YDL_COMMON_OPTS = {
+# ─── FFmpeg detection ─────────────────────────────────────────────────────────
+# Without ffmpeg, yt-dlp CANNOT merge separate video+audio streams (bestvideo+bestaudio)
+# and silently falls back to /best which is typically only 360p on YouTube.
+# We use lazy detection to avoid import-time side effects.
+
+def _find_ffmpeg() -> str | None:
+    """Return path to ffmpeg binary, checking system PATH and Python packages."""
+    path = shutil.which("ffmpeg")
+    if path:
+        return path
+    # Try imageio-ffmpeg bundled binary
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        pass
+    return None
+
+# Lazy singleton — computed on first access
+_ffmpeg_cache: dict[str, Any] = {}
+
+def _get_ffmpeg_path() -> str | None:
+    if "path" not in _ffmpeg_cache:
+        _ffmpeg_cache["path"] = _find_ffmpeg()
+    return _ffmpeg_cache["path"]
+
+def _has_ffmpeg() -> bool:
+    return _get_ffmpeg_path() is not None
+
+_YDL_COMMON_OPTS: dict[str, Any] = {
     "quiet": True,
     "no_warnings": True,
     "noplaylist": True,
     "socket_timeout": 30,
-    "retries": 3,
+    "retries": 5,
+    "fragment_retries": 10,
     "http_headers": {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0.0.0 Safari/537.36"
+            "Chrome/131.0.0.0 Safari/537.36"
         ),
         "Accept-Language": "en-US,en;q=0.9",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     },
-    # Limit filesize to 2 GB to allow 4K downloads while preventing absurd sizes
     "max_filesize": 2 * 1024 * 1024 * 1024,
 }
+# Tell yt-dlp where ffmpeg lives (critical when it's bundled inside a Python package)
+if _FFMPEG_PATH:
+    _YDL_COMMON_OPTS["ffmpeg_location"] = str(Path(_FFMPEG_PATH).parent)
 
 # Allowed quality steps (height in px). 'best' = no cap.
 _ALLOWED_HEIGHTS = {"144", "240", "360", "480", "720", "1080", "1440", "2160", "4320"}
-
-# Quality cap: default to 1080p for a good balance of quality and file size.
-_DEFAULT_FORMAT = (
-    "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]"
-    "/bestvideo[height<=1080]+bestaudio"
-    "/best[height<=1080]"
-    "/best"
-)
 
 _AUDIO_FORMAT = "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best"
 
@@ -82,28 +108,77 @@ def _coerce_str(value, default: str = "") -> str:
         value = ", ".join(str(v) for v in value)
     return str(value).strip()
 
+
 def _format_for_quality(quality: str | int | None) -> str:
-    """Build a yt-dlp format selector for a requested max height (e.g. '720', '2160', 'best')."""
-    if quality is None:
-        return _DEFAULT_FORMAT
-    q = str(quality).strip().lower().replace("p", "").replace("k", "")
-    # Friendly aliases
-    alias = {"4": "2160", "2": "1440", "8": "4320", "hd": "720", "fullhd": "1080", "fhd": "1080", "uhd": "2160", "qhd": "1440"}
+    """Build yt-dlp format string — ffmpeg-aware.
+
+    WITH ffmpeg:    bestvideo+bestaudio  → merged into mp4 (1080p/4K)
+    WITHOUT ffmpeg: best[height<=X]      → pre-muxed stream (up to 720p usually)
+
+    YouTube only offers pre-muxed (video+audio combined) streams up to 720p.
+    Higher qualities (1080p+) are always separate video + audio streams that
+    REQUIRE ffmpeg to merge. This is why without ffmpeg you get 360p.
+    """
+    q = str(quality or "1080").strip().lower().replace("p", "").replace("k", "")
+    alias = {"4": "2160", "2": "1440", "8": "4320", "hd": "720",
+             "fullhd": "1080", "fhd": "1080", "uhd": "2160", "qhd": "1440"}
     q = alias.get(q, q)
-    if q in ("best", "max", "highest", ""):
+    is_best = q in ("best", "max", "highest", "")
+
+    if _HAS_FFMPEG:
+        # ffmpeg available → use split streams for max quality
+        if is_best:
+            return (
+                "bestvideo[ext=mp4]+bestaudio[ext=m4a]"
+                "/bestvideo+bestaudio"
+                "/best[ext=mp4]/best"
+            )
+        if q in _ALLOWED_HEIGHTS:
+            return (
+                f"bestvideo[height<={q}][ext=mp4]+bestaudio[ext=m4a]"
+                f"/bestvideo[height<={q}]+bestaudio"
+                f"/best[height<={q}][ext=mp4]"
+                f"/best[height<={q}]/best"
+            )
+    else:
+        # No ffmpeg → MUST use pre-muxed formats (video+audio in one file)
+        # YouTube pre-muxed max is 720p, so cap there to avoid silent 360p fallback
+        if is_best:
+            return "best[ext=mp4]/best[ext=webm]/best"
+        if q in _ALLOWED_HEIGHTS:
+            cap = min(int(q), 720)  # pre-muxed max is 720p
+            return (
+                f"best[height<={cap}][ext=mp4]"
+                f"/best[height<={cap}][ext=webm]"
+                f"/best[height<={cap}]/best"
+            )
+    # Fallback
+    if _HAS_FFMPEG:
         return (
-            "bestvideo[ext=mp4]+bestaudio[ext=m4a]"
-            "/bestvideo+bestaudio"
-            "/best[ext=mp4]/best"
+            "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]"
+            "/bestvideo[height<=1080]+bestaudio"
+            "/best[height<=1080]/best"
         )
-    if q in _ALLOWED_HEIGHTS:
-        return (
-            f"bestvideo[height<={q}][ext=mp4]+bestaudio[ext=m4a]"
-            f"/bestvideo[height<={q}]+bestaudio"
-            f"/best[height<={q}][ext=mp4]"
-            f"/best[height<={q}]/best"
-        )
-    return _DEFAULT_FORMAT
+    return "best[ext=mp4]/best"
+
+
+def _ffmpeg_merge(video_path: Path, audio_path: Path, output_path: Path) -> bool:
+    """Merge separate video + audio files using ffmpeg. Returns True on success."""
+    if not _FFMPEG_PATH:
+        return False
+    try:
+        cmd = [
+            _FFMPEG_PATH, "-y",
+            "-i", str(video_path),
+            "-i", str(audio_path),
+            "-c:v", "copy", "-c:a", "aac",
+            "-movflags", "+faststart",
+            str(output_path),
+        ]
+        subprocess.run(cmd, capture_output=True, timeout=300, check=True)
+        return output_path.exists() and output_path.stat().st_size > 10000
+    except Exception:
+        return False
 
 
 def _audio_quality_kbps(quality: str | int | None) -> str:
@@ -200,10 +275,14 @@ def _write_cookies_file(job_dir: Path, cookies_text: str) -> Path | None:
             if not name:
                 continue
             # domain TRUE path TRUE httpOnly expires name value
+            # Add ALL supported domains so a single cookie paste works across platforms
+            lines.append(f".youtube.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+            lines.append(f".google.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
             lines.append(f".instagram.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
             lines.append(f".tiktok.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
             lines.append(f".x.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
             lines.append(f".twitter.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
+            lines.append(f".facebook.com\tTRUE\t/\tTRUE\t2147483647\t{name}\t{value}")
         cookies_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
         return cookies_path
     # Multi-line free-form — assume Netscape-ish, write as-is and let yt-dlp try
@@ -214,7 +293,7 @@ def _write_cookies_file(job_dir: Path, cookies_text: str) -> Path | None:
 def _yt_dlp_download(
     url: str,
     job_dir: Path,
-    fmt: str = _DEFAULT_FORMAT,
+    fmt: str | None = None,
     audio_only: bool = False,
     audio_kbps: str = "192",
     extra_opts: dict | None = None,
@@ -237,6 +316,10 @@ def _yt_dlp_download(
         )
 
     out_tmpl = str(job_dir / "%(title).80s.%(ext)s")
+
+    # Resolve format at runtime (ffmpeg-aware)
+    if fmt is None:
+        fmt = _format_for_quality(None)
 
     opts: dict = dict(_YDL_COMMON_OPTS)
     opts["outtmpl"] = out_tmpl
@@ -331,11 +414,150 @@ def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir
         return ExecutionResult(kind="json", message="Please paste a video URL to download.", data={"error": "No URL"})
     if not url.startswith(("http://", "https://")):
         return ExecutionResult(kind="json", message="Invalid URL. Must start with http:// or https://", data={"error": "Invalid URL"})
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     fmt = _format_for_quality(payload.get("quality"))
-    return _yt_dlp_download(url, job_dir, fmt=fmt)
+
+    # Detect YouTube URLs and delegate to the specialized handler with fallbacks
+    if "youtube.com" in url or "youtu.be" in url:
+        return _handle_youtube_downloader(files, payload, job_dir)
+
+    return _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies)
 
 
 # ─── YouTube Downloaders ──────────────────────────────────────────────────────
+
+def _extract_video_id(url: str) -> str | None:
+    """Extract YouTube video ID from any YouTube URL format."""
+    import re as _re
+    for pat in [
+        r"(?:v=|/videos/|embed/|youtu\.be/|/v/|/e/|watch\?v=|&v=)([^#&?\n]{11})",
+        r"youtu\.be/([^?&#\n]{11})",
+        r"/shorts/([^?&#\n]{11})",
+    ]:
+        m = _re.search(pat, url)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _get_video_title(vid_id: str) -> str:
+    """Get video title via noembed (always works, no auth)."""
+    try:
+        r = httpx.get(f"https://noembed.com/embed?url=https://www.youtube.com/watch?v={vid_id}", timeout=8)
+        if r.status_code == 200:
+            return r.json().get("title", f"youtube_{vid_id}")
+    except Exception:
+        pass
+    return f"youtube_{vid_id}"
+
+
+# YouTube Innertube client configs — each bypasses different restrictions.
+_YT_CLIENTS = [
+    {
+        "name": "MWEB",
+        "body": {"context": {"client": {"hl": "en", "gl": "US", "clientName": "MWEB", "clientVersion": "2.20240304.08.00"}}},
+        "headers": {"User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36", "Content-Type": "application/json", "Origin": "https://m.youtube.com", "Referer": "https://m.youtube.com/"},
+        "url": "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
+    },
+    {
+        "name": "ANDROID",
+        "body": {"context": {"client": {"hl": "en", "gl": "US", "clientName": "ANDROID", "clientVersion": "19.29.37", "androidSdkVersion": 33}}},
+        "headers": {"User-Agent": "com.google.android.youtube/19.29.37 (Linux; U; Android 13) gzip", "Content-Type": "application/json"},
+        "url": "https://www.youtube.com/youtubei/v1/player?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8&prettyPrint=false",
+    },
+    {
+        "name": "IOS",
+        "body": {"context": {"client": {"hl": "en", "gl": "US", "clientName": "IOS", "clientVersion": "19.29.1", "deviceMake": "Apple", "deviceModel": "iPhone16,2", "osName": "iPhone", "osVersion": "17.5.1.21F90"}}},
+        "headers": {"User-Agent": "com.google.ios.youtube/19.29.1 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X;)", "Content-Type": "application/json"},
+        "url": "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
+    },
+    {
+        "name": "TV_EMBEDDED",
+        "body": {"context": {"client": {"hl": "en", "gl": "US", "clientName": "TVHTML5_SIMPLY_EMBEDDED_PLAYER", "clientVersion": "2.0"}}},
+        "headers": {"User-Agent": "Mozilla/5.0 (SMART-TV; LINUX; Tizen 6.5)", "Content-Type": "application/json"},
+        "url": "https://www.youtube.com/youtubei/v1/player?prettyPrint=false",
+    },
+]
+
+
+def _stream_download(url: str, output_path: Path, ua: str, timeout: int = 180) -> bool:
+    """Stream-download a large file instead of loading it all into memory."""
+    try:
+        with httpx.stream("GET", url, timeout=timeout, follow_redirects=True,
+                          headers={"User-Agent": ua}) as r:
+            if r.status_code != 200:
+                return False
+            with open(output_path, "wb") as f:
+                for chunk in r.iter_bytes(chunk_size=256 * 1024):
+                    f.write(chunk)
+        return output_path.exists() and output_path.stat().st_size > 50000
+    except Exception:
+        output_path.unlink(missing_ok=True) if output_path.exists() else None
+        return False
+
+
+def _youtube_innertube_fallback(url: str, job_dir: Path, quality: str | None = None) -> ExecutionResult | None:
+    """Multi-client YouTube innertube API fallback (like SnapTube/VidMate).
+
+    Tries MWEB -> Android -> iOS -> TV Embedded clients in sequence.
+    Handles both muxed and adaptive formats, merging with ffmpeg for true HD.
+    """
+    vid_id = _extract_video_id(url)
+    if not vid_id:
+        return None
+
+    title = _get_video_title(vid_id)
+    target_height = int(str(quality or "1080").replace("p", "")) if quality and str(quality).replace("p", "").isdigit() else 1080
+
+    for client in _YT_CLIENTS:
+        try:
+            body = dict(client["body"])
+            body["videoId"] = vid_id
+            r = httpx.post(client["url"], json=body, headers=client["headers"], timeout=15)
+            if r.status_code != 200:
+                continue
+            data = r.json()
+            if (data.get("playabilityStatus") or {}).get("status") != "OK":
+                continue
+
+            streaming = data.get("streamingData") or {}
+            muxed = streaming.get("formats") or []
+            adaptive = streaming.get("adaptiveFormats") or []
+            ua = client["headers"]["User-Agent"]
+
+            # STRATEGY 1: ffmpeg available -> adaptive HD video + audio merge
+            if _HAS_FFMPEG and adaptive:
+                vids = [f for f in adaptive if f.get("mimeType", "").startswith("video/mp4") and f.get("url")]
+                auds = [f for f in adaptive if f.get("mimeType", "").startswith("audio/mp4") and f.get("url")]
+                if vids and auds:
+                    vids.sort(key=lambda f: f.get("height", 0), reverse=True)
+                    auds.sort(key=lambda f: f.get("bitrate", 0), reverse=True)
+                    pick_v = next((v for v in vids if v.get("height", 9999) <= target_height), vids[0])
+                    v_path, a_path = job_dir / "_v.mp4", job_dir / "_a.m4a"
+                    out = job_dir / f"{_safe_title(title)}.mp4"
+                    if _stream_download(pick_v["url"], v_path, ua) and _stream_download(auds[0]["url"], a_path, ua):
+                        if _ffmpeg_merge(v_path, a_path, out):
+                            v_path.unlink(missing_ok=True); a_path.unlink(missing_ok=True)
+                            size_mb = round(out.stat().st_size / 1024 / 1024, 1)
+                            return ExecutionResult(kind="file", message=f"Downloaded: {title} ({pick_v.get('height','?')}p, {size_mb} MB) [HD]",
+                                                   output_path=out, filename=out.name, content_type="video/mp4")
+                    v_path.unlink(missing_ok=True); a_path.unlink(missing_ok=True)
+
+            # STRATEGY 2: muxed format (up to ~720p, no ffmpeg needed)
+            if muxed:
+                mp4s = [f for f in muxed if f.get("mimeType", "").startswith("video/mp4") and f.get("url")]
+                if mp4s:
+                    mp4s.sort(key=lambda f: f.get("height", 0), reverse=True)
+                    pick = next((f for f in mp4s if f.get("height", 9999) <= target_height), mp4s[0])
+                    out = job_dir / f"{_safe_title(title)}.mp4"
+                    if _stream_download(pick["url"], out, ua):
+                        size_mb = round(out.stat().st_size / 1024 / 1024, 1)
+                        return ExecutionResult(kind="file", message=f"Downloaded: {title} ({pick.get('height','?')}p, {size_mb} MB)",
+                                               output_path=out, filename=out.name, content_type="video/mp4")
+        except Exception:
+            continue
+    return None
+
 
 def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = _coerce_str(payload.get("url"))
@@ -343,8 +565,60 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
         return ExecutionResult(kind="json", message="Please paste a YouTube URL.", data={"error": "No URL"})
     if "youtube.com" not in url and "youtu.be" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid YouTube URL (youtube.com or youtu.be).", data={"error": "Not YouTube"})
-    payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
+    quality = payload.get("quality")
+    fmt = _format_for_quality(quality)
+
+    # YouTube-specific extractor args — try mweb client first (best bot bypass rate)
+    yt_extra_mweb = {
+        "extractor_args": {"youtube": {"player_client": ["mweb"]}},
+    }
+    yt_extra_default = {
+        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+    }
+
+    # Strategy 1: yt-dlp with mweb client (best bot bypass)
+    primary = _yt_dlp_download(url, job_dir, fmt=fmt, extra_opts=yt_extra_mweb, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    # Strategy 2: yt-dlp with android+web clients
+    primary = _yt_dlp_download(url, job_dir, fmt=fmt, extra_opts=yt_extra_default, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    # Strategy 3: Direct innertube API (multi-client, like SnapTube/VidMate)
+    fallback = _youtube_innertube_fallback(url, job_dir, quality=quality)
+    if fallback is not None:
+        return fallback
+
+    # All strategies failed — give user a recovery path
+    if not cookies:
+        msg = (
+            "YouTube is blocking this download from our server (bot detection). "
+            "Quick fix: 1) Open youtube.com in Chrome and sign in. "
+            "2) Install the free 'Get cookies.txt LOCALLY' Chrome extension. "
+            "3) Click the extension on youtube.com \u2192 Export \u2192 copy the text. "
+            "4) Paste it into the 'Cookies' field above and retry. "
+            "This passes your browser session to the downloader and bypasses the bot check."
+        )
+        return ExecutionResult(
+            kind="json",
+            message=msg,
+            data={
+                "error": primary.data.get("error", "YouTube bot detection") if primary.data else "YouTube bot detection",
+                "url": url,
+                "fix_steps": [
+                    "Sign in to youtube.com in Chrome",
+                    "Install 'Get cookies.txt LOCALLY' extension",
+                    "Export cookies on youtube.com",
+                    "Paste cookies text in the Cookies field",
+                    "Retry the download",
+                ],
+                "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
+            },
+        )
+    return primary
 
 
 def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -356,7 +630,8 @@ def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: 
     payload["url"] = url
     quality = str(payload.get("quality", "720"))
     payload["quality"] = quality
-    return _handle_video_downloader(files, payload, job_dir)
+    # Delegate to the main YouTube handler which has cookie support + fallbacks
+    return _handle_youtube_downloader(files, payload, job_dir)
 
 
 def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -366,15 +641,50 @@ def _handle_youtube_shorts_downloader(files: list[Path], payload: dict[str, Any]
     if "youtube.com" not in url and "youtu.be" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid YouTube or Shorts URL.", data={"error": "Not YouTube"})
     payload["url"] = url
-    return _handle_video_downloader(files, payload, job_dir)
+    # Delegate to the main YouTube handler which has cookie support + fallbacks
+    return _handle_youtube_downloader(files, payload, job_dir)
 
 
 def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     url = _coerce_str(payload.get("url"))
     if not url:
         return ExecutionResult(kind="json", message="Please paste a YouTube URL to extract audio.", data={"error": "No URL"})
+    cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     kbps = _audio_quality_kbps(payload.get("audio_quality") or payload.get("bitrate") or payload.get("quality"))
-    return _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True, audio_kbps=kbps)
+
+    # YouTube-specific extractor args — try mweb first for bot bypass
+    yt_extra_mweb = {"extractor_args": {"youtube": {"player_client": ["mweb"]}}}
+    yt_extra_default = {"extractor_args": {"youtube": {"player_client": ["android", "web"]}}}
+
+    # Strategy 1: mweb client
+    primary = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
+                                audio_kbps=kbps, extra_opts=yt_extra_mweb, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    # Strategy 2: android+web clients
+    primary = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
+                                audio_kbps=kbps, extra_opts=yt_extra_default, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    # Give user a recovery path if no cookies provided
+    if not cookies:
+        msg = (
+            "YouTube is blocking this download from our server (bot detection). "
+            "Quick fix: Paste your YouTube cookies in the 'Cookies' field above. "
+            "Use the free 'Get cookies.txt LOCALLY' Chrome extension to export them."
+        )
+        return ExecutionResult(
+            kind="json",
+            message=msg,
+            data={
+                "error": primary.data.get("error", "YouTube bot detection") if primary.data else "YouTube bot detection",
+                "url": url,
+                "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
+            },
+        )
+    return primary
 
 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────

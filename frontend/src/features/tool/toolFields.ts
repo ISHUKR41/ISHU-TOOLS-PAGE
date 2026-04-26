@@ -2255,6 +2255,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '240p Very Low', value: '240' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'youtube-video-downloader': [
     { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL here... e.g. https://youtube.com/watch?v=...' },
@@ -2275,6 +2276,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '240p Very Low', value: '240' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'youtube-to-mp3': [
     { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL to extract audio as MP3...' },
@@ -2292,6 +2294,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '96 kbps (Smaller file)', value: '96' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'youtube-downloader': [
     { name: 'url', label: 'YouTube URL', type: 'text', placeholder: 'Paste YouTube video URL... e.g. https://youtube.com/watch?v=...' },
@@ -2312,6 +2315,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '240p Very Low', value: '240' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'photo-collage-maker': [
     {
@@ -3714,6 +3718,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low (fastest)', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'playlist-downloader': [
     { name: 'url', label: 'Playlist URL', type: 'text', placeholder: 'Paste YouTube playlist URL with list=... parameter...' },
@@ -3743,6 +3748,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low (fastest)', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'youtube-to-mp4': [
     { name: 'url', label: 'YouTube Video URL', type: 'text', placeholder: 'Paste YouTube URL, e.g. https://youtu.be/... or https://www.youtube.com/watch?v=...' },
@@ -3762,6 +3768,7 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'youtube-shorts-downloader': [
     { name: 'url', label: 'YouTube Shorts URL', type: 'text', placeholder: 'Paste YouTube Shorts URL, e.g. https://youtube.com/shorts/...' },
@@ -3781,12 +3788,14 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
         { label: '360p Low', value: '360' },
       ],
     },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   'audio-extractor': [
     { name: 'url', label: 'Video URL', type: 'text', placeholder: 'Paste video URL from YouTube, Instagram, TikTok, Twitter, or any 1000+ sites...' },
   ],
   'youtube-audio-downloader': [
     { name: 'url', label: 'YouTube Video URL', type: 'text', placeholder: 'Paste YouTube URL to download audio as MP3...' },
+    { name: 'cookies', label: 'Cookies (optional — paste if download fails with login required)', type: 'textarea', placeholder: 'Optional. Paste Netscape cookies.txt contents OR a "name=value; name=value" cookie string from your browser. Leave blank for public videos.' },
   ],
   // ── More Video Downloaders ────────────────────────────────────────────────
   'instagram-downloader': [{ name: 'url', label: 'Instagram Post URL', type: 'text', placeholder: 'Paste Instagram post/video URL e.g. https://www.instagram.com/p/...' },
