@@ -13676,3 +13676,36 @@ h3 {
 @media (max-width: 640px){
   .backend-status-banner{ font-size: .75rem; padding: .5rem .75rem; }
 }
+
+/* ── Font-display CLS fix ─────────────────────────────────────────────
+ * @fontsource ships with `font-display: swap`, which causes a metric
+ * shift the moment the web font replaces the system fallback (and
+ * Performance Observer was reporting CLS ~0.14 because of it).
+ *
+ * We re-declare the SAME family + SAME unicode-range with
+ * `font-display: optional`. Per CSS Fonts L4, the latest matching
+ * @font-face wins, so the browser will:
+ *   • use the cached web font if it's already on disk (fast path),
+ *   • or use the system fallback for the page if the font isn't
+ *     ready in ~100ms — never mid-page-swap.
+ *
+ * Net effect: ZERO font-related CLS, identical look on repeat visits.
+ * Vite resolves the woff2 url at build time, so the file is still
+ * fingerprinted and long-cacheable.
+ * ──────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Space Grotesk Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 300 700;
+  src: url('@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
