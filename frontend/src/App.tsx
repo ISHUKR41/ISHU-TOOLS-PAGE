@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { BrowserRouter } from 'react-router-dom'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 import { AppRouter } from './app/router'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
@@ -38,6 +39,7 @@ function App() {
             <AppRouter />
           </Suspense>
           <InstallPWA />
+          <SpeedInsights />
         </BrowserRouter>
       </ToastProvider>
     </ErrorBoundary>
