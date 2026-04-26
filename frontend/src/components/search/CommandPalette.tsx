@@ -5,7 +5,7 @@ import { Search, X, Clock, Sparkles, ArrowRight, CornerDownLeft, Trash2, Mic } f
 
 import { useDebounce } from '../../hooks/useDebounce'
 import { useCatalogData } from '../../hooks/useCatalogData'
-import { searchTools, sortToolsByPriority, DAILY_CATEGORY_PRIORITY } from '../../lib/toolSearch'
+import { searchTools, sortToolsByPriority, DAILY_CATEGORY_PRIORITY, getDidYouMeanSuggestions } from '../../lib/toolSearch'
 import { highlightMatches } from '../../lib/highlight'
 import { getCategoryTheme } from '../../lib/toolPresentation'
 import {
@@ -180,6 +180,13 @@ export default function CommandPalette({ open, onClose }: Props) {
     if (!tools.length) return []
     return sortToolsByPriority(tools, localUsage, globalPopularity).slice(0, 6)
   }, [tools, localUsage, globalPopularity])
+
+  /* "Did you mean?" — only computed when strict search returned nothing.
+   * Uses a very-forgiving Fuse pass so even heavy typos surface a suggestion. */
+  const didYouMean = useMemo<ToolDefinition[]>(() => {
+    if (!tools.length || !debouncedQuery.trim() || results.length > 0) return []
+    return getDidYouMeanSuggestions(tools, debouncedQuery, 2)
+  }, [tools, debouncedQuery, results.length])
 
   /* Reset the highlighted index whenever the result set changes */
   useEffect(() => { setActiveIndex(0) }, [debouncedQuery, activeCategory])
@@ -361,7 +368,31 @@ export default function CommandPalette({ open, onClose }: Props) {
 
           {noResults && (
             <div className='cp-empty'>
-              <p className='cp-empty-title'>No matches for “{debouncedQuery}”.</p>
+              <p className='cp-empty-title'>No exact matches for “{debouncedQuery}”.</p>
+
+              {didYouMean.length > 0 && (
+                <div className='cp-dym'>
+                  <span className='cp-dym-label'>
+                    <Sparkles size={12} /> Did you mean
+                  </span>
+                  <div className='cp-dym-row'>
+                    {didYouMean.map((tool, i) => (
+                      <button
+                        key={tool.slug}
+                        type='button'
+                        className='cp-dym-chip'
+                        onClick={() => commit(tool.slug)}
+                        onMouseEnter={() => prefetchToolRoute(tool.slug)}
+                        autoFocus={i === 0}
+                      >
+                        <strong>{tool.title}</strong>
+                        <ArrowRight size={12} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <p className='cp-empty-sub'>
                 Try a shorter word, check spelling, or browse a category above.
                 If you’re typing in Hinglish, try the English equivalent (e.g. <em>“image chhoti karo”</em> → <em>“compress image”</em>).

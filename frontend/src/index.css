@@ -13268,6 +13268,65 @@ h3 {
 .cp-empty-title { font-size: 14.5px; font-weight: 600; color: #fff; margin: 0 0 6px; }
 .cp-empty-sub { font-size: 12.5px; color: rgba(255, 255, 255, 0.55); margin: 0 auto 16px; max-width: 460px; line-height: 1.55; }
 .cp-empty-sub em { color: rgba(255, 255, 255, 0.78); font-style: italic; }
+
+/* "Did you mean?" suggestion block — surfaces closest fuzzy match */
+.cp-dym {
+  margin: 14px auto 18px;
+  max-width: 480px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.06));
+  border: 1px solid rgba(168, 85, 247, 0.32);
+  border-radius: 12px;
+  animation: cp-dym-fade 220ms ease;
+}
+@keyframes cp-dym-fade {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cp-dym-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  margin-bottom: 8px;
+}
+.cp-dym-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: center;
+}
+.cp-dym-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+.cp-dym-chip:hover {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.7);
+  transform: translateY(-1px);
+}
+.cp-dym-chip:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+.cp-dym-chip strong { font-weight: 600; }
+@media (prefers-reduced-motion: reduce) {
+  .cp-dym { animation: none; }
+  .cp-dym-chip:hover { transform: none; }
+}
 .cp-suggestion-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .cp-suggestion {
   display: inline-flex; align-items: center; gap: 6px;

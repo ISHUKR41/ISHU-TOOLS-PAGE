@@ -541,3 +541,42 @@ export function searchTools(
   const results = scored.map((item) => item.tool)
   return options.limit ? results.slice(0, options.limit) : results
 }
+
+/* ───────────────────────────────────────────────────────────────────────
+ * "Did you mean?" — last-resort closest matches when strict search fails.
+ *
+ * Runs a very-forgiving Fuse pass (threshold 0.6) that tolerates significant
+ * typos, transpositions, and partial matches. Used purely for the empty-state
+ * suggestion ("Did you mean: <X>?") inside the Command Palette.
+ *
+ * Pure function — no side effects, no caching — so callers can wrap it in
+ * useMemo for cheap re-runs across renders.
+ * ─────────────────────────────────────────────────────────────────────── */
+export function getDidYouMeanSuggestions(
+  tools: ToolDefinition[],
+  query: string,
+  limit = 2,
+): ToolDefinition[] {
+  const q = normalize(query)
+  if (q.length < 2 || !tools.length) return []
+
+  const fuse = new Fuse(tools, {
+    keys: [
+      { name: 'title', weight: 0.55 },
+      { name: 'slug', weight: 0.20 },
+      { name: 'tags', weight: 0.15 },
+      { name: 'description', weight: 0.10 },
+    ],
+    threshold: 0.6,         // very forgiving — recovers from heavy typos
+    ignoreLocation: true,
+    minMatchCharLength: 2,
+    includeScore: true,
+    distance: 200,
+  })
+
+  const hits = fuse.search(q, { limit: limit * 3 })
+  // Filter out garbage matches: anything with a Fuse score worse than 0.55
+  // is too distant to be a real "did you mean" — ignore it.
+  const filtered = hits.filter((h) => (h.score ?? 1) <= 0.55)
+  return filtered.slice(0, limit).map((h) => h.item)
+}
