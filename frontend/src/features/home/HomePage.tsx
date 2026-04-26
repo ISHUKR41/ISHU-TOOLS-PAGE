@@ -16,7 +16,7 @@ import { usePinnedTools } from '../../hooks/usePinnedTools'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
 import { loadUsage } from '../../lib/usageTracker'
-import { searchTools } from '../../lib/toolSearch'
+import { searchTools, getToolPriorityScore } from '../../lib/toolSearch'
 import HeroSection from './components/HeroSection'
 import './home-modern.css'
 
@@ -467,6 +467,59 @@ export default function HomePage() {
     return out
   }, [recentSlugs, tools, toolBySlug, pinnedSet])
 
+  // ─── Suggested for you ───────────────────────────────────────────────
+  // Discovery row that uses the same priority engine as the All-tools sort
+  // but boosts categories the user has already shown interest in. Designed
+  // to introduce people to tools they haven't tried yet — the value of
+  // 1299 tools is wasted if a user only ever sees the same 6 they pinned.
+  //
+  // Signal sources (all client-side, no backend trip):
+  //   • pinnedSlugs        → strongest interest signal (×3 weight)
+  //   • recent visits      → automatic history (×1 weight)
+  //   • local visit count  → lifetime usage on this device (×0.5 per visit)
+  //
+  // If a user has zero signal (true first-time visitor) the row hides
+  // itself rather than showing a generic recommendation. The All-tools
+  // grid below already shows them the best defaults.
+  const suggestedTools = useMemo(() => {
+    if (tools.length === 0) return []
+    const categoryInterest = new Map<string, number>()
+    const seenSlugs = new Set<string>()
+    // Pinned tools are the strongest signal
+    for (const slug of pinnedSlugs) {
+      seenSlugs.add(slug)
+      const t = toolBySlug.get(slug)
+      if (t) categoryInterest.set(t.category, (categoryInterest.get(t.category) ?? 0) + 3)
+    }
+    // Recent (cap at first 12) is the next-strongest
+    for (const slug of recentSlugs.slice(0, 12)) {
+      seenSlugs.add(slug)
+      const t = toolBySlug.get(slug)
+      if (t) categoryInterest.set(t.category, (categoryInterest.get(t.category) ?? 0) + 1)
+    }
+    // Lifetime visits add a small ambient signal so power users still get
+    // suggestions in their dominant categories even after they clear recents
+    for (const [slug, visits] of Object.entries(usageSnapshot)) {
+      if (visits <= 0) continue
+      seenSlugs.add(slug)
+      const t = toolBySlug.get(slug)
+      if (t) categoryInterest.set(t.category, (categoryInterest.get(t.category) ?? 0) + visits * 0.5)
+    }
+    if (categoryInterest.size === 0) return []
+    // Score every UNVISITED tool with the priority engine and add an
+    // interest-category multiplier so suggestions stay topical
+    const candidates: Array<{ tool: typeof tools[number]; score: number }> = []
+    for (const tool of tools) {
+      if (seenSlugs.has(tool.slug)) continue
+      const interest = categoryInterest.get(tool.category) ?? 0
+      if (interest <= 0) continue
+      const base = getToolPriorityScore(tool, usageSnapshot, globalPopularity)
+      candidates.push({ tool, score: base + interest * 12 })
+    }
+    candidates.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
+    return candidates.slice(0, 6).map((c) => c.tool)
+  }, [tools, toolBySlug, pinnedSlugs, recentSlugs, usageSnapshot, globalPopularity])
+
   // Derive the categories present in the *current* search results so we only
   // show chips that actually have hits — counts are shown next to each label.
   const searchResultCategories = useMemo(() => {
@@ -749,6 +802,40 @@ export default function HomePage() {
                   return (
                     <ToolCard
                       key={`recent-${tool.slug}`}
+                      tool={tool}
+                      categoryLabel={meta?.label ?? tool.category}
+                      accentColor={meta?.accent ?? '#56a6ff'}
+                      visits={usageSnapshot[tool.slug]}
+                    />
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ── Suggested for you ─────────────────────────────────────────
+               Discovery row that turns the priority engine into a recommender.
+               Hidden during search, hidden for true first-time visitors, and
+               hidden when the catalog hasn't loaded yet. Skips anything the
+               user has already pinned or visited so it's pure new-territory. */}
+          {!loading && !error && !isSearching && suggestedTools.length > 0 && (
+            <section className='tool-section suggested-tools-section'>
+              <header className='section-heading'>
+                <div className='section-heading-left'>
+                  <span className='section-kicker'>Discover</span>
+                  <div className='section-heading-title-row'>
+                    <h2>Suggested for you</h2>
+                    <span className='tool-count-badge'>{suggestedTools.length}</span>
+                  </div>
+                </div>
+                <p>New tools picked from the categories you already use.</p>
+              </header>
+              <div className='tool-grid'>
+                {suggestedTools.map((tool) => {
+                  const meta = categoryLabelById.get(tool.category)
+                  return (
+                    <ToolCard
+                      key={`suggested-${tool.slug}`}
                       tool={tool}
                       categoryLabel={meta?.label ?? tool.category}
                       accentColor={meta?.accent ?? '#56a6ff'}
