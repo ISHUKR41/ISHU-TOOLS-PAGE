@@ -187,7 +187,7 @@ function prefetchTool(slug: string) {
 const ToolCardCompact = memo(function ToolCardCompact({
   tool, theme, favorites, onToggleFav, viewMode,
 }: {
-  tool: { slug: string; title: string; description: string }
+  tool: { slug: string; title: string; description: string; category?: string; tags?: string[] }
   theme: { accent: string }
   favorites: Set<string>
   onToggleFav: (slug: string, e: React.MouseEvent) => void
@@ -197,13 +197,28 @@ const ToolCardCompact = memo(function ToolCardCompact({
   const isTrending = TRENDING_SLUGS.has(tool.slug)
   const isNew = NEW_SLUGS.has(tool.slug)
 
+  // Build a stable, searchable keywords string for SEO crawlers, dev-tool inspection,
+  // and browser-extension hooks. Whitespace-separated lowercase tokens.
+  const keywordList = (tool.tags ?? [])
+    .map(t => t.toLowerCase().trim())
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <div className={`tool-card-compact-wrapper${viewMode === 'list' ? ' list-mode' : ''}`}>
+    <div
+      className={`tool-card-compact-wrapper${viewMode === 'list' ? ' list-mode' : ''}`}
+      data-tool={tool.slug}
+      data-category={tool.category ?? ''}
+    >
       <Link
         to={`/tools/${tool.slug}`}
         className='tool-card-compact'
         style={{ '--card-accent': theme.accent } as CSSProperties}
         onMouseEnter={() => prefetchTool(tool.slug)}
+        data-tool={tool.slug}
+        data-category={tool.category ?? ''}
+        data-keywords={keywordList}
+        aria-label={`${tool.title} — ${tool.description}`}
       >
         <span className='tool-card-icon' style={{ color: theme.accent }}>
           <ToolIcon slug={tool.slug} className='tool-icon' />

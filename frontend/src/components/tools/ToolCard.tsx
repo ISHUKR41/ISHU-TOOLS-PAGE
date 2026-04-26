@@ -37,18 +37,28 @@ const ToolCard = memo(function ToolCard({ tool, categoryLabel, accentColor, quer
 
   const usedBefore = (visits ?? 0) > 0
 
+  // Whitespace-separated lowercase keyword tokens for SEO crawlers,
+  // dev-tool inspection, and browser-extension hooks. Stable across renders.
+  const keywordList = tool.tags
+    .map((t) => t.toLowerCase().trim())
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <article
       className={`tool-card${usedBefore ? ' tool-card-used' : ''}`}
       style={{ '--tool-accent': accentColor || '#3bd0ff' } as CSSProperties}
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
+      data-tool={tool.slug}
+      data-category={tool.category}
+      data-keywords={keywordList}
     >
       <Link
         to={`/tools/${tool.slug}`}
         className='tool-card-link'
         onFocus={handlePrefetch}
-        aria-label={`Open ${tool.title}`}
+        aria-label={`Open ${tool.title} — ${tool.description}`}
       >
         <div className='tool-card-header'>
           <span className='tool-icon-wrap'>
