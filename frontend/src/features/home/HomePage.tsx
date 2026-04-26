@@ -11,6 +11,7 @@ import { fetchPopularityMap } from '../../api/toolsApi'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useProgressiveList } from '../../hooks/useProgressiveList'
+import { useToolRecents } from '../../hooks/useToolRecents'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
 import { loadUsage } from '../../lib/usageTracker'
@@ -435,6 +436,23 @@ export default function HomePage() {
     return baseFilteredTools.filter((tool) => tool.category === activeCategory)
   }, [baseFilteredTools, activeCategory, isSearching])
 
+  // ─── Recently-used tools (per-user, localStorage) ─────────────────────
+  // Returning visitors land back on whatever they were working on without
+  // having to re-search across 1247 tools. Hidden during active search so
+  // results stay the focus, and only shown once the catalogue has loaded.
+  const recentSlugs = useToolRecents()
+  const recentTools = useMemo(() => {
+    if (recentSlugs.length === 0 || tools.length === 0) return []
+    const bySlug = new Map(tools.map((t) => [t.slug, t]))
+    const out = []
+    for (const slug of recentSlugs) {
+      const t = bySlug.get(slug)
+      if (t) out.push(t)
+      if (out.length >= 6) break
+    }
+    return out
+  }, [recentSlugs, tools])
+
   // Derive the categories present in the *current* search results so we only
   // show chips that actually have hits — counts are shown next to each label.
   const searchResultCategories = useMemo(() => {
@@ -660,6 +678,39 @@ export default function HomePage() {
               <h3>No tools matched “{debouncedQuery}”</h3>
               <p>Try a shorter keyword, or press Esc to see all {tools.length} tools.</p>
             </article>
+          )}
+
+          {/* ── Recently used (per-user) ───────────────────────────────────
+               Hidden during active search, hidden until the catalogue is
+               ready, and hidden for first-time visitors. Pure localStorage,
+               no backend trip — works offline and on Vercel cold-start. */}
+          {!loading && !error && !isSearching && recentTools.length > 0 && (
+            <section className='tool-section recent-tools-section'>
+              <header className='section-heading'>
+                <div className='section-heading-left'>
+                  <span className='section-kicker'>For you</span>
+                  <div className='section-heading-title-row'>
+                    <h2>Recently used</h2>
+                    <span className='tool-count-badge'>{recentTools.length}</span>
+                  </div>
+                </div>
+                <p>Pick up where you left off — saved on this device only.</p>
+              </header>
+              <div className='tool-grid'>
+                {recentTools.map((tool) => {
+                  const meta = categoryLabelById.get(tool.category)
+                  return (
+                    <ToolCard
+                      key={`recent-${tool.slug}`}
+                      tool={tool}
+                      categoryLabel={meta?.label ?? tool.category}
+                      accentColor={meta?.accent ?? '#56a6ff'}
+                      visits={usageSnapshot[tool.slug]}
+                    />
+                  )
+                })}
+              </div>
+            </section>
           )}
 
           {!loading && !error && filteredTools.length > 0 && (

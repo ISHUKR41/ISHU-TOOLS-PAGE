@@ -18,6 +18,7 @@ import { Link, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../api/toolsApi'
+import { recordToolOpen } from '../../hooks/useToolRecents'
 import SiteShell from '../../components/layout/SiteShell'
 import ToolIcon from '../../components/tools/ToolIcon'
 import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../../types/tools'
@@ -220,6 +221,10 @@ export default function ToolPage() {
         setTool(detail)
         setToolError(null)
         setSeoMod(seoModule)
+        // Persist this open into the user's local "recently used" history
+        // so the homepage can surface it on their next visit. Pure client-side,
+        // never throws, never blocks.
+        recordToolOpen(detail.slug)
         void capabilitiesPromise.then((capabilities) => {
           if (mounted) setRuntimeCapabilities(capabilities)
         })
