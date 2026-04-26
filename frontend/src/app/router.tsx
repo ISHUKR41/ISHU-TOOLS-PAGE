@@ -1,12 +1,21 @@
-import { lazy } from 'react'
+import { lazy, type ReactElement } from 'react'
 import { Navigate, useLocation, useRoutes } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { ErrorBoundary } from '../components/ui/ErrorBoundary'
 
 const HomePage     = lazy(() => import('../features/home/HomePage.tsx'))
 const ToolPage     = lazy(() => import('../features/tool/ToolPage.tsx'))
 const AllToolsPage = lazy(() => import('../features/tools/AllToolsPage.tsx'))
 const CategoryPage = lazy(() => import('../features/category/CategoryPage.tsx'))
 const ScientificCalculatorPage = lazy(() => import('../features/calculator/ScientificCalculatorPage.tsx'))
+
+/* Per-route ErrorBoundary wrapper.
+   The top-level ErrorBoundary in App.tsx catches everything but unmounts the
+   whole navigation shell — that means a single broken tool would force a full
+   page reload to recover. Wrapping each route gives the user a "Try Again"
+   button that resets just that page while keeping the shell + URL intact, so
+   they can click another tool without losing their place. */
+const wrap = (node: ReactElement) => <ErrorBoundary>{node}</ErrorBoundary>
 
 /* ─── Page transition variants ──────────────────────────────
    Fade + subtle upward slide — feels like native iOS navigation.
@@ -27,12 +36,12 @@ function RouteContent() {
   const location = useLocation()
 
   const element = useRoutes([
-    { path: '/',             element: <HomePage />     },
-    { path: '/tools',        element: <AllToolsPage /> },
-    { path: '/scientific-calculator', element: <ScientificCalculatorPage /> },
-    { path: '/tools/:slug',  element: <ToolPage />     },
-    { path: '/category/:categoryId', element: <CategoryPage /> },
-    { path: '*',             element: <Navigate to='/' replace /> },
+    { path: '/',                      element: wrap(<HomePage />)                },
+    { path: '/tools',                 element: wrap(<AllToolsPage />)            },
+    { path: '/scientific-calculator', element: wrap(<ScientificCalculatorPage />) },
+    { path: '/tools/:slug',           element: wrap(<ToolPage />)                },
+    { path: '/category/:categoryId',  element: wrap(<CategoryPage />)            },
+    { path: '*',                      element: <Navigate to='/' replace />       },
   ])
 
   return (
