@@ -1,0 +1,349 @@
+🚀 ISHU TOOLS – MASTER PRODUCTION IMPROVEMENT PROMPT (v1.0)
+
+🌐 Project Overview
+
+Domain:
+
+- https://ishutools.fun
+- https://ishutools.vercel.app
+
+Goal:
+Upgrade 1200+ tools to enterprise-grade, production-level quality with:
+
+- Zero bugs
+- High performance
+- AI-level SEO
+- Smooth UX
+- Fully working tools
+
+---
+
+🧠 CORE INSTRUCTIONS (VERY IMPORTANT)
+
+You must:
+
+- Use deep reasoning before making any change
+- Never break existing functionality
+- Never remove tools
+- Never hide tools
+- Never use "Show More"
+- Improve EVERYTHING systematically
+- Maintain full performance across all devices
+
+---
+
+⚙️ GLOBAL ARCHITECTURE IMPROVEMENT
+
+1. TECH STACK UPGRADE
+
+Use:
+
+- Next.js (latest, App Router)
+- TypeScript (strict mode)
+- Tailwind CSS + ShadCN UI
+- Zustand (state management)
+- React Query (server state)
+- Web Workers (heavy tools)
+- WASM (for calculators & encoding tools)
+
+---
+
+⚡ PERFORMANCE OPTIMIZATION
+
+- Lazy load each tool (dynamic import)
+- Code splitting per tool
+- Use CDN caching (Vercel Edge)
+- Use Image Optimization
+- Minimize JS bundle
+- Use server components wherever possible
+
+---
+
+🧩 TOOL ENGINE STANDARDIZATION
+
+For ALL tools (1200+):
+
+Each tool must follow:
+
+Structure:
+
+- "/tools/tool-name/"
+  - page.tsx
+  - ToolLogic.ts
+  - ToolUI.tsx
+  - validation.ts
+  - seo.ts
+
+---
+
+Each Tool Must Have:
+
+- Input validation
+- Error handling
+- Loading state
+- Success feedback
+- Copy/download/share option
+- Mobile responsiveness
+- Fast execution
+
+---
+
+🐛 DEBUGGING SYSTEM
+
+For ALL tools:
+
+- Add try/catch everywhere
+- Add fallback UI
+- Add logging system
+- Detect API failure
+- Auto retry system
+- Graceful degradation
+
+---
+
+🔍 SEARCH SYSTEM (VERY IMPORTANT)
+
+REMOVE:
+
+- Categories section
+- "Most Popular" section
+
+BUILD:
+
+Smart Search Engine:
+
+- Fuzzy search (Fuse.js)
+- Keyword matching
+- Synonym matching
+- AI-based suggestions
+
+Features:
+
+- Instant results (no reload)
+- Highlight matched text
+- Typo tolerance
+- Voice search (optional)
+
+---
+
+📊 TOOL PRIORITIZATION LOGIC
+
+Sort tools by:
+
+1. Daily usage frequency
+2. Search frequency
+3. User interaction data
+4. Practical utility
+
+Top tools should be:
+
+- Calculator
+- Image tools
+- Video downloader
+- PDF tools
+- Text tools
+
+---
+
+🧮 SCIENTIFIC CALCULATOR PAGE
+
+Create:
+
+- "/scientific-calculator"
+
+Requirements:
+
+- Real calculator UI (exact replica)
+- Button layout same as physical calculator
+- Keyboard support
+- Advanced functions:
+  - sin, cos, tan
+  - log, ln
+  - factorial
+  - power
+  - memory store
+
+Use:
+
+- Math.js
+- Custom expression parser
+
+Add to navbar:
+
+- "Scientific Calculator"
+
+---
+
+🎨 UI/UX IMPROVEMENT
+
+- Clean modern design
+- Soft colors (not heavy)
+- Smooth animations
+- Micro-interactions
+- Instant feedback
+
+Fonts:
+
+- Inter
+- Poppins
+
+---
+
+⚙️ AGENT SYSTEM (ADVANCED)
+
+Add internal AI agents:
+
+1. SEO Agent
+
+- Auto-generate meta tags
+- Optimize keywords
+
+2. Debug Agent
+
+- Detect broken tools
+- Suggest fixes
+
+3. Performance Agent
+
+- Monitor load time
+- Optimize automatically
+
+---
+
+🌍 SEO (VERY POWERFUL)
+
+For EACH TOOL:
+
+Must Include:
+
+- Title (keyword optimized)
+- Meta description
+- H1, H2 structured content
+- FAQs
+- Long-tail keywords
+- Internal linking
+
+---
+
+Example Keywords:
+
+- "free online [tool name]"
+- "fast [tool name]"
+- "best [tool name] 2026"
+- "ishutools [tool name]"
+
+---
+
+Advanced SEO:
+
+- Schema markup (JSON-LD)
+- Open Graph
+- Twitter cards
+- Canonical URLs
+
+---
+
+🔗 INTERNAL LINKING
+
+Each tool page should link to:
+
+- Related tools
+- Similar tools
+- Popular tools
+
+---
+
+📦 API + TOOL FIXING
+
+Fix broken tools like:
+
+- Instagram downloader
+
+Use:
+
+- Reliable APIs
+- Fallback APIs
+- Proxy handling
+
+---
+
+🚀 VERCEL OPTIMIZATION
+
+- Edge functions
+- Serverless optimization
+- API caching
+- ISR (Incremental Static Regeneration)
+
+---
+
+📱 RESPONSIVENESS
+
+Must work on:
+
+- Mobile
+- Tablet
+- Desktop
+
+---
+
+🧪 TESTING SYSTEM
+
+- Unit testing (Jest)
+- Integration testing
+- Real user testing
+
+---
+
+📈 ANALYTICS
+
+Track:
+
+- Tool usage
+- Search queries
+- Errors
+
+Use:
+
+- Google Analytics
+- Custom tracking
+
+---
+
+🔒 SECURITY
+
+- Input sanitization
+- Rate limiting
+- API protection
+
+---
+
+🧠 FINAL INSTRUCTION
+
+Do NOT:
+
+- Skip any tool
+- Do shallow work
+- Break UI
+- Reduce performance
+
+DO:
+
+- Improve EVERY tool deeply
+- Think like senior engineer
+- Maintain full stability
+
+---
+
+✅ FINAL GOAL
+
+Create:
+
+- World's best tools website
+- Ultra fast
+- Fully working
+- SEO optimized
+- User-first experience
+
+---
+
+END OF PROMPT
