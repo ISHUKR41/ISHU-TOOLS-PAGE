@@ -314,10 +314,36 @@ function ToolSkeleton() {
   )
 }
 
+const RECENT_SEARCHES_KEY = 'ishu-recent-searches-v1'
+const RECENT_SEARCH_LIMIT = 6
+
+function loadRecentSearches(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_SEARCHES_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter((s) => typeof s === 'string' && s.trim().length > 0).slice(0, RECENT_SEARCH_LIMIT)
+  } catch {
+    return []
+  }
+}
+
+function saveRecentSearches(searches: string[]) {
+  try {
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(searches.slice(0, RECENT_SEARCH_LIMIT)))
+  } catch {
+    /* localStorage may be disabled — silently ignore */
+  }
+}
+
 export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
   const [globalPopularity, setGlobalPopularity] = useState<Record<string, number>>({})
+  const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [searchFocused, setSearchFocused] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
@@ -395,14 +421,69 @@ export default function HomePage() {
     }
   }, [])
 
-  const filteredTools = useMemo(() => {
+  const baseFilteredTools = useMemo(() => {
     return searchTools(tools, debouncedQuery, {
       localUsage: usageSnapshot,
       globalPopularity,
     })
   }, [debouncedQuery, tools, usageSnapshot, globalPopularity])
 
+  // Apply category chip filter (only meaningful when actively searching).
+  const filteredTools = useMemo(() => {
+    if (!isSearching || activeCategory === 'all') return baseFilteredTools
+    return baseFilteredTools.filter((tool) => tool.category === activeCategory)
+  }, [baseFilteredTools, activeCategory, isSearching])
+
+  // Derive the categories present in the *current* search results so we only
+  // show chips that actually have hits — counts are shown next to each label.
+  const searchResultCategories = useMemo(() => {
+    if (!isSearching) return []
+    const counts = new Map<string, number>()
+    for (const tool of baseFilteredTools) {
+      counts.set(tool.category, (counts.get(tool.category) ?? 0) + 1)
+    }
+    return Array.from(counts.entries())
+      .map(([id, count]) => ({
+        id,
+        label: categoryLabelById.get(id)?.label ?? id,
+        accent: categoryLabelById.get(id)?.accent ?? '#56a6ff',
+        count,
+      }))
+      .sort((a, b) => b.count - a.count)
+  }, [baseFilteredTools, categoryLabelById, isSearching])
+
+  // Reset the category chip whenever the user clears the search — chip filter
+  // only makes sense in an active-search context.
+  useEffect(() => {
+    if (!isSearching && activeCategory !== 'all') setActiveCategory('all')
+  }, [isSearching, activeCategory])
+
   const totalVisibleTools = filteredTools.length
+
+  // ── Recent searches: load once, persist whenever a real query stabilises ──
+  useEffect(() => {
+    setRecentSearches(loadRecentSearches())
+  }, [])
+
+  useEffect(() => {
+    const term = debouncedQuery.trim()
+    if (term.length < 2) return
+    setRecentSearches((prev) => {
+      const next = [term, ...prev.filter((s) => s.toLowerCase() !== term.toLowerCase())].slice(
+        0,
+        RECENT_SEARCH_LIMIT,
+      )
+      saveRecentSearches(next)
+      return next
+    })
+  }, [debouncedQuery])
+
+  const clearRecentSearches = () => {
+    setRecentSearches([])
+    saveRecentSearches([])
+  }
+
+  const showRecentDropdown = searchFocused && !query.trim() && recentSearches.length > 0
 
   return (
     <SiteShell>
@@ -445,6 +526,10 @@ export default function HomePage() {
                 ref={searchInputRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                // Defer blur so users can click on a recent-search chip before
+                // the dropdown disappears. 120ms is below human perception.
+                onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
                 placeholder='Search merge, compress, OCR, JSON, BMI, EMI, remove background…'
                 autoComplete='off'
                 spellCheck={false}
@@ -469,7 +554,80 @@ export default function HomePage() {
                   : `${tools.length || 0} tools`}
               </span>
             </label>
+
+            {/* ── Recent searches dropdown ─────────────────────────────────
+                 Surfaces the last 6 distinct searches when the input is
+                 focused with no query — one tap to re-run a previous lookup.
+                 Persists in localStorage; clearable. */}
+            {showRecentDropdown && (
+              <div
+                className='search-recent-dropdown'
+                role='listbox'
+                aria-label='Recent searches'
+                onMouseDown={(e) => e.preventDefault() /* keep input focused */}
+              >
+                <div className='search-recent-header'>
+                  <span>Recent searches</span>
+                  <button
+                    type='button'
+                    className='search-recent-clear'
+                    onClick={clearRecentSearches}
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className='search-recent-chips'>
+                  {recentSearches.map((term) => (
+                    <button
+                      key={term}
+                      type='button'
+                      className='search-recent-chip'
+                      onClick={() => {
+                        setQuery(term)
+                        searchInputRef.current?.focus()
+                      }}
+                    >
+                      <Search size={12} />
+                      <span>{term}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* ── Search-time category chip filter ─────────────────────────────
+               Per request: NOT a homepage section. Only renders when the user
+               is actively searching, lets them narrow results to a single
+               category. Each chip shows the live hit count. */}
+          {isSearching && searchResultCategories.length > 1 && (
+            <div className='search-category-chips' role='tablist' aria-label='Filter results by category'>
+              <button
+                type='button'
+                className={`search-cat-chip${activeCategory === 'all' ? ' is-active' : ''}`}
+                onClick={() => setActiveCategory('all')}
+                role='tab'
+                aria-selected={activeCategory === 'all'}
+              >
+                All
+                <span className='search-cat-chip-count'>{baseFilteredTools.length}</span>
+              </button>
+              {searchResultCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type='button'
+                  className={`search-cat-chip${activeCategory === cat.id ? ' is-active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                  role='tab'
+                  aria-selected={activeCategory === cat.id}
+                  style={{ '--chip-accent': cat.accent } as CSSProperties}
+                >
+                  {cat.label}
+                  <span className='search-cat-chip-count'>{cat.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ── Unified flat tool directory ───────────────────────────────────
