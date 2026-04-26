@@ -10,9 +10,9 @@ from datetime import datetime, timezone, timedelta
 from typing import Any
 
 try:
-    from .handlers import ExecutionResult, ToolHandler
+    from .handlers import ExecutionResult, ToolHandler, coerce_float, coerce_int, coerce_bool
 except ImportError:
-    from handlers import ExecutionResult, ToolHandler
+    from handlers import ExecutionResult, ToolHandler, coerce_float, coerce_int, coerce_bool
 
 
 # ═══════════════════════════════════════════════════════════
@@ -254,11 +254,42 @@ def handle_roman_to_number(files, payload, output_dir):
     return ExecutionResult(kind="json", message="Roman numeral converted to number", data={"text": str(result), "number": result})
 
 
+_BASE_NAME_MAP = {
+    "binary": 2, "bin": 2, "2": 2,
+    "octal": 8, "oct": 8, "8": 8,
+    "decimal": 10, "dec": 10, "10": 10,
+    "hexadecimal": 16, "hex": 16, "16": 16,
+}
+
+def _resolve_base(raw, default: int = 10) -> int:
+    """Accept ints, numeric strings, or names like 'binary'/'hex'."""
+    if raw is None or raw == "":
+        return default
+    if isinstance(raw, (int, float)):
+        b = int(raw)
+        return b if 2 <= b <= 36 else default
+    s = str(raw).strip().lower()
+    if s in _BASE_NAME_MAP:
+        return _BASE_NAME_MAP[s]
+    try:
+        b = int(s)
+        return b if 2 <= b <= 36 else default
+    except ValueError:
+        return default
+
+
 def handle_number_base_converter(files, payload, output_dir):
     value = str(payload.get("text", "0")).strip()
-    from_base = int(payload.get("from_base", 10))
-    to_base = int(payload.get("to_base", 2))
-    
+    if not value:
+        return ExecutionResult(kind="json", message="Please enter a number to convert.", data={"error": "Empty input"})
+    from_base = _resolve_base(payload.get("from_base"), default=10)
+    to_base = _resolve_base(payload.get("to_base"), default=2)
+
+    # Strip common base prefixes so users can paste "0x1A", "0b1010", "0o17"
+    stripped = value.lstrip("+-").lower()
+    if stripped.startswith(("0x", "0b", "0o")):
+        value = ("-" if value.startswith("-") else "") + stripped[2:]
+
     try:
         decimal = int(value, from_base)
         
@@ -290,7 +321,11 @@ def handle_number_base_converter(files, payload, output_dir):
             "hexadecimal": hex(decimal)[2:].upper(),
         })
     except ValueError as e:
-        return ExecutionResult(kind="json", message=f"Invalid input for base {from_base}", data={"error": str(e)})
+        return ExecutionResult(
+            kind="json",
+            message=f"'{value}' is not a valid number in base {from_base}.",
+            data={"error": str(e)[:200]},
+        )
 
 
 def handle_color_code_generator(files, payload, output_dir):
@@ -602,8 +637,8 @@ def handle_percentage_calculator_improved(files, payload, output_dir):
     mode = str(payload.get("mode", "percentage")).lower()
 
     try:
-        value = float(payload.get("value", 0))
-        total = float(payload.get("total", 100))
+        value = coerce_float(payload.get("value"), default=0.0)
+        total = coerce_float(payload.get("total"), default=100.0)
 
         if mode == "percentage":
             # What % is value of total?
@@ -656,7 +691,11 @@ def handle_percentage_calculator_improved(files, payload, output_dir):
             })
 
     except (ValueError, TypeError) as e:
-        return ExecutionResult(kind="json", message=f"Calculation error: {e}", data={"error": str(e)})
+        return ExecutionResult(
+            kind="json",
+            message="Please enter valid numbers in both fields.",
+            data={"error": str(e)[:200]}
+        )
 
 
 def _safe_scientific_eval_extra(expression: str, angle_mode: str = "rad") -> float:

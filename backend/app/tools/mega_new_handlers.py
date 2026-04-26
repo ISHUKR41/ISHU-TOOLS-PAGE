@@ -1596,8 +1596,9 @@ MEGA_NEW_HANDLERS["json-formatter"] = _handle_json_formatter
 def _handle_uuid_generator(files, payload):
     """Generate UUIDs v1 and v4."""
     import uuid
-    count = min(max(int(payload.get("count", 5)), 1), 50)
-    version = int(payload.get("version", 4))
+    from .handlers import coerce_int
+    count = coerce_int(payload.get("count"), default=5, lo=1, hi=50)
+    version = coerce_int(payload.get("version"), default=4, lo=1, hi=5)
     uuids = []
     for _ in range(count):
         if version == 1:

@@ -944,6 +944,12 @@ def _friendly_error_message(exc: Exception, files: list | None = None) -> str:
     if "connection" in low and ("refused" in low or "reset" in low):
         return "Network connection failed. Please check your link and try again."
 
+    # ── Numeric conversion (calculator inputs) ─────────────────────────────
+    if cls == "ValueError" and ("could not convert" in low or "invalid literal" in low):
+        return "Please enter valid numbers in all fields and try again."
+    if cls == "ZeroDivisionError" or "division by zero" in low:
+        return "Calculation cannot divide by zero. Please adjust your inputs."
+
     # ── Generic library / programmer errors — never expose tracebacks ──────
     if cls in ("KeyError", "IndexError", "TypeError", "AttributeError", "UnboundLocalError"):
         return "Something went wrong while processing your input. Please double-check the values and try again."

@@ -1965,16 +1965,17 @@ def _handle_fuel_calculator(files: list[Path], payload: dict[str, Any], job_dir:
 
 
 def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    principal = float(payload.get("principal", payload.get("loan_amount", 500000)))
-    annual_rate = float(payload.get("rate", payload.get("interest_rate", 8.5)))
-    tenure_months = int(payload.get("tenure", payload.get("tenure_months", 60)))
+    from .handlers import coerce_float, coerce_int
+    principal = coerce_float(payload.get("principal", payload.get("loan_amount")), default=500000.0)
+    annual_rate = coerce_float(payload.get("rate", payload.get("interest_rate")), default=8.5)
+    tenure_months = coerce_int(payload.get("tenure", payload.get("tenure_months")), default=60)
 
     text = _coerce_str(payload.get("text"))
     if text:
         nums = re.findall(r'\d+\.?\d*', text)
-        if len(nums) >= 1: principal = float(nums[0])
-        if len(nums) >= 2: annual_rate = float(nums[1])
-        if len(nums) >= 3: tenure_months = int(float(nums[2]))
+        if len(nums) >= 1: principal = coerce_float(nums[0], default=principal)
+        if len(nums) >= 2: annual_rate = coerce_float(nums[1], default=annual_rate)
+        if len(nums) >= 3: tenure_months = coerce_int(nums[2], default=tenure_months)
 
     if annual_rate <= 0 or tenure_months <= 0 or principal <= 0:
         return ExecutionResult(kind="json", message="Please enter valid loan amount, rate, and tenure.", data={"error": "Invalid input"})
@@ -2015,9 +2016,10 @@ def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: 
 
 
 def _handle_sip_calculator_india(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    monthly = float(payload.get("monthly_investment", payload.get("amount", 5000)))
-    annual_return = float(payload.get("annual_return", payload.get("rate", 12)))
-    years = float(payload.get("years", payload.get("tenure", 10)))
+    from .handlers import coerce_float
+    monthly = coerce_float(payload.get("monthly_investment", payload.get("amount")), default=5000.0)
+    annual_return = coerce_float(payload.get("annual_return", payload.get("rate")), default=12.0)
+    years = coerce_float(payload.get("years", payload.get("tenure")), default=10.0)
 
     if monthly <= 0 or years <= 0 or annual_return < 0:
         return ExecutionResult(kind="json", message="Please enter valid monthly investment, return, and years.", data={"error": "Invalid input"})
@@ -2054,9 +2056,10 @@ def _handle_sip_calculator_india(files: list[Path], payload: dict[str, Any], job
 
 
 def _handle_income_tax_calculator_india(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    income = float(payload.get("income", payload.get("annual_income", 900000)))
-    deductions = float(payload.get("deductions", 0))
-    regime = payload.get("regime", "new").lower()
+    from .handlers import coerce_float
+    income = coerce_float(payload.get("income", payload.get("annual_income")), default=900000.0)
+    deductions = coerce_float(payload.get("deductions"), default=0.0)
+    regime = str(payload.get("regime", "new")).lower()
 
     if income < 0 or deductions < 0:
         return ExecutionResult(kind="json", message="Income and deductions cannot be negative.", data={"error": "Invalid input"})

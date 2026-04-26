@@ -15,7 +15,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
 
-from .handlers import ExecutionResult
+from .handlers import ExecutionResult, coerce_float, coerce_int
 
 
 def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult:
@@ -38,8 +38,8 @@ def _get_text(payload: dict[str, Any]) -> str:
 
 def handle_percentage_calculator(files, payload, output_dir) -> ExecutionResult:
     """Calculate percentage, percentage change, percentage of total"""
-    value = float(payload.get("value", 0))
-    total = float(payload.get("total", 100))
+    value = coerce_float(payload.get("value"), default=0.0)
+    total = coerce_float(payload.get("total"), default=100.0)
     mode = str(payload.get("mode", "percentage")).lower()
 
     if mode == "change":
@@ -155,8 +155,8 @@ def handle_number_base_converter(files, payload, output_dir) -> ExecutionResult:
         "octal": oct(value),
         "hexadecimal": hex(value),
         "input": text,
-        "from_base": from_base,
-    }, f"Converted from {from_base}: {text}")
+        "from_base": from_base_raw,
+    }, f"Converted from {from_base_raw}: {text}")
 
 
 def handle_gpa_calculator(files, payload, output_dir) -> ExecutionResult:
@@ -206,12 +206,15 @@ def handle_gpa_calculator(files, payload, output_dir) -> ExecutionResult:
 
 def handle_bmi_calculator(files, payload, output_dir) -> ExecutionResult:
     """Calculate BMI from weight and height"""
-    weight = float(payload.get("weight", 0))
-    height = float(payload.get("height", 0))
+    weight = coerce_float(payload.get("weight"), default=0.0)
+    height = coerce_float(payload.get("height"), default=0.0)
     unit = str(payload.get("unit", "metric")).lower()
 
     if weight <= 0 or height <= 0:
-        return _text_result({"error": "Weight and height must be positive numbers"}, "Error")
+        return _text_result(
+            {"error": "Please enter positive weight and height values."},
+            "Weight and height must both be positive numbers."
+        )
 
     if unit in ("imperial", "lbs"):
         bmi = (weight / (height * height)) * 703

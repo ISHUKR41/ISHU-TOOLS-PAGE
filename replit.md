@@ -1,5 +1,70 @@
 # ISHU TOOLS
 
+## Latest Update (2026-04-26) — Backend robustness across all 1315 handlers
+
+**Goal:** kill the entire class of "tool crashes on bad input" bugs that produce ugly 500 errors and broken-looking UX. Instead of editing 1315 handlers one by one, do it at the layer below.
+
+### Real bug found and fixed
+- `backend/app/tools/everyday_handlers.py::handle_number_base_converter` — the success-response payload referenced an **undefined variable** `from_base` (should have been `from_base_raw`). This was a latent `NameError` that would crash the *successful* path of the tool the moment a user typed a valid number. Fixed by renaming both reference sites to `from_base_raw`.
+
+### New shared safety helpers in `backend/app/tools/handlers.py`
+Added next to the existing `coerce_quality`:
+- `coerce_float(value, default=0.0, lo=None, hi=None)` — never raises. Strips commas (`"1,234.5"`), trailing `%`, accepts numeric strings/ints/floats/None/empty. Last-ditch regex extracts first numeric token from messy strings. Optional clamping.
+- `coerce_int(value, default=0, lo=None, hi=None)` — same contract, returns `int`.
+- `coerce_bool(value, default=False)` — accepts `true/false/1/0/yes/no/on/off/checked/unchecked`.
+- `safe_handler(handler)` — decorator that wraps any `ToolHandler` and converts `ValueError`/`TypeError`/`KeyError`/`ZeroDivisionError` into clean `ExecutionResult` JSON errors instead of HTTP 500.
+
+These are now exported and used across `everyday_handlers.py`, `new_tools_handlers.py`, `extra_tools_handlers.py`, `mega_new_handlers.py`, `video_extra_handlers.py`.
+
+### Friendlier global error mapping in `backend/app/main.py`
+`_friendly_error_message` now maps:
+- `ValueError: could not convert string to float / invalid literal for int()` → "Please enter valid numbers in all fields and try again."
+- `ZeroDivisionError` / "division by zero" → "Calculation cannot divide by zero. Please adjust your inputs."
+
+This catches every remaining handler that still uses raw `float()`/`int()` so the user sees a friendly message instead of the technical traceback.
+
+### Specific handlers patched to use the new helpers
+- `handle_bmi_calculator` — `weight`/`height` via `coerce_float`; clearer "must be positive" message.
+- `handle_percentage_calculator` (everyday) and `handle_percentage_calculator_improved` (extra_tools — the active override) — both use `coerce_float`; bad input no longer 500s.
+- `handle_lorem_ipsum`, `handle_json_formatter`, `handle_uuid_generator` (new_tools) and `_handle_uuid_generator` (mega_new — the active override) — `count`/`indent`/`version` via `coerce_int` with clamping.
+- `handle_password_generator` — `length`/`count` via `coerce_int`; toggles via `coerce_bool` (no more `str(...) == "true"` brittleness).
+- `handle_base64_encode` — explicit empty-input check + try/except wrapper.
+- `handle_qr_code_generator` (handlers.py) — empty-text check, 4000-char cap, try/except around PIL/qrcode failures with friendly HTTPException.
+- `_handle_emi_calculator`, `_handle_sip_calculator_india`, `_handle_income_tax_calculator_india` (video_extra) — all `float()`/`int()` calls swapped to `coerce_float`/`coerce_int`.
+
+### Number Base Converter — major UX upgrade
+The `number-base-converter` slug had a **second** active handler in `extra_tools_handlers.py` that called `int(payload.get("from_base", 10))` — which crashed when the frontend sent the natural strings `"decimal"`/`"binary"`/`"hex"`/`"octal"`. Rewrote it:
+- New `_resolve_base()` accepts ints, numeric strings, AND named bases (binary/bin/2, octal/oct/8, decimal/dec/10, hexadecimal/hex/16) — falls back to default for anything else.
+- Auto-strips `0x`/`0b`/`0o` prefixes so users can paste `"0xFF"` directly.
+- Friendly error message: `"'xyz' is not a valid number in base 10."` instead of raw `int()` traceback.
+
+### Frontend cleanup
+Deleted two dead components that were not imported anywhere (verified via ripgrep):
+- `frontend/src/features/home/components/CategorySpotlight.tsx`
+- `frontend/src/features/home/components/ToolCategorySection.tsx`
+
+These were leftovers from the old "Categories" + "Most Popular" homepage sections that were already removed in earlier rounds. The single unified smart-sorted grid (`HomePage.tsx`) is the only homepage layout now.
+
+### Verified after restart
+Smoke-tested 12 endpoints with both bad and good inputs. All return clean JSON with friendly messages — none 500. Examples:
+- `bmi-calculator` weight=`"abc"` → "Weight and height must both be positive numbers."
+- `bmi-calculator` weight=70 height=175 → BMI 22.86, Normal weight ✓
+- `percentage-calculator` value=`"abc"` total=`"hello"` → defaults to 0% (no crash)
+- `percentage-calculator` value=15 total=200 mode=of → 30 ✓
+- `number-base-converter` text=255 from=decimal to=binary → "11111111" ✓
+- `number-base-converter` text="0xFF" from=hex to=decimal → "255" ✓ (prefix auto-strip)
+- `number-base-converter` text="xyz" → "'xyz' is not a valid number in base 10." (friendly)
+- `password-generator` length=12 count=3 → 3 strong passwords ✓
+- `qr-code-generator` text="" → "Please enter text or a URL to encode in the QR code."
+- `qr-code-generator` text="https://ishutools.fun" → 563-byte PNG ✓
+- `scientific-calculator` `2+sin(30)` deg → 2.5 ✓
+- Health: 1247 tools, 1315 handlers, 0 missing, 0 duplicates.
+
+### Net effect
+Every handler in the codebase — even those I didn't individually edit — now degrades gracefully on bad input because the global error mapper translates `ValueError`/`TypeError`/`ZeroDivisionError` into friendly text. The most-used calculator/utility tools additionally have proactive input coercion so they accept messy real-world input ("1,234", "12%", " 42 ") without complaining.
+
+---
+
 ## Latest Update (2026-04-25 round 3) — Critical CSS color/font sync (zero FOSC)
 
 **Problem found:** the inlined critical CSS in `frontend/index.html` claimed to "mirror src/index.css EXACTLY" but actually used a different palette and font stack. On every first paint the page rendered with one accent (Apple blue `#007aff`, lighter panel, plain `Inter`) and then visibly shifted the moment the lazy stylesheet swapped in (`#4a9eff`, slightly darker panel, `Inter Variable`). Subtle but real "flash of restyled content" on every cold page load — including all 1247 prerendered tool pages.

@@ -30,12 +30,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 try:
     from .handlers import (
         ExecutionResult, ToolHandler, ensure_files,
-        create_single_file_result, create_zip_result
+        create_single_file_result, create_zip_result,
+        coerce_float, coerce_int, coerce_bool
     )
 except ImportError:
     from handlers import (
         ExecutionResult, ToolHandler, ensure_files,
-        create_single_file_result, create_zip_result
+        create_single_file_result, create_zip_result,
+        coerce_float, coerce_int, coerce_bool
     )
 
 
@@ -47,7 +49,7 @@ LOREM_WORDS = "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiu
 
 
 def handle_lorem_ipsum(files, payload, output_dir):
-    count = max(1, min(50, int(payload.get("count", 5))))
+    count = coerce_int(payload.get("count"), default=5, lo=1, hi=50)
     unit = str(payload.get("unit", "paragraphs")).lower()
     
     import random
@@ -143,7 +145,7 @@ import difflib
 
 def handle_json_formatter(files, payload, output_dir):
     text = str(payload.get("text", ""))
-    indent = max(1, min(8, int(payload.get("indent", 2))))
+    indent = coerce_int(payload.get("indent"), default=2, lo=1, hi=8)
     
     if not text.strip():
         return ExecutionResult(kind="json", message="Please provide JSON text", data={"error": "Empty input"})
@@ -203,7 +205,12 @@ def handle_html_decoder(files, payload, output_dir):
 
 def handle_base64_encode(files, payload, output_dir):
     text = str(payload.get("text", ""))
-    encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
+    if not text:
+        return ExecutionResult(kind="json", message="Please enter text to encode.", data={"error": "Empty input"})
+    try:
+        encoded = base64.b64encode(text.encode("utf-8")).decode("ascii")
+    except Exception as e:
+        return ExecutionResult(kind="json", message="Could not encode that text.", data={"error": str(e)[:200]})
     return ExecutionResult(kind="json", message="Base64 encoded", data={"text": encoded, "original_length": len(text), "encoded_length": len(encoded)})
 
 
@@ -217,7 +224,7 @@ def handle_base64_decode(files, payload, output_dir):
 
 
 def handle_uuid_generator(files, payload, output_dir):
-    count = max(1, min(100, int(payload.get("count", 5))))
+    count = coerce_int(payload.get("count"), default=5, lo=1, hi=100)
     uuids = [str(uuid.uuid4()) for _ in range(count)]
     return ExecutionResult(
         kind="json",
@@ -711,12 +718,12 @@ def handle_gradient_generator(files, payload, output_dir):
 # ═══════════════════════════════════════════════════════════
 
 def handle_password_generator(files, payload, output_dir):
-    length = max(4, min(128, int(payload.get("length", 16))))
-    use_upper = str(payload.get("uppercase", "true")).lower() == "true"
-    use_lower = str(payload.get("lowercase", "true")).lower() == "true"
-    use_digits = str(payload.get("digits", "true")).lower() == "true"
-    use_symbols = str(payload.get("symbols", "true")).lower() == "true"
-    count = max(1, min(20, int(payload.get("count", 5))))
+    length = coerce_int(payload.get("length"), default=16, lo=4, hi=128)
+    use_upper = coerce_bool(payload.get("uppercase"), default=True)
+    use_lower = coerce_bool(payload.get("lowercase"), default=True)
+    use_digits = coerce_bool(payload.get("digits"), default=True)
+    use_symbols = coerce_bool(payload.get("symbols"), default=True)
+    count = coerce_int(payload.get("count"), default=5, lo=1, hi=20)
     
     chars = ""
     if use_lower: chars += string.ascii_lowercase

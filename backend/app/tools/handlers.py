@@ -333,6 +333,101 @@ def coerce_quality(value: Any, default: int = 85, lo: int = 1, hi: int = 100) ->
     return max(lo, min(hi, q))
 
 
+def coerce_float(value: Any, default: float = 0.0,
+                 lo: float | None = None, hi: float | None = None) -> float:
+    """Robustly parse a float from arbitrary user input. Never raises.
+
+    Handles: None, empty string, numbers, numeric strings ("1,234.5", "  42 ", "12%").
+    Falls back to ``default`` on any failure. Optionally clamps to [lo, hi].
+    """
+    if value is None or value is False:
+        v = default
+    elif isinstance(value, bool):
+        v = float(value)
+    elif isinstance(value, (int, float)):
+        v = float(value)
+    else:
+        s = str(value).strip().replace(",", "").rstrip("%").strip()
+        if not s:
+            v = default
+        else:
+            try:
+                v = float(s)
+            except (TypeError, ValueError):
+                # Last-ditch: extract first numeric token
+                m = re.search(r"-?\d+(?:\.\d+)?", s)
+                v = float(m.group()) if m else default
+    if lo is not None and v < lo:
+        v = lo
+    if hi is not None and v > hi:
+        v = hi
+    return v
+
+
+def coerce_int(value: Any, default: int = 0,
+               lo: int | None = None, hi: int | None = None) -> int:
+    """Robustly parse an int from arbitrary user input. Never raises.
+
+    Falls back to ``default`` on any failure. Optionally clamps to [lo, hi].
+    """
+    f = coerce_float(value, default=float(default))
+    try:
+        i = int(f)
+    except (TypeError, ValueError, OverflowError):
+        i = default
+    if lo is not None and i < lo:
+        i = lo
+    if hi is not None and i > hi:
+        i = hi
+    return i
+
+
+def coerce_bool(value: Any, default: bool = False) -> bool:
+    """Parse 'true'/'false'/'1'/'0'/'yes'/'no'/'on'/'off' permissively."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    s = str(value).strip().lower()
+    if s in ("true", "1", "yes", "y", "on", "checked"):
+        return True
+    if s in ("false", "0", "no", "n", "off", "unchecked", ""):
+        return False
+    return default
+
+
+def safe_handler(handler: ToolHandler) -> ToolHandler:
+    """Decorator: wraps a handler so unexpected exceptions become a clean
+    ExecutionResult error response instead of an HTTP 500.
+
+    HTTPException is preserved (re-raised) so explicit validation failures
+    surface with their proper status code. Common user-input errors
+    (ValueError, TypeError, KeyError, ZeroDivisionError) are converted to
+    friendly JSON error responses.
+    """
+    @wraps(handler)
+    def wrapped(files, payload, output_dir):
+        try:
+            return handler(files, payload, output_dir)
+        except HTTPException:
+            raise
+        except (ValueError, TypeError, KeyError) as exc:
+            return ExecutionResult(
+                kind="json",
+                message="Please double-check your input values and try again.",
+                data={"error": str(exc)[:200] or "Invalid input"},
+            )
+        except ZeroDivisionError:
+            return ExecutionResult(
+                kind="json",
+                message="Calculation cannot divide by zero. Adjust your inputs.",
+                data={"error": "Division by zero"},
+            )
+    return wrapped
+
+
 def parse_page_numbers(raw: str, total_pages: int) -> list[int]:
     cleaned = raw.strip().lower()
     if not cleaned or cleaned == "all":
@@ -2161,11 +2256,16 @@ def handle_translate_text(files: list[Path], payload: dict[str, Any], output_dir
 def handle_qr_code_generator(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     text = str(payload.get("text", "")).strip()
     if not text:
-        raise HTTPException(status_code=400, detail="Provide text or URL in payload.text")
+        raise HTTPException(status_code=400, detail="Please enter text or a URL to encode in the QR code.")
+    if len(text) > 4000:
+        raise HTTPException(status_code=400, detail="Text is too long for a single QR code (max 4000 characters).")
 
-    image = qrcode.make(text)
-    output = output_dir / "qr-code.png"
-    image.save(output)
+    try:
+        image = qrcode.make(text)
+        output = output_dir / "qr-code.png"
+        image.save(output)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Could not generate QR code: {str(exc)[:160]}") from exc
     return create_single_file_result(output, "QR generated", "image/png")
 
 
