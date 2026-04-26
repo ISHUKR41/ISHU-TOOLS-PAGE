@@ -10,6 +10,7 @@ import SiteShell from '../../components/layout/SiteShell'
 import { fetchPopularityMap } from '../../api/toolsApi'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
+import { useProgressiveList } from '../../hooks/useProgressiveList'
 import { toSiteUrl } from '../../lib/siteConfig'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import { getToolPriorityScore, searchTools } from '../../lib/toolSearch'
@@ -519,6 +520,13 @@ export default function AllToolsPage() {
 
   const isSearching   = deferredQuery.trim().length > 0
 
+  // Progressive rendering — keeps the initial paint snappy on /tools even
+  // though the catalogue has 1247 cards. Search results render in full.
+  const { visible: visibleFilteredTools, isComplete: filteredComplete } = useProgressiveList(
+    filteredTools,
+    { initial: 240, step: 200, renderAll: isSearching || activeCategory !== 'all' },
+  )
+
   // No grouped-by-category sections (per user request — one flat smart-sorted grid).
   const showFavorites = activeTab === 'favorites'
 
@@ -643,7 +651,7 @@ export default function AllToolsPage() {
                   </p>
                   <section className='category-section all-tools-flat-section'>
                     <div className={`tool-grid cv-grid${viewMode === 'list' ? ' list-mode' : ''}`}>
-                      {filteredTools.map(tool => (
+                      {visibleFilteredTools.map(tool => (
                         <ToolCardCompact
                           key={tool.slug}
                           tool={tool}
@@ -654,6 +662,11 @@ export default function AllToolsPage() {
                         />
                       ))}
                     </div>
+                    {!filteredComplete && (
+                      <p className='progressive-hint' aria-live='polite'>
+                        Streaming the rest of the catalogue…
+                      </p>
+                    )}
                   </section>
                 </>
               )}

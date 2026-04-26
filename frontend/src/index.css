@@ -13579,3 +13579,32 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .smart-drop, .smart-drop-card, .smart-drop-hint { animation: none !important; }
 }
+
+/* ── Progressive list streaming hint ── */
+.progressive-hint{
+  margin: 1.4rem auto 0;
+  text-align: center;
+  font-size: 0.82rem;
+  letter-spacing: .04em;
+  color: var(--muted, #8b90a0);
+  opacity: .75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+}
+.progressive-hint::before,
+.progressive-hint::after{
+  content: '';
+  display: inline-block;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(74,158,255,.25);
+  border-top-color: rgba(74,158,255,.85);
+  animation: progressive-spin .8s linear infinite;
+}
+.progressive-hint::after{ display: none; }
+@keyframes progressive-spin{ to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){
+  .progressive-hint::before{ animation: none; border-top-color: rgba(74,158,255,.4); }
+}

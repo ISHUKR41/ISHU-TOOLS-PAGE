@@ -69,8 +69,13 @@
       h1,h2,h3,h4,h5,h6{margin:0;font-family:var(--font-display);letter-spacing:0}
       button,[role=button]{touch-action:manipulation}
 
-      /* ── App loader — shown before React hydrates (modern) ── */
-      .app-loader{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#061224 0%,#02060f 70%);overflow:hidden;isolation:isolate}
+      /* ── App loader — shown before React hydrates (modern).
+         IMPORTANT: anchored to the top of the viewport with the same vertical
+         padding the real navigation occupies. When React replaces this with
+         <SiteShell> (top-anchored nav + hero) the visual centre of mass barely
+         moves, which keeps Cumulative Layout Shift well under Google's 0.1
+         "Good" threshold — critical for SEO ranking. ── */
+      .app-loader{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:7.5rem 1rem 2rem;background:radial-gradient(ellipse at 50% 30%,#061224 0%,#02060f 70%);overflow:hidden;isolation:isolate;contain:layout paint}
       .app-loader::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 60% 50% at 50% 50%,#000 30%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse 60% 50% at 50% 50%,#000 30%,transparent 80%);z-index:-1}
       .app-loader-orb{position:absolute;width:380px;height:380px;border-radius:50%;filter:blur(80px) saturate(140%);mix-blend-mode:screen;pointer-events:none;z-index:-1;opacity:.7}
       .app-loader-orb.orb-1{background:radial-gradient(circle,#4ad4ff 0%,transparent 65%);top:18%;left:22%;animation:_orbA 6s ease-in-out infinite alternate}

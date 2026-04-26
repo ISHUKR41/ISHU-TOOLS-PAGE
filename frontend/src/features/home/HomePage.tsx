@@ -10,6 +10,7 @@ import SiteShell from '../../components/layout/SiteShell'
 import { fetchPopularityMap } from '../../api/toolsApi'
 import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
+import { useProgressiveList } from '../../hooks/useProgressiveList'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
 import { loadUsage } from '../../lib/usageTracker'
@@ -485,6 +486,14 @@ export default function HomePage() {
 
   const showRecentDropdown = searchFocused && !query.trim() && recentSearches.length > 0
 
+  // Progressive rendering: avoid mounting all 1247 ToolCards on first paint.
+  // - Idle state (no query): start with 240 cards, idle-stream the rest.
+  // - Searching: render all matches instantly (almost always < 100).
+  const { visible: visibleTools, isComplete: gridComplete } = useProgressiveList(
+    filteredTools,
+    { initial: 240, step: 200, renderAll: isSearching },
+  )
+
   return (
     <SiteShell>
       <div className='page-wrap home-wrap'>
@@ -674,7 +683,7 @@ export default function HomePage() {
                 </p>
               </header>
               <div className='tool-grid'>
-                {filteredTools.map((tool) => {
+                {visibleTools.map((tool) => {
                   const meta = categoryLabelById.get(tool.category)
                   return (
                     <ToolCard
@@ -688,6 +697,11 @@ export default function HomePage() {
                   )
                 })}
               </div>
+              {!gridComplete && !isSearching && (
+                <p className='progressive-hint' aria-live='polite'>
+                  Streaming the rest of the catalogue…
+                </p>
+              )}
             </section>
           )}
         </section>
