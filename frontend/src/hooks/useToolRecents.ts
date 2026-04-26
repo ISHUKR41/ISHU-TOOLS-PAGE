@@ -5,9 +5,16 @@ import { useEffect, useState } from 'react'
  *
  * Why: with 1247 tools in the catalogue, returning users want to land back
  * on whatever they were working on without re-searching. We store the last
- * 8 unique slugs they opened, surface them in a dedicated row above the
- * main grid on the homepage, and stay 100% client-side (no backend trip,
- * no privacy concern, works offline).
+ * 24 unique slugs they opened, surface the freshest 6 in a dedicated row
+ * above the main grid on the homepage, and let users page through the
+ * older entries via the "Show older" toggle. 100% client-side (no backend
+ * trip, no privacy concern, works offline).
+ *
+ * Why 24 (not 8)? The homepage Recently Used row pages through history in
+ * slates of 6, mirroring the Suggested row's shuffle UX. 24 gives 4 slates
+ * of depth — enough for a returning power user to dig back into something
+ * they touched a week ago — while still being trivially small in storage
+ * (~1KB max even with the longest slugs).
  *
  * Cross-tab sync via the native `storage` event + an in-page custom event
  * so the homepage updates instantly the moment a tool page is opened.
@@ -17,7 +24,7 @@ import { useEffect, useState } from 'react'
  */
 
 const KEY = 'ishu:recent_tools_v1'
-const MAX_ITEMS = 8
+const MAX_ITEMS = 24
 const CHANGE_EVENT = 'ishu:recent-tools-changed'
 
 function readRecents(): string[] {

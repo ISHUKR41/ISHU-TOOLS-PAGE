@@ -4,7 +4,7 @@ import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
   Calculator, Star, ChevronDown, Award, Users, Sparkles, X as XIcon,
-  Shuffle,
+  Shuffle, History,
 } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
@@ -354,6 +354,11 @@ export default function HomePage() {
   // intentionally don't persist it: a fresh visit should show the strongest
   // picks first, not whatever window the user landed on last time.
   const [suggestedShuffleIndex, setSuggestedShuffleIndex] = useState(0)
+  // Window index for the Recently Used row — same sliding-window pattern as
+  // suggested. Each "Show older" press advances by 6 entries through the
+  // 24-deep history pool. Not persisted: a returning visitor should land on
+  // their freshest activity, not the slate they paged into last session.
+  const [recentShuffleIndex, setRecentShuffleIndex] = useState(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
@@ -459,20 +464,48 @@ export default function HomePage() {
   }, [pinnedSlugs, tools, toolBySlug])
 
   const pinnedSet = useMemo(() => new Set(pinnedSlugs), [pinnedSlugs])
-  const recentTools = useMemo(() => {
-    if (recentSlugs.length === 0 || tools.length === 0) return []
-    const out = []
+  // Build the FULL recent pool (up to 24) so the row can page through history
+  // via "Show older". The visible 6-card window is derived below. We still
+  // skip anything already shown in the Pinned row above to avoid visual
+  // duplication — a pinned tool you just opened shouldn't appear twice in
+  // two consecutive sections.
+  const recentToolsPool = useMemo(() => {
+    if (recentSlugs.length === 0 || tools.length === 0) return [] as typeof tools
+    const out: typeof tools = []
     for (const slug of recentSlugs) {
-      // Skip anything already shown in the Pinned row above to avoid
-      // visual duplication — a pinned tool you just opened shouldn't
-      // appear twice in two consecutive sections.
       if (pinnedSet.has(slug)) continue
       const t = toolBySlug.get(slug)
       if (t) out.push(t)
-      if (out.length >= 6) break
     }
     return out
   }, [recentSlugs, tools, toolBySlug, pinnedSet])
+
+  // Sliding window of 6 over the recent pool. Mirrors the Suggested row's
+  // shuffle math: each "Show older" press advances the slate by one, wrapping
+  // around so the button always cycles back to the freshest 6 eventually.
+  const visibleRecent = useMemo(() => {
+    const pool = recentToolsPool
+    if (pool.length === 0) return [] as typeof pool
+    if (pool.length <= 6) return pool.slice(0, 6)
+    const slates = Math.max(1, Math.ceil(pool.length / 6))
+    const slate = ((recentShuffleIndex % slates) + slates) % slates
+    const start = (slate * 6) % pool.length
+    const out: typeof pool = []
+    for (let i = 0; i < 6 && i < pool.length; i++) {
+      out.push(pool[(start + i) % pool.length])
+    }
+    return out
+  }, [recentToolsPool, recentShuffleIndex])
+
+  // The "Show older" button only appears when there's actual depth to page
+  // through — pointless to show it for a 4-tool history.
+  const canPageRecent = recentToolsPool.length > 6
+  const recentSlateLabel = useMemo(() => {
+    if (!canPageRecent) return ''
+    const slates = Math.max(1, Math.ceil(recentToolsPool.length / 6))
+    const slate = ((recentShuffleIndex % slates) + slates) % slates
+    return `${slate + 1} / ${slates}`
+  }, [canPageRecent, recentToolsPool.length, recentShuffleIndex])
 
   // ─── Suggested for you ───────────────────────────────────────────────
   // Discovery row that uses the same priority engine as the All-tools sort
@@ -841,20 +874,39 @@ export default function HomePage() {
                Hidden during active search, hidden until the catalogue is
                ready, and hidden for first-time visitors. Pure localStorage,
                no backend trip — works offline and on Vercel cold-start. */}
-          {!loading && !error && !isSearching && recentTools.length > 0 && (
+          {!loading && !error && !isSearching && visibleRecent.length > 0 && (
             <section className='tool-section recent-tools-section'>
               <header className='section-heading'>
                 <div className='section-heading-left'>
                   <span className='section-kicker'>For you</span>
                   <div className='section-heading-title-row'>
                     <h2>Recently used</h2>
-                    <span className='tool-count-badge'>{recentTools.length}</span>
+                    <span className='tool-count-badge'>{recentToolsPool.length}</span>
+                    {canPageRecent && (
+                      <button
+                        type='button'
+                        className='suggested-shuffle-btn'
+                        onClick={() => setRecentShuffleIndex((i) => i + 1)}
+                        aria-label={`Show older recently used tools (page ${recentSlateLabel})`}
+                        title='Page through older recently used tools'
+                      >
+                        <History size={14} aria-hidden='true' />
+                        <span>Show older</span>
+                        <span className='suggested-shuffle-meta' aria-hidden='true'>
+                          {recentSlateLabel}
+                        </span>
+                      </button>
+                    )}
                   </div>
                 </div>
-                <p>Pick up where you left off — saved on this device only.</p>
+                <p>
+                  {canPageRecent
+                    ? 'Pick up where you left off — tap "Show older" to walk back through your history.'
+                    : 'Pick up where you left off — saved on this device only.'}
+                </p>
               </header>
-              <div className='tool-grid'>
-                {recentTools.map((tool) => {
+              <div className='tool-grid' key={`recent-slate-${recentShuffleIndex}`}>
+                {visibleRecent.map((tool) => {
                   const meta = categoryLabelById.get(tool.category)
                   return (
                     <ToolCard
