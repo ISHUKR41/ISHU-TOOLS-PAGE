@@ -26,6 +26,7 @@ import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentat
 import { SITE_FALLBACK_URL, SITE_OG_IMAGE, SITE_URL, toSiteUrl } from '../../lib/siteConfig'
 import { getToolFields } from './toolFields'
 import ToolSidebar from './components/ToolSidebar'
+import PinSuggestionBanner from './components/PinSuggestionBanner'
 import ToolActions from '../../components/tool/ToolActions'
 import type { ToolSEO } from '../../lib/seoData'
 import SkeletonToolPage from '../../components/ui/SkeletonToolPage'
@@ -910,6 +911,11 @@ export default function ToolPage() {
           <ArrowLeft size={18} />
           Back to all tools
         </Link>
+
+        {/* Auto-pin nudge for power users (≥5 visits, not yet pinned, not
+            previously dismissed). Renders nothing in all other cases so
+            first-time visitors never see it. */}
+        <PinSuggestionBanner slug={tool.slug} title={tool.title} />
 
         <div className='tool-layout'>
           <div className='tool-main-column'>

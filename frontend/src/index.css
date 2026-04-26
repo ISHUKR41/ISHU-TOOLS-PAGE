@@ -1211,6 +1211,111 @@ h3 {
   .tool-pin-btn:hover { transform: none; }
 }
 
+/* ── Pin suggestion banner (top of ToolPage for power users) ───────────
+   Only renders when visits ≥ 5, not pinned, not dismissed. One slim row,
+   sits between back-link and the tool layout, never blocks tool UI. */
+.pin-suggestion-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.95rem;
+  margin: 0.55rem 0 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #3bd0ff 28%, rgba(156, 190, 255, 0.10));
+  background: linear-gradient(135deg,
+    color-mix(in srgb, #3bd0ff 9%, rgba(13, 19, 35, 0.95)),
+    rgba(8, 13, 24, 0.95));
+  color: rgba(220, 232, 255, 0.92);
+  font-size: 0.92rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+  animation: pinBannerSlideIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pinBannerSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.pin-suggestion-icon {
+  flex: 0 0 auto;
+  color: #3bd0ff;
+}
+.pin-suggestion-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.pin-suggestion-text strong {
+  color: #fff;
+  font-weight: 600;
+}
+.pin-suggestion-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.pin-suggestion-pin-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid color-mix(in srgb, #3bd0ff 55%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #3bd0ff 18%, rgba(8, 13, 24, 0.85));
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.16s ease, transform 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.pin-suggestion-pin-btn:hover {
+  background: color-mix(in srgb, #3bd0ff 30%, rgba(8, 13, 24, 0.85));
+  transform: translateY(-1px);
+}
+.pin-suggestion-pin-btn:focus-visible {
+  outline: 2px solid #3bd0ff;
+  outline-offset: 2px;
+}
+.pin-suggestion-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(220, 232, 255, 0.55);
+  cursor: pointer;
+  transition: color 0.16s ease, background 0.16s ease;
+}
+.pin-suggestion-dismiss:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+}
+.pin-suggestion-dismiss:focus-visible {
+  outline: 2px solid #3bd0ff;
+  outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  .pin-suggestion-banner {
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+  .pin-suggestion-text {
+    flex-basis: 100%;
+    order: 2;
+  }
+  .pin-suggestion-actions {
+    order: 3;
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pin-suggestion-banner { animation: none; }
+  .pin-suggestion-pin-btn:hover { transform: none; }
+}
+
 .tool-icon-wrap {
   width: 46px;
   height: 46px;
