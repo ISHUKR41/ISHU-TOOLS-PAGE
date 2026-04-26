@@ -448,8 +448,169 @@ app.add_middleware(
 )
 
 
+# ── Slug alias map ────────────────────────────────────────────────────────────
+# Users (and the wider web) often type tool names slightly differently than how
+# we slug them in the registry. Instead of returning 404, we transparently map
+# the most common alternate slugs to their real registry counterparts. This is
+# a pure UX layer — the response uses the canonical tool's title/handler.
+_SLUG_ALIASES: dict[str, str] = {
+    # text case
+    "case-converter":            "string-case-converter",
+    "text-case-converter":       "string-case-converter",
+    "letter-case-converter":     "string-case-converter",
+    "text-to-uppercase":         "string-case-converter",
+    "uppercase-converter":       "string-case-converter",
+    "text-to-lowercase":         "string-case-converter",
+    "lowercase-converter":       "string-case-converter",
+    "title-case-converter":      "string-case-converter",
+    "title-case":                "string-case-converter",
+
+    # whitespace
+    "remove-extra-spaces":       "whitespace-remover",
+    "remove-spaces":             "whitespace-remover",
+    "trim-spaces":               "whitespace-remover",
+    "trim-whitespace":           "whitespace-remover",
+    "remove-line-breaks":        "whitespace-remover",
+    "remove-newlines":           "whitespace-remover",
+    "strip-whitespace":          "whitespace-remover",
+
+    # word/char counts
+    "count-words":               "word-counter",
+    "word-count":                "word-counter",
+    "count-characters":          "character-counter",
+    "character-count":           "character-counter",
+
+    # slug
+    "slugify":                   "url-slug-generator",
+    "slugify-text":              "url-slug-generator",
+    "slug-generator":            "url-slug-generator",
+    "text-to-slug":              "url-slug-generator",
+
+    # JSON
+    "json-validator":            "json-formatter",
+    "validate-json":             "json-formatter",
+    "json-validate":             "json-formatter",
+    "json-minify":               "json-minifier",
+    "minify-json":               "json-minifier",
+    "json-beautify":             "json-prettify",
+    "beautify-json":             "json-prettify",
+
+    # hash
+    "sha1-generator":            "hash-generator",
+    "sha-1":                     "hash-generator",
+    "sha-256":                   "sha256-generator",
+    "sha-512":                   "sha512-hash",
+    "md5-hash-generator":        "md5-generator",
+
+    # encoding
+    "text-encoder":              "base64-encode",
+    "text-decoder":              "base64-decode",
+    "base64":                    "base64-encode",
+    "base-64-encode":            "base64-encode",
+    "base-64-decode":            "base64-decode",
+    "url-encoder":               "url-encode",
+    "url-decoder":               "url-decode",
+    "html-encoder":              "html-encode",
+    "html-decoder":              "html-decode",
+
+    # morse / binary text
+    "morse-code-encoder":        "text-to-morse",
+    "morse-code-decoder":        "morse-to-text",
+    "morse-code-translator":     "morse-code-converter",
+    "binary-encoder":            "text-to-binary",
+    "binary-decoder":            "binary-to-text",
+    "text-to-binary-encoder":    "text-to-binary",
+
+    # timestamp
+    "timestamp-to-date":         "unix-timestamp-converter",
+    "date-to-timestamp":         "unix-timestamp-converter",
+    "epoch-to-date":             "epoch-converter",
+    "unix-time":                 "unix-timestamp-converter",
+
+    # percentage / ratio
+    "percentage-of-number":      "percentage-calculator",
+    "percent-of":                "percentage-calculator",
+    "what-is-percent":           "percentage-calculator",
+    "percent-change-calculator": "percentage-change-calculator",
+    "percent-change":            "percentage-change-calculator",
+    "ratio-calculator":          "aspect-ratio-calculator",
+    "calculate-ratio":           "aspect-ratio-calculator",
+
+    # color
+    "rgb-to-hex-converter":      "rgb-to-hex",
+    "hex-to-rgb-converter":      "hex-to-rgb",
+
+    # PDF / images (often-typed alternates)
+    "pdf-merger":                "merge-pdf",
+    "pdf-merge":                 "merge-pdf",
+    "merge-pdfs":                "merge-pdf",
+    "pdf-splitter":              "split-pdf",
+    "pdf-split":                 "split-pdf",
+    "pdf-compressor":            "compress-pdf",
+    "compress-pdfs":             "compress-pdf",
+    "image-compressor":          "compress-image",
+    "compress-images":           "compress-image",
+    "image-resizer":             "resize-image",
+    "resize-images":             "resize-image",
+    "background-remover":        "remove-background",
+    "remove-bg":                 "remove-background",
+    "image-to-pdf":              "jpg-to-pdf",
+    "photo-to-pdf":              "jpg-to-pdf",
+
+    # password / qr
+    "qr-generator":              "qr-code-generator",
+    "qrcode-generator":          "qr-code-generator",
+    "generate-qr":               "qr-code-generator",
+    "generate-password":         "password-generator",
+    "strong-password-generator": "password-generator",
+
+    # video downloaders (real slugs in registry are youtube-downloader / instagram-downloader / tiktok-downloader)
+    "youtube-video-downloader":  "youtube-downloader",
+    "yt-downloader":             "youtube-downloader",
+    "yt-video-downloader":       "youtube-downloader",
+    "instagram-video-downloader":"instagram-downloader",
+    "ig-downloader":             "instagram-downloader",
+    "ig-video-downloader":       "instagram-downloader",
+    "instagram-reels-downloader":"instagram-reel-downloader",
+    "tiktok-video-downloader":   "tiktok-downloader",
+    "tt-downloader":             "tiktok-downloader",
+    "twitter-downloader":        "twitter-video-downloader",
+    "x-downloader":              "x-video-downloader",
+    "facebook-downloader":       "facebook-video-downloader",
+    "fb-downloader":             "facebook-video-downloader",
+    "fb-video-downloader":       "facebook-video-downloader",
+}
+
+
+def _resolve_slug(slug: str) -> str:
+    """Resolve a user-facing slug to its canonical registry slug.
+
+    Tries (in order): exact match, lowercase, alias map, alias on lowercase.
+    Falls back to the original slug if no resolution succeeds (caller will 404).
+    """
+    if slug in _TOOL_BY_SLUG:
+        return slug
+    lowered = slug.lower().strip()
+    if lowered in _TOOL_BY_SLUG:
+        return lowered
+    if slug in _SLUG_ALIASES and _SLUG_ALIASES[slug] in _TOOL_BY_SLUG:
+        return _SLUG_ALIASES[slug]
+    if lowered in _SLUG_ALIASES and _SLUG_ALIASES[lowered] in _TOOL_BY_SLUG:
+        return _SLUG_ALIASES[lowered]
+    return slug
+
+
+# Validate alias targets at import time so a typo here surfaces in the dev log.
+_BAD_ALIASES = [a for a, target in _SLUG_ALIASES.items() if target not in _TOOL_BY_SLUG]
+if _BAD_ALIASES:
+    print(f"[main] WARNING: {len(_BAD_ALIASES)} slug aliases point to missing tools: {_BAD_ALIASES[:10]}")
+else:
+    print(f"[main] Slug alias map loaded: {len(_SLUG_ALIASES)} aliases, all targets valid.")
+
+
 def get_tool(slug: str) -> ToolDefinition:
-    tool = _TOOL_BY_SLUG.get(slug)
+    resolved = _resolve_slug(slug)
+    tool = _TOOL_BY_SLUG.get(resolved)
     if tool:
         return tool
     raise HTTPException(status_code=404, detail="Tool not found")
@@ -874,7 +1035,9 @@ def track_tool_visit(
 
 @app.get("/api/tools/{slug}")
 def tool_details(slug: str) -> Response:
-    tool = get_tool(slug)
+    # Resolve user-typed slug variants so /api/tools/case-converter returns
+    # the canonical 'string-case-converter' record.
+    tool = get_tool(_resolve_slug(slug))
     return JSONResponse(content=tool.model_dump(), headers={"Cache-Control": _CACHE_CONTROL_TOOL})
 
 
@@ -981,7 +1144,10 @@ def run_tool(
     client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or \
                 (request.client.host if request.client else "unknown")
     _check_rate_limit(client_ip)
-    tool = get_tool(slug)
+    # Resolve user-typed slug variants (e.g. "case-converter" → "string-case-converter").
+    resolved_slug = _resolve_slug(slug)
+    tool = get_tool(resolved_slug)
+    slug = resolved_slug  # use canonical slug for handler lookup, cache, popularity, logging
     handler = HANDLERS.get(slug)
     if not handler:
         raise HTTPException(status_code=501, detail=f"Handler is not implemented for '{tool.title}'. Please check back later.")

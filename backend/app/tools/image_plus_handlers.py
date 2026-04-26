@@ -567,16 +567,31 @@ def handle_morse_to_text(files: list[Path], payload: dict[str, Any], output_dir:
         "-....":"6","--...":"7","---..":"8","----.":"9",".-.-.-":".","--..--":",",
         "..--..":"?","-.-.--":"!",".--.-.":"@","-....-":"-",
     }
-    code = str(payload.get("morse", "")).strip()
+    # Accept multiple field names so the tool works no matter which UI calls it.
+    code = str(
+        payload.get("morse") or payload.get("text") or payload.get("input")
+        or payload.get("code") or payload.get("value") or ""
+    ).strip()
     if not code:
-        raise HTTPException(status_code=400, detail="morse is required")
-    words = code.strip().split("   ")
+        return ExecutionResult(
+            kind="json",
+            message="Please paste Morse code to decode (e.g. ... --- ...).",
+            data={"error": "No Morse code provided."},
+        )
+    # Support both single-space (letter sep) + triple-space (word sep) and
+    # the common slash convention "... --- ... / .... .. " for word breaks.
+    normalised = code.replace("/", "   ").replace("|", "   ")
+    words = [w for w in normalised.strip().split("   ") if w.strip()]
     decoded = []
     for word in words:
         letters = word.split()
         decoded.append("".join(MORSE.get(l, "?") for l in letters))
     result = " ".join(decoded)
-    return ExecutionResult(kind="json", message=result, data={"decoded": result, "message": result})
+    return ExecutionResult(
+        kind="json",
+        message=result or "Could not decode any letters.",
+        data={"decoded": result, "message": result, "input": code},
+    )
 
 
 def handle_text_to_morse(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:

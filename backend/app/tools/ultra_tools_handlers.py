@@ -570,19 +570,32 @@ def _handle_speed_calculator(files: list[Path], payload: dict[str, Any], job_dir
 
 # ─── 10. Aspect Ratio Calculator ───────────────────────────────────────────
 def _handle_aspect_ratio_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    try:
-        width = float(payload.get("width", 0))
-        height = float(payload.get("height", 0))
-        target_width = payload.get("target_width")
-        target_height = payload.get("target_height")
-
-        target_width = float(target_width) if target_width not in (None, "", "null") else None
-        target_height = float(target_height) if target_height not in (None, "", "null") else None
-    except (ValueError, TypeError):
-        return _make_json({"error": "Please enter valid numeric values."}, "Invalid")
+    # Accept many alternate field names — `width`/`height` is canonical but
+    # generic UIs send `value`/`total`, `w`/`h`, or `numerator`/`denominator`.
+    width = coerce_float(
+        payload.get("width") or payload.get("w") or payload.get("value")
+        or payload.get("numerator") or payload.get("first") or payload.get("a"),
+        default=0.0,
+    )
+    height = coerce_float(
+        payload.get("height") or payload.get("h") or payload.get("total")
+        or payload.get("denominator") or payload.get("second") or payload.get("b"),
+        default=0.0,
+    )
+    target_width = coerce_float(
+        payload.get("target_width") or payload.get("new_width"),
+        default=0.0, lo=0.0,
+    ) or None
+    target_height = coerce_float(
+        payload.get("target_height") or payload.get("new_height"),
+        default=0.0, lo=0.0,
+    ) or None
 
     if width <= 0 or height <= 0:
-        return _make_json({"error": "Width and height must be positive."}, "Invalid")
+        return _make_json(
+            {"error": "Please enter both width and height as positive numbers (e.g. 1920 and 1080)."},
+            "Width and height must be positive.",
+        )
 
     gcd = math.gcd(int(width), int(height))
     ratio_w = int(width) // gcd
@@ -1697,24 +1710,35 @@ def _handle_fraction_calculator(files: list[Path], payload: dict[str, Any], job_
 
 # ─── Percentage Change Calculator ──────────────────────────────────────────
 def _handle_percentage_change_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    try:
-        old = float(payload.get("old_value", payload.get("original", payload.get("from", 0))))
-        new = float(payload.get("new_value", payload.get("new", payload.get("to", 0))))
-        if old == 0:
-            return _make_json({"error": "Original value cannot be zero (division by zero)"}, "Error")
-        change = new - old
-        pct = round((change / abs(old)) * 100, 4)
-        direction = "increase" if change > 0 else ("decrease" if change < 0 else "no change")
-        return _make_json({
-            "original_value": old,
-            "new_value": new,
-            "absolute_change": round(change, 4),
-            "percentage_change": pct,
-            "direction": direction,
-            "summary": f"{abs(pct)}% {direction} (from {old} to {new})"
-        }, f"{abs(pct)}% {direction}")
-    except (ValueError, TypeError) as e:
-        return _make_json({"error": str(e)}, "Error")
+    # Accept many alternate field names so the tool works no matter which inputs the UI sends.
+    old = coerce_float(
+        payload.get("old_value") or payload.get("original") or payload.get("from")
+        or payload.get("value") or payload.get("initial") or payload.get("old")
+        or payload.get("v1") or payload.get("first"),
+        default=0.0,
+    )
+    new = coerce_float(
+        payload.get("new_value") or payload.get("new") or payload.get("to")
+        or payload.get("total") or payload.get("final") or payload.get("current")
+        or payload.get("v2") or payload.get("second"),
+        default=0.0,
+    )
+    if old == 0:
+        return _make_json(
+            {"error": "Please enter a non-zero original value (we cannot divide by zero)."},
+            "Original value must be non-zero.",
+        )
+    change = new - old
+    pct = round((change / abs(old)) * 100, 4)
+    direction = "increase" if change > 0 else ("decrease" if change < 0 else "no change")
+    return _make_json({
+        "original_value": old,
+        "new_value": new,
+        "absolute_change": round(change, 4),
+        "percentage_change": pct,
+        "direction": direction,
+        "summary": f"{abs(pct)}% {direction} (from {old} to {new})",
+    }, f"{abs(pct)}% {direction}")
 
 
 # ─── EMI Calculator ─────────────────────────────────────────────────────────

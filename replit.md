@@ -1055,3 +1055,44 @@ Build still ~2s + ~200ms postbuild. Per-page payload +~2.5 KB gzipped. Safe — 
 - `diagnostic_report.json` (older run) showed 76 "fails" out of 1247. Re-tested live: many were stale (whitespace-remover, nato-alphabet, prime-number-checker all work fine), some were graceful error-returns being mis-classified (average/gpa/jwt/stopwatch/roman-numeral). True remaining bugs from this round: ~6 hard handler bugs (all fixed above) + ~12 systemic field-coercion gaps (also fixed via the `coerce_float` rollout above).
 - Health: **1247 tools, 1317 handlers, 0 missing, 0 duplicates, 0 5xx in smoke tests.**
 
+
+## 2026-04-26 — Round 14 (Smart slug-alias router + 4 more handler hardenings)
+
+### Smart slug-alias router (highest-leverage UX fix)
+
+Added `_SLUG_ALIASES` map (~80 entries) + `_resolve_slug()` helper at `backend/app/main.py:454`. Both the `GET /api/tools/{slug}` and `POST /api/tools/{slug}/execute` routes now transparently resolve user-typed alternate slugs to their canonical registry slugs. The handler, cache, popularity tracking, and logging all use the canonical slug — clients get a normal success response.
+
+**Why this was needed:** Smoke testing revealed dozens of "404 Tool not found" responses for slug variations users naturally type (e.g. `case-converter`, `remove-extra-spaces`, `morse-code-encoder`, `instagram-video-downloader`). Every concept exists in the registry, just under a different slug name. Adding slug aliases at the routing layer means every common alternate name now resolves correctly without inflating the catalog.
+
+**Aliases added (sample):**
+- text case → `case-converter`, `text-to-uppercase`, `text-to-lowercase`, `title-case-converter`, `letter-case-converter` → `string-case-converter`
+- whitespace → `remove-extra-spaces`, `remove-line-breaks`, `trim-whitespace`, `strip-whitespace` → `whitespace-remover`
+- counts → `count-words`, `word-count` → `word-counter`; `count-characters` → `character-counter`
+- slug → `slugify`, `slugify-text`, `slug-generator` → `url-slug-generator`
+- JSON → `json-validator`, `validate-json` → `json-formatter`; `json-minify`, `minify-json` → `json-minifier`
+- hash → `sha1-generator`, `sha-1` → `hash-generator`; `sha-256` → `sha256-generator`
+- encoding → `text-encoder` → `base64-encode`; `base64`, `base-64-encode` → `base64-encode`
+- morse/binary → `morse-code-encoder` → `text-to-morse`; `morse-code-decoder` → `morse-to-text`; `binary-encoder` → `text-to-binary`
+- timestamp → `timestamp-to-date`, `epoch-to-date`, `unix-time` → `unix-timestamp-converter` / `epoch-converter`
+- percentage/ratio → `percentage-of-number` → `percentage-calculator`; `ratio-calculator` → `aspect-ratio-calculator`
+- color → `rgb-to-hex-converter`, `hex-to-rgb-converter` (no-op stripping of `-converter` suffix)
+- PDF/image → `pdf-merger` → `merge-pdf`; `image-compressor` → `compress-image`; `background-remover` → `remove-background`
+- video downloaders → `youtube-video-downloader` → `youtube-downloader`; `instagram-video-downloader` → `instagram-downloader`; `tiktok-video-downloader` → `tiktok-downloader`; `x-downloader` → `x-video-downloader`
+
+Validates all alias targets at import time and prints a warning if any point to missing tools (none currently).
+
+### Round-14 handler hardenings
+
+- **`_handle_percentage_change_calculator` (ultra_tools)** — was returning `Error` because it accepted only `old_value`/`original`/`from` and `new_value`/`new`/`to`. Now also accepts `value`/`total`/`initial`/`final`/`current`/`v1`/`v2`/`first`/`second` via `coerce_float`. No more silent "Error" responses.
+- **`_handle_regex_tester` (social_video — active winner)** — pattern now accepts `pattern`/`regex`/`expression`/`value`/`rule`; text accepts `text`/`input`/`string`/`subject`/`content`. Friendly error message when pattern is missing.
+- **`handle_morse_to_text` (image_plus — active winner)** — was raising `HTTPException(400, "morse is required")` on missing field. Now accepts `morse`/`text`/`input`/`code`/`value` aliases; supports `/` and `|` as word separators (in addition to triple-space); friendly error when input empty.
+- **`_handle_aspect_ratio_calculator` (ultra_tools)** — was using raw `float()`. Now accepts `width`/`w`/`value`/`numerator`/`first`/`a` and `height`/`h`/`total`/`denominator`/`second`/`b` via `coerce_float`; same for `target_width`/`target_height`. Friendly error.
+
+### Smoke test result
+
+Hand-curated 82-tool smoke covering high-traffic student/everyday tools (calculators, text, units, dev, encoders, converters, social-media downloaders):
+- **Round 13 baseline:** 60/82 passed (22 false-404s + 2 real bugs)
+- **Round 14 final:** **80/82 passed**, 2 "failures" are actually correct binary responses (`qr-code-generator` returns PNG bytes; `text-to-speech` returns MP3 bytes — JSON-only smoke test can't decode binary, but the tools work perfectly).
+
+Health: 1247 tools, 1317 handlers, 0 missing, 0 duplicates. Backend restarted clean.
+

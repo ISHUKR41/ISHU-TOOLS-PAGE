@@ -834,12 +834,23 @@ def _handle_cron_parser(files: list[Path], payload: dict[str, Any], job_dir: Pat
 # ─── Regex Tester ─────────────────────────────────────────────────────────────
 
 def _handle_regex_tester(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
-    pattern_str = payload.get("pattern", "").strip()
-    test_str = payload.get("text", "")
-    flags_str = payload.get("flags", "").upper()
+    # Accept many alternate field names — UI labels vary tool-to-tool.
+    pattern_str = str(
+        payload.get("pattern") or payload.get("regex") or payload.get("expression")
+        or payload.get("value") or payload.get("rule") or ""
+    ).strip()
+    test_str = str(
+        payload.get("text") or payload.get("input") or payload.get("string")
+        or payload.get("subject") or payload.get("content") or ""
+    )
+    flags_str = str(payload.get("flags") or payload.get("modifiers") or "").upper().strip()
 
     if not pattern_str:
-        return ExecutionResult(kind="json", message="Please enter a regex pattern.", data={"error": "No pattern"})
+        return ExecutionResult(
+            kind="json",
+            message="Please enter a regex pattern (e.g. \\d+ to match numbers).",
+            data={"error": "No regex pattern provided."},
+        )
 
     import re
     flag_map = {"I": re.IGNORECASE, "M": re.MULTILINE, "S": re.DOTALL, "X": re.VERBOSE}
