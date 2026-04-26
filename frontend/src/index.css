@@ -13874,3 +13874,58 @@ h3 {
   src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/* ── Suggested-for-you shuffle button ──────────────────────────────────
+   Lives inside the section title row right next to the count badge.
+   Stays compact so it doesn't compete with the heading on mobile, but
+   gets a soft accent ring and hover lift so it's discoverable. */
+.suggested-shuffle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(145, 180, 255, 0.22);
+  background: linear-gradient(140deg, rgba(86, 166, 255, 0.12), rgba(140, 92, 255, 0.10));
+  color: rgba(220, 232, 255, 0.92);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.suggested-shuffle-btn:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(140deg, rgba(86, 166, 255, 0.22), rgba(140, 92, 255, 0.18));
+  border-color: rgba(145, 180, 255, 0.42);
+  box-shadow: 0 4px 14px -6px rgba(86, 166, 255, 0.5);
+}
+.suggested-shuffle-btn:active {
+  transform: translateY(0);
+}
+.suggested-shuffle-btn:focus-visible {
+  outline: 2px solid rgba(120, 180, 255, 0.7);
+  outline-offset: 2px;
+}
+.suggested-shuffle-btn svg {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* Subtle fade-in when the shuffle slate changes — uses the React `key`
+   prop on the grid to force a remount, then this animation runs once.
+   Pure CSS, GPU-accelerated, respects reduced-motion. */
+.suggested-tools-section .tool-grid {
+  animation: suggestedFadeIn 0.28s ease both;
+}
+@keyframes suggestedFadeIn {
+  from { opacity: 0.55; transform: translateY(2px); }
+  to   { opacity: 1;    transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .suggested-tools-section .tool-grid { animation: none; }
+  .suggested-shuffle-btn { transition: none; }
+}

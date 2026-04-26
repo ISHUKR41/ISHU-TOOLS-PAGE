@@ -4,6 +4,7 @@ import {
   Search, MousePointerClick, Upload, Download, CheckCircle,
   ShieldCheck, Zap, Smartphone, Globe, Code2, FileText, Images,
   Calculator, Star, ChevronDown, Award, Users, Sparkles, X as XIcon,
+  Shuffle,
 } from 'lucide-react'
 
 import SiteShell from '../../components/layout/SiteShell'
@@ -347,6 +348,12 @@ export default function HomePage() {
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [searchFocused, setSearchFocused] = useState(false)
+  // Shuffle index for the "Suggested for you" row — each click advances by one
+  // window-step through the deeper candidate pool so users can keep refreshing
+  // without ever leaving the page. Resets implicitly on full reload because we
+  // intentionally don't persist it: a fresh visit should show the strongest
+  // picks first, not whatever window the user landed on last time.
+  const [suggestedShuffleIndex, setSuggestedShuffleIndex] = useState(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Tighter debounce — 90ms feels instant while still avoiding work per keystroke.
@@ -505,7 +512,7 @@ export default function HomePage() {
       const t = toolBySlug.get(slug)
       if (t) categoryInterest.set(t.category, (categoryInterest.get(t.category) ?? 0) + visits * 0.5)
     }
-    if (categoryInterest.size === 0) return { tools: [], topCategoryIds: [] as string[] }
+    if (categoryInterest.size === 0) return { pool: [] as typeof tools, topCategoryIds: [] as string[] }
     // Score every UNVISITED tool with the priority engine and add an
     // interest-category multiplier so suggestions stay topical
     const candidates: Array<{ tool: typeof tools[number]; score: number }> = []
@@ -524,8 +531,36 @@ export default function HomePage() {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 2)
       .map(([id]) => id)
-    return { tools: candidates.slice(0, 6).map((c) => c.tool), topCategoryIds }
+    // Keep up to 24 high-scoring candidates so the shuffle button has real
+    // depth to rotate through (4 distinct slates of 6). 24 is small enough
+    // that keeping them in memory is free, but big enough to feel fresh on
+    // every shuffle even for users with narrow category interests.
+    return { pool: candidates.slice(0, 24).map((c) => c.tool), topCategoryIds }
   }, [tools, toolBySlug, pinnedSlugs, recentSlugs, usageSnapshot, globalPopularity])
+
+  // Sliding window of 6 over the pool. Each shuffle advances the start index
+  // by 6 and wraps around — deterministic, predictable, and guarantees every
+  // press visibly changes the row. We compute against pool.length so a small
+  // pool (e.g. user only uses one tiny category) still rotates correctly.
+  const visibleSuggested = useMemo(() => {
+    const pool = suggestedTools.pool
+    if (pool.length === 0) return []
+    if (pool.length <= 6) return pool.slice(0, 6)
+    const slates = Math.max(1, Math.ceil(pool.length / 6))
+    const slate = ((suggestedShuffleIndex % slates) + slates) % slates
+    const start = (slate * 6) % pool.length
+    // Wrap around the pool boundary so the last slate is still a full 6 cards
+    // even when pool.length isn't a perfect multiple of 6.
+    const out: typeof pool = []
+    for (let i = 0; i < 6 && i < pool.length; i++) {
+      out.push(pool[(start + i) % pool.length])
+    }
+    return out
+  }, [suggestedTools.pool, suggestedShuffleIndex])
+
+  // Shuffle is only meaningful when there's more in the pool than what's
+  // visible — otherwise pressing the button would just re-show the same 6.
+  const canShuffleSuggested = suggestedTools.pool.length > 6
 
   // Build a short, human-readable reason like "Because you use PDF and Image
   // tools" by looking up the friendly category labels. Falls back to the raw
@@ -840,14 +875,26 @@ export default function HomePage() {
                Hidden during search, hidden for true first-time visitors, and
                hidden when the catalog hasn't loaded yet. Skips anything the
                user has already pinned or visited so it's pure new-territory. */}
-          {!loading && !error && !isSearching && suggestedTools.tools.length > 0 && (
+          {!loading && !error && !isSearching && visibleSuggested.length > 0 && (
             <section className='tool-section suggested-tools-section'>
               <header className='section-heading'>
                 <div className='section-heading-left'>
                   <span className='section-kicker'>Discover</span>
                   <div className='section-heading-title-row'>
                     <h2>Suggested for you</h2>
-                    <span className='tool-count-badge'>{suggestedTools.tools.length}</span>
+                    <span className='tool-count-badge'>{visibleSuggested.length}</span>
+                    {canShuffleSuggested && (
+                      <button
+                        type='button'
+                        className='suggested-shuffle-btn'
+                        onClick={() => setSuggestedShuffleIndex((i) => i + 1)}
+                        aria-label='Shuffle suggestions'
+                        title='Show different picks from the same categories'
+                      >
+                        <Shuffle size={14} aria-hidden='true' />
+                        <span>Shuffle</span>
+                      </button>
+                    )}
                   </div>
                 </div>
                 <p>
@@ -856,8 +903,8 @@ export default function HomePage() {
                     : 'New tools picked from the categories you already use.'}
                 </p>
               </header>
-              <div className='tool-grid'>
-                {suggestedTools.tools.map((tool) => {
+              <div className='tool-grid' key={`suggested-slate-${suggestedShuffleIndex}`}>
+                {visibleSuggested.map((tool) => {
                   const meta = categoryLabelById.get(tool.category)
                   return (
                     <ToolCard
