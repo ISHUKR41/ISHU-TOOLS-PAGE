@@ -263,23 +263,75 @@ export async function checkHealth(): Promise<boolean> {
   return true
 }
 
+/**
+ * Heuristic: is this error worth a SINGLE auto-retry?
+ *
+ * The Render free-tier backend cold-starts after ~15min of idle, and the
+ * first request during that window often fails with a 502/503/504 from the
+ * Render edge proxy or a network abort. Retrying once after a brief wait
+ * almost always succeeds because the container is now warm.
+ *
+ * We do NOT retry on:
+ *   - 4xx (real client/validation errors — input is wrong, file too large, etc.)
+ *   - 200 responses with handler-level errors in the body
+ *   - Aborted-by-user requests
+ */
+function isTransientBackendError(err: unknown): boolean {
+  if (!err) return false
+  const msg = (err instanceof Error ? err.message : String(err)).toLowerCase()
+  if (/abort|cancell?ed by user/.test(msg)) return false
+  return (
+    /failed to fetch|networkerror|load failed|fetch failed/.test(msg) ||
+    /timeout|timed? out/.test(msg) ||
+    /http 50[234]|bad gateway|service unavailable|gateway timeout/.test(msg)
+  )
+}
+
+export interface RunToolOptions {
+  /**
+   * Called once if a transient failure was detected and an auto-retry is
+   * about to happen. Lets the UI show "Server waking up, retrying…".
+   */
+  onColdStartRetry?: () => void
+}
+
 export async function runTool(
   slug: string,
   files: File[],
   payload: Record<string, unknown>,
+  options: RunToolOptions = {},
 ): Promise<ToolRunResponse> {
-  const formData = new FormData()
-  for (const file of files) {
-    formData.append('files', file)
+  const buildFormData = () => {
+    const fd = new FormData()
+    for (const file of files) fd.append('files', file)
+    fd.append('payload', JSON.stringify(payload))
+    return fd
   }
-  formData.append('payload', JSON.stringify(payload))
 
-  // Long timeout for tool execution (2 minutes)
-  const res = await fetchWithTimeout(
-    `${API_BASE_URL}/api/tools/${slug}/execute`,
-    { method: 'POST', body: formData },
-    120000,
-  )
+  const callOnce = async (timeoutMs: number): Promise<Response> =>
+    fetchWithTimeout(
+      `${API_BASE_URL}/api/tools/${slug}/execute`,
+      { method: 'POST', body: buildFormData() },
+      timeoutMs,
+    )
+
+  let res: Response
+  try {
+    // Long timeout for tool execution (2 minutes)
+    res = await callOnce(120_000)
+    // Some Render edge errors come back as a real Response (502/503/504).
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new Error(`HTTP ${res.status}`)
+    }
+  } catch (firstErr) {
+    if (!isTransientBackendError(firstErr)) throw firstErr
+    // Cold-start retry path: tell the UI, wait for the container to warm,
+    // then try once more with a slightly shorter timeout (it should be fast
+    // now that the server is awake).
+    options.onColdStartRetry?.()
+    await new Promise((r) => setTimeout(r, 8000))
+    res = await callOnce(90_000)
+  }
 
   if (!res.ok) {
     throw await readError(res)

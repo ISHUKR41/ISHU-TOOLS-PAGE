@@ -673,7 +673,15 @@ export default function ToolPage() {
         if (clientResult) result = clientResult
       }
       if (!result) {
-        result = await runTool(slug, files, payload)
+        result = await runTool(slug, files, payload, {
+          onColdStartRetry: () => {
+            toast.show(
+              'Server was idle — waking it up and auto-retrying. Hang tight…',
+              'info',
+              9000,
+            )
+          },
+        })
       }
 
       stopProgressSimulation(true)
