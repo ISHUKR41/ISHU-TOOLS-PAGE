@@ -12,6 +12,7 @@ import { useCatalogData } from '../../hooks/useCatalogData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useProgressiveList } from '../../hooks/useProgressiveList'
 import { useToolRecents } from '../../hooks/useToolRecents'
+import { usePinnedTools } from '../../hooks/usePinnedTools'
 import { applyDocumentBranding, getCategoryTheme } from '../../lib/toolPresentation'
 import ToolCard from '../../components/tools/ToolCard'
 import { loadUsage } from '../../lib/usageTracker'
@@ -436,22 +437,35 @@ export default function HomePage() {
     return baseFilteredTools.filter((tool) => tool.category === activeCategory)
   }, [baseFilteredTools, activeCategory, isSearching])
 
-  // ─── Recently-used tools (per-user, localStorage) ─────────────────────
-  // Returning visitors land back on whatever they were working on without
-  // having to re-search across 1247 tools. Hidden during active search so
-  // results stay the focus, and only shown once the catalogue has loaded.
+  // ─── Pinned + Recently-used tools (per-user, localStorage) ────────────
+  // Pinned = explicit user intent (favorites), shown above Recently used.
+  // Recently used = automatic history. Both hidden during active search
+  // so results stay the focus, and both lookup against the live catalogue
+  // so renamed/removed slugs are silently dropped.
   const recentSlugs = useToolRecents()
+  const { slugs: pinnedSlugs } = usePinnedTools()
+  const toolBySlug = useMemo(() => new Map(tools.map((t) => [t.slug, t])), [tools])
+
+  const pinnedTools = useMemo(() => {
+    if (pinnedSlugs.length === 0 || tools.length === 0) return []
+    return pinnedSlugs.map((s) => toolBySlug.get(s)).filter((t): t is NonNullable<typeof t> => Boolean(t))
+  }, [pinnedSlugs, tools, toolBySlug])
+
+  const pinnedSet = useMemo(() => new Set(pinnedSlugs), [pinnedSlugs])
   const recentTools = useMemo(() => {
     if (recentSlugs.length === 0 || tools.length === 0) return []
-    const bySlug = new Map(tools.map((t) => [t.slug, t]))
     const out = []
     for (const slug of recentSlugs) {
-      const t = bySlug.get(slug)
+      // Skip anything already shown in the Pinned row above to avoid
+      // visual duplication — a pinned tool you just opened shouldn't
+      // appear twice in two consecutive sections.
+      if (pinnedSet.has(slug)) continue
+      const t = toolBySlug.get(slug)
       if (t) out.push(t)
       if (out.length >= 6) break
     }
     return out
-  }, [recentSlugs, tools])
+  }, [recentSlugs, tools, toolBySlug, pinnedSet])
 
   // Derive the categories present in the *current* search results so we only
   // show chips that actually have hits — counts are shown next to each label.
@@ -678,6 +692,39 @@ export default function HomePage() {
               <h3>No tools matched “{debouncedQuery}”</h3>
               <p>Try a shorter keyword, or press Esc to see all {tools.length} tools.</p>
             </article>
+          )}
+
+          {/* ── Pinned (favorites) ─────────────────────────────────────────
+               Explicit user intent — they actively pinned these tools so
+               they sit at the very top, above Recently Used. Each card has
+               a pin button on it, click to toggle. Pure localStorage. */}
+          {!loading && !error && !isSearching && pinnedTools.length > 0 && (
+            <section className='tool-section pinned-tools-section'>
+              <header className='section-heading'>
+                <div className='section-heading-left'>
+                  <span className='section-kicker'>Your favorites</span>
+                  <div className='section-heading-title-row'>
+                    <h2>Pinned tools</h2>
+                    <span className='tool-count-badge'>{pinnedTools.length}</span>
+                  </div>
+                </div>
+                <p>Click the pin on any tool to add it here. Saved on this device.</p>
+              </header>
+              <div className='tool-grid'>
+                {pinnedTools.map((tool) => {
+                  const meta = categoryLabelById.get(tool.category)
+                  return (
+                    <ToolCard
+                      key={`pinned-${tool.slug}`}
+                      tool={tool}
+                      categoryLabel={meta?.label ?? tool.category}
+                      accentColor={meta?.accent ?? '#56a6ff'}
+                      visits={usageSnapshot[tool.slug]}
+                    />
+                  )
+                })}
+              </div>
+            </section>
           )}
 
           {/* ── Recently used (per-user) ───────────────────────────────────

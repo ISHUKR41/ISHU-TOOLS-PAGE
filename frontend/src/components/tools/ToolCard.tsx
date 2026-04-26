@@ -1,11 +1,12 @@
-import { ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowUpRight, Sparkles, Pin } from 'lucide-react'
 import { memo, useCallback } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 import type { ToolDefinition } from '../../types/tools'
 import { prefetchToolRoute } from '../../lib/prefetchTool'
 import { highlightMatches } from '../../lib/highlight'
+import { usePinnedTools } from '../../hooks/usePinnedTools'
 import ToolIcon from './ToolIcon'
 
 type ToolCardProps = {
@@ -37,6 +38,21 @@ const ToolCard = memo(function ToolCard({ tool, categoryLabel, accentColor, quer
 
   const usedBefore = (visits ?? 0) > 0
 
+  // ─── Pin / unpin (favorites) ──────────────────────────────────────────
+  // The pin button sits OUTSIDE the <Link> so clicks toggle pin state
+  // without navigating. localStorage-backed; pinned tools surface in their
+  // own row at the top of the homepage on the user's next visit.
+  const { isPinned, toggle: togglePin } = usePinnedTools()
+  const pinned = isPinned(tool.slug)
+  const handlePinClick = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      e.stopPropagation()
+      togglePin(tool.slug)
+    },
+    [tool.slug, togglePin],
+  )
+
   // Whitespace-separated lowercase keyword tokens for SEO crawlers,
   // dev-tool inspection, and browser-extension hooks. Stable across renders.
   const keywordList = tool.tags
@@ -46,7 +62,7 @@ const ToolCard = memo(function ToolCard({ tool, categoryLabel, accentColor, quer
 
   return (
     <article
-      className={`tool-card${usedBefore ? ' tool-card-used' : ''}`}
+      className={`tool-card${usedBefore ? ' tool-card-used' : ''}${pinned ? ' tool-card-pinned' : ''}`}
       style={{ '--tool-accent': accentColor || '#3bd0ff' } as CSSProperties}
       onMouseEnter={handlePrefetch}
       onTouchStart={handlePrefetch}
@@ -54,6 +70,16 @@ const ToolCard = memo(function ToolCard({ tool, categoryLabel, accentColor, quer
       data-category={tool.category}
       data-keywords={keywordList}
     >
+      <button
+        type='button'
+        className={`tool-pin-btn${pinned ? ' is-pinned' : ''}`}
+        onClick={handlePinClick}
+        aria-pressed={pinned}
+        aria-label={pinned ? `Unpin ${tool.title} from your favorites` : `Pin ${tool.title} to your favorites`}
+        title={pinned ? 'Unpin from favorites' : 'Pin to favorites'}
+      >
+        <Pin size={13} strokeWidth={2.4} />
+      </button>
       <Link
         to={`/tools/${tool.slug}`}
         className='tool-card-link'

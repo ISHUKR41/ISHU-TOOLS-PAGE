@@ -1151,6 +1151,66 @@ h3 {
   flex-wrap: wrap;
 }
 
+/* ── Pin / unpin button (top-right of every ToolCard) ──────────────────
+   Sits OUTSIDE the <Link> so clicks toggle pin state without navigating.
+   Subtle by default (low opacity) so it doesn't fight the card content,
+   then becomes vivid + accent-colored when active or on card hover. */
+.tool-pin-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  background: rgba(8, 13, 24, 0.55);
+  color: rgba(220, 232, 255, 0.55);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.16s ease, color 0.16s ease, background 0.16s ease,
+    border-color 0.16s ease, transform 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.tool-card:hover .tool-pin-btn,
+.tool-pin-btn:focus-visible {
+  opacity: 1;
+}
+.tool-pin-btn:hover {
+  color: var(--tool-accent, #3bd0ff);
+  border-color: color-mix(in srgb, var(--tool-accent) 55%, transparent);
+  background: rgba(8, 13, 24, 0.85);
+  transform: scale(1.08);
+}
+.tool-pin-btn.is-pinned {
+  opacity: 1;
+  color: var(--tool-accent, #3bd0ff);
+  background: color-mix(in srgb, var(--tool-accent) 18%, rgba(8, 13, 24, 0.85));
+  border-color: color-mix(in srgb, var(--tool-accent) 60%, transparent);
+}
+.tool-pin-btn.is-pinned svg {
+  fill: currentColor;
+}
+.tool-pin-btn:focus-visible {
+  outline: 2px solid var(--tool-accent, #3bd0ff);
+  outline-offset: 2px;
+}
+/* Pinned cards get a slightly brighter accent-colored left border so the
+   "this one is yours" cue is visible even before you notice the pin icon. */
+.tool-card.tool-card-pinned > .tool-card-link {
+  border-left-width: 4px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px color-mix(in srgb, var(--tool-accent) 14%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-pin-btn { transition: none; }
+  .tool-pin-btn:hover { transform: none; }
+}
+
 .tool-icon-wrap {
   width: 46px;
   height: 46px;
