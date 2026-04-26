@@ -505,7 +505,7 @@ export default function HomePage() {
       const t = toolBySlug.get(slug)
       if (t) categoryInterest.set(t.category, (categoryInterest.get(t.category) ?? 0) + visits * 0.5)
     }
-    if (categoryInterest.size === 0) return []
+    if (categoryInterest.size === 0) return { tools: [], topCategoryIds: [] as string[] }
     // Score every UNVISITED tool with the priority engine and add an
     // interest-category multiplier so suggestions stay topical
     const candidates: Array<{ tool: typeof tools[number]; score: number }> = []
@@ -517,8 +517,30 @@ export default function HomePage() {
       candidates.push({ tool, score: base + interest * 12 })
     }
     candidates.sort((a, b) => b.score - a.score || a.tool.title.localeCompare(b.tool.title))
-    return candidates.slice(0, 6).map((c) => c.tool)
+    // Top categories by interest — used to render the "Because you use X" line
+    // so suggestions feel transparent instead of mysterious. We expose at most
+    // two so the explanation stays short on mobile.
+    const topCategoryIds = Array.from(categoryInterest.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([id]) => id)
+    return { tools: candidates.slice(0, 6).map((c) => c.tool), topCategoryIds }
   }, [tools, toolBySlug, pinnedSlugs, recentSlugs, usageSnapshot, globalPopularity])
+
+  // Build a short, human-readable reason like "Because you use PDF and Image
+  // tools" by looking up the friendly category labels. Falls back to the raw
+  // category id if no label is registered (defensive — labels can race the
+  // catalog load on first paint).
+  const suggestedReason = useMemo(() => {
+    const ids = suggestedTools.topCategoryIds
+    if (ids.length === 0) return ''
+    const labels = ids
+      .map((id) => categoryLabelById.get(id)?.label ?? id)
+      .filter(Boolean)
+    if (labels.length === 0) return ''
+    if (labels.length === 1) return `Because you use ${labels[0]} tools`
+    return `Because you use ${labels[0]} and ${labels[1]} tools`
+  }, [suggestedTools.topCategoryIds, categoryLabelById])
 
   // Derive the categories present in the *current* search results so we only
   // show chips that actually have hits — counts are shown next to each label.
@@ -818,20 +840,24 @@ export default function HomePage() {
                Hidden during search, hidden for true first-time visitors, and
                hidden when the catalog hasn't loaded yet. Skips anything the
                user has already pinned or visited so it's pure new-territory. */}
-          {!loading && !error && !isSearching && suggestedTools.length > 0 && (
+          {!loading && !error && !isSearching && suggestedTools.tools.length > 0 && (
             <section className='tool-section suggested-tools-section'>
               <header className='section-heading'>
                 <div className='section-heading-left'>
                   <span className='section-kicker'>Discover</span>
                   <div className='section-heading-title-row'>
                     <h2>Suggested for you</h2>
-                    <span className='tool-count-badge'>{suggestedTools.length}</span>
+                    <span className='tool-count-badge'>{suggestedTools.tools.length}</span>
                   </div>
                 </div>
-                <p>New tools picked from the categories you already use.</p>
+                <p>
+                  {suggestedReason
+                    ? `${suggestedReason} — fresh picks you haven’t opened yet.`
+                    : 'New tools picked from the categories you already use.'}
+                </p>
               </header>
               <div className='tool-grid'>
-                {suggestedTools.map((tool) => {
+                {suggestedTools.tools.map((tool) => {
                   const meta = categoryLabelById.get(tool.category)
                   return (
                     <ToolCard
