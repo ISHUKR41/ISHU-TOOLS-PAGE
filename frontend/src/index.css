@@ -13608,3 +13608,71 @@ h3 {
 @media (prefers-reduced-motion: reduce){
   .progressive-hint::before{ animation: none; border-top-color: rgba(74,158,255,.4); }
 }
+
+/* ── Backend status banner — surfaces Render free-tier cold-starts ── */
+.backend-status-banner{
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  padding: .55rem 1rem;
+  font-size: .82rem;
+  font-weight: 500;
+  letter-spacing: .01em;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: backend-banner-in .35s ease-out;
+}
+.backend-status-banner[data-state="waking"]{
+  background: linear-gradient(90deg,
+    rgba(255,184,76,.14) 0%,
+    rgba(255,184,76,.18) 50%,
+    rgba(255,184,76,.14) 100%);
+  color: #ffd6a0;
+  border-bottom-color: rgba(255,184,76,.22);
+}
+.backend-status-banner[data-state="down"]{
+  background: linear-gradient(90deg,
+    rgba(255,87,87,.16) 0%,
+    rgba(255,87,87,.20) 50%,
+    rgba(255,87,87,.16) 100%);
+  color: #ffc4c4;
+  border-bottom-color: rgba(255,87,87,.26);
+}
+.backend-status-dot{
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: backend-banner-pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.backend-status-text{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 70ch;
+}
+@keyframes backend-banner-in{
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes backend-banner-pulse{
+  0%   { box-shadow: 0 0 0 0 currentColor;        opacity: 1; }
+  70%  { box-shadow: 0 0 0 6px rgba(255,255,255,0); opacity: .6; }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0);  opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce){
+  .backend-status-banner{ animation: none; }
+  .backend-status-dot{ animation: none; }
+}
+@media (max-width: 640px){
+  .backend-status-banner{ font-size: .75rem; padding: .5rem .75rem; }
+}

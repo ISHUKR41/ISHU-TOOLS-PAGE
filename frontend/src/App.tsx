@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ToastProvider } from './components/ui/Toast'
 import ScrollToTop from './components/ui/ScrollToTop'
 import InstallPWA from './components/ui/InstallPWA'
+import BackendStatusBanner from './components/ui/BackendStatusBanner'
 
 function AppLoader() {
   return (
@@ -32,6 +33,7 @@ function App() {
       <ToastProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <BackendStatusBanner />
           <Suspense fallback={<AppLoader />}>
             <AppRouter />
           </Suspense>
