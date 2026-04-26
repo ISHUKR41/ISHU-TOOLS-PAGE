@@ -119,6 +119,153 @@ const DAILY_TOOL_BONUS = new Map<string, number>([
   ['rgb-to-hex', 154],
   ['hex-to-rgb', 152],
   ['roman-numeral-converter', 150],
+  // ─── Curated student / daily-user expansion (Apr 2026) ───
+  // Every slug below was validated against catalogFallback.ts before being
+  // added — entries pointing at non-existent tools would silently waste
+  // bonus weight, so every key here is guaranteed to be a real tool.
+  // Bonus ranges intentionally overlap the original list so the most
+  // student-critical additions (attendance, GPA, grade calculators) compete
+  // directly with the original top-tier entries above.
+
+  // ── Student academic essentials — engineering attendance + grades ──
+  // Bonuses sized to slot these into the top ~30 alongside the original
+  // BMI / percentage / EMI tier — these are the calculators a real student
+  // opens daily once exams or attendance season hits.
+  ['attendance-calculator', 285],
+  ['attendance-required-calculator', 283],
+  ['attendance-tracker', 281],
+  ['gpa-calculator', 279],
+  ['gpa-cgpa-calculator', 277],
+  ['cgpa-to-percentage', 275],
+  ['grade-calculator', 273],
+  ['grade-needed-calculator', 271],
+  ['grade-average-calculator', 269],
+  ['typing-speed-test', 245],
+  ['stopwatch', 243],
+  ['fraction-calculator', 241],
+  ['fraction-math', 239],
+  ['speed-distance-time', 237],
+  ['aspect-ratio-calculator', 235],
+
+  // ── KB-exact photo compressors — every form-fill exam student searches these ──
+  // Sized to sit just below the original 20kb-1mb compressors (which occupy
+  // 226-236) so the full grid of KB variants stays clustered together.
+  ['compress-jpeg-to-10kb', 224],
+  ['compress-jpeg-to-25kb', 222],
+  ['compress-jpeg-to-30kb', 220],
+  ['compress-to-30kb', 218],
+  ['compress-to-40kb', 216],
+  ['compress-to-150kb', 214],
+  ['compress-to-300kb', 212],
+  ['compress-jpeg-to-150kb', 210],
+  ['compress-jpeg-to-300kb', 208],
+  ['compress-jpeg-between-20kb-to-50kb', 206],
+
+  // ── Government-form photo / signature essentials ──
+  ['passport-photo-maker', 139],
+  ['passport-size-photo', 138],
+  ['ssc-photo-resizer', 137],
+  ['psc-photo-resize', 136],
+  ['generate-signature', 135],
+  ['resize-signature', 134],
+  ['merge-photo-signature', 133],
+  ['watermark-image', 132],
+  ['upscale-image', 131],
+  ['circle-crop-image', 130],
+  ['beautify-image', 129],
+
+  // ── PDF page-level workflows (one-line jobs students do weekly) ──
+  ['pdf-page-count', 128],
+  ['edit-pdf-text', 127],
+  ['edit-metadata-pdf', 126],
+  ['extract-metadata', 125],
+  ['sign-pdf', 124],
+  ['add-page-numbers', 123],
+  ['page-numbers-pdf', 122],
+  ['pdf-pages-to-zip', 121],
+  ['reverse-pdf', 120],
+
+  // ── Developer minifiers / formatters ──
+  ['minify-css', 109],
+  ['minify-js', 108],
+  ['minify-html', 107],
+  ['html-encoder', 106],
+  ['html-decoder', 105],
+  ['url-encoder', 104],
+  ['url-decoder', 103],
+  ['md5-generator', 102],
+  ['sha512-hash', 101],
+  ['jwt-decode', 100],
+  ['jwt-decoder', 99],
+  ['ssl-certificate-checker', 98],
+  ['ip-address-lookup', 97],
+  ['whois-lookup', 96],
+  ['dns-lookup', 95],
+  ['port-checker', 94],
+  ['user-agent-parser', 93],
+  ['random-password-generator', 92],
+  ['bcrypt-generator', 91],
+  ['xml-formatter', 90],
+  ['yaml-formatter', 89],
+  ['json-to-csv', 88],
+  ['csv-to-json', 87],
+  ['rgb-to-hsl', 86],
+
+  // ── India-specific finance & payroll ──
+  ['hra-calculator-india', 84],
+  ['retirement-planner', 83],
+  ['in-hand-salary-calculator', 82],
+  ['net-salary-calculator-india', 81],
+  ['salary-calculator', 80],
+  ['gratuity-calculator-india', 79],
+  ['split-bill', 78],
+  ['profit-margin-calculator', 77],
+  ['profit-loss-calculator', 76],
+  ['gst-reverse-calculator', 75],
+  ['tip-calculator', 74],
+
+  // ── Text manipulation power-tools ──
+  ['all-case-converter', 64],
+  ['case-converter-text', 63],
+  ['case-converter-advanced', 62],
+  ['string-case-converter', 61],
+  ['reverse-words', 60],
+  ['remove-duplicates', 59],
+  ['deduplicate-lines-text', 58],
+  ['sort-lines', 57],
+  ['line-counter', 56],
+  ['paragraph-counter', 55],
+  ['lorem-ipsum-generator', 54],
+  ['fancy-text-generator', 53],
+  ['emoji-counter', 52],
+  ['text-to-binary', 51],
+  ['binary-to-text', 50],
+  ['morse-code-converter', 49],
+
+  // ── Health / lifestyle (daily wellness checks) ──
+  ['bmr-calculator', 34],
+  ['calorie-calculator', 33],
+  ['ideal-weight-calculator', 32],
+  ['body-fat-calculator', 31],
+  ['water-intake-calculator', 30],
+  ['pregnancy-week-calculator', 29],
+  ['period-calculator', 28],
+  ['heart-rate-calculator', 27],
+  ['sleep-calculator', 26],
+  ['running-pace-calculator', 25],
+
+  // ── QR / generators / utilities ──
+  ['barcode-generator', 19],
+  ['wifi-qr-generator', 18],
+  ['vcard-generator', 17],
+  ['username-generator', 16],
+  ['random-name-generator', 15],
+  ['random-color-generator', 14],
+
+  // ── Social downloaders (companion to the originals already in this map) ──
+  ['youtube-thumbnail-downloader', 12],
+  ['tiktok-downloader', 11],
+  ['facebook-video-downloader', 10],
 ])
 
 const SEARCH_SYNONYMS: Record<string, string[]> = {
