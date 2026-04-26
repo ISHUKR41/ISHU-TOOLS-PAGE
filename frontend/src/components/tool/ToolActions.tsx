@@ -48,7 +48,9 @@ export default function ToolActions({ slug, title, description, url, accent = '#
   const handleShare = async () => {
     const shareData = { title: `${title} — ISHU TOOLS`, text: description, url }
     try {
-      if (navigator.share && typeof navigator.canShare === 'function' ? navigator.canShare(shareData) : Boolean(navigator.share)) {
+      const canUseShare = typeof navigator.share === 'function' &&
+        (typeof navigator.canShare === 'function' ? navigator.canShare(shareData) : true)
+      if (canUseShare) {
         await navigator.share(shareData)
         setShared('shared')
         setTimeout(() => setShared('idle'), 2200)

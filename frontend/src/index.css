@@ -12833,3 +12833,84 @@ html {
     padding: 1.1rem 1rem;
   }
 }
+
+/* ── Search match highlighting ─────────────────────────────────────────────
+   When a search query is active the matched substring inside tool card
+   titles and descriptions is wrapped in <mark class="search-mark"> by the
+   highlightMatches() helper. The highlight is intentionally subtle — a
+   tinted background with a soft underline accent so it reads as "matched"
+   without screaming. Color follows the per-card --tool-accent so each card
+   keeps its own visual identity. */
+.search-mark {
+  background: color-mix(in srgb, var(--tool-accent, #3bd0ff) 22%, transparent);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 0.18em;
+  margin: 0 -0.04em;
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--tool-accent, #3bd0ff) 55%, transparent);
+  font-weight: 600;
+}
+
+/* ── Personal-use indicator ─────────────────────────────────────────────
+   Tiny pill that surfaces ONLY on tools the current visitor has actually
+   opened before (read from localStorage usageTracker). This is private,
+   per-device — not a public "Most Popular" leaderboard. Lives in the card
+   header next to the open arrow so it never displaces content. */
+.tool-used-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  padding: 0.22rem 0.46rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--tool-accent, #3bd0ff) 92%, #ffffff);
+  background: color-mix(in srgb, var(--tool-accent, #3bd0ff) 14%, rgba(255, 255, 255, 0.04));
+  border: 1px solid color-mix(in srgb, var(--tool-accent, #3bd0ff) 38%, rgba(255, 255, 255, 0.06));
+  margin-left: auto;
+  margin-right: 0.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tool-used-pill svg {
+  opacity: 0.95;
+}
+
+.tool-card-used .tool-card-link {
+  border-left-width: 4px;
+}
+
+/* ── Typography refinement (modern look) ────────────────────────────────
+   - font-feature-settings turns on contextual alternates and stylistic
+     numerals available in the Inter / Space Grotesk variable fonts.
+   - font-variant-numeric: tabular-nums keeps numbers monospace inside
+     calculator readouts, comparison tables, and stat cards so columns
+     line up cleanly without a separate mono font.
+   - Letter-spacing is tightened slightly on display sizes (matches the
+     Inter design intent at large weights). */
+body {
+  font-feature-settings: 'cv11' 1, 'ss03' 1, 'ss01' 1, 'kern' 1;
+  font-variant-ligatures: contextual;
+}
+
+h1, h2, h3, h4, .section-kicker, .nav-pill, .brand-mark {
+  font-feature-settings: 'cv11' 1, 'ss03' 1, 'kern' 1;
+}
+
+h1, h2 {
+  letter-spacing: -0.018em;
+}
+
+h3 {
+  letter-spacing: -0.012em;
+}
+
+.tool-count-badge,
+.bento-stat,
+.cmp-val,
+.search-result-count,
+.kbd {
+  font-variant-numeric: tabular-nums;
+}

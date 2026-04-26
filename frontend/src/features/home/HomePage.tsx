@@ -524,6 +524,8 @@ export default function HomePage() {
                       tool={tool}
                       categoryLabel={meta?.label ?? tool.category}
                       accentColor={meta?.accent ?? '#56a6ff'}
+                      query={isSearching ? debouncedQuery : undefined}
+                      visits={usageSnapshot[tool.slug]}
                     />
                   )
                 })}
