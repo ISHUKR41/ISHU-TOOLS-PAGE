@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp } from 'lucide-react'
+import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp, Search } from 'lucide-react'
 import AnimatedBackdrop from './AnimatedBackdrop'
+import CommandPalette from '../search/CommandPalette'
 
 const TOOL_COUNT_LABEL = '1200+'
 
@@ -174,7 +175,32 @@ export default function SiteShell({ children }: PropsWithChildren) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
+
+  /* Cmd/Ctrl + K, plus "/" anywhere outside an input, opens the palette */
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const isMeta = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'
+      const target = e.target as HTMLElement | null
+      const inField = !!target && (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      )
+      if (isMeta) {
+        e.preventDefault()
+        setPaletteOpen((v) => !v)
+        return
+      }
+      if (e.key === '/' && !inField && !paletteOpen) {
+        e.preventDefault()
+        setPaletteOpen(true)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [paletteOpen])
 
   /* Throttled scroll — avoids re-render spam during fast scroll */
   const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -232,6 +258,17 @@ export default function SiteShell({ children }: PropsWithChildren) {
               {megaOpen && <MegaMenu onClose={() => setMegaOpen(false)} />}
             </div>
           </nav>
+
+          <button
+            type='button'
+            className='nav-search-btn'
+            onClick={(e) => { e.stopPropagation(); setPaletteOpen(true); setMegaOpen(false) }}
+            aria-label='Search all tools'
+          >
+            <Search size={15} />
+            <span className='nav-search-label'>Search tools…</span>
+            <span className='nav-search-kbd'><kbd>⌘</kbd><kbd>K</kbd></span>
+          </button>
 
           <button
             className='mobile-menu-btn'
@@ -497,6 +534,8 @@ export default function SiteShell({ children }: PropsWithChildren) {
           </div>
         </div>
       </footer>
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   )
 }

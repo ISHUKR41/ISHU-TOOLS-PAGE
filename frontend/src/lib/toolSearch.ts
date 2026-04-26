@@ -329,7 +329,7 @@ const SEARCH_SYNONYMS: Record<string, string[]> = {
   result: ['marks', 'percentage', 'cgpa'],
 }
 
-type SearchOptions = {
+export type SearchOptions = {
   category?: string
   globalPopularity?: Record<string, number>
   localUsage?: Record<string, number>

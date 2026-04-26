@@ -11,7 +11,9 @@ import { API_BASE_URL } from '../api/config'
 export const FAVORITES_KEY = 'ishu_fav_tools'
 export const RECENT_KEY = 'ishu_recent_tools'
 export const USAGE_KEY = 'ishu_tool_usage_v1'
+export const RECENT_SEARCH_KEY = 'ishu_recent_searches_v1'
 export const MAX_RECENT = 12
+export const MAX_RECENT_SEARCHES = 6
 const REMOTE_VISIT_ENDPOINT = `${API_BASE_URL}/api/popularity/visit`
 
 function sendVisitTelemetry(slug: string) {
@@ -55,6 +57,25 @@ export function loadRecent(): string[] {
 export function loadUsage(): Record<string, number> {
   try { return JSON.parse(localStorage.getItem(USAGE_KEY) ?? '{}') }
   catch { return {} }
+}
+
+/** Recent search queries (for the command palette empty-state). */
+export function loadRecentSearches(): string[] {
+  try { return JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) ?? '[]') }
+  catch { return [] }
+}
+
+export function pushRecentSearch(query: string) {
+  const q = query.trim()
+  if (!q || q.length < 2) return
+  try {
+    const next = [q, ...loadRecentSearches().filter((entry) => entry.toLowerCase() !== q.toLowerCase())]
+    localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(next.slice(0, MAX_RECENT_SEARCHES)))
+  } catch { /* ignore */ }
+}
+
+export function clearRecentSearches() {
+  try { localStorage.removeItem(RECENT_SEARCH_KEY) } catch { /* ignore */ }
 }
 
 /** Bump the visit counter and push the slug onto the recent list. */

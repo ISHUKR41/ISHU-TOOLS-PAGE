@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import ScientificCalculator from './ScientificCalculator.tsx'
+import SiteShell from '../../components/layout/SiteShell.tsx'
 import { applyDocumentBranding } from '../../lib/toolPresentation.ts'
 
 const PAGE_ACCENT = '#fbbf24'
@@ -177,6 +178,7 @@ export default function ScientificCalculatorPage() {
   }
 
   return (
+    <SiteShell>
     <main className='sci-calc-page'>
       <motion.div
         className='sci-calc-page-inner'
@@ -297,6 +299,7 @@ export default function ScientificCalculatorPage() {
         </section>
       </motion.div>
     </main>
+    </SiteShell>
   )
 }
 
