@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../api/toolsApi'
 import { recordToolOpen } from '../../hooks/useToolRecents'
+import { usePinnedTools } from '../../hooks/usePinnedTools'
 import SiteShell from '../../components/layout/SiteShell'
 import ToolIcon from '../../components/tools/ToolIcon'
 import type { RuntimeCapabilities, ToolDefinition, ToolRunJsonResult } from '../../types/tools'
@@ -133,6 +134,10 @@ function findFallbackRelatedTools(tool: ToolDefinition | null) {
 export default function ToolPage() {
   const { slug } = useParams<{ slug: string }>()
   const toast = useToast()
+  // Pin/unpin shortcut + banner state share the same hook so a single
+  // keypress updates both the pin button on every ToolCard, the homepage
+  // Pinned row, and the suggestion banner without any prop drilling.
+  const { isPinned: isPinnedFn, toggle: togglePin } = usePinnedTools()
   const initialTool = useMemo(() => findFallbackTool(slug), [slug])
 
   const [tool, setTool] = useState<ToolDefinition | null>(() => initialTool)
@@ -768,11 +773,13 @@ export default function ToolPage() {
   }
 
   // ─── Universal keyboard shortcuts (works on every tool) ───
-  // Ctrl/Cmd+Enter = Run  |  Esc = Reset/Clear
+  // Ctrl/Cmd+Enter = Run  |  Esc = Reset/Clear  |  P = Toggle pin
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement
       const isTextarea = target?.tagName === 'TEXTAREA'
+      const isInput = target?.tagName === 'INPUT'
+      const isEditable = target?.isContentEditable === true
       // Cmd/Ctrl+Enter to submit (works even when typing in textarea)
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault()
@@ -782,15 +789,35 @@ export default function ToolPage() {
         }
       }
       // Esc to reset (only when not typing in inputs)
-      if (e.key === 'Escape' && !isTextarea && target?.tagName !== 'INPUT') {
+      if (e.key === 'Escape' && !isTextarea && !isInput) {
         if (downloadUrl || jsonResult || runError) {
           handleReset()
         }
       }
+      // "P" to toggle pin/unpin for the current tool. Skipped when the user
+      // is typing anywhere (input/textarea/contenteditable) and skipped if
+      // any modifier is held — Ctrl+P stays as the browser's print dialog,
+      // Cmd+Shift+P stays as the developer-tools command menu, etc.
+      if (
+        (e.key === 'p' || e.key === 'P') &&
+        !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey &&
+        !e.isComposing && !isTextarea && !isInput && !isEditable && tool
+      ) {
+        e.preventDefault()
+        const wasPinned = isPinnedFn(tool.slug)
+        togglePin(tool.slug)
+        toast.show(
+          wasPinned
+            ? `Removed “${tool.title}” from your favorites`
+            : `Pinned “${tool.title}” to your favorites`,
+          'success',
+          2400,
+        )
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [running, tool, downloadUrl, jsonResult, runError])
+  }, [running, tool, downloadUrl, jsonResult, runError, isPinnedFn, togglePin, toast])
 
   // ─── Universal clipboard paste — paste image/file directly into the dropzone ───
   useEffect(() => {
