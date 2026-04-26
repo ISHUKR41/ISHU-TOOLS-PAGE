@@ -66,7 +66,32 @@ for _tool in TOOLS:
 _TOOL_SLUGS = set(_TOOL_BY_SLUG)
 _CATEGORY_IDS = {category.id for category in CATEGORIES}
 _ORPHAN_CATEGORY_IDS = sorted({tool.category for tool in TOOLS if tool.category not in _CATEGORY_IDS})
-_MISSING_HANDLER_SLUGS = sorted(slug for slug in _TOOL_SLUGS if slug not in HANDLERS)
+# Slugs that intentionally have no Python handler because they execute purely
+# in the browser via frontend/src/lib/clientToolExecutors.ts. Adding them here
+# keeps the /health endpoint reporting "ok" without weakening real handler-gap
+# detection elsewhere in the catalog.
+_CLIENT_ONLY_HANDLER_SLUGS: set[str] = {
+    "base64-encoder", "base64-decoder", "base32-encoder", "base32-decoder",
+    "text-to-binary", "binary-to-text", "text-to-hex", "hex-to-text",
+    "md5-hash-generator", "sha1-hash-generator", "sha256-hash-generator",
+    "sha384-hash-generator", "sha512-hash-generator",
+    "reverse-text", "text-reverser", "backwards-text-generator", "reverse-lines",
+    "remove-duplicate-lines", "duplicate-line-remover", "unique-lines",
+    "remove-empty-lines", "add-line-numbers", "trim-whitespace",
+    "shuffle-lines", "random-line-picker", "word-shuffler", "character-shuffler",
+    "uppercase-text", "lowercase-text", "sentence-case", "capitalize-text",
+    "invert-case", "toggle-case", "mixed-case",
+    "sponge-text", "mock-text", "spongebob-case",
+    "bold-text-generator", "bubble-text", "upside-down-text", "small-text",
+    "wide-text", "spaced-text", "strikethrough-text", "underline-text", "zalgo-text",
+    "leetspeak", "l33t-converter", "leet-converter",
+    "rot13", "rot47", "caesar-cipher", "atbash-cipher",
+    "remove-line-breaks", "json-validator", "slug-generator",
+}
+_MISSING_HANDLER_SLUGS = sorted(
+    slug for slug in _TOOL_SLUGS
+    if slug not in HANDLERS and slug not in _CLIENT_ONLY_HANDLER_SLUGS
+)
 _POPULARITY_FILE = STORAGE_DIR / "tool_popularity.json"
 _popularity_lock = Lock()
 

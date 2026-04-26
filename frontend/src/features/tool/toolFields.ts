@@ -5584,6 +5584,45 @@ TOOL_FIELDS['json-unescape'] = [
   { name: 'text', label: 'Escaped JSON String', type: 'textarea', placeholder: 'Paste a JSON-escaped string (with or without surrounding quotes)…' },
 ]
 
+// ─── Round 8: Client-side instant tools that need an extra parameter ─────────
+// (All other client-instant tools — base64-encoder, sha256, rot13, bubble-text, etc.
+//  fall back to the default textarea injected by ToolPage when no explicit entry
+//  exists for an `input_kind === 'text'` tool.)
+TOOL_FIELDS['caesar-cipher'] = [
+  { name: 'text', label: 'Your Text', type: 'textarea', placeholder: 'Paste text to encrypt or decrypt…', required: true },
+  { name: 'shift', label: 'Shift (1–25)', type: 'number', defaultValue: '3', min: 1, max: 25, placeholder: '3' },
+]
+TOOL_FIELDS['percentage-calculator'] = [
+  { name: 'value', label: 'Value', type: 'number', placeholder: '50', required: true },
+  { name: 'total', label: 'Total', type: 'number', placeholder: '200', required: true },
+]
+TOOL_FIELDS['age-calculator'] = [
+  { name: 'birthdate', label: 'Date of Birth', type: 'date', required: true, placeholder: 'YYYY-MM-DD' },
+]
+TOOL_FIELDS['bmi-calculator'] = [
+  { name: 'weight_kg', label: 'Weight (kg)', type: 'number', placeholder: '70', required: true, step: 0.1 },
+  { name: 'height_cm', label: 'Height (cm)', type: 'number', placeholder: '175', required: true, step: 0.1 },
+]
+TOOL_FIELDS['tip-calculator'] = [
+  { name: 'bill', label: 'Bill Amount', type: 'number', placeholder: '500', required: true, step: 0.01 },
+  { name: 'tip_percent', label: 'Tip %', type: 'number', placeholder: '10', defaultValue: '10', step: 0.5 },
+  { name: 'people', label: 'Split between (people)', type: 'number', placeholder: '1', defaultValue: '1', min: 1 },
+]
+TOOL_FIELDS['password-generator'] = [
+  { name: 'length', label: 'Password length', type: 'number', defaultValue: '16', min: 4, max: 128 },
+  { name: 'uppercase', label: 'Include UPPERCASE', type: 'select', defaultValue: 'true', options: booleanOptions },
+  { name: 'lowercase', label: 'Include lowercase', type: 'select', defaultValue: 'true', options: booleanOptions },
+  { name: 'numbers', label: 'Include numbers', type: 'select', defaultValue: 'true', options: booleanOptions },
+  { name: 'symbols', label: 'Include symbols', type: 'select', defaultValue: 'true', options: booleanOptions },
+]
+TOOL_FIELDS['lorem-ipsum-generator'] = [
+  { name: 'paragraphs', label: 'Paragraphs', type: 'number', defaultValue: '3', min: 1, max: 50 },
+  { name: 'sentences_per_paragraph', label: 'Sentences per paragraph', type: 'number', defaultValue: '5', min: 1, max: 30 },
+]
+TOOL_FIELDS['uuid-generator'] = [
+  { name: 'count', label: 'How many UUIDs?', type: 'number', defaultValue: '1', min: 1, max: 1000 },
+]
+
 export function getToolFields(slug: string): ToolField[] {
   return TOOL_FIELDS[slug] || []
 }

@@ -33,6 +33,7 @@ import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 import { trackToolVisit } from '../../lib/usageTracker'
 import { takePendingDrop } from '../../lib/pendingFile'
+import { runClientTool, getClientExecutor } from '../../lib/clientToolExecutors'
 
 // ─── Lazy-loaded per-tool SEO database (504 KB chunk) ─────────────────────────
 // Static-importing seoData would block the very first tool-page paint with
@@ -493,7 +494,25 @@ export default function ToolPage() {
     }
   }, [downloadUrl])
 
-  const fields = useMemo(() => (tool ? getToolFields(tool.slug) : []), [tool])
+  const fields = useMemo(() => {
+    if (!tool) return []
+    const explicit = getToolFields(tool.slug)
+    if (explicit.length > 0) return explicit
+    // Fallback: any text-input tool without explicit field defs gets a default textarea.
+    // This makes every client-side instant tool (base64-encoder, sha256, rot13, bubble-text…)
+    // and every legacy text tool render a usable input even if its field schema was never wired.
+    if (tool.input_kind === 'text') {
+      return [{
+        name: 'text',
+        label: 'Input Text',
+        type: 'textarea' as const,
+        placeholder: 'Paste or type your text here…',
+        required: true,
+        rows: 8,
+      }]
+    }
+    return []
+  }, [tool])
   const formFields = useMemo(() => fields.filter((field) => field.type !== 'file'), [fields])
   const fileAccept = useMemo(
     () => fields.find((field) => field.type === 'file' && field.accept)?.accept,
@@ -640,7 +659,22 @@ export default function ToolPage() {
       }
 
       const files = fileItems.map((item) => item.file)
-      const result = await runTool(slug, files, payload)
+
+      // ─── CLIENT-SIDE INSTANT EXECUTION ──────────────────────────────────────
+      // For pure-function tools (base64, sha256, json-formatter, password-generator,
+      // case transforms, ciphers, …) we run the tool 100% in the browser — no API
+      // call. That makes the tool: (a) instant, (b) immune to backend / Vercel
+      // outages, (c) usable even with zero network. If the executor returns null
+      // (unexpected throw), we silently fall back to the network path below.
+      let result: Awaited<ReturnType<typeof runTool>> | null = null
+      const hasFiles = files.length > 0
+      if (!hasFiles && getClientExecutor(slug)) {
+        const clientResult = await runClientTool(slug, payload)
+        if (clientResult) result = clientResult
+      }
+      if (!result) {
+        result = await runTool(slug, files, payload)
+      }
 
       stopProgressSimulation(true)
 

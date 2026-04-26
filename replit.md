@@ -1,6 +1,33 @@
 # ISHU TOOLS
 
-## Latest Update (2026-04-26) — Backend robustness across all 1315 handlers
+## Latest Update (2026-04-26 PM) — Round 8 part 2 · Catalog + form fallback for client-instant tools
+
+**Goal:** make every client-side instant tool actually navigable + usable end-to-end. Round 8 part 1 shipped `frontend/src/lib/clientToolExecutors.ts` (~700 lines, 60+ pure-JS executors covering encoding/hashing/text-transform/cipher/calc/generator). But probing showed ~52 of those slugs (`base64-encoder`, `sha256-hash-generator`, `rot13`, `bubble-text`, `caesar-cipher`, `slug-generator`, …) didn't exist in the catalog at all — so the tool detail page returned "Tool not found" before the executor could ever run.
+
+### What shipped
+- **Catalog: +52 ToolDefinition entries** appended to `backend/app/registry.py` (block `_CLIENT_INSTANT_DEFS`, guarded by `_existing_slugs`). Categories chosen contextually: encoding/hashing/ciphers → `developer`; text transforms/stylized text → `text-ops`; whitespace/line-break ops → `text-cleanup`. Every entry has rich tags for search recall.
+- **Total tool count: 1247 → 1299.** All 6 spot-checked slugs now resolve via `/api/tools/<slug>`.
+- **Smart form fallback in `frontend/src/features/tool/ToolPage.tsx`:** the `fields` `useMemo` now falls back to a default `[{name:'text', type:'textarea', required:true}]` for any tool where `getToolFields(slug)` returns `[]` AND `tool.input_kind === 'text'`. This means every existing or future text-input tool auto-renders a usable input even if its field schema was never explicitly wired — covers the new 52 plus orphaned legacy slugs like `word-counter`.
+- **Explicit field defs for tools that need extra params** (added at the end of `frontend/src/features/tool/toolFields.ts`): `caesar-cipher` (text + shift 1–25), `percentage-calculator`, `age-calculator`, `bmi-calculator`, `tip-calculator`, `password-generator` (length + 4 boolean toggles), `lorem-ipsum-generator`, `uuid-generator`.
+- **Health endpoint stays "ok":** added `_CLIENT_ONLY_HANDLER_SLUGS` set in `backend/app/main.py` listing the 52 intentionally handler-less slugs. `_MISSING_HANDLER_SLUGS` now excludes them, so `/health` reports `status: ok, missing_handlers: 0` instead of `degraded`.
+
+### Round 8 wiring recap (already in place from part 1)
+`ToolPage.tsx::handleSubmit` short-circuits to `getClientExecutor(slug)(payload)` when there are no files AND a client executor is registered. Null/error result falls back to backend `runTool()` for graceful degradation.
+
+### Files touched in this part
+- `backend/app/registry.py` (append `_CLIENT_INSTANT_DEFS` block before `TOOL_SLUGS = {…}`)
+- `backend/app/main.py` (add `_CLIENT_ONLY_HANDLER_SLUGS`, filter from `_MISSING_HANDLER_SLUGS`)
+- `frontend/src/features/tool/ToolPage.tsx` (smart fallback in `fields` useMemo)
+- `frontend/src/features/tool/toolFields.ts` (8 explicit entries appended at EOF)
+
+### Verification
+- `tsc --noEmit` clean.
+- `vite build` clean — 1.50 s, ToolPage chunk 117 → 118 KB (+1 KB), tool-fields chunk +~3 KB.
+- `/api/tools` count: 1299. `/health.status: ok`. `/tool/{base64-encoder,rot13,bubble-text}` all return HTTP 200.
+
+---
+
+## Previous Update (2026-04-26) — Backend robustness across all 1315 handlers
 
 **Goal:** kill the entire class of "tool crashes on bad input" bugs that produce ugly 500 errors and broken-looking UX. Instead of editing 1315 handlers one by one, do it at the layer below.
 
