@@ -714,9 +714,39 @@ export default function ToolPage() {
       }
     } catch (err) {
       stopProgressSimulation(false)
-      const errMsg = err instanceof Error ? err.message : 'Tool execution failed'
-      setRunError(errMsg)
-      toast.show(errMsg, 'error', 5000)
+      // Friendly, actionable error messages for ALL 1247 tools — replaces
+      // cryptic browser/network errors ("Failed to fetch", "AbortError",
+      // raw HTTP status codes) with something a non-technical user can act on.
+      // The Render backend is on a free tier and may cold-start, so a 502/504
+      // or aborted request is almost always "server is waking up" rather than
+      // a real bug — telling the user to retry in 20 seconds is vastly better
+      // UX than showing them "fetch failed".
+      const raw = err instanceof Error ? err.message : String(err || '')
+      const lower = raw.toLowerCase()
+      let friendly = raw || 'This tool could not finish the request.'
+      if (!raw || /failed to fetch|networkerror|load failed/.test(lower)) {
+        friendly = navigator.onLine === false
+          ? 'You appear to be offline. Reconnect to the internet and try again.'
+          : 'Could not reach the server. Please check your connection and try again in a moment.'
+      } else if (/abort|timeout|timed? out/.test(lower)) {
+        friendly = 'The request took too long and was cancelled. Try again — the server may have been waking up.'
+      } else if (/http 50[234]|bad gateway|service unavailable|gateway timeout/.test(lower)) {
+        friendly = 'The server is waking up. Please retry in about 20 seconds.'
+      } else if (/http 429|too many requests|rate limit/.test(lower)) {
+        friendly = 'Too many requests right now. Please wait a minute before trying again.'
+      } else if (/http 413|payload too large|file too large/.test(lower)) {
+        friendly = 'That file is too large. Try a smaller file (or compress it first).'
+      } else if (/http 415|unsupported media type/.test(lower)) {
+        friendly = 'That file type is not supported by this tool.'
+      } else if (/http 401|http 403|unauthor|forbidden/.test(lower)) {
+        friendly = 'This source requires authentication. Please check the URL or sign in.'
+      } else if (/http 404|not found/.test(lower)) {
+        friendly = 'The content could not be found. Double-check the link and try again.'
+      } else if (/http 5\d\d/.test(lower)) {
+        friendly = 'The server hit an error processing your request. Please try again — if it keeps failing, the input may be unsupported.'
+      }
+      setRunError(friendly)
+      toast.show(friendly, 'error', 6000)
       scrollToResult()
     } finally {
       setRunning(false)
