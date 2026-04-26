@@ -486,7 +486,11 @@ def handle_epoch_converter(files: list[Path], payload: dict[str, Any], output_di
 def handle_fancy_text_generator(files: list[Path], payload: dict[str, Any], output_dir: Path) -> ExecutionResult:
     text = str(payload.get("text", "")).strip()
     if not text:
-        raise HTTPException(status_code=400, detail="text is required")
+        return ExecutionResult(
+            kind="json",
+            message="Please enter some text to convert into fancy styles.",
+            data={"error": "Text is required."},
+        )
     text = text[:200]
     BOLD = str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
                           "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵")
@@ -494,14 +498,18 @@ def handle_fancy_text_generator(files: list[Path], payload: dict[str, Any], outp
                             "𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻")
     BUBBLE = str.maketrans("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
                              "ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ⓪①②③④⑤⑥⑦⑧⑨")
+    # Upside-down: each side exactly 62 chars (a-z, A-Z, 0-9)
+    UPSIDE_SRC = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    UPSIDE_DST = "ɐqɔpǝɟƃɥᴉɾʞlɯuodbɹsʇnʌʍxʎz∀qƆpƎℲפHIſʞ˥WNOԀQɹS┴∩ΛMXʎZ0ƖᄅƐㄣϛ9ㄥ86"
+    if len(UPSIDE_SRC) != len(UPSIDE_DST):
+        UPSIDE_DST = UPSIDE_SRC  # safety fallback so the tool never crashes
     variants = {
         "Bold": text.translate(BOLD),
         "Italic": text.translate(ITALIC),
         "Bubble": text.translate(BUBBLE),
         "Strikethrough": "".join(c + "\u0336" for c in text),
         "Underline": "".join(c + "\u0332" for c in text),
-        "Upside Down": text.translate(str.maketrans("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-                                                      "ɐqɔpǝɟƃɥıɾʞlɯuodbɹsʇnʌʍxʎz∀ᗺƆᗡƎℲ⅁HIᒋʞ˥WNOdQᴚS┴∩ΛMX⅄Z0ɹ2Ɛ4⁵9ᴸ8")),
+        "Upside Down": text.translate(str.maketrans(UPSIDE_SRC, UPSIDE_DST))[::-1],
         "Small Caps": text.translate(str.maketrans("abcdefghijklmnopqrstuvwxyz", "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ")),
     }
     return ExecutionResult(kind="json", message=f"Generated {len(variants)} fancy text styles", data={"styles": variants, "original": text, "message": f"Generated {len(variants)} styles for: {text[:40]}"})

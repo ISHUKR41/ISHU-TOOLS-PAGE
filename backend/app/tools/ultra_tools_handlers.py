@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from .handlers import HANDLERS, ExecutionResult
+from .handlers import HANDLERS, ExecutionResult, coerce_float, coerce_int
 
 
 def _make_json(data: dict, msg: str = "Done") -> ExecutionResult:
@@ -1720,9 +1720,29 @@ def _handle_percentage_change_calculator(files: list[Path], payload: dict[str, A
 # ─── EMI Calculator ─────────────────────────────────────────────────────────
 def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     try:
-        principal = float(payload.get("principal", payload.get("loan_amount", payload.get("amount", 100000))))
-        rate = float(payload.get("rate", payload.get("interest_rate", 10)))
-        tenure_months = int(payload.get("tenure_months", payload.get("tenure", payload.get("months", 12))))
+        principal = coerce_float(
+            payload.get("principal") or payload.get("loan_amount") or payload.get("amount"),
+            default=100000.0, lo=0.0,
+        )
+        rate = coerce_float(
+            payload.get("rate") or payload.get("interest_rate"),
+            default=10.0, lo=0.0,
+        )
+        # Accept tenure_months OR tenure/years (in years)
+        if payload.get("tenure_months"):
+            tenure_months = coerce_int(payload.get("tenure_months"), default=12, lo=1, hi=600)
+        elif payload.get("years"):
+            tenure_months = max(1, int(round(coerce_float(payload.get("years"), default=1.0, lo=0.0) * 12)))
+        elif payload.get("tenure"):
+            tenure_months = max(1, int(round(coerce_float(payload.get("tenure"), default=1.0, lo=0.0) * 12)))
+        elif payload.get("months"):
+            tenure_months = coerce_int(payload.get("months"), default=12, lo=1, hi=600)
+        else:
+            tenure_months = 12
+        if principal <= 0:
+            return _make_json({"error": "Loan amount must be greater than zero."}, "Please enter a loan amount greater than zero.")
+        if tenure_months <= 0:
+            return _make_json({"error": "Tenure must be at least one month."}, "Please enter a loan tenure of at least one month.")
         monthly_rate = rate / 12 / 100
         if monthly_rate == 0:
             emi = principal / tenure_months
@@ -1749,11 +1769,27 @@ def _handle_emi_calculator(files: list[Path], payload: dict[str, Any], job_dir: 
 # ─── Interest Calculator ─────────────────────────────────────────────────────
 def _handle_interest_calculator(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
     try:
-        principal = float(payload.get("principal", payload.get("amount", 10000)))
-        rate = float(payload.get("rate", payload.get("interest_rate", 8)))
-        time_years = float(payload.get("time", payload.get("years", payload.get("time_years", 1))))
+        principal = coerce_float(
+            payload.get("principal") or payload.get("amount"),
+            default=10000.0, lo=0.0,
+        )
+        rate = coerce_float(
+            payload.get("rate") or payload.get("interest_rate"),
+            default=8.0, lo=0.0,
+        )
+        time_years = coerce_float(
+            payload.get("time") or payload.get("years") or payload.get("time_years"),
+            default=1.0, lo=0.0,
+        )
         mode = str(payload.get("type", payload.get("mode", "compound"))).lower()
-        n = int(payload.get("compounding_times", payload.get("n", 12)))  # per year
+        n = coerce_int(
+            payload.get("compounding_times") or payload.get("n"),
+            default=12, lo=1, hi=365,
+        )  # per year
+        if principal <= 0:
+            return _make_json({"error": "Principal must be greater than zero."}, "Please enter a principal amount greater than zero.")
+        if time_years <= 0:
+            return _make_json({"error": "Time period must be greater than zero years."}, "Please enter a time period greater than zero years.")
         if mode in ("simple", "si"):
             interest = round(principal * rate * time_years / 100, 2)
             final = round(principal + interest, 2)
@@ -2311,10 +2347,13 @@ ULTRA_HANDLERS: dict[str, Any] = {
     "percentage-change": _handle_percentage_change_calculator,
     "emi-calculator": _handle_emi_calculator,
     "loan-emi-calculator": _handle_emi_calculator,
+    "home-loan-emi-calculator": _handle_emi_calculator,
+    "personal-loan-calculator": _handle_emi_calculator,
+    "car-loan-emi-calculator": _handle_emi_calculator,
     "monthly-emi": _handle_emi_calculator,
     "interest-calculator": _handle_interest_calculator,
-    "simple-interest-calculator": _handle_interest_calculator,
-    "compound-interest-calculator": _handle_interest_calculator,
+    "simple-interest-calculator": lambda f, p, j: _handle_interest_calculator(f, {**p, "type": "simple"}, j),
+    "compound-interest-calculator": lambda f, p, j: _handle_interest_calculator(f, {**p, "type": "compound"}, j),
     "reading-time-estimator": _handle_reading_time_estimator,
     "reading-time": _handle_reading_time_estimator,
     "estimate-reading-time": _handle_reading_time_estimator,

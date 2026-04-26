@@ -864,12 +864,25 @@ def handle_scientific_calculator_improved(files, payload, output_dir):
 
 
 def handle_compound_interest(files, payload, output_dir):
-    """Accurate compound interest calculator"""
-    principal = float(payload.get("principal", 10000))
-    rate = float(payload.get("rate", 8))  # annual %
-    time = float(payload.get("time", 5))  # years
-    n = int(payload.get("compound_per_year", 12))  # compounding frequency
-    
+    """Accurate compound interest calculator with safe input coercion"""
+    principal = coerce_float(payload.get("principal"), default=10000.0, lo=0.0)
+    rate = coerce_float(payload.get("rate"), default=8.0, lo=0.0)  # annual %
+    time = coerce_float(payload.get("time"), default=5.0, lo=0.0)  # years
+    n = coerce_int(payload.get("compound_per_year"), default=12, lo=1, hi=365)  # compounding frequency
+
+    if principal <= 0:
+        return ExecutionResult(
+            kind="json",
+            message="Please enter a principal amount greater than zero.",
+            data={"error": "Principal must be > 0"},
+        )
+    if time <= 0:
+        return ExecutionResult(
+            kind="json",
+            message="Please enter a time period greater than zero years.",
+            data={"error": "Time must be > 0"},
+        )
+
     r = rate / 100
     amount = principal * (1 + r/n) ** (n * time)
     interest = amount - principal
@@ -900,22 +913,36 @@ def handle_compound_interest(files, payload, output_dir):
 
 
 def handle_loan_emi(files, payload, output_dir):
-    """Accurate EMI calculator with amortization"""
-    principal = float(payload.get("principal", 1000000))
-    rate = float(payload.get("rate", 8.5))  # annual %
-    years = float(payload.get("years", 20))
-    
-    months = int(years * 12)
+    """Accurate EMI calculator with amortization and safe input coercion"""
+    principal = coerce_float(payload.get("principal"), default=1000000.0, lo=0.0)
+    rate = coerce_float(payload.get("rate"), default=8.5, lo=0.0)  # annual %
+    years = coerce_float(payload.get("years"), default=20.0, lo=0.0, hi=100.0)
+
+    if principal <= 0:
+        return ExecutionResult(
+            kind="json",
+            message="Please enter a loan amount greater than zero.",
+            data={"error": "Principal must be > 0"},
+        )
+    if years <= 0:
+        return ExecutionResult(
+            kind="json",
+            message="Please enter a loan tenure greater than zero years.",
+            data={"error": "Years must be > 0"},
+        )
+
+    months = max(1, int(round(years * 12)))
     monthly_rate = rate / 100 / 12
-    
+
     if monthly_rate == 0:
         emi = principal / months
     else:
         emi = principal * monthly_rate * (1 + monthly_rate)**months / ((1 + monthly_rate)**months - 1)
-    
+
     total_payment = emi * months
     total_interest = total_payment - principal
-    
+    interest_ratio = (total_interest / principal * 100) if principal > 0 else 0.0
+
     return ExecutionResult(kind="json", message=f"Monthly EMI: ₹{emi:,.2f}", data={
         "text": (
             f"═══ EMI Calculator ═══\n"
@@ -925,11 +952,12 @@ def handle_loan_emi(files, payload, output_dir):
             f"Monthly EMI: ₹{emi:,.2f}\n"
             f"Total Interest: ₹{total_interest:,.2f}\n"
             f"Total Payment: ₹{total_payment:,.2f}\n"
-            f"Interest to Principal Ratio: {total_interest/principal*100:.1f}%"
+            f"Interest to Principal Ratio: {interest_ratio:.1f}%"
         ),
         "emi": round(emi, 2),
         "total_interest": round(total_interest, 2),
         "total_payment": round(total_payment, 2),
+        "months": months,
     })
 
 

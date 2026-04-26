@@ -13,7 +13,7 @@ import tempfile
 import os
 from typing import Any
 
-from .handlers import HANDLERS
+from .handlers import HANDLERS, coerce_float, coerce_int
 
 
 MEGA_NEW_HANDLERS: dict[str, Any] = {}
@@ -982,27 +982,29 @@ MEGA_NEW_HANDLERS["color-palette-generator"] = _handle_color_palette_generator
 
 
 def _handle_loan_emi_calculator(files, payload):
-    """Detailed loan EMI with amortization."""
+    """Detailed loan EMI with amortization. Safe input coercion + amortization schedule."""
     try:
-        principal = float(
-            payload.get("principal") or payload.get("loan_amount") or
-            payload.get("amount") or 100000
+        principal = coerce_float(
+            payload.get("principal") or payload.get("loan_amount") or payload.get("amount"),
+            default=100000.0, lo=0.0,
         )
-        annual_rate = float(
-            payload.get("annual_rate") or payload.get("rate") or
-            payload.get("interest_rate") or 10
+        annual_rate = coerce_float(
+            payload.get("annual_rate") or payload.get("rate") or payload.get("interest_rate"),
+            default=10.0, lo=0.0,
         )
         # Accept tenure_months directly, or tenure/years in years (convert to months)
         if payload.get("tenure_months"):
-            tenure_months = int(payload["tenure_months"])
-        elif payload.get("tenure"):
-            tenure_months = int(float(payload["tenure"]) * 12)
+            tenure_months = coerce_int(payload.get("tenure_months"), default=12, lo=1, hi=600)
         elif payload.get("years"):
-            tenure_months = int(float(payload["years"]) * 12)
+            tenure_months = max(1, int(round(coerce_float(payload.get("years"), default=1.0, lo=0.0) * 12)))
+        elif payload.get("tenure"):
+            tenure_months = max(1, int(round(coerce_float(payload.get("tenure"), default=1.0, lo=0.0) * 12)))
         else:
             tenure_months = 12
-        if annual_rate < 0 or tenure_months <= 0 or principal <= 0:
-            return _err("Principal, rate, and tenure must all be positive")
+        if principal <= 0:
+            return _err("Please enter a loan amount greater than zero.")
+        if tenure_months <= 0:
+            return _err("Please enter a loan tenure of at least one month.")
         monthly_rate = annual_rate / (12 * 100)
         if monthly_rate == 0:
             emi = principal / tenure_months
