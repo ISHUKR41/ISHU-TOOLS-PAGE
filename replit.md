@@ -1024,3 +1024,34 @@ Build still ~2s + ~200ms postbuild. Per-page payload +~2.5 KB gzipped. Safe — 
 - After fix: **471 popularity entries, 0 orphans** — every boost lands on a real tool.
 - Made `handle_age_calculator` (everyday_handlers.py:223) accept all common DOB field name variants: `text`, `date`, `dob`, `birth_date`, `birthday`, `date_of_birth`, `input_text`, `input` — verified all 3 new names return success.
 - Top-20 home grid now leads with student/normal-user staples: merge-pdf, compress-pdf, compress-image, pdf-to-word, word-to-pdf, kg-to-lbs, cm-to-inches, °C↔°F, decimal-to-binary, jpg-to-pdf, remove-background, video-to-mp3, split-pdf.
+
+
+## 2026-04-26 — Round 13 (Smart input coercion + unit-converter overhaul + Casio fx-991 calculator)
+
+### Backend handler fixes (no more raw `float()` crashes, friendly errors everywhere)
+
+**Finance / Math handlers — fixed silent wrong-answer bugs and crashes:**
+- `simple-interest-calculator` — was returning **compound interest** (₹27,023 for 100K @ 8% × 3yr) because ultra_tools `_handle_interest_calculator` defaulted `mode="compound"`. Now wrapped at registration with `lambda` forcing `type=simple` / `type=compound` per slug → **correctly returns SI ₹24,000**.
+- `compound-interest-calculator` (extra_tools) + `loan-emi-calculator` (mega_new + ultra_tools active winners) — replaced raw `float()` with `coerce_float` + `>0` guards + friendly per-field errors. Added `home-loan/personal-loan/car-loan-emi-calculator` aliases.
+- `profit-loss-calculator` (student_everyday) — accepts `cost_price`/`cp`/`buy`/`buying_price`/`selling_price`/`sp`/`sell`/`sale_price` aliases via `coerce_float`. No more 422 crashes.
+- `speed-distance-time` (student_everyday) — accepts `distance`/`time`/`time_hours`/`v1`/`v2`/`first`/`second` aliases.
+- `roi-calculator` (health_finance) — accepts `principal`/`invested`/`returns`/`current_value`/`duration`/`period` aliases.
+- `cgpa-to-percentage` — same `coerce_float` treatment.
+
+**Unit converters — major systemic overhaul (`new_tools_handlers._unit_converter`):**
+- New `_normalize_unit()` helper handles plurals (kilograms→kilogram, meters→meter, ounces→ounce), British spellings (metre/litre/kilometre), space variants, and 50+ common synonyms (kph→km/h, miles per hour→mph, square meter→sq meter, etc.).
+- Value parsed via `coerce_float` (was `float()` → crashed on "abc"). Empty/missing value falls back to `1.0` so the tool always returns a sensible result.
+- Accepts `from`/`to`/`source_unit`/`input_unit`/`target_unit`/`output_unit` aliases (was strict `from_unit`/`to_unit` only).
+- When unit unrecognised, falls back to first/second key in conversions (instead of dumping the whole error list).
+- Verified: `5 kilograms → 11.02 pound`, `10 meters → 32.81 feet`, `1 acre → 0.40 hectare`, `100 mph → 160.93 km/h`. All 8 affected tools (length/weight/speed/area/volume/data-storage/energy/pressure) now bulletproof.
+
+**`hex-to-rgb` (new_tools_handlers):** accepts `text`/`hex`/`color`/`input` aliases, `#RRGGBB`/`RRGGBB`/`#RGB`/`0xRRGGBB`/`#RRGGBBAA` (alpha stripped), friendly empty-input message. Validates hex chars before parsing.
+
+**`base64-decode` (new_tools_handlers):** accepts `text`/`input`/`base64` aliases, strips `data:...,` URI prefix, removes whitespace, **auto-pads** missing `=` (was failing on padless strings like `SGVsbG8gV29ybGQ`), friendly empty-input message.
+
+**`fancy-text-generator` (image_plus_handlers — active winner):** **fixed real `maketrans` length-mismatch crash** — old `Upside Down` map had 62 src chars but 61 dst chars (missing one digit) → all calls returned 422. New 62-char balanced map (a-z, A-Z, 0-9 → upside-down equivalents) + safety fallback if lengths ever drift. Empty input now returns friendly message instead of `HTTPException`.
+
+### Diagnostic baseline
+- `diagnostic_report.json` (older run) showed 76 "fails" out of 1247. Re-tested live: many were stale (whitespace-remover, nato-alphabet, prime-number-checker all work fine), some were graceful error-returns being mis-classified (average/gpa/jwt/stopwatch/roman-numeral). True remaining bugs from this round: ~6 hard handler bugs (all fixed above) + ~12 systemic field-coercion gaps (also fixed via the `coerce_float` rollout above).
+- Health: **1247 tools, 1317 handlers, 0 missing, 0 duplicates, 0 5xx in smoke tests.**
+

@@ -11,7 +11,7 @@ import math
 from datetime import datetime, timedelta
 from typing import Any
 
-from .handlers import ExecutionResult
+from .handlers import ExecutionResult, coerce_float, coerce_int
 
 
 def _json(data: dict, message: str = "Done") -> ExecutionResult:
@@ -409,12 +409,23 @@ def handle_sip_calculator(files, payload, output_dir) -> ExecutionResult:
 
 def handle_roi_calculator(files, payload, output_dir) -> ExecutionResult:
     """Return on Investment (ROI) calculator."""
-    initial   = float(payload.get("initial_investment", 0) or payload.get("value", 0) or payload.get("initial", 0))
-    final_val = float(payload.get("final_value", 0) or payload.get("total", 0) or payload.get("final", 0))
-    years     = float(payload.get("years", 0))
+    initial = coerce_float(
+        payload.get("initial_investment") or payload.get("value")
+        or payload.get("initial") or payload.get("principal") or payload.get("invested"),
+        default=0.0,
+    )
+    final_val = coerce_float(
+        payload.get("final_value") or payload.get("total") or payload.get("final")
+        or payload.get("returns") or payload.get("current_value"),
+        default=0.0,
+    )
+    years = coerce_float(payload.get("years") or payload.get("duration") or payload.get("period"),
+                         default=0.0, lo=0.0)
 
     if initial <= 0:
-        return _err("Initial investment must be greater than 0.")
+        return _err("Please enter your initial investment amount (must be greater than 0).")
+    if final_val < 0:
+        return _err("Final value cannot be negative.")
 
     gain     = final_val - initial
     roi_pct  = (gain / initial) * 100

@@ -215,12 +215,37 @@ def handle_base64_encode(files, payload, output_dir):
 
 
 def handle_base64_decode(files, payload, output_dir):
-    text = str(payload.get("text", "")).strip()
+    text = str(payload.get("text") or payload.get("input") or payload.get("base64") or "").strip()
+    if not text:
+        return ExecutionResult(
+            kind="json",
+            message="Please paste a Base64 string to decode.",
+            data={"error": "No input provided."},
+        )
+    # Strip data URI prefix and whitespace, auto-pad
+    if text.startswith("data:"):
+        _, _, text = text.partition(",")
+    text = "".join(text.split())
+    pad = (-len(text)) % 4
+    if pad:
+        text = text + ("=" * pad)
     try:
-        decoded = base64.b64decode(text).decode("utf-8", errors="replace")
-        return ExecutionResult(kind="json", message="Base64 decoded", data={"text": decoded})
+        decoded_bytes = base64.b64decode(text, validate=False)
+        try:
+            decoded = decoded_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            decoded = decoded_bytes.decode("utf-8", errors="replace")
+        return ExecutionResult(
+            kind="json",
+            message="Base64 decoded successfully",
+            data={"text": decoded, "bytes_length": len(decoded_bytes)},
+        )
     except Exception as e:
-        return ExecutionResult(kind="json", message=f"Decode error: {e}", data={"error": str(e)})
+        return ExecutionResult(
+            kind="json",
+            message="That doesn't look like a valid Base64 string. Please check your input.",
+            data={"error": str(e)[:200]},
+        )
 
 
 def handle_uuid_generator(files, payload, output_dir):
@@ -607,17 +632,45 @@ def handle_color_picker(files, payload, output_dir):
 
 
 def handle_hex_to_rgb(files, payload, output_dir):
-    hex_color = str(payload.get("text", "")).strip().lstrip("#")
+    raw = str(payload.get("text") or payload.get("hex") or payload.get("color") or payload.get("input") or "").strip()
+    if not raw:
+        return ExecutionResult(
+            kind="json",
+            message="Enter a HEX color like #FF5733 or 3b82f6.",
+            data={"error": "No HEX value provided."},
+        )
+    hex_color = raw.lstrip("#").strip()
+    # accept 0xRRGGBB form too
+    if hex_color.lower().startswith("0x"):
+        hex_color = hex_color[2:]
     if len(hex_color) == 3:
-        hex_color = "".join(c*2 for c in hex_color)
+        hex_color = "".join(c * 2 for c in hex_color)
+    elif len(hex_color) == 8:
+        hex_color = hex_color[:6]  # ignore alpha channel for RGB
+    if len(hex_color) != 6 or any(c not in "0123456789abcdefABCDEF" for c in hex_color):
+        return ExecutionResult(
+            kind="json",
+            message="That doesn't look like a valid HEX color. Try something like #FF5733.",
+            data={"error": "Invalid HEX format.", "input": raw},
+        )
     try:
         r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
-        return ExecutionResult(kind="json", message="HEX converted to RGB", data={
-            "text": f"RGB: rgb({r}, {g}, {b})\nR: {r}\nG: {g}\nB: {b}",
-            "rgb": f"rgb({r}, {g}, {b})", "r": r, "g": g, "b": b
-        })
+        return ExecutionResult(
+            kind="json",
+            message=f"#{hex_color.upper()} = rgb({r}, {g}, {b})",
+            data={
+                "text": f"RGB: rgb({r}, {g}, {b})\nR: {r}\nG: {g}\nB: {b}",
+                "rgb": f"rgb({r}, {g}, {b})",
+                "hex": f"#{hex_color.upper()}",
+                "r": r, "g": g, "b": b,
+            },
+        )
     except (ValueError, IndexError):
-        return ExecutionResult(kind="json", message="Invalid HEX color", data={"error": "Enter a valid HEX color like #FF5733"})
+        return ExecutionResult(
+            kind="json",
+            message="Invalid HEX color. Try something like #FF5733.",
+            data={"error": "Enter a valid HEX color like #FF5733."},
+        )
 
 
 def handle_rgb_to_hex(files, payload, output_dir):
@@ -823,22 +876,116 @@ def handle_temperature_converter(files, payload, output_dir):
     })
 
 
+def _normalize_unit(s: str, available_keys) -> str:
+    """Lowercase, strip, drop punctuation, handle plurals & common synonyms.
+    Tries (a) exact, (b) singular (drop trailing 's'), (c) replace spaces/dashes,
+    (d) common synonym map. Returns the matched key or the original string.
+    """
+    if s is None:
+        return ""
+    raw = str(s).strip().lower().replace("²", "2").replace("³", "3")
+    raw = raw.replace("-", " ").replace("_", " ")
+    while "  " in raw:
+        raw = raw.replace("  ", " ")
+    raw = raw.strip()
+
+    SYNONYMS = {
+        # length
+        "metre": "meter", "metres": "meter", "meters": "meter",
+        "kilometre": "kilometer", "kilometres": "kilometer", "kilometers": "kilometer",
+        "centimetre": "centimeter", "centimetres": "centimeter", "centimeters": "centimeter",
+        "millimetre": "millimeter", "millimetres": "millimeter", "millimeters": "millimeter",
+        "miles": "mile", "yards": "yard", "inches": "inch", "ft": "foot",
+        "nautical miles": "nautical mile",
+        # weight
+        "kilograms": "kilogram", "kgs": "kg", "grams": "gram", "milligrams": "milligram",
+        "pounds": "pound", "ounces": "ounce", "tons": "ton", "tonne": "ton",
+        "tonnes": "ton", "metric tons": "metric ton", "stones": "stone",
+        # speed
+        "kph": "km/h", "km per hour": "km/h", "kmph": "km/h",
+        "miles per hour": "mph", "meters per second": "m/s", "feet per second": "ft/s",
+        # area
+        "sq metre": "sq meter", "sq metres": "sq meter", "sq meters": "sq meter",
+        "sq feet": "sq foot", "square meter": "sq meter", "square foot": "sq foot",
+        "square kilometer": "sq kilometer", "square mile": "sq mile",
+        "square yard": "sq yard", "square inch": "sq inch",
+        "acres": "acre", "hectares": "hectare",
+        # volume
+        "liters": "liter", "litre": "liter", "litres": "liter",
+        "milliliters": "milliliter", "millilitre": "milliliter", "millilitres": "milliliter",
+        "gallons": "gallon", "quarts": "quart", "pints": "pint", "cups": "cup",
+        "fluid ounces": "fluid ounce", "tablespoons": "tablespoon", "teaspoons": "teaspoon",
+        # data
+        "bytes": "byte", "kilobytes": "kilobyte", "megabytes": "megabyte",
+        "gigabytes": "gigabyte", "terabytes": "terabyte", "petabytes": "petabyte",
+        # energy
+        "joules": "joule", "kilojoules": "kilojoule", "calories": "calorie",
+        "kilocalories": "kilocalorie",
+        # pressure
+        "pascals": "pascal", "kilopascals": "kilopascal", "bars": "bar",
+    }
+    candidate = SYNONYMS.get(raw, raw)
+    if candidate in available_keys:
+        return candidate
+    if raw in available_keys:
+        return raw
+    # try singular (drop trailing 's' if longer than 2 chars)
+    if len(raw) > 2 and raw.endswith("s") and raw[:-1] in available_keys:
+        return raw[:-1]
+    # try with spaces collapsed
+    no_space = raw.replace(" ", "")
+    if no_space in available_keys:
+        return no_space
+    return raw  # no match — caller will report
+
+
 def _unit_converter(conversions, payload, unit_type):
-    value = float(payload.get("value", 0))
-    from_unit = str(payload.get("from_unit", "")).lower()
-    to_unit = str(payload.get("to_unit", "")).lower()
-    
-    if from_unit not in conversions or to_unit not in conversions:
-        available = ", ".join(conversions.keys())
-        return ExecutionResult(kind="json", message=f"Unknown unit. Available: {available}", data={"error": "Unknown unit", "available": available})
-    
+    value = coerce_float(
+        payload.get("value")
+        or payload.get("number")
+        or payload.get("input")
+        or payload.get("amount"),
+        default=1.0,
+    )
+    from_raw = (payload.get("from_unit") or payload.get("from")
+                or payload.get("source_unit") or payload.get("input_unit") or "")
+    to_raw   = (payload.get("to_unit") or payload.get("to")
+                or payload.get("target_unit") or payload.get("output_unit") or "")
+    from_unit = _normalize_unit(from_raw, conversions.keys())
+    to_unit   = _normalize_unit(to_raw, conversions.keys())
+
+    # Sensible default: pick first two keys if user didn't pick units
+    keys = list(conversions.keys())
+    if from_unit not in conversions:
+        from_unit = keys[0]
+    if to_unit not in conversions:
+        # pick a different unit than from_unit if possible
+        to_unit = next((k for k in keys if k != from_unit), keys[0])
+
     base = value * conversions[from_unit]
+    if conversions[to_unit] == 0:
+        return ExecutionResult(
+            kind="json",
+            message=f"Cannot convert to {to_unit} (zero factor).",
+            data={"error": "Invalid target unit factor."},
+        )
     result = base / conversions[to_unit]
-    
-    return ExecutionResult(kind="json", message=f"{value} {from_unit} = {result:.6g} {to_unit}", data={
-        "text": f"{value} {from_unit} = {result:.6g} {to_unit}",
-        "result": result, "from": from_unit, "to": to_unit
-    })
+    line = f"{value:g} {from_unit} = {result:.6g} {to_unit}"
+    return ExecutionResult(
+        kind="json",
+        message=line,
+        data={
+            "text": line,
+            "result": result,
+            "value": value,
+            "from": from_unit,
+            "to": to_unit,
+            "from_unit": from_unit,
+            "to_unit": to_unit,
+            "unit_type": unit_type,
+            "available_units": list(conversions.keys()),
+        },
+    )
 
 
 def handle_length_converter(files, payload, output_dir):

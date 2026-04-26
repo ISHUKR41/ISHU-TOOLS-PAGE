@@ -15,7 +15,7 @@ import hashlib
 from datetime import datetime, timezone, timedelta
 from typing import Any
 
-from .handlers import ExecutionResult
+from .handlers import ExecutionResult, coerce_float, coerce_int
 
 
 def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult:
@@ -288,12 +288,24 @@ def handle_electricity_bill_calculator(files, payload, output_dir) -> ExecutionR
 
 def handle_speed_distance_time(files, payload, output_dir) -> ExecutionResult:
     """Calculate speed, distance, or time given two values"""
-    mode = str(payload.get("mode", "speed")).lower()
-    val1 = float(payload.get("value", 0))
-    val2 = float(payload.get("total", 0))
+    mode = str(payload.get("mode", "speed")).lower().strip()
+    # Accept many alternate field names so the tool works no matter how the user labels inputs
+    val1 = coerce_float(
+        payload.get("value") or payload.get("distance") or payload.get("speed_value")
+        or payload.get("v1") or payload.get("first"),
+        default=0.0,
+    )
+    val2 = coerce_float(
+        payload.get("total") or payload.get("time") or payload.get("time_hours")
+        or payload.get("v2") or payload.get("second"),
+        default=0.0,
+    )
 
     if val1 <= 0 or val2 <= 0:
-        return _text_result({"error": "Values must be positive"}, "Error")
+        return _text_result(
+            {"error": "Please enter two positive numbers (e.g. distance and time)."},
+            "Both values must be positive numbers.",
+        )
 
     if mode == "speed":
         # distance / time = speed
@@ -322,11 +334,22 @@ def handle_speed_distance_time(files, payload, output_dir) -> ExecutionResult:
 
 def handle_profit_loss_calculator(files, payload, output_dir) -> ExecutionResult:
     """Calculate profit or loss percentage"""
-    cost_price = float(payload.get("value", 0) or payload.get("cost", 0))
-    selling_price = float(payload.get("total", 0) or payload.get("selling", 0))
+    cost_price = coerce_float(
+        payload.get("value") or payload.get("cost") or payload.get("cost_price")
+        or payload.get("cp") or payload.get("buy") or payload.get("buying_price"),
+        default=0.0,
+    )
+    selling_price = coerce_float(
+        payload.get("total") or payload.get("selling") or payload.get("selling_price")
+        or payload.get("sp") or payload.get("sell") or payload.get("sale_price"),
+        default=0.0,
+    )
 
     if cost_price <= 0 or selling_price <= 0:
-        return _text_result({"error": "Prices must be positive"}, "Error")
+        return _text_result(
+            {"error": "Please enter both cost price and selling price as positive numbers."},
+            "Cost price and selling price must be positive.",
+        )
 
     diff = selling_price - cost_price
     pct = (diff / cost_price) * 100
@@ -346,10 +369,14 @@ def handle_cgpa_to_percentage(files, payload, output_dir) -> ExecutionResult:
     """Convert CGPA to percentage and vice versa"""
     text = _get_text(payload)
     mode = str(payload.get("mode", "cgpa_to_pct")).lower()
-    value = float(payload.get("value", 0) or (float(text) if text else 0))
-
+    value = coerce_float(payload.get("value"), default=0.0)
+    if value <= 0 and text:
+        value = coerce_float(text, default=0.0)
     if value <= 0:
-        return _text_result({"error": "Enter a valid positive number"}, "Error")
+        return _text_result(
+            {"error": "Enter a valid positive number (e.g. CGPA like 8.5 or percentage like 75)."},
+            "Please enter a valid positive number.",
+        )
 
     if mode == "pct_to_cgpa":
         # Percentage to CGPA (divide by 9.5 — CBSE standard)
