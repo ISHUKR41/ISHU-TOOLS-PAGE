@@ -26,6 +26,23 @@ function warmRouteChunks(): void {
   void import('../lib/seoData')
 }
 
+/**
+ * Public, slug-free variant: warm ONLY the lazy /tools/:slug route chunks.
+ * Cheap and idempotent — safe to call from any layout / shell mount effect.
+ *
+ * Use this for "background" warming (e.g. kick off shortly after page idle
+ * so the very first tool click anywhere on the site has a fully parsed
+ * route ready, with no chunk download or parse delay).
+ *
+ * Unlike `prefetchToolRoute(slug)` this never calls `fetchTool` and so
+ * doesn't trigger any per-slug network traffic — perfect for the cold
+ * landing-page case where we don't yet know what the user will click.
+ */
+export function prefetchToolChunks(): void {
+  if (chunksWarmed) return
+  whenIdle(warmRouteChunks)
+}
+
 // Schedule using requestIdleCallback when the browser is idle so we never
 // fight with what the user is currently doing. Falls back to a tiny
 // setTimeout for browsers (Safari) that lack rIC.

@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp, Search } from 'lucide-react'
 import AnimatedBackdrop from './AnimatedBackdrop'
 import CommandPalette from '../search/CommandPalette'
+import SmartDropOverlay from './SmartDropOverlay'
+import { prefetchToolChunks } from '../../lib/prefetchTool'
 
 const TOOL_COUNT_LABEL = '1200+'
 
@@ -172,11 +174,32 @@ function MegaMenu({ onClose }: MegaMenuProps) {
 export default function SiteShell({ children }: PropsWithChildren) {
   const location = useLocation()
   const isHome = location.pathname === '/'
+  const isOnToolPage =
+    location.pathname.startsWith('/tools/') ||
+    location.pathname === '/scientific-calculator'
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const megaRef = useRef<HTMLDivElement>(null)
+
+  /* Background warm-up of /tools/:slug route chunks.
+   *
+   * We schedule this via `requestIdleCallback` (inside `prefetchToolChunks`)
+   * so it never competes with critical-path work on first paint. The benefit:
+   * the very first click on ANY tool card — anywhere on the site (Home,
+   * AllTools, Category, search palette, mega menu, footer link) — feels
+   * instant because the lazy ToolPage chunk is already downloaded + parsed
+   * by the time the user navigates.
+   *
+   * Skipped when the user is already on a tool page (chunks are loaded
+   * eagerly there) and short-circuits internally if already warmed, so
+   * route changes within a session cost nothing.
+   */
+  useEffect(() => {
+    if (isOnToolPage) return
+    prefetchToolChunks()
+  }, [isOnToolPage])
 
   /* Cmd/Ctrl + K, plus "/" anywhere outside an input, opens the palette */
   useEffect(() => {
@@ -536,6 +559,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
       </footer>
 
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <SmartDropOverlay />
     </div>
   )
 }

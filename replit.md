@@ -1096,3 +1096,18 @@ Hand-curated 82-tool smoke covering high-traffic student/everyday tools (calcula
 
 Health: 1247 tools, 1317 handlers, 0 missing, 0 duplicates. Backend restarted clean.
 
+
+### Round 7 — Smart Drop Zone (global file drop → tool match)
+
+**Problem:** With 1247 tools, finding the right one for a specific file (PDF, image, JSON, docx, video…) takes mental effort. User has to navigate, search, click, then drag-drop the file.
+
+**Fix:** Drop a file ANYWHERE on the site (Home, /tools, search) and a frosted overlay opens with the top tools that can do something with that file type. Pick a tool → routed there with the file already loaded into its dropzone.
+
+**Files:**
+- `frontend/src/lib/pendingFile.ts` — transient module-level holder with TTL (10s) and single-shot `take(slug)` semantics so stale drops never reappear.
+- `frontend/src/lib/fileToToolMatcher.ts` — MIME + extension → ranked slug list, intersected with live catalog so we never offer non-existent tools. Covers PDF, image, video, audio, JSON, CSV, XML, YAML, HTML, MD, CSS/JS, Office (docx/xlsx/pptx), archives (zip/7z/rar/tar/gz). `describeFileType()` for friendly headlines.
+- `frontend/src/components/layout/SmartDropOverlay.tsx` — document-level dragenter/leave/over/drop with ref-counting; two stages (`dragging` hint + `picking` chip grid). Disabled on `/tools/*` and `/scientific-calculator` so per-tool dropzones own UX. Esc / backdrop click cancels. Hover/focus prefetches each chip's tool route. Mounted in SiteShell.
+- `frontend/src/features/tool/ToolPage.tsx` — new effect drains `takePendingDrop(slug)` after `tool` loads and feeds files through the existing `onDrop`, with a success toast.
+- `frontend/src/index.css` — `.smart-drop-*` styles (~170 lines): pulsing dashed orb during drag, frosted modal card with chip grid during pick, mobile single-column, `prefers-reduced-motion` honored.
+
+**Result:** "I have this file, what tool fits?" → 0 clicks. Works across all 1247 tools with zero per-tool wiring.

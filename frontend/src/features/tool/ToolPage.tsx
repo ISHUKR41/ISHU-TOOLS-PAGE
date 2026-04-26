@@ -32,6 +32,7 @@ import { useToast } from '../../components/ui/Toast'
 import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 import { trackToolVisit } from '../../lib/usageTracker'
+import { takePendingDrop } from '../../lib/pendingFile'
 
 // ─── Lazy-loaded per-tool SEO database (504 KB chunk) ─────────────────────────
 // Static-importing seoData would block the very first tool-page paint with
@@ -738,6 +739,27 @@ export default function ToolPage() {
     window.addEventListener('paste', handlePaste)
     return () => window.removeEventListener('paste', handlePaste)
   }, [tool, onDrop, toast])
+
+  // ─── Drain pending file from global SmartDropOverlay ──────────────────
+  // If the user dropped a file anywhere on the site and picked this tool from
+  // the chip menu, the file is sitting in `pendingFile`. We pull it (if present
+  // and matching this slug) and feed it through the same onDrop the tool's
+  // own dropzone uses, so everything else (preview, multiple-files handling,
+  // remove buttons) just works. Single-shot — `takePendingDrop` clears state.
+  useEffect(() => {
+    if (!slug || !tool) return
+    if (tool.input_kind !== 'files' && tool.input_kind !== 'mixed') return
+    const dropped = takePendingDrop(slug)
+    if (!dropped || !dropped.length) return
+    const next = tool.accepts_multiple ? dropped : dropped.slice(0, 1)
+    onDrop(next)
+    toast.show(
+      next.length === 1
+        ? `Loaded ${next[0].name}`
+        : `Loaded ${next.length} files`,
+      'success',
+    )
+  }, [slug, tool, onDrop, toast])
 
   // ─── Auto-save text payload inputs to localStorage per tool ───
   // Restore on revisit so the user never loses their work
