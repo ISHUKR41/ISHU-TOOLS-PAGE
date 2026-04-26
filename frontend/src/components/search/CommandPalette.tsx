@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
-import { Search, X, Clock, Sparkles, ArrowRight, CornerDownLeft, Trash2 } from 'lucide-react'
+import { Search, X, Clock, Sparkles, ArrowRight, CornerDownLeft, Trash2, Mic } from 'lucide-react'
 
 import { useDebounce } from '../../hooks/useDebounce'
 import { useCatalogData } from '../../hooks/useCatalogData'
@@ -61,11 +61,68 @@ export default function CommandPalette({ open, onClose }: Props) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [globalPopularity, setGlobalPopularity] = useState<Record<string, number>>({})
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [isListening, setIsListening] = useState(false)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const recognitionRef = useRef<any>(null)
 
   const debouncedQuery = useDebounce(query, 70)
+
+  /* Voice search support detection (memoized once) */
+  const voiceSupported = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    return Boolean(SR)
+  }, [])
+
+  const stopVoice = useCallback(() => {
+    try { recognitionRef.current?.stop() } catch { /* noop */ }
+    setIsListening(false)
+  }, [])
+
+  const startVoice = useCallback(() => {
+    if (!voiceSupported) return
+    if (isListening) { stopVoice(); return }
+
+    setVoiceError(null)
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    const rec = new SR()
+    rec.lang = navigator.language || 'en-US'
+    rec.interimResults = true
+    rec.continuous = false
+    rec.maxAlternatives = 1
+
+    rec.onstart = () => setIsListening(true)
+    rec.onerror = (e: any) => {
+      setIsListening(false)
+      const code = e?.error || 'error'
+      const msg =
+        code === 'not-allowed' ? 'Mic permission denied — enable it in browser settings.' :
+        code === 'no-speech' ? 'Didn\u2019t catch that — try again.' :
+        code === 'audio-capture' ? 'No microphone detected.' :
+        'Voice search unavailable right now.'
+      setVoiceError(msg)
+      window.setTimeout(() => setVoiceError(null), 3200)
+    }
+    rec.onend = () => setIsListening(false)
+    rec.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript
+      }
+      const cleaned = transcript.trim().replace(/[.!?,]+$/g, '')
+      if (cleaned) {
+        setQuery(cleaned)
+        setActiveCategory('all')
+        setActiveIndex(0)
+      }
+    }
+
+    recognitionRef.current = rec
+    try { rec.start() } catch { setIsListening(false) }
+  }, [voiceSupported, isListening, stopVoice])
 
   /* Hydrate global popularity once (cached by API layer) */
   useEffect(() => {
@@ -82,6 +139,11 @@ export default function CommandPalette({ open, onClose }: Props) {
       setRecentSearches(loadRecentSearches())
       const t = setTimeout(() => inputRef.current?.focus(), 30)
       return () => clearTimeout(t)
+    } else {
+      // Stop any active voice recognition when palette closes
+      try { recognitionRef.current?.stop() } catch { /* noop */ }
+      setIsListening(false)
+      setVoiceError(null)
     }
   }, [open])
 
@@ -176,10 +238,33 @@ export default function CommandPalette({ open, onClose }: Props) {
               <X size={15} />
             </button>
           )}
+          {voiceSupported && (
+            <button
+              type='button'
+              className={`cp-mic${isListening ? ' listening' : ''}`}
+              onClick={startVoice}
+              aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
+              aria-pressed={isListening}
+              title={isListening ? 'Listening… click to stop' : 'Voice search'}
+            >
+              <Mic size={15} />
+              {isListening && <span className='cp-mic-pulse' aria-hidden='true' />}
+            </button>
+          )}
           <button className='cp-close' onClick={onClose} aria-label='Close search'>
             Esc
           </button>
         </div>
+
+        {(isListening || voiceError) && (
+          <div className={`cp-voice-banner${voiceError ? ' err' : ''}`} role='status' aria-live='polite'>
+            {voiceError ? voiceError : (
+              <>
+                <span className='cp-voice-dot' /> Listening… speak the tool name (e.g. <em>compress pdf</em>)
+              </>
+            )}
+          </div>
+        )}
 
         {!showRecent && availableCategories.length > 0 && (
           <div className='cp-chips' role='tablist'>
