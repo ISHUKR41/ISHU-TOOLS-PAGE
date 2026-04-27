@@ -3,15 +3,15 @@ import Fuse from 'fuse.js'
 import type { ToolDefinition } from '../types/tools'
 
 export const DAILY_CATEGORY_PRIORITY = [
+  'student-tools',
+  'math-tools',
   'pdf-core',
   'image-core',
+  'finance-tools',
   'unit-converter',
   'developer-tools',
-  'math-tools',
-  'student-tools',
-  'finance-tools',
-  'health-tools',
   'text-ops',
+  'health-tools',
   'video-tools',
   'office-suite',
   'format-lab',

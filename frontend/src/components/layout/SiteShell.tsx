@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, FileText, Image, Zap, Code2, ChevronDown, Calculator, Globe, Shield, Layers, ArrowUp, Search } from 'lucide-react'
 import AnimatedBackdrop from './AnimatedBackdrop'
-import CommandPalette from '../search/CommandPalette'
+import NavbarSearch from '../search/NavbarSearch'
 import SmartDropOverlay from './SmartDropOverlay'
 import { prefetchToolChunks } from '../../lib/prefetchTool'
 
@@ -282,16 +282,24 @@ export default function SiteShell({ children }: PropsWithChildren) {
             </div>
           </nav>
 
-          <button
-            type='button'
-            className='nav-search-btn'
-            onClick={(e) => { e.stopPropagation(); setPaletteOpen(true); setMegaOpen(false) }}
-            aria-label='Search all tools'
-          >
-            <Search size={15} />
-            <span className='nav-search-label'>Search tools…</span>
-            <span className='nav-search-kbd'><kbd>⌘</kbd><kbd>K</kbd></span>
-          </button>
+          <div className='nav-search-wrap' onClick={(e) => e.stopPropagation()}>
+            <button
+              type='button'
+              className={`nav-search-btn ${paletteOpen ? 'active' : ''}`}
+              onClick={(e) => { e.stopPropagation(); setPaletteOpen((v) => !v); setMegaOpen(false) }}
+              aria-label='Search all tools'
+            >
+              <Search size={15} />
+              {!paletteOpen && (
+                <>
+                  <span className='nav-search-label'>Search tools…</span>
+                  <span className='nav-search-kbd'><kbd>⌘</kbd><kbd>K</kbd></span>
+                </>
+              )}
+              {paletteOpen && <X size={14} />}
+            </button>
+            <NavbarSearch open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+          </div>
 
           <button
             className='mobile-menu-btn'
@@ -558,7 +566,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
         </div>
       </footer>
 
-      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+
       <SmartDropOverlay />
     </div>
   )

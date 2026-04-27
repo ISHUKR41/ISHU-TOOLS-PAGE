@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ToolErrorBoundary } from '../../components/ui/ToolErrorBoundary'
 import type { CSSProperties, FormEvent } from 'react'
 import { useDropzone } from 'react-dropzone'
 import {
@@ -17,7 +18,7 @@ import {
 import { Link, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool } from '../../api/toolsApi'
+import { fetchRuntimeCapabilities, fetchTool, fetchTools, runTool, preWarmBackend, getToolDiagnosticHint, measureConnectionSpeed, circuitBreaker } from '../../api/toolsApi'
 import { recordToolOpen } from '../../hooks/useToolRecents'
 import { usePinnedTools } from '../../hooks/usePinnedTools'
 import SiteShell from '../../components/layout/SiteShell'
@@ -153,6 +154,7 @@ export default function ToolPage() {
   const [payloadState, setPayloadState] = useState<Record<string, string>>({})
   const [running, setRunning] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [longRunning, setLongRunning] = useState(false)
   const [runMessage, setRunMessage] = useState<string | null>(null)
   const [runError, setRunError] = useState<string | null>(null)
   const [jsonResult, setJsonResult] = useState<ToolRunJsonResult | null>(null)
@@ -160,12 +162,95 @@ export default function ToolPage() {
   const [downloadName, setDownloadName] = useState<string | null>(null)
   const [outputImagePreview, setOutputImagePreview] = useState<string | null>(null)
 
+  // ─── FALLBACK INFRASTRUCTURE STATE ─────────────────────────────────────
+  const [retryCount, setRetryCount] = useState(0)
+  const [rateLimitEnd, setRateLimitEnd] = useState<number | null>(null)
+  const [rateLimitLeft, setRateLimitLeft] = useState(0)
+  const [isOffline, setIsOffline] = useState(() => typeof navigator !== 'undefined' ? !navigator.onLine : false)
+  const [pendingRetryOnReconnect, setPendingRetryOnReconnect] = useState(false)
+  const MAX_AUTO_RETRIES = 3
+  const abortRef = useRef<AbortController | null>(null)
+
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+  const longRunningTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resultRef = useRef<HTMLElement | null>(null)
+
+  // ─── LOCALSTORAGE INPUT PERSISTENCE ──────────────────────────────────
+  // Save user inputs to localStorage so they survive page refreshes.
+  // Debounced to avoid excessive writes on every keystroke.
+  const LS_KEY = `ishu-tools:input:${slug}`
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Restore saved inputs on mount
+  useEffect(() => {
+    if (!slug) return
+    try {
+      const saved = localStorage.getItem(LS_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved) as Record<string, string>
+        if (typeof parsed === 'object' && parsed !== null) {
+          setPayloadState((prev) => ({ ...prev, ...parsed }))
+        }
+      }
+    } catch { /* corrupt data — ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug])
+
+  // Debounced save on every input change
+  useEffect(() => {
+    if (!slug || Object.keys(payloadState).length === 0) return
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(payloadState))
+      } catch { /* storage full — ignore */ }
+    }, 800) // 800ms debounce
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [payloadState, slug])
+
+  // ─── OFFLINE DETECTION ─────────────────────────────────────────────────
+  useEffect(() => {
+    const goOffline = () => setIsOffline(true)
+    const goOnline = () => {
+      setIsOffline(false)
+      // If user was waiting to retry, auto-submit now
+      if (pendingRetryOnReconnect) {
+        setPendingRetryOnReconnect(false)
+        setTimeout(() => {
+          const form = document.querySelector('.tool-form') as HTMLFormElement | null
+          form?.requestSubmit()
+        }, 500)
+      }
+    }
+    window.addEventListener('offline', goOffline)
+    window.addEventListener('online', goOnline)
+    return () => {
+      window.removeEventListener('offline', goOffline)
+      window.removeEventListener('online', goOnline)
+    }
+  }, [pendingRetryOnReconnect])
+
+  // ─── RATE LIMIT COUNTDOWN TIMER ────────────────────────────────────────
+  useEffect(() => {
+    if (!rateLimitEnd) { setRateLimitLeft(0); return }
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((rateLimitEnd - Date.now()) / 1000))
+      setRateLimitLeft(left)
+      if (left <= 0) { setRateLimitEnd(null); setRateLimitLeft(0) }
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [rateLimitEnd])
 
   // ─── Scroll to top + reset state on slug change ───
   useEffect(() => {
     if (slug) trackToolVisit(slug)
+    // Pre-warm the backend so it's ready when the user clicks Run
+    preWarmBackend()
+    // Measure connection quality to adapt timeouts
+    measureConnectionSpeed()
     const fallback = findFallbackTool(slug)
     setTool(fallback)
     setRelatedTools(findFallbackRelatedTools(fallback))
@@ -603,12 +688,17 @@ export default function ToolPage() {
 
   function startProgressSimulation() {
     setProgress(0)
+    setLongRunning(false)
     let currentProgress = 0
     progressInterval.current = setInterval(() => {
       currentProgress += Math.random() * 10
       if (currentProgress > 88) currentProgress = 88
       setProgress(Math.round(currentProgress))
     }, 350)
+    // Show a "taking longer than expected" warning after 30 seconds
+    longRunningTimer.current = setTimeout(() => {
+      setLongRunning(true)
+    }, 30000)
   }
 
   function stopProgressSimulation(success: boolean) {
@@ -616,6 +706,11 @@ export default function ToolPage() {
       clearInterval(progressInterval.current)
       progressInterval.current = null
     }
+    if (longRunningTimer.current) {
+      clearTimeout(longRunningTimer.current)
+      longRunningTimer.current = null
+    }
+    setLongRunning(false)
     setProgress(success ? 100 : 0)
     if (success) {
       setTimeout(() => setProgress(0), 2000)
@@ -635,11 +730,43 @@ export default function ToolPage() {
     setDownloadUrl(null)
     setDownloadName(null)
     setOutputImagePreview(null)
+    setRetryCount(0)
+    setPendingRetryOnReconnect(false)
+    // Cancel any in-flight request
+    if (abortRef.current) { abortRef.current.abort(); abortRef.current = null }
+  }
+
+  // Full tool state reset — wipes everything including files and form inputs
+  function handleFullReset() {
+    handleReset()
+    fileItems.forEach((item) => { if (item.previewUrl) URL.revokeObjectURL(item.previewUrl) })
+    setFileItems([])
+    setProgress(0)
+    setRunning(false)
+    setLongRunning(false)
+    setRetryCount(0)
+    setRateLimitEnd(null)
+    setPendingRetryOnReconnect(false)
+    // Reset form fields to defaults
+    const defaults: Record<string, string> = {}
+    for (const field of formFields) {
+      if (field.defaultValue !== undefined) defaults[field.name] = field.defaultValue
+    }
+    setPayloadState(defaults)
+    // Clear saved inputs from localStorage
+    try { localStorage.removeItem(LS_KEY) } catch { /* ignore */ }
+    toast.show('Tool reset — ready to go!', 'success', 2000)
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!tool || !slug) return
+
+    // ─── RATE LIMIT GUARD ────────────────────────────────────────────────
+    if (rateLimitEnd && Date.now() < rateLimitEnd) {
+      toast.show(`Rate limited — please wait ${rateLimitLeft}s before trying again.`, 'error', 3000)
+      return
+    }
 
     handleReset()
 
@@ -657,118 +784,166 @@ export default function ToolPage() {
       return
     }
 
-    try {
-      setRunning(true)
-      startProgressSimulation()
+    const payload: Record<string, unknown> = {}
+    for (const field of formFields) {
+      const rawValue = payloadState[field.name]
+      if (rawValue !== undefined && rawValue !== '') {
+        payload[field.name] = normalizePayloadValue(rawValue, field.type)
+      }
+    }
 
-      const payload: Record<string, unknown> = {}
-      for (const field of formFields) {
-        const rawValue = payloadState[field.name]
-        if (rawValue !== undefined && rawValue !== '') {
-          payload[field.name] = normalizePayloadValue(rawValue, field.type)
+    const files = fileItems.map((item) => item.file)
+    const hasFiles = files.length > 0
+    const hasClientExec = !hasFiles && getClientExecutor(slug)
+
+    // ─── OFFLINE GUARD — block network-only tools, allow client-side ──────
+    if (isOffline && !hasClientExec) {
+      setRunError('You are offline. This tool requires an internet connection. It will auto-retry when you reconnect.')
+      setPendingRetryOnReconnect(true)
+      toast.show('You are offline — will auto-retry when connection is restored.', 'error', 5000)
+      return
+    }
+
+    // ─── AUTO-RETRY LOOP ─────────────────────────────────────────────────
+    // Tries up to MAX_AUTO_RETRIES times with exponential backoff for
+    // transient failures (502/503/504, network errors, timeouts).
+    // Shows visible retry counter to the user at each stage.
+    let lastError: Error | null = null
+
+    for (let attempt = 0; attempt <= MAX_AUTO_RETRIES; attempt++) {
+      try {
+        if (attempt > 0) {
+          setRetryCount(attempt)
+          const delay = Math.min(2000 * Math.pow(1.5, attempt - 1), 8000)
+          toast.show(`Retrying… (attempt ${attempt} of ${MAX_AUTO_RETRIES})`, 'info', 3000)
+          await new Promise((r) => setTimeout(r, delay))
         }
-      }
+        setRunning(true)
+        setRunError(null)
+        startProgressSimulation()
 
-      const files = fileItems.map((item) => item.file)
-
-      // ─── CLIENT-SIDE INSTANT EXECUTION ──────────────────────────────────────
-      // For pure-function tools (base64, sha256, json-formatter, password-generator,
-      // case transforms, ciphers, …) we run the tool 100% in the browser — no API
-      // call. That makes the tool: (a) instant, (b) immune to backend / Vercel
-      // outages, (c) usable even with zero network. If the executor returns null
-      // (unexpected throw), we silently fall back to the network path below.
-      let result: Awaited<ReturnType<typeof runTool>> | null = null
-      const hasFiles = files.length > 0
-      if (!hasFiles && getClientExecutor(slug)) {
-        const clientResult = await runClientTool(slug, payload)
-        if (clientResult) result = clientResult
-      }
-      if (!result) {
-        result = await runTool(slug, files, payload, {
-          onColdStartRetry: () => {
-            toast.show(
-              'Server was idle — waking it up and auto-retrying. Hang tight…',
-              'info',
-              9000,
-            )
-          },
-        })
-      }
-
-      stopProgressSimulation(true)
-
-      if (result.type === 'file') {
-        if (downloadUrl) URL.revokeObjectURL(downloadUrl)
-        const objectUrl = URL.createObjectURL(result.blob)
-        setDownloadUrl(objectUrl)
-        setDownloadName(result.filename)
-        setRunMessage(result.message)
-
-        if (isImageBlob(result.contentType || '')) {
-          setOutputImagePreview(objectUrl)
+        // ─── CLIENT-SIDE INSTANT EXECUTION ──────────────────────────────
+        let result: Awaited<ReturnType<typeof runTool>> | null = null
+        if (hasClientExec) {
+          const clientResult = await runClientTool(slug, payload)
+          if (clientResult) result = clientResult
+        }
+        if (!result) {
+          result = await runTool(slug, files, payload, {
+            onColdStartRetry: () => {
+              toast.show(
+                'Server was idle — waking it up and auto-retrying. Hang tight…',
+                'info',
+                9000,
+              )
+            },
+            onCacheHit: () => {
+              toast.show('⚡ Instant result from cache!', 'success', 1500)
+            },
+            onRetryStage: (stage) => {
+              if (stage === 1) {
+                toast.show('Server waking up — trying again with extended timeout…', 'info', 6000)
+              } else if (stage === 2) {
+                toast.show('Still working — giving the server more time for this heavy task…', 'info', 10000)
+              }
+            },
+          })
         }
 
-        toast.show(result.message || 'File is ready to download!', 'success')
-        scrollToResult()
-      } else {
-        // Detect handler-level errors returned as JSON (e.g. Instagram cookies needed,
-        // Twitter no-video-in-tweet, rate limits). The HTTP status is 200 but the body
-        // signals failure — surface it prominently instead of a misleading green "Done".
-        const data = (result.payload?.data || {}) as Record<string, unknown>
-        const errText = typeof data.error === 'string' ? (data.error as string) : ''
-        const msg = result.payload?.message || ''
-        const looksLikeError = !!errText
-          || /^(error|failed|unable|invalid|not|no |please (paste|enter|provide))/i.test(msg.trim())
-        if (looksLikeError) {
-          const friendly = msg || errText || 'This tool could not complete the request.'
-          setRunError(friendly)
-          setJsonResult(result.payload) // still show details for power users
-          toast.show(friendly, 'error', 6000)
+        stopProgressSimulation(true)
+        setRetryCount(0) // Clear retry counter on success
+
+        if (result.type === 'file') {
+          if (downloadUrl) URL.revokeObjectURL(downloadUrl)
+          const objectUrl = URL.createObjectURL(result.blob)
+          setDownloadUrl(objectUrl)
+          setDownloadName(result.filename)
+          setRunMessage(result.message)
+
+          if (isImageBlob(result.contentType || '')) {
+            setOutputImagePreview(objectUrl)
+          }
+
+          toast.show(result.message || 'File is ready to download!', 'success')
+          scrollToResult()
         } else {
-          setJsonResult(result.payload)
-          setRunMessage(msg || 'Tool completed successfully.')
-          toast.show(msg || 'Done!', 'success')
+          const data = (result.payload?.data || {}) as Record<string, unknown>
+          const errText = typeof data.error === 'string' ? (data.error as string) : ''
+          const msg = result.payload?.message || ''
+          const looksLikeError = !!errText
+            || /^(error|failed|unable|invalid|not|no |please (paste|enter|provide))/i.test(msg.trim())
+          if (looksLikeError) {
+            const friendly = msg || errText || 'This tool could not complete the request.'
+            setRunError(friendly)
+            setJsonResult(result.payload)
+            toast.show(friendly, 'error', 6000)
+          } else {
+            setJsonResult(result.payload)
+            setRunMessage(msg || 'Tool completed successfully.')
+            toast.show(msg || 'Done!', 'success')
+          }
+          scrollToResult()
         }
-        scrollToResult()
+        return // ← Success — exit the retry loop
+
+      } catch (err) {
+        stopProgressSimulation(false)
+        lastError = err instanceof Error ? err : new Error(String(err || ''))
+        const lower = lastError.message.toLowerCase()
+
+        // ── Rate limit: start countdown, don't retry ──
+        if (/http 429|too many requests|rate limit/.test(lower)) {
+          setRateLimitEnd(Date.now() + 60_000) // 60s countdown
+          setRunError('Rate limit reached. Please wait for the countdown before trying again.')
+          toast.show('Rate limit hit — a 60-second cooldown has started.', 'error', 6000)
+          break // Don't retry rate limits
+        }
+
+        // ── Non-retryable errors: break immediately ──
+        const isNonRetryable = /http 4\d\d|payload too large|unsupported|not found|unauthor|forbidden|file too large/.test(lower)
+        if (isNonRetryable) break
+
+        // ── Retryable (network/server errors): continue loop ──
+        const isRetryable = /failed to fetch|networkerror|load failed|timeout|timed? out|http 50[234]|bad gateway|service unavailable|gateway timeout/.test(lower)
+        if (!isRetryable && attempt === 0) break // Unknown error, don't retry
+      } finally {
+        setRunning(false)
       }
-    } catch (err) {
-      stopProgressSimulation(false)
-      // Friendly, actionable error messages for ALL 1247 tools — replaces
-      // cryptic browser/network errors ("Failed to fetch", "AbortError",
-      // raw HTTP status codes) with something a non-technical user can act on.
-      // The Render backend is on a free tier and may cold-start, so a 502/504
-      // or aborted request is almost always "server is waking up" rather than
-      // a real bug — telling the user to retry in 20 seconds is vastly better
-      // UX than showing them "fetch failed".
-      const raw = err instanceof Error ? err.message : String(err || '')
-      const lower = raw.toLowerCase()
-      let friendly = raw || 'This tool could not finish the request.'
-      if (!raw || /failed to fetch|networkerror|load failed/.test(lower)) {
-        friendly = navigator.onLine === false
-          ? 'You appear to be offline. Reconnect to the internet and try again.'
-          : 'Could not reach the server. Please check your connection and try again in a moment.'
-      } else if (/abort|timeout|timed? out/.test(lower)) {
-        friendly = 'The request took too long and was cancelled. Try again — the server may have been waking up.'
-      } else if (/http 50[234]|bad gateway|service unavailable|gateway timeout/.test(lower)) {
-        friendly = 'The server is waking up. Please retry in about 20 seconds.'
-      } else if (/http 429|too many requests|rate limit/.test(lower)) {
-        friendly = 'Too many requests right now. Please wait a minute before trying again.'
-      } else if (/http 413|payload too large|file too large/.test(lower)) {
-        friendly = 'That file is too large. Try a smaller file (or compress it first).'
-      } else if (/http 415|unsupported media type/.test(lower)) {
-        friendly = 'That file type is not supported by this tool.'
-      } else if (/http 401|http 403|unauthor|forbidden/.test(lower)) {
-        friendly = 'This source requires authentication. Please check the URL or sign in.'
-      } else if (/http 404|not found/.test(lower)) {
-        friendly = 'The content could not be found. Double-check the link and try again.'
-      } else if (/http 5\d\d/.test(lower)) {
-        friendly = 'The server hit an error processing your request. Please try again — if it keeps failing, the input may be unsupported.'
-      }
+    }
+
+    // ── All retries exhausted — show friendly error ──────────────────────
+    setRetryCount(0)
+    const raw = lastError?.message || ''
+    const lower = raw.toLowerCase()
+    let friendly = raw || 'This tool could not finish the request.'
+    if (!raw || /failed to fetch|networkerror|load failed/.test(lower)) {
+      friendly = navigator.onLine === false
+        ? 'You are offline. This tool will auto-retry when you reconnect.'
+        : 'Could not reach the server after multiple attempts. Please try again in a moment.'
+      if (!navigator.onLine) setPendingRetryOnReconnect(true)
+    } else if (/abort|timeout|timed? out/.test(lower)) {
+      friendly = 'The request kept timing out. The server may be under heavy load — please try again in a minute.'
+    } else if (/http 50[234]|bad gateway|service unavailable|gateway timeout/.test(lower)) {
+      friendly = 'The server is still waking up. Please retry in about 30 seconds.'
+    } else if (/http 429|too many requests|rate limit/.test(lower)) {
+      friendly = 'Rate limit reached. Please wait for the countdown timer above.'
+    } else if (/http 413|payload too large|file too large/.test(lower)) {
+      friendly = 'That file is too large. Try a smaller file (or compress it first).'
+    } else if (/http 415|unsupported media type/.test(lower)) {
+      friendly = 'That file type is not supported by this tool.'
+    } else if (/http 401|http 403|unauthor|forbidden/.test(lower)) {
+      friendly = 'This source requires authentication. Please check the URL or sign in.'
+    } else if (/http 404|not found/.test(lower)) {
+      friendly = 'The content could not be found. Double-check the link and try again.'
+    } else if (/http 5\d\d/.test(lower)) {
+      friendly = 'The server hit an error. Please try again — if it keeps failing, the input may be unsupported.'
+    } else if (/circuit breaker/.test(lower)) {
+      friendly = `Server is temporarily unreachable. Auto-recovery in ${circuitBreaker.getCooldownLeft()}s. Client-side tools still work!`
+    }
+    if (!runError) {
       setRunError(friendly)
       toast.show(friendly, 'error', 6000)
       scrollToResult()
-    } finally {
-      setRunning(false)
     }
   }
 
@@ -946,6 +1121,7 @@ export default function ToolPage() {
 
         <div className='tool-layout'>
           <div className='tool-main-column'>
+          <ToolErrorBoundary toolSlug={slug} onReset={handleFullReset}>
             <motion.section
               className='tool-main-panel'
               style={
@@ -1006,6 +1182,38 @@ export default function ToolPage() {
                 <ScientificCalculator accent={toolTheme.accent} />
               ) : (
               <>
+              {/* ─── FALLBACK STATUS BANNERS ───────────────────────────────── */}
+              {isOffline && (
+                <div className='tool-status-banner offline'>
+                  <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='m2 2 20 20'/><path d='M8.5 16.5a5 5 0 0 1 7 0'/><path d='M2 8.82a15 15 0 0 1 4.17-2.65'/><path d='M10.66 5c4.01-.36 8.14.9 11.34 3.76'/><path d='M16.85 11.25a10 10 0 0 1 2.22 1.68'/><path d='M5 12.859a10 10 0 0 1 5.17-2.69'/><path d='M12 20h.01'/></svg>
+                  <span>You are offline. {getClientExecutor(slug!) ? 'This tool works offline — go ahead!' : 'Some features need an internet connection.'}</span>
+                </div>
+              )}
+              {rateLimitLeft > 0 && (
+                <div className='tool-status-banner rate-limit'>
+                  <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
+                  <span>Rate limit active — please wait <strong>{rateLimitLeft}s</strong> before trying again.</span>
+                </div>
+              )}
+              {retryCount > 0 && running && (
+                <div className='tool-status-banner retrying'>
+                  <LoaderCircle size={16} className='spin' />
+                  <span>Auto-retrying… (attempt {retryCount} of {MAX_AUTO_RETRIES})</span>
+                </div>
+              )}
+              {pendingRetryOnReconnect && !running && (
+                <div className='tool-status-banner reconnect'>
+                  <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/><path d='M3 3v5h5'/><path d='M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16'/><path d='M16 16h5v5'/></svg>
+                  <span>Waiting for connection… will auto-retry when you're back online.</span>
+                </div>
+              )}
+              {circuitBreaker.getState() === 'open' && (
+                <div className='tool-status-banner circuit-open'>
+                  <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>
+                  <span>Server is experiencing issues — auto-cooldown active ({circuitBreaker.getCooldownLeft()}s). Client-side tools still work!</span>
+                </div>
+              )}
+
               {/* Progress bar */}
               <AnimatePresence>
                 {running && (
@@ -1023,6 +1231,11 @@ export default function ToolPage() {
                       />
                     </div>
                     <p className='tool-progress-label'>Processing… {progress}%</p>
+                    {longRunning && (
+                      <p className='tool-progress-warning'>
+                        This is taking longer than usual. The server might be waking up — please wait…
+                      </p>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1297,9 +1510,9 @@ export default function ToolPage() {
                   <button
                     type='submit'
                     className='run-button'
-                    disabled={running}
+                    disabled={running || rateLimitLeft > 0}
                     style={
-                      !running
+                      !running && !rateLimitLeft
                         ? {
                             background: `linear-gradient(120deg, ${toolTheme.accent}, ${toolTheme.accent}bb)`,
                           }
@@ -1309,7 +1522,12 @@ export default function ToolPage() {
                     {running ? (
                       <>
                         <LoaderCircle size={18} className='spin' />
-                        Processing…
+                        {retryCount > 0 ? `Retrying (${retryCount}/${MAX_AUTO_RETRIES})…` : 'Processing…'}
+                      </>
+                    ) : rateLimitLeft > 0 ? (
+                      <>
+                        <LoaderCircle size={18} className='spin' />
+                        Wait {rateLimitLeft}s…
                       </>
                     ) : (
                       <>
@@ -1330,6 +1548,15 @@ export default function ToolPage() {
                       New
                     </button>
                   )}
+                  <button
+                    type='button'
+                    className='reset-button tool-full-reset'
+                    onClick={handleFullReset}
+                    title='Reset everything — clear files, inputs, and results'
+                  >
+                    <RefreshCw size={14} />
+                    Reset Tool
+                  </button>
                 </div>
               </form>
               </>
@@ -1352,15 +1579,53 @@ export default function ToolPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.4 }}
                 >
-                  {runError && (
+                  {runError && (() => {
+                    const diagHint = slug ? getToolDiagnosticHint(slug, runError) : ''
+                    return (
                     <div className='result-error'>
                       <X size={18} />
                       <div>
-                        <strong>Error</strong>
+                        <strong>Something went wrong</strong>
                         <p>{runError}</p>
+                        {diagHint && (
+                          <p className='result-error-diagnostic'>
+                            💡 {diagHint}
+                          </p>
+                        )}
+                        <p className='result-error-hint'>
+                          {navigator.onLine === false
+                            ? 'You appear to be offline. Please check your internet connection.'
+                            : diagHint
+                              ? ''
+                              : 'Try again — if the problem persists, the input may be unsupported.'}
+                        </p>
+                        <div className='result-error-actions'>
+                          <button
+                            type='button'
+                            className='result-error-retry'
+                            onClick={() => {
+                              handleReset()
+                              const form = document.querySelector('.tool-form') as HTMLFormElement | null
+                              form?.requestSubmit()
+                            }}
+                            style={{ color: toolTheme.accent, borderColor: `${toolTheme.accent}55` }}
+                          >
+                            <RefreshCw size={14} />
+                            Retry
+                          </button>
+                          <button
+                            type='button'
+                            className='result-error-retry secondary'
+                            onClick={handleFullReset}
+                          >
+                            <RefreshCw size={14} />
+                            Reset Tool
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  )}
+                    )
+                  })()}
 
                   {runMessage && !runError && (
                     <div className='result-success'>
@@ -1525,6 +1790,7 @@ export default function ToolPage() {
                 </>
               )}
             </motion.section>
+          </ToolErrorBoundary>
           </div>
 
           <ToolSidebar

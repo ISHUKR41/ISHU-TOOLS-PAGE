@@ -8,6 +8,7 @@ import { ToastProvider } from './components/ui/Toast'
 import ScrollToTop from './components/ui/ScrollToTop'
 import InstallPWA from './components/ui/InstallPWA'
 import BackendStatusBanner from './components/ui/BackendStatusBanner'
+import OfflineDetector from './components/ui/OfflineDetector'
 
 function AppLoader() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <BrowserRouter>
           <ScrollToTop />
           <BackendStatusBanner />
+          <OfflineDetector />
           <Suspense fallback={<AppLoader />}>
             <AppRouter />
           </Suspense>

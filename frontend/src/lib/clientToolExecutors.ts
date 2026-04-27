@@ -879,6 +879,416 @@ const slugExec: Executor = (p) => {
 EXEC['slug-generator'] = slugExec
 EXEC['url-slug-generator'] = slugExec
 
+// ─── COLOR TOOLS ─────────────────────────────────────────────────────────────
+EXEC['hex-to-rgb'] = (p) => {
+  const h = str(p.text || p.hex).replace(/^#/, '').trim()
+  if (!/^[0-9a-fA-F]{3,8}$/.test(h)) return err('Enter a valid hex color (e.g. #ff5733).')
+  const full = h.length === 3 ? h.split('').map((c: string) => c + c).join('') : h
+  const r = parseInt(full.slice(0, 2), 16), g = parseInt(full.slice(2, 4), 16), b = parseInt(full.slice(4, 6), 16)
+  return ok(`RGB: ${r}, ${g}, ${b}`, { hex: '#' + full, r, g, b, rgb: `rgb(${r}, ${g}, ${b})` })
+}
+EXEC['rgb-to-hex'] = (p) => {
+  const r = num(p.r || p.red, 0), g = num(p.g || p.green, 0), b = num(p.b || p.blue, 0)
+  const hex = '#' + [r, g, b].map((v: number) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('')
+  return ok(`Hex: ${hex}`, { r, g, b, hex })
+}
+EXEC['hex-to-hsl'] = (p) => {
+  const h = str(p.text || p.hex).replace(/^#/, '').trim()
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return err('Enter a 6-digit hex color.')
+  const r = parseInt(h.slice(0, 2), 16) / 255, g = parseInt(h.slice(2, 4), 16) / 255, b = parseInt(h.slice(4, 6), 16) / 255
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2
+  let hue = 0, s = 0
+  if (max !== min) { const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min); hue = max === r ? ((g - b) / d + (g < b ? 6 : 0)) * 60 : max === g ? ((b - r) / d + 2) * 60 : ((r - g) / d + 4) * 60 }
+  return ok(`HSL: ${Math.round(hue)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`, { hex: '#' + h, h: Math.round(hue), s: Math.round(s * 100), l: Math.round(l * 100) })
+}
+EXEC['color-converter'] = EXEC['hex-to-rgb']
+EXEC['color-picker'] = EXEC['hex-to-rgb']
+
+// ─── MATH & NUMBER TOOLS ─────────────────────────────────────────────────────
+EXEC['percentage-calculator'] = (p) => {
+  const val = num(p.value || p.number), pct = num(p.percentage || p.percent)
+  if (!pct) return err('Enter a percentage.')
+  const result = val * pct / 100
+  return ok(`${pct}% of ${val} = ${result}`, { value: val, percentage: pct, result, increase: val + result, decrease: val - result })
+}
+EXEC['average-calculator'] = (p) => {
+  const t = str(p.text || p.numbers).trim(); if (!t) return err('Enter numbers separated by commas or spaces.')
+  const nums = t.split(/[,\s]+/).map(Number).filter(Number.isFinite)
+  if (!nums.length) return err('No valid numbers found.')
+  const sum = nums.reduce((a: number, b: number) => a + b, 0), avg = sum / nums.length
+  const sorted = [...nums].sort((a: number, b: number) => a - b)
+  const median = nums.length % 2 === 0 ? (sorted[nums.length / 2 - 1] + sorted[nums.length / 2]) / 2 : sorted[Math.floor(nums.length / 2)]
+  return ok(`Average: ${avg.toFixed(4)}`, { numbers: nums, count: nums.length, sum, average: +avg.toFixed(6), median, min: sorted[0], max: sorted[sorted.length - 1] })
+}
+EXEC['number-to-words'] = (p) => {
+  const n = num(p.number || p.text); if (!Number.isFinite(n)) return err('Enter a valid number.')
+  const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']
+  const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+  const conv = (n: number): string => { if (n === 0) return ''; if (n < 20) return ones[n]; if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? '-' + ones[n % 10] : ''); if (n < 1000) return ones[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' and ' + conv(n % 100) : ''); if (n < 1000000) return conv(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + conv(n % 1000) : ''); return conv(Math.floor(n / 1000000)) + ' million' + (n % 1000000 ? ' ' + conv(n % 1000000) : '') }
+  const result = n === 0 ? 'zero' : (n < 0 ? 'negative ' : '') + conv(Math.abs(Math.floor(n)))
+  return ok(result.charAt(0).toUpperCase() + result.slice(1), { number: n, words: result })
+}
+EXEC['roman-numeral-converter'] = (p) => {
+  const t = str(p.text || p.number).trim(); if (!t) return err('Enter a number or Roman numeral.')
+  if (/^\d+$/.test(t)) {
+    let n = parseInt(t, 10); if (n <= 0 || n > 3999) return err('Number must be 1-3999.')
+    const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    const syms = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I']
+    let r = ''; for (let i = 0; i < vals.length; i++) { while (n >= vals[i]) { r += syms[i]; n -= vals[i] } }
+    return ok(`Roman: ${r}`, { input: t, roman: r })
+  }
+  const rom: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
+  const up = t.toUpperCase(); let result = 0
+  for (let i = 0; i < up.length; i++) { const c = rom[up[i]]; if (!c) return err('Invalid Roman numeral.'); result += (c < (rom[up[i + 1]] || 0)) ? -c : c }
+  return ok(`Number: ${result}`, { input: t, number: result })
+}
+EXEC['factorial-calculator'] = (p) => {
+  const n = num(p.number || p.text); if (!Number.isInteger(n) || n < 0 || n > 170) return err('Enter a non-negative integer (0-170).')
+  let result = 1; for (let i = 2; i <= n; i++) result *= i
+  return ok(`${n}! = ${result}`, { number: n, factorial: result })
+}
+EXEC['prime-checker'] = (p) => {
+  const n = num(p.number || p.text); if (!Number.isInteger(n) || n < 2) return err('Enter an integer ≥ 2.')
+  let isPrime = true; for (let i = 2; i <= Math.sqrt(n); i++) { if (n % i === 0) { isPrime = false; break } }
+  return ok(isPrime ? `${n} is a prime number.` : `${n} is NOT prime.`, { number: n, is_prime: isPrime })
+}
+EXEC['gcd-lcm-calculator'] = (p) => {
+  const a = num(p.a || p.number1), b = num(p.b || p.number2)
+  if (!a || !b) return err('Enter two numbers.')
+  const gcd = (x: number, y: number): number => y === 0 ? x : gcd(y, x % y)
+  const g = gcd(Math.abs(a), Math.abs(b)), l = Math.abs(a * b) / g
+  return ok(`GCD: ${g}, LCM: ${l}`, { a, b, gcd: g, lcm: l })
+}
+EXEC['random-number-generator'] = (p) => {
+  const min = num(p.min, 1), max = num(p.max, 100), count = Math.min(num(p.count, 1), 100)
+  const results: number[] = []; for (let i = 0; i < count; i++) results.push(min + secureRandomInt(max - min + 1))
+  return ok(`Generated ${count} random number(s).`, { min, max, count, numbers: results, sum: results.reduce((a, b) => a + b, 0) })
+}
+EXEC['binary-to-decimal'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Enter a binary number.')
+  const n = parseInt(t.replace(/\s/g, ''), 2); if (!Number.isFinite(n)) return err('Invalid binary.')
+  return ok(`Decimal: ${n}`, { binary: t, decimal: n, hex: n.toString(16), octal: n.toString(8) })
+}
+EXEC['decimal-to-binary'] = (p) => {
+  const n = num(p.text || p.number); if (!Number.isFinite(n)) return err('Enter a decimal number.')
+  return ok(`Binary: ${Math.floor(n).toString(2)}`, { decimal: n, binary: Math.floor(n).toString(2), hex: Math.floor(n).toString(16), octal: Math.floor(n).toString(8) })
+}
+EXEC['hex-to-decimal'] = (p) => {
+  const t = str(p.text).replace(/^0x/i, '').trim(); if (!t) return err('Enter a hex number.')
+  const n = parseInt(t, 16); if (!Number.isFinite(n)) return err('Invalid hex.')
+  return ok(`Decimal: ${n}`, { hex: t, decimal: n, binary: n.toString(2), octal: n.toString(8) })
+}
+EXEC['decimal-to-hex'] = (p) => {
+  const n = num(p.text || p.number); return ok(`Hex: 0x${Math.floor(n).toString(16).toUpperCase()}`, { decimal: n, hex: '0x' + Math.floor(n).toString(16).toUpperCase() })
+}
+EXEC['octal-to-decimal'] = (p) => {
+  const t = str(p.text).trim(); const n = parseInt(t, 8)
+  if (!Number.isFinite(n)) return err('Invalid octal number.')
+  return ok(`Decimal: ${n}`, { octal: t, decimal: n })
+}
+EXEC['decimal-to-octal'] = (p) => {
+  const n = num(p.text || p.number); return ok(`Octal: ${Math.floor(n).toString(8)}`, { decimal: n, octal: Math.floor(n).toString(8) })
+}
+
+// ─── TEXT UTILITIES ──────────────────────────────────────────────────────────
+EXEC['text-repeater'] = (p) => {
+  const t = str(p.text); const count = Math.min(num(p.count || p.times, 2), 1000)
+  if (!t) return err('Enter text to repeat.')
+  const sep = str(p.separator, '\n')
+  return ok(`Repeated ${count} times.`, { input: t, count, result: Array(count).fill(t).join(sep) })
+}
+EXEC['text-truncator'] = (p) => {
+  const t = str(p.text); const max = num(p.max_length || p.length, 100)
+  if (!t) return err('Enter text.'); const suffix = str(p.suffix, '...')
+  return ok('Truncated.', { input: t, result: t.length <= max ? t : t.slice(0, max) + suffix, original_length: t.length })
+}
+EXEC['find-and-replace'] = (p) => {
+  const t = str(p.text), find = str(p.find), replace = str(p.replace)
+  if (!t || !find) return err('Enter text and a search term.')
+  const result = t.split(find).join(replace)
+  const count = (t.length - result.length + replace.length * ((t.length - result.length) / (find.length - replace.length || 1))) || t.split(find).length - 1
+  return ok(`Replaced ${Math.abs(Math.round(count))} occurrence(s).`, { input: t, find, replace, result })
+}
+EXEC['text-sorter'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text with multiple lines.')
+  const lines = t.split('\n').filter((l: string) => l.trim())
+  const dir = str(p.direction || p.order, 'asc')
+  const sorted = [...lines].sort((a: string, b: string) => dir === 'desc' ? b.localeCompare(a) : a.localeCompare(b))
+  return ok(`Sorted ${sorted.length} lines.`, { input: t, result: sorted.join('\n'), line_count: sorted.length })
+}
+EXEC['remove-whitespace'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  return ok('Whitespace removed.', { input: t, result: t.replace(/\s+/g, ''), trimmed: t.trim().replace(/\s+/g, ' ') })
+}
+EXEC['add-line-numbers'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  const lines = t.split('\n')
+  return ok(`Added numbers to ${lines.length} lines.`, { result: lines.map((l: string, i: number) => `${i + 1}. ${l}`).join('\n') })
+}
+EXEC['remove-line-numbers'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  return ok('Line numbers removed.', { result: t.split('\n').map((l: string) => l.replace(/^\s*\d+[\.\)\]:\-]\s*/, '')).join('\n') })
+}
+EXEC['string-length-calculator'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  return ok(`Length: ${t.length} characters`, { text: t, length: t.length, bytes: new TextEncoder().encode(t).length, words: t.trim().split(/\s+/).length, lines: t.split('\n').length })
+}
+EXEC['text-to-ascii'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  const codes = Array.from(t).map((c: string) => c.charCodeAt(0))
+  return ok('Converted to ASCII codes.', { input: t, ascii: codes.join(' '), codes })
+}
+EXEC['ascii-to-text'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Enter ASCII codes (space-separated).')
+  const codes = t.split(/[\s,]+/).map(Number).filter(Number.isFinite)
+  return ok('Converted to text.', { ascii: t, text: String.fromCharCode(...codes) })
+}
+EXEC['nato-alphabet'] = (p) => {
+  const t = str(p.text).toUpperCase(); if (!t) return err('Enter text.')
+  const nato: Record<string, string> = { A:'Alpha',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliet',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu','0':'Zero','1':'One','2':'Two','3':'Three','4':'Four','5':'Five','6':'Six','7':'Seven','8':'Eight','9':'Nine' }
+  const result = Array.from(t).map((c: string) => nato[c] || c).join(' - ')
+  return ok('NATO alphabet conversion done.', { input: t, nato: result })
+}
+EXEC['morse-code-converter'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Enter text or Morse code.')
+  const toMorse: Record<string, string> = { A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',' ':'/','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.' }
+  if (/^[\.\-\/ ]+$/.test(t)) {
+    const fromMorse = Object.fromEntries(Object.entries(toMorse).map(([k, v]) => [v, k]))
+    const decoded = t.split(' / ').map((w: string) => w.split(' ').map((c: string) => fromMorse[c] || '?').join('')).join(' ')
+    return ok('Decoded from Morse.', { morse: t, text: decoded })
+  }
+  const encoded = t.toUpperCase().split('').map((c: string) => toMorse[c] || c).join(' ')
+  return ok('Encoded to Morse.', { text: t, morse: encoded })
+}
+
+// ─── DATE & TIME TOOLS ──────────────────────────────────────────────────────
+EXEC['unix-timestamp-converter'] = (p) => {
+  const t = str(p.text || p.timestamp).trim()
+  if (!t || t === 'now') { const now = Date.now(); return ok(`Current: ${Math.floor(now / 1000)}`, { timestamp: Math.floor(now / 1000), milliseconds: now, iso: new Date(now).toISOString(), utc: new Date(now).toUTCString() }) }
+  const n = Number(t); if (Number.isFinite(n)) { const ms = n > 1e12 ? n : n * 1000; const d = new Date(ms); return ok(`Date: ${d.toISOString()}`, { timestamp: Math.floor(ms / 1000), date: d.toISOString(), utc: d.toUTCString() }) }
+  const d = new Date(t); if (Number.isNaN(d.getTime())) return err('Invalid date or timestamp.')
+  return ok(`Timestamp: ${Math.floor(d.getTime() / 1000)}`, { date: t, timestamp: Math.floor(d.getTime() / 1000), iso: d.toISOString() })
+}
+EXEC['date-difference-calculator'] = (p) => {
+  const d1 = new Date(str(p.date1 || p.start_date)), d2 = new Date(str(p.date2 || p.end_date))
+  if (Number.isNaN(d1.getTime()) || Number.isNaN(d2.getTime())) return err('Enter two valid dates.')
+  const diffMs = Math.abs(d2.getTime() - d1.getTime()), days = Math.floor(diffMs / 86400000)
+  return ok(`Difference: ${days} days`, { date1: d1.toISOString().split('T')[0], date2: d2.toISOString().split('T')[0], days, weeks: Math.floor(days / 7), months: Math.floor(days / 30.44), years: +(days / 365.25).toFixed(2), hours: days * 24 })
+}
+
+// ─── MISC UTILITIES ─────────────────────────────────────────────────────────
+EXEC['uuid-generator'] = () => {
+  const uuid = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16) })
+  return ok(`UUID: ${uuid}`, { uuid, version: 4 })
+}
+EXEC['ip-address-converter'] = (p) => {
+  const t = str(p.text || p.ip).trim(); if (!t) return err('Enter an IP address.')
+  const parts = t.split('.').map(Number)
+  if (parts.length === 4 && parts.every((n: number) => Number.isInteger(n) && n >= 0 && n <= 255)) {
+    const decimal = ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0
+    const binary = parts.map((n: number) => n.toString(2).padStart(8, '0')).join('.')
+    const hex = parts.map((n: number) => n.toString(16).padStart(2, '0')).join(':')
+    return ok('IP converted.', { ip: t, decimal, binary, hex, class: parts[0] < 128 ? 'A' : parts[0] < 192 ? 'B' : parts[0] < 224 ? 'C' : 'D/E' })
+  }
+  return err('Invalid IPv4 address.')
+}
+EXEC['csv-to-json'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste CSV data.')
+  const lines = t.split('\n').map((l: string) => l.trim()).filter(Boolean)
+  if (lines.length < 2) return err('CSV needs at least a header and one data row.')
+  const headers = lines[0].split(',').map((h: string) => h.trim().replace(/^"|"$/g, ''))
+  const rows = lines.slice(1).map((line: string) => { const vals = line.split(',').map((v: string) => v.trim().replace(/^"|"$/g, '')); const obj: Record<string, string> = {}; headers.forEach((h: string, i: number) => { obj[h] = vals[i] || '' }); return obj })
+  return ok(`Converted ${rows.length} rows.`, { headers, rows, json: JSON.stringify(rows, null, 2) })
+}
+EXEC['json-to-csv'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste JSON array.')
+  try {
+    const arr = JSON.parse(t); if (!Array.isArray(arr) || !arr.length) return err('Input must be a non-empty JSON array.')
+    const headers = Object.keys(arr[0])
+    const csv = [headers.join(','), ...arr.map((row: Record<string, unknown>) => headers.map((h: string) => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(','))].join('\n')
+    return ok(`Converted ${arr.length} rows to CSV.`, { csv, row_count: arr.length })
+  } catch { return err('Invalid JSON.') }
+}
+EXEC['html-entity-encoder'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text.')
+  const encoded = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+  return ok('Encoded HTML entities.', { input: t, encoded })
+}
+EXEC['html-entity-decoder'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter encoded text.')
+  const decoded = t.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#(\d+);/g, (_: string, n: string) => String.fromCharCode(parseInt(n)))
+  return ok('Decoded HTML entities.', { input: t, decoded })
+}
+EXEC['url-encoder'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text to encode.')
+  return ok('URL encoded.', { input: t, encoded: encodeURIComponent(t) })
+}
+EXEC['url-decoder'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter encoded URL.')
+  try { return ok('URL decoded.', { input: t, decoded: decodeURIComponent(t) }) }
+  catch { return err('Invalid URL encoding.') }
+}
+EXEC['email-validator'] = (p) => {
+  const t = str(p.text || p.email).trim(); if (!t) return err('Enter an email address.')
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)
+  const [local, domain] = t.split('@')
+  return ok(valid ? 'Valid email address.' : 'Invalid email address.', { email: t, valid, local, domain: domain || '' })
+}
+EXEC['temperature-converter'] = (p) => {
+  const v = num(p.value || p.text || p.temperature), from = str(p.from || p.unit, 'celsius').toLowerCase()
+  let c: number
+  if (from.startsWith('f')) c = (v - 32) * 5 / 9
+  else if (from.startsWith('k')) c = v - 273.15
+  else c = v
+  return ok('Temperature converted.', { input: v, from, celsius: +c.toFixed(2), fahrenheit: +(c * 9 / 5 + 32).toFixed(2), kelvin: +(c + 273.15).toFixed(2) })
+}
+EXEC['length-converter'] = (p) => {
+  const v = num(p.value || p.text, 1)
+  const meters = v // assume input is meters
+  return ok('Length converted.', { meters: v, kilometers: +(v / 1000).toFixed(6), centimeters: +(v * 100).toFixed(2), millimeters: +(v * 1000).toFixed(1), inches: +(v * 39.3701).toFixed(4), feet: +(v * 3.28084).toFixed(4), yards: +(v * 1.09361).toFixed(4), miles: +(v / 1609.344).toFixed(6) })
+}
+EXEC['weight-converter'] = (p) => {
+  const v = num(p.value || p.text, 1)
+  return ok('Weight converted.', { kilograms: v, grams: +(v * 1000).toFixed(2), milligrams: +(v * 1e6).toFixed(0), pounds: +(v * 2.20462).toFixed(4), ounces: +(v * 35.274).toFixed(4), tons_metric: +(v / 1000).toFixed(6) })
+}
+
+// ─── JSON / CODE / CSS TOOLS ─────────────────────────────────────────────────
+EXEC['json-formatter'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste JSON to format.')
+  try { const parsed = JSON.parse(t); return ok('JSON formatted.', { formatted: JSON.stringify(parsed, null, 2), minified: JSON.stringify(parsed), keys: Object.keys(typeof parsed === 'object' && parsed ? parsed : {}).length }) }
+  catch { return err('Invalid JSON — check for syntax errors.') }
+}
+EXEC['json-beautifier'] = EXEC['json-formatter']
+EXEC['json-validator'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste JSON to validate.')
+  try { JSON.parse(t); return ok('✅ Valid JSON!', { valid: true, size: t.length }) }
+  catch (e) { return ok('❌ Invalid JSON', { valid: false, error: e instanceof Error ? e.message : 'Parse error' }) }
+}
+EXEC['json-minifier'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste JSON to minify.')
+  try { const minified = JSON.stringify(JSON.parse(t)); return ok(`Minified: ${t.length} → ${minified.length} chars (${Math.round((1 - minified.length / t.length) * 100)}% reduction)`, { minified, original_size: t.length, minified_size: minified.length }) }
+  catch { return err('Invalid JSON.') }
+}
+EXEC['css-minifier'] = (p) => {
+  const t = str(p.text); if (!t) return err('Paste CSS to minify.')
+  const minified = t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;\}/g, '}').trim()
+  return ok(`Minified: ${t.length} → ${minified.length} chars`, { minified, original_size: t.length, minified_size: minified.length, reduction: Math.round((1 - minified.length / t.length) * 100) + '%' })
+}
+EXEC['css-beautifier'] = (p) => {
+  const t = str(p.text); if (!t) return err('Paste CSS to beautify.')
+  const result = t.replace(/\s*\{\s*/g, ' {\n  ').replace(/\s*\}\s*/g, '\n}\n').replace(/;\s*/g, ';\n  ').replace(/\n\s*\n/g, '\n')
+  return ok('CSS beautified.', { beautified: result })
+}
+EXEC['html-minifier'] = (p) => {
+  const t = str(p.text); if (!t) return err('Paste HTML to minify.')
+  const minified = t.replace(/<!--[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim()
+  return ok(`Minified: ${t.length} → ${minified.length} chars`, { minified, reduction: Math.round((1 - minified.length / t.length) * 100) + '%' })
+}
+EXEC['js-minifier'] = (p) => {
+  const t = str(p.text); if (!t) return err('Paste JavaScript to minify.')
+  const minified = t.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,=+\-*/<>!&|()])\s*/g, '$1').trim()
+  return ok(`Minified: ${t.length} → ${minified.length} chars`, { minified, reduction: Math.round((1 - minified.length / t.length) * 100) + '%' })
+}
+EXEC['javascript-minifier'] = EXEC['js-minifier']
+EXEC['xml-formatter'] = (p) => {
+  const t = str(p.text).trim(); if (!t) return err('Paste XML to format.')
+  let formatted = '', indent = 0
+  t.replace(/>\s*</g, '><').replace(/(<\/?[^>]+>)/g, (match: string) => {
+    if (match.startsWith('</')) indent--
+    formatted += '  '.repeat(Math.max(indent, 0)) + match + '\n'
+    if (match.startsWith('<') && !match.startsWith('</') && !match.endsWith('/>') && !match.startsWith('<?')) indent++
+    return match
+  })
+  return ok('XML formatted.', { formatted: formatted.trim() })
+}
+EXEC['regex-tester'] = (p) => {
+  const pattern = str(p.pattern || p.regex), text = str(p.text), flags = str(p.flags, 'g')
+  if (!pattern || !text) return err('Enter both a regex pattern and test text.')
+  try {
+    const re = new RegExp(pattern, flags)
+    const matches: string[] = []; let m
+    while ((m = re.exec(text)) !== null) { matches.push(m[0]); if (!flags.includes('g')) break }
+    return ok(`Found ${matches.length} match(es).`, { pattern, flags, matches, count: matches.length })
+  } catch (e) { return err(`Invalid regex: ${e instanceof Error ? e.message : 'Parse error'}`) }
+}
+EXEC['jwt-decoder'] = (p) => {
+  const t = str(p.text || p.token).trim(); if (!t) return err('Paste a JWT token.')
+  const parts = t.split('.')
+  if (parts.length !== 3) return err('Invalid JWT — must have 3 parts separated by dots.')
+  try {
+    const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')))
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+    const isExpired = payload.exp ? Date.now() / 1000 > payload.exp : false
+    return ok('JWT decoded.', { header, payload, signature: parts[2], is_expired: isExpired, expires_at: payload.exp ? new Date(payload.exp * 1000).toISOString() : 'N/A' })
+  } catch { return err('Could not decode JWT — invalid Base64.') }
+}
+EXEC['rot13'] = (p) => {
+  const t = str(p.text); if (!t) return err('Enter text to encode/decode.')
+  const result = t.replace(/[a-zA-Z]/g, (c: string) => {
+    const base = c <= 'Z' ? 65 : 97
+    return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base)
+  })
+  return ok('ROT13 applied.', { input: t, result })
+}
+EXEC['caesar-cipher'] = (p) => {
+  const t = str(p.text), shift = num(p.shift || p.key, 3)
+  if (!t) return err('Enter text to encrypt.')
+  const encrypt = (s: string, sh: number) => s.replace(/[a-zA-Z]/g, (c: string) => {
+    const base = c <= 'Z' ? 65 : 97
+    return String.fromCharCode(((c.charCodeAt(0) - base + sh) % 26 + 26) % 26 + base)
+  })
+  return ok(`Encrypted with shift ${shift}.`, { input: t, encrypted: encrypt(t, shift), decrypted: encrypt(t, -shift), shift })
+}
+
+// ─── CALCULATORS ─────────────────────────────────────────────────────────────
+EXEC['bmi-calculator'] = (p) => {
+  const w = num(p.weight, 0), h = num(p.height, 0)
+  if (!w || !h) return err('Enter weight (kg) and height (cm).')
+  const hm = h / 100, bmi = w / (hm * hm)
+  const cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'
+  return ok(`BMI: ${bmi.toFixed(1)} (${cat})`, { weight_kg: w, height_cm: h, bmi: +bmi.toFixed(1), category: cat })
+}
+EXEC['age-calculator'] = (p) => {
+  const d = new Date(str(p.date || p.birthdate || p.dob))
+  if (Number.isNaN(d.getTime())) return err('Enter a valid birth date.')
+  const now = new Date(), years = now.getFullYear() - d.getFullYear()
+  const months = now.getMonth() - d.getMonth(), days = Math.floor((now.getTime() - d.getTime()) / 86400000)
+  return ok(`Age: ${years} years`, { birthdate: d.toISOString().split('T')[0], years, months: years * 12 + months, days, weeks: Math.floor(days / 7), hours: days * 24 })
+}
+EXEC['tip-calculator'] = (p) => {
+  const bill = num(p.bill || p.amount, 0), tipPct = num(p.tip || p.tip_percent, 15), people = Math.max(num(p.people || p.split, 1), 1)
+  if (!bill) return err('Enter the bill amount.')
+  const tip = bill * tipPct / 100, total = bill + tip
+  return ok(`Tip: $${tip.toFixed(2)} | Total: $${total.toFixed(2)}`, { bill, tip_percent: tipPct, tip: +tip.toFixed(2), total: +total.toFixed(2), per_person: +(total / people).toFixed(2), people })
+}
+EXEC['loan-calculator'] = (p) => {
+  const principal = num(p.principal || p.amount, 0), rate = num(p.rate || p.interest, 5) / 100 / 12, months = num(p.months || p.term, 12)
+  if (!principal) return err('Enter loan amount.')
+  const payment = rate > 0 ? principal * rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1) : principal / months
+  const totalPaid = payment * months, totalInterest = totalPaid - principal
+  return ok(`Monthly: $${payment.toFixed(2)}`, { principal, monthly_payment: +payment.toFixed(2), total_paid: +totalPaid.toFixed(2), total_interest: +totalInterest.toFixed(2), months })
+}
+EXEC['compound-interest-calculator'] = (p) => {
+  const principal = num(p.principal || p.amount, 1000), rate = num(p.rate, 5) / 100, years = num(p.years || p.time, 5), n = num(p.compounds || p.frequency, 12)
+  const amount = principal * Math.pow(1 + rate / n, n * years)
+  const interest = amount - principal
+  return ok(`Final: $${amount.toFixed(2)}`, { principal, rate: rate * 100, years, compounds_per_year: n, final_amount: +amount.toFixed(2), interest_earned: +interest.toFixed(2) })
+}
+EXEC['aspect-ratio-calculator'] = (p) => {
+  const w = num(p.width, 1920), h = num(p.height, 1080)
+  if (!w || !h) return err('Enter width and height.')
+  const gcd = (a: number, b: number): number => b === 0 ? a : gcd(b, a % b)
+  const g = gcd(w, h)
+  return ok(`Ratio: ${w / g}:${h / g}`, { width: w, height: h, ratio: `${w / g}:${h / g}`, decimal: +(w / h).toFixed(4) })
+}
+EXEC['speed-distance-time-calculator'] = (p) => {
+  const s = num(p.speed, 0), d = num(p.distance, 0), t = num(p.time, 0)
+  if (s && d) return ok(`Time: ${(d / s).toFixed(2)} hours`, { speed: s, distance: d, time: +(d / s).toFixed(4) })
+  if (s && t) return ok(`Distance: ${(s * t).toFixed(2)}`, { speed: s, time: t, distance: +(s * t).toFixed(4) })
+  if (d && t) return ok(`Speed: ${(d / t).toFixed(2)}`, { distance: d, time: t, speed: +(d / t).toFixed(4) })
+  return err('Enter any two values (speed, distance, time) to calculate the third.')
+}
+
 // — Public API ────────────────────────────────────────────────────────────────
 export function getClientExecutor(slug: string): Executor | undefined {
   return EXEC[slug]
