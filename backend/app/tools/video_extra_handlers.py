@@ -598,6 +598,11 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     if fallback is not None:
         return fallback
 
+    # Strategy 4: Cobalt API fallback
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+
     # All strategies failed — give user a recovery path
     if not cookies:
         msg = (
@@ -674,6 +679,11 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     if primary.kind == "file":
         return primary
 
+    # Strategy 3: Cobalt API fallback
+    cobalt_fb = _cobalt_api_fallback(url, job_dir, audio_only=True)
+    if cobalt_fb is not None:
+        return cobalt_fb
+
     # Give user a recovery path if no cookies provided
     if not cookies:
         msg = (
@@ -694,6 +704,110 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
 
 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
+
+def _cobalt_api_fallback(url: str, job_dir: Path, audio_only: bool = False) -> ExecutionResult | None:
+    """Third-party Cobalt API fallback (supports YT, IG, TikTok, X, Facebook, etc)."""
+    instances = [
+        "https://api.cobalt.tools/api/json",
+        "https://co.wuk.sh/api/json",
+        "https://cobalt.kwiatekm.com/api/json",
+        "https://cobalt.qewertyy.dev/api/json"
+    ]
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    }
+    payload = {
+        "url": url,
+        "vQuality": "1080",
+        "isAudioOnly": audio_only,
+        "aFormat": "mp3" if audio_only else "best",
+        "filenamePattern": "basic"
+    }
+    for endpoint in instances:
+        try:
+            r = httpx.post(endpoint, json=payload, headers=headers, timeout=15)
+            if r.status_code == 200:
+                data = r.json()
+                if data.get("status") in ["stream", "redirect", "success", "picker"] and data.get("url"):
+                    media_url = data["url"]
+                    ext = "mp3" if audio_only else "mp4"
+                    out = job_dir / f"download.{ext}"
+                    with httpx.stream("GET", media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]}) as v:
+                        if v.status_code == 200:
+                            with open(out, "wb") as f:
+                                for chunk in v.iter_bytes(chunk_size=256*1024):
+                                    f.write(chunk)
+                    if out.exists() and out.stat().st_size > 5000:
+                        size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+                        return ExecutionResult(
+                            kind="file",
+                            message=f"Downloaded successfully ({size_mb} MB)",
+                            output_path=out,
+                            filename=out.name,
+                            content_type=f"audio/{ext}" if audio_only else f"video/{ext}"
+                        )
+                elif data.get("status") == "picker" and data.get("picker"):
+                    # Handle multiple media (e.g. IG carousel) - pick first video or image
+                    picker = data["picker"]
+                    for item in picker:
+                        media_url = item.get("url")
+                        if media_url:
+                            ext = "mp4" if item.get("type") == "video" else "jpg"
+                            if audio_only: ext = "mp3"
+                            out = job_dir / f"download.{ext}"
+                            with httpx.stream("GET", media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]}) as v:
+                                if v.status_code == 200:
+                                    with open(out, "wb") as f:
+                                        for chunk in v.iter_bytes(chunk_size=256*1024):
+                                            f.write(chunk)
+                            if out.exists() and out.stat().st_size > 5000:
+                                size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+                                return ExecutionResult(
+                                    kind="file",
+                                    message=f"Downloaded successfully ({size_mb} MB)",
+                                    output_path=out,
+                                    filename=out.name,
+                                    content_type=f"audio/{ext}" if audio_only else (f"video/{ext}" if ext == "mp4" else f"image/{ext}")
+                                )
+        except Exception:
+            continue
+    return None
+
+
+def _ttsave_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """ttsave.app fallback for TikTok."""
+    try:
+        r = httpx.post(
+            "https://ttsave.app/download",
+            json={"query": url, "language_id": "1"},
+            headers={
+                "User-Agent": "Mozilla/5.0",
+                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json"
+            },
+            timeout=15
+        )
+        if r.status_code == 200:
+            import re as _re
+            html = r.text
+            match = _re.search(r'href="(https://[^"]+)"[^>]*>Download \(Without Watermark\)', html, _re.IGNORECASE)
+            if match:
+                media_url = match.group(1)
+                out = job_dir / "tiktok_ttsave.mp4"
+                with httpx.stream("GET", media_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"}) as v:
+                    if v.status_code == 200:
+                        with open(out, "wb") as f:
+                            for chunk in v.iter_bytes(chunk_size=256*1024):
+                                f.write(chunk)
+                if out.exists() and out.stat().st_size > 5000:
+                    size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+                    return ExecutionResult(kind="file", message=f"Downloaded (ttsave) ({size_mb} MB)", output_path=out, filename=out.name, content_type="video/mp4")
+    except Exception:
+        pass
+    return None
+
 
 def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     """Free no-auth fallback for public Instagram reels/posts.
@@ -920,7 +1034,12 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if html_fallback is not None:
         return html_fallback
 
-    # All three strategies failed — give the user a concrete recovery path.
+    # Strategy 4: Cobalt API fallback
+    cobalt_fb = _cobalt_api_fallback(clean_url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+
+    # All strategies failed — give the user a concrete recovery path.
     msg = (
         "Instagram is blocking this download from our server (this happens with reels from accounts that require login, "
         "or when Instagram rate-limits cloud IPs). "
@@ -1024,6 +1143,17 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
         fallback2 = _tikwm_fallback(url, job_dir)
         if fallback2:
             return fallback2
+            
+    # Try ttsave.app fallback
+    ttsave_fb = _ttsave_fallback(clean_url, job_dir)
+    if ttsave_fb:
+        return ttsave_fb
+        
+    # Try Cobalt fallback
+    cobalt_fb = _cobalt_api_fallback(clean_url, job_dir)
+    if cobalt_fb:
+        return cobalt_fb
+        
     return result  # return original yt-dlp error message
 
 
@@ -1107,6 +1237,11 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     fallback = _twitter_syndication_fallback(url, job_dir)
     if fallback is not None:
         return fallback
+        
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+        
     return primary
 
 
@@ -1183,6 +1318,11 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         fallback2 = _facebook_html_fallback(mbasic_url, job_dir)
         if fallback2 is not None:
             return fallback2
+            
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+        
     return primary
 
 
