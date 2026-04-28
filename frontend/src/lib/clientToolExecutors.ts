@@ -1289,6 +1289,209 @@ EXEC['speed-distance-time-calculator'] = (p) => {
   return err('Enter any two values (speed, distance, time) to calculate the third.')
 }
 
+// ─── STUDENT-ESSENTIAL CALCULATORS ──────────────────────────────────────────
+EXEC['gpa-calculator'] = (p) => {
+  const t = str(p.text || p.grades).trim()
+  if (!t) return err('Enter grades separated by commas (e.g. A,B+,A-,B,A).')
+  const gradePoints: Record<string, number> = {
+    'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+    'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'D-': 0.7, 'F': 0.0,
+    'O': 10.0, 'E': 8.0, 'a': 8.0, 'b': 6.0, 'c': 5.0, 'd': 4.0, 'P': 4.0,
+  }
+  const grades = t.split(/[,;\s]+/).map(g => g.trim()).filter(Boolean)
+  const credits = str(p.credits).split(/[,;\s]+/).map(Number).filter(Number.isFinite)
+  let totalPoints = 0, totalCredits = 0
+  for (let i = 0; i < grades.length; i++) {
+    const gp = gradePoints[grades[i]] ?? Number(grades[i])
+    if (!Number.isFinite(gp)) return err(`Unknown grade: "${grades[i]}". Supported: ${Object.keys(gradePoints).join(', ')}`)
+    const cr = credits[i] || 3
+    totalPoints += gp * cr
+    totalCredits += cr
+  }
+  const gpa = totalCredits > 0 ? totalPoints / totalCredits : 0
+  return ok(`GPA: ${gpa.toFixed(2)}`, {
+    gpa: +gpa.toFixed(4), total_grade_points: +totalPoints.toFixed(2),
+    total_credits: totalCredits, subjects: grades.length,
+    classification: gpa >= 3.7 ? 'Summa Cum Laude' : gpa >= 3.5 ? 'Magna Cum Laude' : gpa >= 3.0 ? 'Cum Laude' : gpa >= 2.0 ? 'Satisfactory' : 'Below Average',
+  })
+}
+EXEC['cgpa-to-percentage'] = (p) => {
+  const cgpa = num(p.cgpa || p.text || p.value)
+  if (!cgpa || cgpa < 0) return err('Enter a valid CGPA.')
+  const scale = num(p.scale, 10)
+  // Standard Indian university formulas
+  const percentage_vtu = cgpa * 10 - 7.5   // VTU formula
+  const percentage_anna = (cgpa - 0.75) * 10 // Anna University
+  const percentage_cbse = cgpa * 9.5         // CBSE formula
+  const percentage_generic = (cgpa / scale) * 100  // Generic
+  return ok(`CGPA ${cgpa} ≈ ${percentage_cbse.toFixed(2)}% (CBSE scale)`, {
+    cgpa, scale,
+    percentage_cbse: +percentage_cbse.toFixed(2),
+    percentage_vtu: +percentage_vtu.toFixed(2),
+    percentage_anna: +percentage_anna.toFixed(2),
+    percentage_generic: +percentage_generic.toFixed(2),
+    note: 'Different universities use different formulas. CBSE uses ×9.5, VTU uses ×10−7.5, Anna uses (CGPA−0.75)×10.',
+  })
+}
+EXEC['attendance-calculator'] = (p) => {
+  const totalClasses = num(p.total_classes || p.total, 0)
+  const attended = num(p.attended || p.present, 0)
+  if (totalClasses <= 0) return err('Enter total classes.')
+  if (attended > totalClasses) return err('Attended cannot exceed total classes.')
+  const pct = (attended / totalClasses) * 100
+  const needed75 = Math.max(0, Math.ceil((0.75 * totalClasses - attended) / (1 - 0.75)))
+  const canSkip75 = Math.max(0, Math.floor((attended - 0.75 * totalClasses) / 0.75))
+  const needed85 = Math.max(0, Math.ceil((0.85 * totalClasses - attended) / (1 - 0.85)))
+  return ok(`Attendance: ${pct.toFixed(1)}%`, {
+    total_classes: totalClasses, attended, absent: totalClasses - attended,
+    percentage: +pct.toFixed(2),
+    status: pct >= 75 ? '✅ Safe (≥75%)' : '⚠️ Shortage (<75%)',
+    classes_needed_for_75: needed75, classes_can_skip_for_75: canSkip75,
+    classes_needed_for_85: needed85,
+  })
+}
+EXEC['grade-calculator'] = (p) => {
+  const marks = num(p.marks || p.score || p.text, 0)
+  const total = num(p.total || p.max_marks, 100)
+  if (total <= 0) return err('Enter total marks.')
+  const pct = (marks / total) * 100
+  let grade = 'F', gpa = 0
+  if (pct >= 90) { grade = 'A+'; gpa = 4.0 }
+  else if (pct >= 80) { grade = 'A'; gpa = 3.7 }
+  else if (pct >= 70) { grade = 'B+'; gpa = 3.3 }
+  else if (pct >= 60) { grade = 'B'; gpa = 3.0 }
+  else if (pct >= 50) { grade = 'C'; gpa = 2.5 }
+  else if (pct >= 40) { grade = 'D'; gpa = 2.0 }
+  else if (pct >= 33) { grade = 'E'; gpa = 1.0 }
+  return ok(`Grade: ${grade} (${pct.toFixed(1)}%)`, {
+    marks, total, percentage: +pct.toFixed(2), grade, gpa,
+    result: pct >= 33 ? 'PASS' : 'FAIL',
+  })
+}
+EXEC['marks-percentage-calculator'] = (p) => {
+  const t = str(p.text || p.marks).trim()
+  if (!t) return err('Enter marks separated by commas (e.g. 85,78,92,88,76).')
+  const marks = t.split(/[,;\s]+/).map(Number).filter(Number.isFinite)
+  if (!marks.length) return err('No valid marks found.')
+  const totalMarksPerSubject = num(p.total_per_subject || p.max, 100)
+  const obtained = marks.reduce((a, b) => a + b, 0)
+  const maxTotal = marks.length * totalMarksPerSubject
+  const pct = (obtained / maxTotal) * 100
+  return ok(`Percentage: ${pct.toFixed(2)}%`, {
+    subjects: marks.length, marks, total_obtained: obtained,
+    total_maximum: maxTotal, percentage: +pct.toFixed(2),
+    average_marks: +(obtained / marks.length).toFixed(2),
+    highest: Math.max(...marks), lowest: Math.min(...marks),
+    result: pct >= 33 ? 'PASS' : 'FAIL',
+  })
+}
+EXEC['study-planner'] = (p) => {
+  const examDate = str(p.exam_date || p.date).trim()
+  const subjects = str(p.subjects || p.text).trim()
+  if (!examDate) return err('Enter your exam date (e.g. 2025-03-15).')
+  if (!subjects) return err('Enter subjects separated by commas.')
+  const exam = new Date(examDate)
+  if (Number.isNaN(exam.getTime())) return err('Invalid date format. Try YYYY-MM-DD.')
+  const daysLeft = Math.max(0, Math.ceil((exam.getTime() - Date.now()) / 86400000))
+  const subjectList = subjects.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
+  const daysPerSubject = Math.max(1, Math.floor(daysLeft / subjectList.length))
+  const hoursPerDay = num(p.hours_per_day, 6)
+  const schedule = subjectList.map((sub, i) => ({
+    subject: sub,
+    start_day: i * daysPerSubject + 1,
+    end_day: Math.min((i + 1) * daysPerSubject, daysLeft),
+    hours_total: daysPerSubject * hoursPerDay,
+  }))
+  return ok(`${daysLeft} days left — ${daysPerSubject} days per subject.`, {
+    exam_date: examDate, days_left: daysLeft, total_subjects: subjectList.length,
+    days_per_subject: daysPerSubject, hours_per_day: hoursPerDay,
+    total_study_hours: daysLeft * hoursPerDay, schedule,
+    tip: daysLeft < 7 ? '⚠️ Very little time! Focus on high-weight topics and past papers.' : daysLeft < 30 ? '📚 Steady revision mode. Alternate subjects daily.' : '✅ Good time. Start with fundamentals, save revision for last week.',
+  })
+}
+EXEC['bmr-calculator'] = (p) => {
+  const w = num(p.weight, 70), h = num(p.height, 175), age = num(p.age, 25)
+  const gender = str(p.gender || p.sex, 'male').toLowerCase()
+  if (w <= 0 || h <= 0 || age <= 0) return err('Enter valid weight (kg), height (cm), and age.')
+  // Mifflin-St Jeor (most accurate)
+  const bmr = gender.startsWith('f') ? 10 * w + 6.25 * h - 5 * age - 161 : 10 * w + 6.25 * h - 5 * age + 5
+  return ok(`BMR: ${bmr.toFixed(0)} cal/day`, {
+    weight_kg: w, height_cm: h, age, gender,
+    bmr: +bmr.toFixed(0), formula: 'Mifflin-St Jeor',
+    sedentary: +(bmr * 1.2).toFixed(0), light_exercise: +(bmr * 1.375).toFixed(0),
+    moderate_exercise: +(bmr * 1.55).toFixed(0), heavy_exercise: +(bmr * 1.725).toFixed(0),
+    athlete: +(bmr * 1.9).toFixed(0),
+  })
+}
+EXEC['tdee-calculator'] = (p) => {
+  const w = num(p.weight, 70), h = num(p.height, 175), age = num(p.age, 25)
+  const gender = str(p.gender || p.sex, 'male').toLowerCase()
+  const activity = str(p.activity || p.activity_level, 'moderate').toLowerCase()
+  const bmr = gender.startsWith('f') ? 10 * w + 6.25 * h - 5 * age - 161 : 10 * w + 6.25 * h - 5 * age + 5
+  const multipliers: Record<string, number> = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9 }
+  const mult = multipliers[activity] || multipliers['moderate'] || 1.55
+  const tdee = bmr * mult
+  return ok(`TDEE: ${tdee.toFixed(0)} cal/day`, {
+    bmr: +bmr.toFixed(0), tdee: +tdee.toFixed(0), activity_level: activity,
+    weight_loss: +(tdee - 500).toFixed(0), weight_gain: +(tdee + 500).toFixed(0),
+    protein_g: +(w * 2).toFixed(0), carbs_g: +(tdee * 0.45 / 4).toFixed(0), fat_g: +(tdee * 0.25 / 9).toFixed(0),
+  })
+}
+EXEC['calorie-calculator'] = EXEC['tdee-calculator']
+EXEC['water-intake-calculator'] = (p) => {
+  const w = num(p.weight, 70)
+  const activity = str(p.activity || p.activity_level, 'moderate').toLowerCase()
+  const climate = str(p.climate, 'normal').toLowerCase()
+  if (w <= 0) return err('Enter your weight in kg.')
+  let base = w * 35 // ml per kg
+  if (activity === 'active' || activity === 'heavy') base *= 1.3
+  if (climate === 'hot') base *= 1.2
+  const liters = base / 1000
+  const glasses = Math.ceil(liters / 0.25)
+  return ok(`Drink ~${liters.toFixed(1)}L (${glasses} glasses) per day.`, {
+    weight_kg: w, activity, climate,
+    water_ml: +base.toFixed(0), water_liters: +liters.toFixed(1), glasses_250ml: glasses,
+    morning: '2 glasses on waking up', before_meals: '1 glass 30 min before meals',
+    tip: '💧 Carry a water bottle and set hourly reminders.',
+  })
+}
+EXEC['sleep-calculator'] = (p) => {
+  const wakeUp = str(p.wake_time || p.text || p.wake).trim()
+  const now = new Date()
+  if (!wakeUp) {
+    // Calculate ideal sleep times from now
+    const cycles = [4, 5, 6].map(c => {
+      const sleepMs = c * 90 * 60000 + 14 * 60000 // cycles * 90min + 14min fall-asleep
+      const d = new Date(now.getTime() + sleepMs)
+      return { cycles: c, wake_at: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`, sleep_hours: +(c * 1.5).toFixed(1) }
+    })
+    return ok('Sleep cycle recommendations:', { current_time: now.toTimeString().slice(0, 5), recommended_wake_times: cycles, ideal: '6 full cycles = 9 hours', note: '14 min average time to fall asleep included.' })
+  }
+  // Calculate bedtime from wake-up time
+  const [hh, mm] = wakeUp.split(':').map(Number)
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return err('Enter time as HH:MM.')
+  const wakeDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm)
+  if (wakeDate < now) wakeDate.setDate(wakeDate.getDate() + 1)
+  const bedtimes = [6, 5, 4].map(c => {
+    const bedMs = wakeDate.getTime() - (c * 90 * 60000 + 14 * 60000)
+    const d = new Date(bedMs)
+    return { cycles: c, bedtime: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`, sleep_hours: +(c * 1.5).toFixed(1) }
+  })
+  return ok(`Go to bed at one of these times:`, { wake_time: wakeUp, recommended_bedtimes: bedtimes, ideal: '5-6 cycles recommended' })
+}
+EXEC['discount-calculator'] = (p) => {
+  const price = num(p.price || p.original_price || p.text, 0)
+  const discount = num(p.discount || p.percentage, 10)
+  if (price <= 0) return err('Enter the original price.')
+  const savings = price * discount / 100
+  const final_price = price - savings
+  return ok(`You save ₹${savings.toFixed(2)} — pay ₹${final_price.toFixed(2)}!`, {
+    original_price: price, discount_percent: discount,
+    savings: +savings.toFixed(2), final_price: +final_price.toFixed(2),
+    per_100: +(discount).toFixed(2),
+  })
+}
+
 // — Public API ────────────────────────────────────────────────────────────────
 export function getClientExecutor(slug: string): Executor | undefined {
   return EXEC[slug]
