@@ -28,6 +28,36 @@ app = FastAPI(
     description="Backend API for ISHU TOOLS document and image operations.",
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "message": "An unexpected server error occurred. Please try again later."}
+    )
+
+import threading
+import subprocess
+
+def _update_ytdlp_periodically():
+    while True:
+        try:
+            print("[main] Running automated yt-dlp update...")
+            # We use python -m pip to ensure it runs in the same environment
+            import sys
+            subprocess.run([sys.executable, "-m", "pip", "install", "-U", "yt-dlp"], check=True, capture_output=True)
+            print("[main] yt-dlp updated successfully.")
+        except Exception as e:
+            print(f"[main] Failed to update yt-dlp: {e}")
+        # wait 24 hours
+        time.sleep(86400)
+
+@app.on_event("startup")
+def startup_event():
+    thread = threading.Thread(target=_update_ytdlp_periodically, daemon=True)
+    thread.start()
+
 SITE_BASE_URL = os.getenv("PUBLIC_SITE_URL", "https://ishutools.fun").rstrip("/")
 SITE_FALLBACK_URL = os.getenv("FALLBACK_SITE_URL", "https://ishutools.vercel.app").rstrip("/")
 

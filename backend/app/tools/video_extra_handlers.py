@@ -72,6 +72,12 @@ def _get_ffmpeg_path() -> str | None:
 def _has_ffmpeg() -> bool:
     return _get_ffmpeg_path() is not None
 
+# Module-level aliases used throughout this file.
+# These resolve the ffmpeg path ONCE at import-time so that all handlers and
+# the _YDL_COMMON_OPTS dict are configured correctly.
+_FFMPEG_PATH: str | None = _get_ffmpeg_path()
+_HAS_FFMPEG: bool = _FFMPEG_PATH is not None
+
 _YDL_COMMON_OPTS: dict[str, Any] = {
     "quiet": True,
     "no_warnings": True,
