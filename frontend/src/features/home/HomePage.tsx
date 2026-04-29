@@ -345,7 +345,7 @@ export default function HomePage() {
   const { categories, tools, loading, error, apiReady } = useCatalogData()
   const [query, setQuery] = useState('')
   const [globalPopularity, setGlobalPopularity] = useState<Record<string, number>>({})
-  const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => loadRecentSearches())
   const [activeCategory, setActiveCategory] = useState<string>('all')
   const [searchFocused, setSearchFocused] = useState(false)
   // Shuffle index for the "Suggested for you" row — each click advances by one
@@ -631,27 +631,28 @@ export default function HomePage() {
   // Reset the category chip whenever the user clears the search — chip filter
   // only makes sense in an active-search context.
   useEffect(() => {
-    if (!isSearching && activeCategory !== 'all') setActiveCategory('all')
+    if (isSearching || activeCategory === 'all') return
+    const frame = requestAnimationFrame(() => setActiveCategory('all'))
+    return () => cancelAnimationFrame(frame)
   }, [isSearching, activeCategory])
 
   const totalVisibleTools = filteredTools.length
 
-  // ── Recent searches: load once, persist whenever a real query stabilises ──
-  useEffect(() => {
-    setRecentSearches(loadRecentSearches())
-  }, [])
-
+  // ── Recent searches: persist whenever a real query stabilises ──
   useEffect(() => {
     const term = debouncedQuery.trim()
     if (term.length < 2) return
-    setRecentSearches((prev) => {
-      const next = [term, ...prev.filter((s) => s.toLowerCase() !== term.toLowerCase())].slice(
-        0,
-        RECENT_SEARCH_LIMIT,
-      )
-      saveRecentSearches(next)
-      return next
+    const frame = requestAnimationFrame(() => {
+      setRecentSearches((prev) => {
+        const next = [term, ...prev.filter((s) => s.toLowerCase() !== term.toLowerCase())].slice(
+          0,
+          RECENT_SEARCH_LIMIT,
+        )
+        saveRecentSearches(next)
+        return next
+      })
     })
+    return () => cancelAnimationFrame(frame)
   }, [debouncedQuery])
 
   const clearRecentSearches = () => {

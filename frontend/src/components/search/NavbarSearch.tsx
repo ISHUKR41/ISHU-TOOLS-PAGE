@@ -79,15 +79,20 @@ export default function NavbarSearch({ open, onClose }: Props) {
   // Reset on open
   useEffect(() => {
     if (open) {
-      setQuery('')
-      setActiveIndex(0)
-      // Focus after DOM paint
-      requestAnimationFrame(() => inputRef.current?.focus())
+      const frame = requestAnimationFrame(() => {
+        setQuery('')
+        setActiveIndex(0)
+        inputRef.current?.focus()
+      })
+      return () => cancelAnimationFrame(frame)
     }
   }, [open])
 
   // Reset index when results change
-  useEffect(() => { setActiveIndex(0) }, [debouncedQuery])
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setActiveIndex(0))
+    return () => cancelAnimationFrame(frame)
+  }, [debouncedQuery])
 
   // Close on outside click
   useEffect(() => {

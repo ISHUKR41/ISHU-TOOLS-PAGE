@@ -39,6 +39,45 @@ const err = (message: string, data: Record<string, unknown> = {}): ToolRunRespon
   payload: { status: 'error', message, data: { error: message, ...data } },
 })
 
+function payloadText(payload: Payload): string {
+  return Object.values(payload)
+    .filter((value) => value !== undefined && value !== null && String(value).trim() !== '')
+    .map((value) => String(value).trim())
+    .join('\n')
+    .trim()
+}
+
+export function canRunGenericClientFallback(payload: Payload): boolean {
+  return payloadText(payload).length > 0
+}
+
+export function runGenericClientFallback(
+  slug: string,
+  payload: Payload,
+  reason = 'The online processor is temporarily unavailable.',
+): ToolRunResponse | null {
+  const text = payloadText(payload)
+  if (!text) return null
+  const words = text.match(/\S+/g)?.length ?? 0
+  const lines = text.split(/\r?\n/).length
+  const urls = Array.from(text.matchAll(/https?:\/\/[^\s)]+/gi)).map((match) => match[0])
+  return ok('Recovery mode is active. A browser-safe fallback result is ready.', {
+    fallback_mode: true,
+    slug,
+    reason,
+    input_preview: text.slice(0, 4000),
+    characters: text.length,
+    words,
+    lines,
+    detected_urls: urls.slice(0, 5),
+    next_steps: [
+      'Copy or save this fallback report if you need the input summary.',
+      'Press Reset / Reload Tool to start fresh if the form feels stuck.',
+      'Retry when your connection or the remote service is stable for the full tool result.',
+    ],
+  })
+}
+
 // ─── UTF-8 safe base64 ───────────────────────────────────────────────────────
 function b64encode(text: string): string {
   const bytes = new TextEncoder().encode(text)
@@ -1027,7 +1066,7 @@ EXEC['add-line-numbers'] = (p) => {
 }
 EXEC['remove-line-numbers'] = (p) => {
   const t = str(p.text); if (!t) return err('Enter text.')
-  return ok('Line numbers removed.', { result: t.split('\n').map((l: string) => l.replace(/^\s*\d+[\.\)\]:\-]\s*/, '')).join('\n') })
+  return ok('Line numbers removed.', { result: t.split('\n').map((l: string) => l.replace(/^\s*\d+[.)\]:-]\s*/, '')).join('\n') })
 }
 EXEC['string-length-calculator'] = (p) => {
   const t = str(p.text); if (!t) return err('Enter text.')
@@ -1052,7 +1091,7 @@ EXEC['nato-alphabet'] = (p) => {
 EXEC['morse-code-converter'] = (p) => {
   const t = str(p.text).trim(); if (!t) return err('Enter text or Morse code.')
   const toMorse: Record<string, string> = { A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',' ':'/','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.' }
-  if (/^[\.\-\/ ]+$/.test(t)) {
+  if (/^[./ -]+$/.test(t)) {
     const fromMorse = Object.fromEntries(Object.entries(toMorse).map(([k, v]) => [v, k]))
     const decoded = t.split(' / ').map((w: string) => w.split(' ').map((c: string) => fromMorse[c] || '?').join('')).join(' ')
     return ok('Decoded from Morse.', { morse: t, text: decoded })
@@ -1144,7 +1183,6 @@ EXEC['temperature-converter'] = (p) => {
 }
 EXEC['length-converter'] = (p) => {
   const v = num(p.value || p.text, 1)
-  const meters = v // assume input is meters
   return ok('Length converted.', { meters: v, kilometers: +(v / 1000).toFixed(6), centimeters: +(v * 100).toFixed(2), millimeters: +(v * 1000).toFixed(1), inches: +(v * 39.3701).toFixed(4), feet: +(v * 3.28084).toFixed(4), yards: +(v * 1.09361).toFixed(4), miles: +(v / 1609.344).toFixed(6) })
 }
 EXEC['weight-converter'] = (p) => {

@@ -37,7 +37,12 @@ import SmartResultDisplay from './components/SmartResultDisplay'
 import { FALLBACK_TOOLS } from '../../data/catalogFallback'
 import { trackToolVisit } from '../../lib/usageTracker'
 import { takePendingDrop } from '../../lib/pendingFile'
-import { runClientTool, getClientExecutor } from '../../lib/clientToolExecutors'
+import {
+  canRunGenericClientFallback,
+  getClientExecutor,
+  runClientTool,
+  runGenericClientFallback,
+} from '../../lib/clientToolExecutors'
 
 // ─── Lazy-loaded per-tool SEO database (504 KB chunk) ─────────────────────────
 // Static-importing seoData would block the very first tool-page paint with
@@ -51,8 +56,9 @@ function loadSeoModule() {
   if (!_seoModulePromise) _seoModulePromise = import('../../lib/seoData')
   return _seoModulePromise
 }
-function fallbackToolSEO(slug: string, title: string, description: string, _category: string): ToolSEO {
+function fallbackToolSEO(slug: string, title: string, description: string, category: string): ToolSEO {
   const lower = title.toLowerCase()
+  const categoryKeyword = category.replace(/-/g, ' ')
   const desc = description?.trim()
   return {
     title: `${title} — Free Online Tool | ISHU TOOLS`,
@@ -63,6 +69,7 @@ function fallbackToolSEO(slug: string, title: string, description: string, _cate
       lower,
       `${lower} online`,
       `${lower} free`,
+      categoryKeyword,
       `free ${lower}`,
       `${lower} no signup`,
       slug.replace(/-/g, ' '),
@@ -795,12 +802,13 @@ export default function ToolPage() {
     const files = fileItems.map((item) => item.file)
     const hasFiles = files.length > 0
     const hasClientExec = !hasFiles && getClientExecutor(slug)
+    const hasGenericFallback = !hasFiles && canRunGenericClientFallback(payload)
 
-    // ─── OFFLINE GUARD — block network-only tools, allow client-side ──────
-    if (isOffline && !hasClientExec) {
+    // Offline guard: block true network-only tools, allow local fallbacks.
+    if (isOffline && !hasClientExec && !hasGenericFallback) {
       setRunError('You are offline. This tool requires an internet connection. It will auto-retry when you reconnect.')
       setPendingRetryOnReconnect(true)
-      toast.show('You are offline — will auto-retry when connection is restored.', 'error', 5000)
+      toast.show('You are offline. Auto-retry will run when connection is restored.', 'error', 5000)
       return
     }
 
@@ -815,24 +823,27 @@ export default function ToolPage() {
         if (attempt > 0) {
           setRetryCount(attempt)
           const delay = Math.min(2000 * Math.pow(1.5, attempt - 1), 8000)
-          toast.show(`Retrying… (attempt ${attempt} of ${MAX_AUTO_RETRIES})`, 'info', 3000)
+          toast.show(`Retrying... (attempt ${attempt} of ${MAX_AUTO_RETRIES})`, 'info', 3000)
           await new Promise((r) => setTimeout(r, delay))
         }
         setRunning(true)
         setRunError(null)
         startProgressSimulation()
 
-        // ─── CLIENT-SIDE INSTANT EXECUTION ──────────────────────────────
+        // Prefer browser-safe executors before asking the backend.
         let result: Awaited<ReturnType<typeof runTool>> | null = null
         if (hasClientExec) {
           const clientResult = await runClientTool(slug, payload)
           if (clientResult) result = clientResult
         }
+        if (!result && isOffline && hasGenericFallback) {
+          result = runGenericClientFallback(slug, payload, 'You are offline, so the tool is running in local recovery mode.')
+        }
         if (!result) {
           result = await runTool(slug, files, payload, {
             onColdStartRetry: () => {
               toast.show(
-                'Server was idle — waking it up and auto-retrying. Hang tight…',
+                'Server was idle. Waking it up and auto-retrying. Hang tight...',
                 'info',
                 9000,
               )
@@ -842,9 +853,9 @@ export default function ToolPage() {
             },
             onRetryStage: (stage) => {
               if (stage === 1) {
-                toast.show('Server waking up — trying again with extended timeout…', 'info', 6000)
+                toast.show('Server waking up. Trying again with extended timeout...', 'info', 6000)
               } else if (stage === 2) {
-                toast.show('Still working — giving the server more time for this heavy task…', 'info', 10000)
+                toast.show('Still working. Giving the server more time for this heavy task...', 'info', 10000)
               }
             },
           })
@@ -868,10 +879,12 @@ export default function ToolPage() {
           scrollToResult()
         } else {
           const data = (result.payload?.data || {}) as Record<string, unknown>
+          const isFallbackMode = data.fallback_mode === true
           const errText = typeof data.error === 'string' ? (data.error as string) : ''
           const msg = result.payload?.message || ''
-          const looksLikeError = !!errText
+          const looksLikeError = !isFallbackMode && (!!errText
             || /^(error|failed|unable|invalid|not|no |please (paste|enter|provide))/i.test(msg.trim())
+          )
           if (looksLikeError) {
             const friendly = msg || errText || 'This tool could not complete the request.'
             setRunError(friendly)
@@ -880,11 +893,11 @@ export default function ToolPage() {
           } else {
             setJsonResult(result.payload)
             setRunMessage(msg || 'Tool completed successfully.')
-            toast.show(msg || 'Done!', 'success')
+            toast.show(msg || (isFallbackMode ? 'Recovery mode result is ready.' : 'Done!'), isFallbackMode ? 'info' : 'success')
           }
           scrollToResult()
         }
-        return // ← Success — exit the retry loop
+        return // Success: exit the retry loop.
 
       } catch (err) {
         stopProgressSimulation(false)
@@ -922,7 +935,7 @@ export default function ToolPage() {
         : 'Could not reach the server after multiple attempts. Please try again in a moment.'
       if (!navigator.onLine) setPendingRetryOnReconnect(true)
     } else if (/abort|timeout|timed? out/.test(lower)) {
-      friendly = 'The request kept timing out. The server may be under heavy load — please try again in a minute.'
+          friendly = 'The request kept timing out. The server may be under heavy load. Please try again in a minute.'
     } else if (/http 50[234]|bad gateway|service unavailable|gateway timeout/.test(lower)) {
       friendly = 'The server is still waking up. Please retry in about 30 seconds.'
     } else if (/http 429|too many requests|rate limit/.test(lower)) {
@@ -936,9 +949,19 @@ export default function ToolPage() {
     } else if (/http 404|not found/.test(lower)) {
       friendly = 'The content could not be found. Double-check the link and try again.'
     } else if (/http 5\d\d/.test(lower)) {
-      friendly = 'The server hit an error. Please try again — if it keeps failing, the input may be unsupported.'
+      friendly = 'The server hit an error. Please try again. If it keeps failing, the input may be unsupported.'
     } else if (/circuit breaker/.test(lower)) {
       friendly = `Server is temporarily unreachable. Auto-recovery in ${circuitBreaker.getCooldownLeft()}s. Client-side tools still work!`
+    }
+    if (!hasFiles) {
+      const fallback = runGenericClientFallback(slug, payload, friendly)
+      if (fallback) {
+        setJsonResult(fallback.payload)
+        setRunMessage(fallback.payload.message || 'Recovery fallback generated.')
+        toast.show('Online method failed. Local recovery result is available.', 'info', 5000)
+        scrollToResult()
+        return
+      }
     }
     if (!runError) {
       setRunError(friendly)
@@ -1186,7 +1209,7 @@ export default function ToolPage() {
               {isOffline && (
                 <div className='tool-status-banner offline'>
                   <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'><path d='m2 2 20 20'/><path d='M8.5 16.5a5 5 0 0 1 7 0'/><path d='M2 8.82a15 15 0 0 1 4.17-2.65'/><path d='M10.66 5c4.01-.36 8.14.9 11.34 3.76'/><path d='M16.85 11.25a10 10 0 0 1 2.22 1.68'/><path d='M5 12.859a10 10 0 0 1 5.17-2.69'/><path d='M12 20h.01'/></svg>
-                  <span>You are offline. {getClientExecutor(slug!) ? 'This tool works offline — go ahead!' : 'Some features need an internet connection.'}</span>
+                          <span>You are offline. {getClientExecutor(slug!) ? 'This tool works offline — go ahead!' : 'Some features need an internet connection; text/URL inputs can still use recovery mode.'}</span>
                 </div>
               )}
               {rateLimitLeft > 0 && (
@@ -1682,8 +1705,18 @@ export default function ToolPage() {
 
                   {jsonResult && (() => {
                     const d = jsonResult.data || {}
+                    const isFallbackMode = (d as Record<string, unknown>).fallback_mode === true
                     return (
                       <div className='json-result-block'>
+                        {isFallbackMode && (
+                          <div className='result-recovery-banner' role='status'>
+                            <RefreshCw size={16} />
+                            <div>
+                              <strong>Recovery mode is active</strong>
+                              <p>The main processor could not finish, so ISHU TOOLS returned the safest available fallback result with next steps.</p>
+                            </div>
+                          </div>
+                        )}
                         <SmartResultDisplay
                           data={d as Record<string, unknown>}
                           slug={tool.slug}

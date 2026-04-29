@@ -31,6 +31,7 @@ import json
 import random
 import re
 import secrets
+import shutil
 import socket
 import string
 import struct
@@ -51,8 +52,35 @@ from .handlers import ExecutionResult, HANDLERS
 _SOCIAL_ALLOWED_HEIGHTS = {"144", "240", "360", "480", "720", "1080", "1440", "2160", "4320"}
 
 
+def _find_social_ffmpeg() -> str | None:
+    ffmpeg = shutil.which("ffmpeg")
+    if ffmpeg:
+        return ffmpeg
+    try:
+        import imageio_ffmpeg
+
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+_SOCIAL_FFMPEG_PATH = _find_social_ffmpeg()
+
+
 def _social_format_for_quality(quality: str | int | None) -> str:
     """Build a yt-dlp format selector capped at requested height (up to 4K/8K)."""
+    if not _SOCIAL_FFMPEG_PATH:
+        if quality is None:
+            return "best[ext=mp4]/best[ext=webm]/best"
+        q = str(quality).strip().lower().replace("p", "").replace("k", "")
+        alias = {"4": "2160", "2": "1440", "8": "4320", "hd": "720", "fullhd": "1080", "fhd": "1080", "uhd": "2160", "qhd": "1440"}
+        q = alias.get(q, q)
+        if q in ("best", "max", "highest", ""):
+            return "best[ext=mp4]/best[ext=webm]/best"
+        if q in _SOCIAL_ALLOWED_HEIGHTS:
+            cap = min(int(q), 720)
+            return f"best[height<={cap}][ext=mp4]/best[height<={cap}][ext=webm]/best[height<={cap}]/best"
+        return "best[ext=mp4]/best"
     if quality is None:
         return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
     q = str(quality).strip().lower().replace("p", "").replace("k", "")
@@ -70,6 +98,52 @@ def _social_format_for_quality(quality: str | int | None) -> str:
     return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
 
 
+def _social_downloader_error_code(raw: str) -> str:
+    low = (raw or "").lower()
+    if "sign in" in low or "login" in low or "private" in low or "cookie" in low:
+        return "needs_authentication"
+    if "429" in low or "rate limit" in low or "too many" in low:
+        return "rate_limited"
+    if "unsupported url" in low or "unable to extract" in low:
+        return "unsupported_url"
+    if "timeout" in low or "timed out" in low:
+        return "timeout"
+    if "unavailable" in low or "removed" in low or "copyright" in low:
+        return "unavailable"
+    return "download_failed"
+
+
+def _social_recovery_result(
+    url: str,
+    tool_name: str,
+    attempts: list[str],
+    last_result: ExecutionResult | None = None,
+) -> ExecutionResult:
+    reason = "download_failed"
+    if last_result and isinstance(last_result.data, dict):
+        reason = str(last_result.data.get("error") or reason)
+    return ExecutionResult(
+        kind="json",
+        message=(
+            f"{tool_name} could not fetch this public media after trying every available method. "
+            "The platform may be blocking cloud downloads, or the post may be private, deleted, or region-restricted."
+        ),
+        data={
+            "error": reason,
+            "fallback_mode": True,
+            "url": url,
+            "attempts_tried": attempts,
+            "next_steps": [
+                "Open the link in your browser to confirm it is public.",
+                "Retry after 30-60 seconds if the platform is rate-limiting requests.",
+                "Try a lower quality option if one is available.",
+                "For login-gated content, use the platform app or browser while signed in.",
+            ],
+            "open_original_url": url,
+        },
+    )
+
+
 def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) -> ExecutionResult:
     """Generic yt-dlp downloader used by all social platforms."""
     try:
@@ -80,12 +154,17 @@ def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) ->
             "no_warnings": True,
             "outtmpl": str(job_dir / "%(title)s.%(ext)s"),
             "merge_output_format": "mp4",
-            "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best",
+            "format": _social_format_for_quality(None),
             "max_filesize": 2 * 1024 * 1024 * 1024,  # 2 GB cap (4K-friendly)
+            "socket_timeout": 30,
+            "retries": 5,
+            "fragment_retries": 10,
             "http_headers": {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             },
         }
+        if _SOCIAL_FFMPEG_PATH:
+            ydl_opts["ffmpeg_location"] = str(Path(_SOCIAL_FFMPEG_PATH).parent)
         if extra_opts:
             ydl_opts.update(extra_opts)
 
@@ -113,13 +192,16 @@ def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) ->
 
     except Exception as e:
         err = str(e)
-        if "Unable to extract" in err or "Unsupported URL" in err:
-            return ExecutionResult(kind="json", message="This URL is not supported. Please check and try again.", data={"error": err[:200]})
-        if "Private video" in err or "Sign in" in err or "unavailable" in err:
-            return ExecutionResult(kind="json", message="This video is private or unavailable.", data={"error": err[:200]})
-        if "rate limit" in err.lower() or "429" in err:
-            return ExecutionResult(kind="json", message="Rate limited by the platform. Please try again in a minute.", data={"error": err[:200]})
-        return ExecutionResult(kind="json", message=f"Download error: {err[:200]}", data={"error": err[:200]})
+        code = _social_downloader_error_code(err)
+        if code == "unsupported_url":
+            return ExecutionResult(kind="json", message="This URL is not supported by the current downloader method.", data={"error": code})
+        if code in ("needs_authentication", "unavailable"):
+            return ExecutionResult(kind="json", message="This media is private, unavailable, or requires sign-in.", data={"error": code})
+        if code == "rate_limited":
+            return ExecutionResult(kind="json", message="The platform is rate-limiting downloads. Please try again in a minute.", data={"error": code})
+        if code == "timeout":
+            return ExecutionResult(kind="json", message="The platform took too long to respond. Please try again shortly.", data={"error": code})
+        return ExecutionResult(kind="json", message="Download failed with this method. Trying backup methods when available.", data={"error": code})
 
 
 def _yt_dlp_info(url: str) -> dict:
@@ -198,7 +280,12 @@ def _handle_pinterest_downloader(files: list[Path], payload: dict[str, Any], job
     fb = _pinterest_html_fallback(url, job_dir)
     if fb is not None:
         return fb
-    return primary
+    return _social_recovery_result(
+        url,
+        "Pinterest downloader",
+        ["yt-dlp", "Pinterest OpenGraph scrape"],
+        primary,
+    )
 
 
 # ─── Reddit Downloader ────────────────────────────────────────────────────────
@@ -271,7 +358,12 @@ def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_di
     fb = _reddit_json_fallback(url, job_dir)
     if fb is not None:
         return fb
-    return primary
+    return _social_recovery_result(
+        url,
+        "Reddit video downloader",
+        ["yt-dlp with audio/video merge", "Reddit public JSON fallback"],
+        primary,
+    )
 
 
 # ─── Twitch Clip Downloader ───────────────────────────────────────────────────
@@ -282,7 +374,18 @@ def _handle_twitch_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Twitch clip or VOD URL.", data={"error": "No URL"})
     if "twitch.tv" not in url and "clips.twitch.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitch URL.", data={"error": "Not Twitch"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    fb = _og_meta_video_fallback(url, job_dir, "Twitch video")
+    if fb is not None:
+        return fb
+    return _social_recovery_result(
+        url,
+        "Twitch downloader",
+        ["yt-dlp", "OpenGraph video scrape"],
+        primary,
+    )
 
 
 # ─── Generic og:video meta-tag fallback ───────────────────────────────────────
@@ -360,9 +463,12 @@ def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_
     fb = _og_meta_video_fallback(url, job_dir, "LinkedIn video")
     if fb is not None:
         return fb
-    if primary.kind == "json" and "error" in (primary.data or {}):
-        return ExecutionResult(kind="json", message="LinkedIn requires login for most videos. For public posts, paste the direct share URL — and Boost users may still see a 401 because LinkedIn blocks unauthenticated downloads.", data=primary.data)
-    return primary
+    return _social_recovery_result(
+        url,
+        "LinkedIn video downloader",
+        ["yt-dlp", "OpenGraph video scrape"],
+        primary,
+    )
 
 
 # ─── Bilibili Downloader ──────────────────────────────────────────────────────

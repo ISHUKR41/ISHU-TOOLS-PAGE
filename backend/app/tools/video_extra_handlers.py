@@ -115,6 +115,64 @@ def _coerce_str(value, default: str = "") -> str:
     return str(value).strip()
 
 
+def _downloader_error_code(raw: str) -> str:
+    """Collapse noisy extractor/server errors into stable client-safe codes."""
+    low = (raw or "").lower()
+    if "sign in" in low or "login" in low or "private" in low or "cookies" in low:
+        return "needs_authentication"
+    if "429" in low or "rate limit" in low or "too many" in low:
+        return "rate_limited"
+    if "copyright" in low or "dmca" in low or "unavailable" in low or "removed" in low:
+        return "unavailable"
+    if "unsupported url" in low or "no suitable" in low:
+        return "unsupported_url"
+    if "timeout" in low or "timed out" in low:
+        return "timeout"
+    if "drm" in low or "encrypted" in low:
+        return "protected_media"
+    return "download_failed"
+
+
+def _video_recovery_steps(url: str) -> list[str]:
+    host = urlsplit(url).netloc.lower()
+    steps = [
+        "Check that the link is public and opens in a browser.",
+        "Retry once after 30-60 seconds; social platforms often rate-limit cloud servers briefly.",
+        "Try a lower quality option or audio-only mode if available.",
+    ]
+    if any(site in host for site in ("youtube", "youtu.be", "instagram", "tiktok", "x.com", "twitter", "facebook")):
+        steps.append("For private, age-restricted, or login-gated content, paste fresh cookies from your browser and retry.")
+    steps.append("If the platform blocks downloads, open the original URL from this result and use the platform's own save/share options.")
+    return steps
+
+
+def _video_recovery_result(
+    url: str,
+    tool_name: str,
+    attempts: list[str],
+    last_result: ExecutionResult | None = None,
+) -> ExecutionResult:
+    """Final graceful degradation for downloader tools after all real methods fail."""
+    reason = "download_failed"
+    if last_result and isinstance(last_result.data, dict):
+        reason = _coerce_str(last_result.data.get("error"), reason)
+    return ExecutionResult(
+        kind="json",
+        message=(
+            f"{tool_name} could not fetch this media after trying every available method. "
+            "The link may be private, region-blocked, rate-limited, or protected by the platform."
+        ),
+        data={
+            "error": reason,
+            "fallback_mode": True,
+            "url": url,
+            "attempts_tried": attempts,
+            "next_steps": _video_recovery_steps(url),
+            "open_original_url": url,
+        },
+    )
+
+
 def _format_for_quality(quality: str | int | None) -> str:
     """Build yt-dlp format string — ffmpeg-aware.
 
@@ -408,7 +466,7 @@ def _yt_dlp_download(
         return ExecutionResult(
             kind="json",
             message=_classify_ytdlp_error(err),
-            data={"error": err[:500], "url": url},
+            data={"error": _downloader_error_code(err), "url": url},
         )
 
 
@@ -423,11 +481,38 @@ def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir
     cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     fmt = _format_for_quality(payload.get("quality"))
 
-    # Detect YouTube URLs and delegate to the specialized handler with fallbacks
-    if "youtube.com" in url or "youtu.be" in url:
-        return _handle_youtube_downloader(files, payload, job_dir)
+    host = urlsplit(url).netloc.lower()
 
-    return _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies)
+    # Detect platform URLs and delegate to specialized handlers with deeper fallbacks.
+    if "youtube.com" in host or "youtu.be" in host:
+        return _handle_youtube_downloader(files, payload, job_dir)
+    if "instagram.com" in host or "instagr.am" in host:
+        return _handle_instagram_downloader(files, payload, job_dir)
+    if "tiktok.com" in host or "vm.tiktok.com" in host:
+        return _handle_tiktok_downloader(files, payload, job_dir)
+    if "twitter.com" in host or "x.com" in host or "t.co" in host:
+        return _handle_twitter_downloader(files, payload, job_dir)
+    if "facebook.com" in host or "fb.watch" in host or "fb.com" in host:
+        return _handle_facebook_downloader(files, payload, job_dir)
+    if "vimeo.com" in host:
+        return _handle_vimeo_downloader(files, payload, job_dir)
+    if "dailymotion.com" in host or "dai.ly" in host:
+        return _handle_dailymotion_downloader(files, payload, job_dir)
+
+    primary = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies)
+    if primary.kind == "file":
+        return primary
+
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+
+    return _video_recovery_result(
+        url,
+        "Universal video downloader",
+        ["yt-dlp generic extractor", "Cobalt mirror APIs", "offline recovery response"],
+        primary,
+    )
 
 
 # ─── YouTube Downloaders ──────────────────────────────────────────────────────
@@ -617,8 +702,9 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
             kind="json",
             message=msg,
             data={
-                "error": primary.data.get("error", "YouTube bot detection") if primary.data else "YouTube bot detection",
+                "error": primary.data.get("error", "needs_authentication") if primary.data else "needs_authentication",
                 "url": url,
+                "fallback_mode": True,
                 "fix_steps": [
                     "Sign in to youtube.com in Chrome",
                     "Install 'Get cookies.txt LOCALLY' extension",
@@ -629,7 +715,12 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
                 "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
             },
         )
-    return primary
+    return _video_recovery_result(
+        url,
+        "YouTube downloader",
+        ["yt-dlp mweb client", "yt-dlp android/web clients", "YouTube Innertube clients", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 def _handle_youtube_to_mp4(files: list[Path], payload: dict[str, Any], job_dir: Path) -> ExecutionResult:
@@ -695,12 +786,18 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
             kind="json",
             message=msg,
             data={
-                "error": primary.data.get("error", "YouTube bot detection") if primary.data else "YouTube bot detection",
+                "error": primary.data.get("error", "needs_authentication") if primary.data else "needs_authentication",
                 "url": url,
+                "fallback_mode": True,
                 "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
             },
         )
-    return primary
+    return _video_recovery_result(
+        url,
+        "YouTube audio downloader",
+        ["yt-dlp mweb audio", "yt-dlp android/web audio", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
@@ -1154,7 +1251,12 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
     if cobalt_fb:
         return cobalt_fb
         
-    return result  # return original yt-dlp error message
+    return _video_recovery_result(
+        url,
+        "TikTok downloader",
+        ["yt-dlp mobile client", "TikWM public mirror", "original TikTok URL retry", "ttsave mirror", "Cobalt mirror APIs"],
+        result,
+    )
 
 
 def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
@@ -1242,7 +1344,12 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     if cobalt_fb is not None:
         return cobalt_fb
         
-    return primary
+    return _video_recovery_result(
+        url,
+        "Twitter/X video downloader",
+        ["Twitter/X syndication CDN", "yt-dlp", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 def _facebook_html_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
@@ -1318,12 +1425,15 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         fallback2 = _facebook_html_fallback(mbasic_url, job_dir)
         if fallback2 is not None:
             return fallback2
-            
     cobalt_fb = _cobalt_api_fallback(url, job_dir)
     if cobalt_fb is not None:
         return cobalt_fb
-        
-    return primary
+    return _video_recovery_result(
+        url,
+        "Facebook video downloader",
+        ["yt-dlp", "desktop HTML media scrape", "mbasic Facebook scrape", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 def _vimeo_player_config_fallback(url: str, job_dir: Path, quality_hint: str | None):
@@ -1398,7 +1508,15 @@ def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir
     fb = _vimeo_player_config_fallback(url, job_dir, payload.get("quality"))
     if fb is not None:
         return fb
-    return primary
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+    return _video_recovery_result(
+        url,
+        "Vimeo downloader",
+        ["yt-dlp", "Vimeo player config", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 def _dailymotion_metadata_fallback(url: str, job_dir: Path, quality_hint: str | None):
@@ -1481,7 +1599,15 @@ def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], j
     fb = _dailymotion_metadata_fallback(url, job_dir, payload.get("quality"))
     if fb is not None:
         return fb
-    return primary
+    cobalt_fb = _cobalt_api_fallback(url, job_dir)
+    if cobalt_fb is not None:
+        return cobalt_fb
+    return _video_recovery_result(
+        url,
+        "Dailymotion downloader",
+        ["yt-dlp", "Dailymotion metadata API", "Cobalt mirror APIs"],
+        primary,
+    )
 
 
 # ─── Playlist Downloader ──────────────────────────────────────────────────────

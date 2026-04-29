@@ -726,6 +726,23 @@ export const FALLBACK_TOOLS: ToolDefinition[] = [
     "accepts_multiple": false
   },
   {
+    "slug": "python-to-pdf",
+    "title": "Python to PDF Converter - Convert .py Files to PDF",
+    "description": "Upload a Python .py source file or paste Python code and convert it into a readable PDF with line numbers and a safe outline summary.",
+    "category": "developer-tools",
+    "tags": [
+      "python to pdf",
+      "py to pdf",
+      "convert python file to pdf",
+      "code to pdf",
+      "python source pdf",
+      "developer tools"
+    ],
+    "input_kind": "mixed",
+    "accepts_multiple": false,
+    "popularity_rank": 96
+  },
+  {
     "slug": "summarize-text",
     "title": "Summarize Text",
     "description": "Generate short summary from long text.",

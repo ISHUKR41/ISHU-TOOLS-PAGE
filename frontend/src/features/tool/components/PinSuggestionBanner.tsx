@@ -41,7 +41,9 @@ export default function PinSuggestionBanner({ slug, title }: Props) {
     }
     if (dismissed) return
     const visits = loadUsage()[slug] ?? 0
-    if (visits >= VISIT_THRESHOLD) setShow(true)
+    if (visits < VISIT_THRESHOLD) return
+    const frame = requestAnimationFrame(() => setShow(true))
+    return () => cancelAnimationFrame(frame)
   }, [slug, isPinned])
 
   const handlePin = useCallback(() => {

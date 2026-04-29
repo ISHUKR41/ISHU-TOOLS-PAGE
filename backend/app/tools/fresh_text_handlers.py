@@ -4,6 +4,9 @@ ISHU TOOLS – Fresh batch (April 2026)
 """
 from __future__ import annotations
 
+import base64
+import codecs
+import hashlib
 import json
 import random
 import re
@@ -18,6 +21,156 @@ def _text_result(data: dict[str, Any], message: str = "Done") -> ExecutionResult
 
 def _get_text(payload: dict[str, Any]) -> str:
     return str(payload.get("text") or payload.get("input") or "")
+
+
+def _clean_lines(text: str) -> list[str]:
+    return text.splitlines()
+
+
+def _map_ascii(text: str, upper_start: int | None = None, lower_start: int | None = None, digit_start: int | None = None) -> str:
+    out: list[str] = []
+    for ch in text:
+        code = ord(ch)
+        if upper_start is not None and 65 <= code <= 90:
+            out.append(chr(upper_start + code - 65))
+        elif lower_start is not None and 97 <= code <= 122:
+            out.append(chr(lower_start + code - 97))
+        elif digit_start is not None and 48 <= code <= 57:
+            out.append(chr(digit_start + code - 48))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _make_simple_transform(name: str, transform):
+    def handler(_files, payload, _job):
+        text = _get_text(payload)
+        if not text:
+            return _text_result({"error": "empty"}, f"Please paste text for {name}.")
+        out = transform(text, payload)
+        return _text_result({"result": out, "characters": len(out)}, f"{name} completed.")
+    return handler
+
+
+def handle_base64_encode(_files, payload, _job):
+    text = _get_text(payload)
+    if not text:
+        return _text_result({"error": "empty"}, "Please paste text to encode.")
+    out = base64.b64encode(text.encode("utf-8")).decode("ascii")
+    return _text_result({"result": out}, "Base64 encoded.")
+
+
+def handle_base64_decode(_files, payload, _job):
+    text = _get_text(payload).strip()
+    if not text:
+        return _text_result({"error": "empty"}, "Please paste Base64 text to decode.")
+    try:
+        padded = text + "=" * (-len(text) % 4)
+        out = base64.b64decode(padded, validate=False).decode("utf-8", errors="replace")
+    except Exception:
+        return _text_result({"error": "invalid_base64"}, "That Base64 text could not be decoded.")
+    return _text_result({"result": out}, "Base64 decoded.")
+
+
+def handle_base32_encode(_files, payload, _job):
+    text = _get_text(payload)
+    if not text:
+        return _text_result({"error": "empty"}, "Please paste text to encode.")
+    out = base64.b32encode(text.encode("utf-8")).decode("ascii")
+    return _text_result({"result": out}, "Base32 encoded.")
+
+
+def handle_base32_decode(_files, payload, _job):
+    text = _get_text(payload).strip().replace(" ", "")
+    if not text:
+        return _text_result({"error": "empty"}, "Please paste Base32 text to decode.")
+    try:
+        padded = text.upper() + "=" * (-len(text) % 8)
+        out = base64.b32decode(padded, casefold=True).decode("utf-8", errors="replace")
+    except Exception:
+        return _text_result({"error": "invalid_base32"}, "That Base32 text could not be decoded.")
+    return _text_result({"result": out}, "Base32 decoded.")
+
+
+def _hash_handler(algorithm: str):
+    def handler(_files, payload, _job):
+        text = _get_text(payload)
+        if not text:
+            return _text_result({"error": "empty"}, "Please paste text to hash.")
+        digest = hashlib.new(algorithm, text.encode("utf-8")).hexdigest()
+        return _text_result({"algorithm": algorithm, "hash": digest, "result": digest}, f"{algorithm.upper()} hash generated.")
+    return handler
+
+
+def handle_json_validator(_files, payload, _job):
+    text = _get_text(payload).strip()
+    if not text:
+        return _text_result({"valid": False, "error": "empty"}, "Please paste JSON to validate.")
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError as exc:
+        return _text_result(
+            {"valid": False, "line": exc.lineno, "column": exc.colno, "message": exc.msg},
+            f"Invalid JSON near line {exc.lineno}, column {exc.colno}.",
+        )
+    return _text_result({"valid": True, "type": type(parsed).__name__, "formatted": json.dumps(parsed, ensure_ascii=False, indent=2)}, "JSON is valid.")
+
+
+def _title_case(text: str) -> str:
+    return re.sub(r"\S+", lambda m: m.group(0)[:1].upper() + m.group(0)[1:].lower(), text)
+
+
+def _sentence_case(text: str) -> str:
+    lowered = text.lower()
+    return re.sub(r"(^\s*[a-z])|([.!?]\s+[a-z])", lambda m: m.group(0).upper(), lowered)
+
+
+def _rot47(text: str) -> str:
+    out = []
+    for ch in text:
+        code = ord(ch)
+        out.append(chr(33 + ((code + 14) % 94)) if 33 <= code <= 126 else ch)
+    return "".join(out)
+
+
+def _caesar(text: str, shift: int = 13) -> str:
+    out = []
+    for ch in text:
+        if "a" <= ch <= "z":
+            out.append(chr((ord(ch) - 97 + shift) % 26 + 97))
+        elif "A" <= ch <= "Z":
+            out.append(chr((ord(ch) - 65 + shift) % 26 + 65))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _atbash(text: str) -> str:
+    out = []
+    for ch in text:
+        if "a" <= ch <= "z":
+            out.append(chr(122 - (ord(ch) - 97)))
+        elif "A" <= ch <= "Z":
+            out.append(chr(90 - (ord(ch) - 65)))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def _upside_down(text: str) -> str:
+    pairs = {
+        "a": "ɐ", "b": "q", "c": "ɔ", "d": "p", "e": "ǝ", "f": "ɟ", "g": "ƃ", "h": "ɥ", "i": "ᴉ", "j": "ɾ",
+        "k": "ʞ", "l": "ʅ", "m": "ɯ", "n": "u", "o": "o", "p": "d", "q": "b", "r": "ɹ", "s": "s", "t": "ʇ",
+        "u": "n", "v": "ʌ", "w": "ʍ", "x": "x", "y": "ʎ", "z": "z", "0": "0", "1": "Ɩ", "2": "ᄅ",
+        "3": "Ɛ", "4": "ㄣ", "5": "ϛ", "6": "9", "7": "ㄥ", "8": "8", "9": "6", ".": "˙", ",": "'",
+        "!": "¡", "?": "¿", "(": ")", ")": "(", "[": "]", "]": "[", "{": "}", "}": "{", "<": ">", ">": "<",
+    }
+    pairs.update({k.upper(): v.upper() for k, v in list(pairs.items()) if k.isalpha()})
+    return "".join(pairs.get(ch, ch) for ch in text)[::-1]
+
+
+def _leetspeak(text: str) -> str:
+    return text.translate(str.maketrans({"a": "4", "e": "3", "i": "1", "o": "0", "s": "5", "t": "7", "A": "4", "E": "3", "I": "1", "O": "0", "S": "5", "T": "7"}))
 
 
 # ── 1. Text Shuffler ────────────────────────────────────────────────────────
@@ -282,4 +435,56 @@ FRESH_TEXT_HANDLERS = {
     "syllable-counter": handle_syllable_counter,
     "json-escape": handle_json_escape,
     "json-unescape": handle_json_unescape,
+    "base64-encoder": handle_base64_encode,
+    "base64-decoder": handle_base64_decode,
+    "base32-encoder": handle_base32_encode,
+    "base32-decoder": handle_base32_decode,
+    "md5-hash-generator": _hash_handler("md5"),
+    "sha1-hash-generator": _hash_handler("sha1"),
+    "sha256-hash-generator": _hash_handler("sha256"),
+    "sha384-hash-generator": _hash_handler("sha384"),
+    "sha512-hash-generator": _hash_handler("sha512"),
+    "reverse-text": _make_simple_transform("Reverse text", lambda text, _payload: text[::-1]),
+    "text-reverser": _make_simple_transform("Reverse text", lambda text, _payload: text[::-1]),
+    "backwards-text-generator": _make_simple_transform("Backward text", lambda text, _payload: text[::-1]),
+    "reverse-lines": _make_simple_transform("Reverse lines", lambda text, _payload: "\n".join(reversed(_clean_lines(text)))),
+    "remove-duplicate-lines": _make_simple_transform("Remove duplicate lines", lambda text, _payload: "\n".join(dict.fromkeys(_clean_lines(text)))),
+    "duplicate-line-remover": _make_simple_transform("Remove duplicate lines", lambda text, _payload: "\n".join(dict.fromkeys(_clean_lines(text)))),
+    "unique-lines": _make_simple_transform("Unique lines", lambda text, _payload: "\n".join(dict.fromkeys(_clean_lines(text)))),
+    "remove-empty-lines": _make_simple_transform("Remove empty lines", lambda text, _payload: "\n".join(line for line in _clean_lines(text) if line.strip())),
+    "add-line-numbers": _make_simple_transform("Add line numbers", lambda text, _payload: "\n".join(f"{i}. {line}" for i, line in enumerate(_clean_lines(text), 1))),
+    "trim-whitespace": _make_simple_transform("Trim whitespace", lambda text, _payload: "\n".join(line.strip() for line in _clean_lines(text))),
+    "shuffle-lines": _make_simple_transform("Shuffle lines", lambda text, _payload: "\n".join(random.sample(_clean_lines(text), len(_clean_lines(text))))),
+    "random-line-picker": _make_simple_transform("Random line picker", lambda text, _payload: random.choice([line for line in _clean_lines(text) if line.strip()] or [""])),
+    "word-shuffler": _make_simple_transform("Word shuffler", lambda text, _payload: " ".join(random.sample(text.split(), len(text.split())))),
+    "character-shuffler": _make_simple_transform("Character shuffler", lambda text, _payload: "".join(random.sample(list(text), len(text)))),
+    "uppercase-text": _make_simple_transform("Uppercase text", lambda text, _payload: text.upper()),
+    "lowercase-text": _make_simple_transform("Lowercase text", lambda text, _payload: text.lower()),
+    "sentence-case": _make_simple_transform("Sentence case", lambda text, _payload: _sentence_case(text)),
+    "capitalize-text": _make_simple_transform("Capitalize text", lambda text, _payload: _title_case(text)),
+    "invert-case": _make_simple_transform("Invert case", lambda text, _payload: text.swapcase()),
+    "toggle-case": _make_simple_transform("Toggle case", lambda text, _payload: text.swapcase()),
+    "mixed-case": handle_sponge_case,
+    "sponge-text": handle_sponge_case,
+    "mock-text": handle_sponge_case,
+    "spongebob-case": handle_sponge_case,
+    "bold-text-generator": _make_simple_transform("Bold text", lambda text, _payload: _map_ascii(text, 0x1D400, 0x1D41A, 0x1D7CE)),
+    "bubble-text": _make_simple_transform("Bubble text", lambda text, _payload: _map_ascii(text.upper(), 0x24B6, None, 0x2460).replace(chr(0x2460 - 1), "⓪")),
+    "upside-down-text": _make_simple_transform("Upside-down text", lambda text, _payload: _upside_down(text)),
+    "small-text": _make_simple_transform("Small text", lambda text, _payload: text.lower()),
+    "wide-text": _make_simple_transform("Wide text", lambda text, _payload: " ".join(text)),
+    "spaced-text": _make_simple_transform("Spaced text", lambda text, _payload: " ".join(text)),
+    "strikethrough-text": _make_simple_transform("Strikethrough text", lambda text, _payload: "".join(ch + "\u0336" for ch in text)),
+    "underline-text": _make_simple_transform("Underline text", lambda text, _payload: "".join(ch + "\u0332" for ch in text)),
+    "zalgo-text": _make_simple_transform("Zalgo text", lambda text, _payload: "".join(ch + "\u0301\u0323" if ch.strip() else ch for ch in text)),
+    "leetspeak": _make_simple_transform("Leetspeak", lambda text, _payload: _leetspeak(text)),
+    "l33t-converter": _make_simple_transform("Leetspeak", lambda text, _payload: _leetspeak(text)),
+    "leet-converter": _make_simple_transform("Leetspeak", lambda text, _payload: _leetspeak(text)),
+    "rot13": _make_simple_transform("ROT13", lambda text, _payload: codecs.decode(text, "rot_13")),
+    "rot47": _make_simple_transform("ROT47", lambda text, _payload: _rot47(text)),
+    "caesar-cipher": _make_simple_transform("Caesar cipher", lambda text, payload: _caesar(text, int(payload.get("shift") or 3))),
+    "atbash-cipher": _make_simple_transform("Atbash cipher", lambda text, _payload: _atbash(text)),
+    "remove-line-breaks": _make_simple_transform("Remove line breaks", lambda text, _payload: " ".join(line.strip() for line in _clean_lines(text) if line.strip())),
+    "json-validator": handle_json_validator,
+    "slug-generator": handle_url_slug_generator,
 }

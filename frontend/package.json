@@ -8,6 +8,7 @@
     "prebuild": "node scripts/gen-sitemap.mjs || (echo '[prebuild] sitemap gen failed but continuing build' && exit 0)",
     "build": "vite build",
     "postbuild": "node scripts/gen-static-seo.mjs || (echo '[postbuild] static SEO gen failed but build succeeded' && exit 0)",
+    "start": "vite preview --host 0.0.0.0",
     "lint": "eslint .",
     "preview": "vite preview"
   },

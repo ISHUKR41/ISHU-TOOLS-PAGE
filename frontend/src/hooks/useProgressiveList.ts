@@ -69,18 +69,31 @@ export function useProgressiveList<T>(
 
     if (renderAll) {
       // Render-all mode (search results, small lists): show everything now.
-      if (visibleCount !== total) setVisibleCount(total)
+      if (visibleCount !== total) {
+        idleHandleRef.current = ric(() => {
+          idleHandleRef.current = null
+          setVisibleCount(total)
+        }, { timeout: 16 })
+      }
       return
     }
 
     if (total <= initial) {
-      if (visibleCount !== total) setVisibleCount(total)
+      if (visibleCount !== total) {
+        idleHandleRef.current = ric(() => {
+          idleHandleRef.current = null
+          setVisibleCount(total)
+        }, { timeout: 16 })
+      }
       return
     }
 
     // If items shrank below current visible count (filtering), collapse.
     if (visibleCount > total) {
-      setVisibleCount(total)
+      idleHandleRef.current = ric(() => {
+        idleHandleRef.current = null
+        setVisibleCount(total)
+      }, { timeout: 16 })
       return
     }
 
@@ -88,7 +101,10 @@ export function useProgressiveList<T>(
     // significantly (e.g. category switch). We detect "significant" change
     // simply by checking if current visibleCount is way past total.
     if (visibleCount > total) {
-      setVisibleCount(Math.min(initial, total))
+      idleHandleRef.current = ric(() => {
+        idleHandleRef.current = null
+        setVisibleCount(Math.min(initial, total))
+      }, { timeout: 16 })
       return
     }
 

@@ -903,6 +903,55 @@ export const TOOL_FIELDS: Record<string, ToolField[]> = {
       placeholder: 'Paste plain text here...',
     },
   ],
+  'python-to-pdf': [
+    {
+      name: 'file',
+      label: 'Python File',
+      type: 'file',
+      accept: '.py,text/x-python,text/plain',
+      help: 'Upload a .py file. The code is converted to PDF safely and is never executed.',
+    },
+    {
+      name: 'code',
+      label: 'Python Code (optional)',
+      type: 'textarea',
+      placeholder: 'Paste Python code here if you do not want to upload a file...',
+      rows: 10,
+    },
+    {
+      name: 'include_line_numbers',
+      label: 'Line Numbers',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+    {
+      name: 'include_summary',
+      label: 'Summary Page',
+      type: 'select',
+      defaultValue: 'true',
+      options: booleanOptions,
+    },
+    {
+      name: 'page_size',
+      label: 'Page Size',
+      type: 'select',
+      defaultValue: 'a4',
+      options: [
+        { label: 'A4', value: 'a4' },
+        { label: 'Letter', value: 'letter' },
+      ],
+    },
+    {
+      name: 'font_size',
+      label: 'Code Font Size',
+      type: 'number',
+      defaultValue: '9',
+      min: 7,
+      max: 12,
+      step: 1,
+    },
+  ],
   'create-pdf': [
     {
       name: 'text',

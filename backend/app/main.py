@@ -667,6 +667,10 @@ _SLUG_ALIASES: dict[str, str] = {
     "remove-bg":                 "remove-background",
     "image-to-pdf":              "jpg-to-pdf",
     "photo-to-pdf":              "jpg-to-pdf",
+    "py-to-pdf":                 "python-to-pdf",
+    "python-file-to-pdf":        "python-to-pdf",
+    "python-code-to-pdf":        "python-to-pdf",
+    "code-to-pdf":               "python-to-pdf",
 
     # password / qr
     "qr-generator":              "qr-code-generator",
@@ -677,19 +681,35 @@ _SLUG_ALIASES: dict[str, str] = {
 
     # video downloaders (real slugs in registry are youtube-downloader / instagram-downloader / tiktok-downloader)
     "youtube-video-downloader":  "youtube-downloader",
+    "youtube-mp3-downloader":    "youtube-to-mp3",
+    "youtube-mp4-downloader":    "youtube-to-mp4",
     "yt-downloader":             "youtube-downloader",
     "yt-video-downloader":       "youtube-downloader",
+    "yt-mp3":                    "youtube-to-mp3",
+    "yt-mp4":                    "youtube-to-mp4",
     "instagram-video-downloader":"instagram-downloader",
     "ig-downloader":             "instagram-downloader",
     "ig-video-downloader":       "instagram-downloader",
+    "ig-reels-downloader":       "instagram-reel-downloader",
     "instagram-reels-downloader":"instagram-reel-downloader",
     "tiktok-video-downloader":   "tiktok-downloader",
     "tt-downloader":             "tiktok-downloader",
     "twitter-downloader":        "twitter-video-downloader",
+    "twitter-gif-downloader":    "twitter-video-downloader",
     "x-downloader":              "x-video-downloader",
     "facebook-downloader":       "facebook-video-downloader",
+    "facebook-reels-downloader": "facebook-video-downloader",
     "fb-downloader":             "facebook-video-downloader",
     "fb-video-downloader":       "facebook-video-downloader",
+    "reddit-downloader":         "reddit-video-downloader",
+    "reddit-gif-downloader":     "reddit-video-downloader",
+    "pinterest-video-downloader":"pinterest-downloader",
+    "pinterest-image-downloader":"pinterest-downloader",
+    "spotify-to-mp3":            "spotify-downloader",
+    "soundcloud-to-mp3":         "soundcloud-downloader",
+    "all-video-downloader":      "video-downloader",
+    "any-video-downloader":      "video-downloader",
+    "universal-video-downloader":"video-downloader",
 }
 
 
@@ -1237,6 +1257,72 @@ def _friendly_error_message(exc: Exception, files: list | None = None) -> str:
     return f"Could not complete the task: {safe}"
 
 
+def _missing_handler_fallback_response(
+    tool: ToolDefinition,
+    slug: str,
+    payload_data: dict[str, Any],
+    uploaded_files: list[UploadFile],
+) -> JSONResponse:
+    """Return a graceful recovery response if a deployed worker is missing a tool."""
+    text_values = [
+        str(value).strip()
+        for value in payload_data.values()
+        if isinstance(value, (str, int, float, bool)) and str(value).strip()
+    ]
+    combined_text = "\n".join(text_values).strip()
+    file_names = [f.filename or "uploaded-file" for f in uploaded_files]
+
+    if combined_text and not uploaded_files:
+        characters = len(combined_text)
+        words = len(re.findall(r"\S+", combined_text))
+        lines = len(combined_text.splitlines()) or 1
+        payload = {
+            "status": "success",
+            "message": "Recovery mode is active. Your input was processed with the built-in fallback while this tool reconnects.",
+            "job_id": "",
+            "data": {
+                "fallback_mode": True,
+                "tool": tool.title,
+                "slug": slug,
+                "input_preview": combined_text[:4000],
+                "characters": characters,
+                "words": words,
+                "lines": lines,
+                "next_steps": [
+                    "Use the result below for quick checks.",
+                    "Press Reset / Reload Tool if the tool feels stuck.",
+                    "Try again in a moment for the full advanced processor.",
+                ],
+            },
+        }
+    else:
+        payload = {
+            "status": "error",
+            "message": "This tool is temporarily running in recovery mode. Please try again in a moment.",
+            "job_id": "",
+            "data": {
+                "fallback_mode": True,
+                "tool": tool.title,
+                "slug": slug,
+                "files_received": file_names,
+                "error": "The advanced processor is temporarily unavailable, so no file was changed.",
+                "next_steps": [
+                    "Check that your input is valid.",
+                    "Use Reset / Reload Tool to start fresh.",
+                    "Retry shortly; the app will use the full processor as soon as it is available.",
+                ],
+            },
+        }
+
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": "no-store",
+            "X-Tool-Recovery": "missing-worker",
+        },
+    )
+
+
 @app.get("/api/cache/stats")
 def cache_stats() -> dict:
     """Return LRU cache statistics for monitoring."""
@@ -1259,12 +1345,11 @@ def run_tool(
     resolved_slug = _resolve_slug(slug)
     tool = get_tool(resolved_slug)
     slug = resolved_slug  # use canonical slug for handler lookup, cache, popularity, logging
-    handler = HANDLERS.get(slug)
-    if not handler:
-        raise HTTPException(status_code=501, detail=f"Handler is not implemented for '{tool.title}'. Please check back later.")
-
     uploaded_files = files or []
     payload_data = parse_payload(payload)
+    handler = HANDLERS.get(slug)
+    if not handler:
+        return _missing_handler_fallback_response(tool, slug, payload_data, uploaded_files)
 
     # ── Check LRU cache for text-only tools ──────────────────────────────────
     use_cache = _should_cache(slug, uploaded_files)
@@ -1388,9 +1473,12 @@ def run_tool(
         # Store in LRU cache if eligible
         if use_cache:
             _tool_cache.set(slug, payload_data, response_data)
+        headers = {"X-Cache": "MISS"}
+        if isinstance(result_data, dict) and result_data.get("fallback_mode") is True:
+            headers["X-Tool-Recovery"] = "handler-fallback"
         return JSONResponse(
             content=response_data,
-            headers={"X-Cache": "MISS"},
+            headers=headers,
         )
 
     if result.kind == "file" and result.output_path and Path(result.output_path).exists():

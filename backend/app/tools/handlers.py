@@ -6795,6 +6795,78 @@ except Exception as e:
 
 print(f"[handlers] DATA-FORMAT TOTAL registered handlers: {len(HANDLERS)}")
 
+# Merge code/document handlers (Python source -> PDF, code PDFs)
+try:
+    from .code_document_handlers import CODE_DOCUMENT_HANDLERS
+    HANDLERS.update(CODE_DOCUMENT_HANDLERS)
+    print(f"[handlers] Loaded {len(CODE_DOCUMENT_HANDLERS)} code/document handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not load code_document_handlers: {e}")
+
+# Critical downloader overrides must run after every handler pack has loaded.
+# Several packs define older video helpers with the same slugs; forcing the
+# hardened implementations here prevents runtime drift and "not implemented"
+# style failures for the most complained-about downloader tools.
+try:
+    from .video_extra_handlers import VIDEO_EXTRA_HANDLERS as _VIDEO_EXTRA_OVERRIDES
+    from .social_video_handlers import SOCIAL_VIDEO_HANDLERS as _SOCIAL_VIDEO_OVERRIDES
+    from .new_extra_tools_handlers import NEW_EXTRA_HANDLERS as _NEW_EXTRA_OVERRIDES
+
+    _CRITICAL_VIDEO_OVERRIDES: dict[str, Any] = {
+        "video-downloader": _VIDEO_EXTRA_OVERRIDES.get("video-downloader"),
+        "youtube-video-downloader": _VIDEO_EXTRA_OVERRIDES.get("youtube-video-downloader"),
+        "youtube-downloader": _VIDEO_EXTRA_OVERRIDES.get("youtube-downloader"),
+        "youtube-to-mp3": _VIDEO_EXTRA_OVERRIDES.get("youtube-to-mp3"),
+        "youtube-to-mp4": _VIDEO_EXTRA_OVERRIDES.get("youtube-to-mp4"),
+        "youtube-shorts-downloader": _VIDEO_EXTRA_OVERRIDES.get("youtube-shorts-downloader"),
+        "youtube-audio-downloader": _VIDEO_EXTRA_OVERRIDES.get("youtube-audio-downloader"),
+        "instagram-downloader": _VIDEO_EXTRA_OVERRIDES.get("instagram-downloader"),
+        "instagram-reel-downloader": _VIDEO_EXTRA_OVERRIDES.get("instagram-downloader"),
+        "tiktok-downloader": _VIDEO_EXTRA_OVERRIDES.get("tiktok-downloader"),
+        "twitter-video-downloader": _VIDEO_EXTRA_OVERRIDES.get("twitter-video-downloader"),
+        "x-video-downloader": _VIDEO_EXTRA_OVERRIDES.get("x-video-downloader"),
+        "facebook-video-downloader": _VIDEO_EXTRA_OVERRIDES.get("facebook-video-downloader"),
+        "vimeo-downloader": _VIDEO_EXTRA_OVERRIDES.get("vimeo-downloader"),
+        "dailymotion-downloader": _VIDEO_EXTRA_OVERRIDES.get("dailymotion-downloader"),
+        "playlist-downloader": _VIDEO_EXTRA_OVERRIDES.get("playlist-downloader"),
+        "youtube-playlist-downloader": _VIDEO_EXTRA_OVERRIDES.get("youtube-playlist-downloader"),
+        "pinterest-downloader": _SOCIAL_VIDEO_OVERRIDES.get("pinterest-downloader"),
+        "reddit-downloader": _SOCIAL_VIDEO_OVERRIDES.get("reddit-downloader"),
+        "reddit-video-downloader": _SOCIAL_VIDEO_OVERRIDES.get("reddit-video-downloader"),
+        "twitch-downloader": _SOCIAL_VIDEO_OVERRIDES.get("twitch-downloader"),
+        "twitch-clip-downloader": _SOCIAL_VIDEO_OVERRIDES.get("twitch-clip-downloader"),
+        "twitch-vod-downloader": _SOCIAL_VIDEO_OVERRIDES.get("twitch-vod-downloader"),
+        "linkedin-video-downloader": _SOCIAL_VIDEO_OVERRIDES.get("linkedin-video-downloader"),
+        "bilibili-downloader": _SOCIAL_VIDEO_OVERRIDES.get("bilibili-downloader"),
+        "rumble-downloader": _SOCIAL_VIDEO_OVERRIDES.get("rumble-downloader"),
+        "soundcloud-downloader": _SOCIAL_VIDEO_OVERRIDES.get("soundcloud-downloader"),
+        "mixcloud-downloader": _SOCIAL_VIDEO_OVERRIDES.get("mixcloud-downloader"),
+        "bandcamp-downloader": _SOCIAL_VIDEO_OVERRIDES.get("bandcamp-downloader"),
+        "odysee-downloader": _SOCIAL_VIDEO_OVERRIDES.get("odysee-downloader"),
+        "streamable-downloader": _SOCIAL_VIDEO_OVERRIDES.get("streamable-downloader"),
+        "kick-downloader": _SOCIAL_VIDEO_OVERRIDES.get("kick-downloader"),
+        "imgur-downloader": _SOCIAL_VIDEO_OVERRIDES.get("imgur-downloader"),
+        "universal-playlist-downloader": _SOCIAL_VIDEO_OVERRIDES.get("universal-playlist-downloader"),
+        "m3u8-downloader": _SOCIAL_VIDEO_OVERRIDES.get("m3u8-downloader"),
+        "youtube-thumbnail-downloader": _SOCIAL_VIDEO_OVERRIDES.get("youtube-thumbnail-downloader"),
+        "video-info": _SOCIAL_VIDEO_OVERRIDES.get("video-info"),
+        "video-metadata-extractor": _SOCIAL_VIDEO_OVERRIDES.get("video-metadata-extractor"),
+        "spotify-downloader": _NEW_EXTRA_OVERRIDES.get("spotify-downloader"),
+        "snapchat-downloader": _NEW_EXTRA_OVERRIDES.get("snapchat-downloader"),
+        "threads-downloader": _NEW_EXTRA_OVERRIDES.get("threads-downloader"),
+        "youtube-subtitle-downloader": _NEW_EXTRA_OVERRIDES.get("youtube-subtitle-downloader"),
+        "youtube-subtitles-downloader": _NEW_EXTRA_OVERRIDES.get("youtube-subtitles-downloader"),
+        "subtitle-downloader": _NEW_EXTRA_OVERRIDES.get("subtitle-downloader"),
+    }
+    _video_override_count = 0
+    for _slug, _handler in _CRITICAL_VIDEO_OVERRIDES.items():
+        if _handler is not None:
+            HANDLERS[_slug] = _handler
+            _video_override_count += 1
+    print(f"[handlers] Re-pinned {_video_override_count} hardened downloader handlers")
+except Exception as e:
+    print(f"[handlers] WARNING: Could not pin downloader overrides: {e}")
+
 
 def _message_from_payload(payload: Any, fallback: str = "Tool completed successfully") -> str:
     if isinstance(payload, dict):

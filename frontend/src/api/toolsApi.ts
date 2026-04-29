@@ -13,19 +13,30 @@ function parseFilename(contentDisposition: string | null, fallback: string): str
   return asciiMatch?.[1] || fallback
 }
 
+function toFriendlyApiError(message: string, status: number): string {
+  const lower = message.toLowerCase()
+  if (status === 501 || /handler is not implemented|not implemented|not supported yet/.test(lower)) {
+    return 'This tool is temporarily running in recovery mode. Please reset the tool and try again in a moment.'
+  }
+  if (/traceback|stack trace|internal server error/i.test(message)) {
+    return 'Something went wrong while processing your request. Please check your input and try again.'
+  }
+  return message || `Request failed (${status})`
+}
+
 async function readError(res: Response): Promise<Error> {
   const contentType = res.headers.get('content-type') || ''
   if (contentType.includes('application/json')) {
     try {
       const payload = await res.json()
-      return new Error(payload.detail || payload.message || `Request failed (${res.status})`)
+      return new Error(toFriendlyApiError(String(payload.detail || payload.message || ''), res.status))
     } catch {
       return new Error(`Request failed (${res.status})`)
     }
   }
   try {
     const text = await res.text()
-    return new Error(text || `Request failed (${res.status})`)
+    return new Error(toFriendlyApiError(text, res.status))
   } catch {
     return new Error(`Request failed (${res.status})`)
   }

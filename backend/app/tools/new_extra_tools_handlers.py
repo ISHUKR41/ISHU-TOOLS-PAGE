@@ -19,18 +19,92 @@ def _safe_name(name: str, limit: int = 60) -> str:
     return cleaned.replace(" ", "_") or "file"
 
 
+def _find_ffmpeg() -> str | None:
+    ffmpeg = shutil.which("ffmpeg")
+    if ffmpeg:
+        return ffmpeg
+    try:
+        import imageio_ffmpeg
+
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return None
+
+
+_FFMPEG_PATH = _find_ffmpeg()
+
+
+def _media_error_code(raw: str) -> str:
+    low = (raw or "").lower()
+    if "sign in" in low or "login" in low or "private" in low or "cookies" in low:
+        return "needs_authentication"
+    if "429" in low or "rate limit" in low or "too many" in low:
+        return "rate_limited"
+    if "drm" in low or "protected" in low or "encrypted" in low:
+        return "protected_media"
+    if "timeout" in low or "timed out" in low:
+        return "timeout"
+    if "unsupported url" in low or "unable to extract" in low:
+        return "unsupported_url"
+    if "unavailable" in low or "removed" in low or "not found" in low:
+        return "unavailable"
+    return "download_failed"
+
+
+def _media_recovery_result(url: str, label: str, attempts: list[str], last_error: str = "") -> ExecutionResult:
+    return ExecutionResult(
+        kind="json",
+        message=(
+            f"{label} could not fetch this media after trying every available method. "
+            "The post may be private, expired, rate-limited, DRM-protected, or blocked by the platform."
+        ),
+        data={
+            "error": _media_error_code(last_error),
+            "fallback_mode": True,
+            "url": url,
+            "attempts_tried": attempts,
+            "next_steps": [
+                "Open the link in your browser and confirm it is public.",
+                "Retry after 30-60 seconds if the platform is temporarily rate-limiting downloads.",
+                "Use the platform's built-in download/save option for private or DRM-protected media.",
+            ],
+            "open_original_url": url,
+        },
+    )
+
+
+def _quality_format() -> str:
+    if _FFMPEG_PATH:
+        return "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best[ext=mp4]/best"
+    return "best[ext=mp4]/best[ext=webm]/best"
+
+
 def _ydl_download(url: str, job_dir: Path, fmt: str = "bestvideo+bestaudio/best",
                   merge_to: str = "mp4", audio_only: bool = False) -> tuple[Path | None, str]:
     """Run yt-dlp and return (path, title)."""
     import yt_dlp
 
     out_template = str(job_dir / "%(title).80s.%(ext)s")
+    common_opts = {
+        "outtmpl": out_template,
+        "quiet": True,
+        "no_warnings": True,
+        "socket_timeout": 30,
+        "retries": 5,
+        "fragment_retries": 10,
+        "http_headers": {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            ),
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    }
+    if _FFMPEG_PATH:
+        common_opts["ffmpeg_location"] = str(Path(_FFMPEG_PATH).parent)
     if audio_only:
         opts = {
             "format": "bestaudio/best",
-            "outtmpl": out_template,
-            "quiet": True,
-            "no_warnings": True,
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "mp3",
@@ -39,12 +113,10 @@ def _ydl_download(url: str, job_dir: Path, fmt: str = "bestvideo+bestaudio/best"
         }
     else:
         opts = {
-            "format": fmt,
-            "outtmpl": out_template,
-            "quiet": True,
-            "no_warnings": True,
+            "format": fmt if _FFMPEG_PATH else _quality_format(),
             "merge_output_format": merge_to,
         }
+    opts.update(common_opts)
 
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
@@ -82,9 +154,12 @@ def _handle_spotify_downloader(files: list[Path], payload: dict[str, Any], job_d
             content_type="audio/mpeg",
         )
     except Exception as e:
-        msg = str(e)
-        friendly = "Spotify track is DRM-protected." if "DRM" in msg or "protected" in msg.lower() else f"Download failed: {msg[:200]}"
-        return ExecutionResult(kind="json", message=friendly, data={"error": msg[:500]})
+        return _media_recovery_result(
+            url,
+            "Spotify downloader",
+            ["yt-dlp audio extraction", "local DRM/protection detection"],
+            str(e),
+        )
 
 
 # ─── Generic og:video meta scrape fallback (Snapchat / Threads / etc.) ───────
@@ -164,7 +239,7 @@ def _handle_snapchat_downloader(files: list[Path], payload: dict[str, Any], job_
     fb = _og_meta_scrape_to_file(url, job_dir, "Snapchat")
     if fb is not None:
         return fb
-    return ExecutionResult(kind="json", message="Snapchat content not accessible — it may be private, expired, or login-required.", data={"error": "No file"})
+    return _media_recovery_result(url, "Snapchat downloader", ["yt-dlp", "OpenGraph media scrape"])
 
 
 # ─── 3. Threads (Meta) Downloader ────────────────────────────────────────────
@@ -191,7 +266,7 @@ def _handle_threads_downloader(files: list[Path], payload: dict[str, Any], job_d
     fb = _og_meta_scrape_to_file(url, job_dir, "Threads post")
     if fb is not None:
         return fb
-    return ExecutionResult(kind="json", message="Threads post not accessible — check that it is public.", data={"error": "No file"})
+    return _media_recovery_result(url, "Threads downloader", ["yt-dlp", "Meta OpenGraph scrape"])
 
 
 # ─── 4. YouTube Subtitle Downloader ──────────────────────────────────────────
@@ -251,7 +326,12 @@ def _handle_youtube_subtitle_downloader(files: list[Path], payload: dict[str, An
             content_type="text/plain",
         )
     except Exception as e:
-        return ExecutionResult(kind="json", message=f"Subtitle download failed: {str(e)[:200]}", data={"error": str(e)[:500]})
+        return _media_recovery_result(
+            url,
+            "YouTube subtitle downloader",
+            ["yt-dlp manual subtitles", "yt-dlp auto-generated captions"],
+            str(e),
+        )
 
 
 def _vtt_to_srt(vtt: Path, srt: Path) -> None:

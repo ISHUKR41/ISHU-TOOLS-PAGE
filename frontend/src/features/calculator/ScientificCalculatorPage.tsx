@@ -128,7 +128,7 @@ function setCanonical(url: string) {
 export default function ScientificCalculatorPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
-  const structuredData = useMemo(buildStructuredData, [])
+  const structuredData = useMemo(() => buildStructuredData(), [])
 
   useEffect(() => {
     applyDocumentBranding(PAGE_TITLE, PAGE_DESCRIPTION, PAGE_ACCENT)

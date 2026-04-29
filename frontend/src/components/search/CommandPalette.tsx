@@ -23,6 +23,37 @@ type Props = {
   onClose: () => void
 }
 
+type SpeechRecognitionResultLike = {
+  0: { transcript: string }
+}
+
+type SpeechRecognitionEventLike = {
+  results: ArrayLike<SpeechRecognitionResultLike>
+}
+
+type SpeechRecognitionErrorLike = {
+  error?: string
+}
+
+type SpeechRecognitionLike = {
+  lang: string
+  interimResults: boolean
+  continuous: boolean
+  maxAlternatives: number
+  onstart: (() => void) | null
+  onerror: ((event: SpeechRecognitionErrorLike) => void) | null
+  onend: (() => void) | null
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null
+  start: () => void
+  stop: () => void
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike
+type SpeechWindow = Window & {
+  SpeechRecognition?: SpeechRecognitionConstructor
+  webkitSpeechRecognition?: SpeechRecognitionConstructor
+}
+
 const CATEGORY_LABELS: Record<string, string> = {
   'pdf-core': 'PDF',
   'pdf-advanced': 'PDF Pro',
@@ -52,6 +83,12 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const RESULT_LIMIT = 9
 
+function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | null {
+  if (typeof window === 'undefined') return null
+  const speechWindow = window as SpeechWindow
+  return speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition ?? null
+}
+
 export default function CommandPalette({ open, onClose }: Props) {
   const navigate = useNavigate()
   const { tools } = useCatalogData()
@@ -66,15 +103,13 @@ export default function CommandPalette({ open, onClose }: Props) {
 
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
 
   const debouncedQuery = useDebounce(query, 70)
 
   /* Voice search support detection (memoized once) */
   const voiceSupported = useMemo(() => {
-    if (typeof window === 'undefined') return false
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    return Boolean(SR)
+    return Boolean(getSpeechRecognitionConstructor())
   }, [])
 
   const stopVoice = useCallback(() => {
@@ -87,7 +122,8 @@ export default function CommandPalette({ open, onClose }: Props) {
     if (isListening) { stopVoice(); return }
 
     setVoiceError(null)
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    const SR = getSpeechRecognitionConstructor()
+    if (!SR) return
     const rec = new SR()
     rec.lang = navigator.language || 'en-US'
     rec.interimResults = true
@@ -95,7 +131,7 @@ export default function CommandPalette({ open, onClose }: Props) {
     rec.maxAlternatives = 1
 
     rec.onstart = () => setIsListening(true)
-    rec.onerror = (e: any) => {
+    rec.onerror = (e: SpeechRecognitionErrorLike) => {
       setIsListening(false)
       const code = e?.error || 'error'
       const msg =
@@ -107,7 +143,7 @@ export default function CommandPalette({ open, onClose }: Props) {
       window.setTimeout(() => setVoiceError(null), 3200)
     }
     rec.onend = () => setIsListening(false)
-    rec.onresult = (event: any) => {
+    rec.onresult = (event: SpeechRecognitionEventLike) => {
       let transcript = ''
       for (let i = 0; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript
@@ -133,17 +169,25 @@ export default function CommandPalette({ open, onClose }: Props) {
   /* Reset state on every fresh open and load recents */
   useEffect(() => {
     if (open) {
-      setQuery('')
-      setActiveCategory('all')
-      setActiveIndex(0)
-      setRecentSearches(loadRecentSearches())
+      const frame = requestAnimationFrame(() => {
+        setQuery('')
+        setActiveCategory('all')
+        setActiveIndex(0)
+        setRecentSearches(loadRecentSearches())
+      })
       const t = setTimeout(() => inputRef.current?.focus(), 30)
-      return () => clearTimeout(t)
+      return () => {
+        cancelAnimationFrame(frame)
+        clearTimeout(t)
+      }
     } else {
       // Stop any active voice recognition when palette closes
       try { recognitionRef.current?.stop() } catch { /* noop */ }
-      setIsListening(false)
-      setVoiceError(null)
+      const frame = requestAnimationFrame(() => {
+        setIsListening(false)
+        setVoiceError(null)
+      })
+      return () => cancelAnimationFrame(frame)
     }
   }, [open])
 
@@ -189,7 +233,10 @@ export default function CommandPalette({ open, onClose }: Props) {
   }, [tools, debouncedQuery, results.length])
 
   /* Reset the highlighted index whenever the result set changes */
-  useEffect(() => { setActiveIndex(0) }, [debouncedQuery, activeCategory])
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setActiveIndex(0))
+    return () => cancelAnimationFrame(frame)
+  }, [debouncedQuery, activeCategory])
 
   /* Keep the highlighted item in view */
   useEffect(() => {

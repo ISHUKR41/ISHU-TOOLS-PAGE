@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start",
     "preview": "npm --prefix frontend run preview"
   },
   "dependencies": {

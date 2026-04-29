@@ -7554,6 +7554,29 @@ for _slug, _title, _desc, _category, _input, _tags in _CLIENT_INSTANT_DEFS:
 
 TOOL_SLUGS = {tool.slug for tool in TOOLS}
 
+if "python-to-pdf" not in {t.slug for t in TOOLS}:
+    TOOLS.append(ToolDefinition(
+        slug="python-to-pdf",
+        title="Python to PDF Converter - Convert .py Files to PDF",
+        description=(
+            "Upload a Python .py source file or paste Python code and convert it into a readable PDF "
+            "with monospaced formatting, optional line numbers, and a safe outline summary. The code is never executed."
+        ),
+        category="developer-tools",
+        tags=[
+            "python to pdf",
+            "py to pdf",
+            "convert python file to pdf",
+            "code to pdf",
+            "python source pdf",
+            "developer tools",
+        ],
+        input_kind="mixed",
+        accepts_multiple=False,
+        popularity_rank=96,
+    ))
+    _existing_slugs.add("python-to-pdf")
+
 # ── Assign popularity ranks — higher = more popular (shown first) ─────────────
 # Tier 1 (200+) = mega-popular daily-use tools shown in "Top Tools" pinned row
 # Tier 2 (150-199) = highly used tools

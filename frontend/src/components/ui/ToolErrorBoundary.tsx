@@ -14,7 +14,7 @@
  * router-level crashes. Having both layers means a tool can crash without
  * bringing down the navbar, footer, or offline banner.
  */
-import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Component, type ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -44,7 +44,7 @@ export class ToolErrorBoundary extends Component<Props, State> {
     return { hasError: true, errorMessage: error?.message || 'Unexpected error' }
   }
 
-  componentDidCatch(_error: Error, _info: ErrorInfo) {
+  componentDidCatch() {
     if (this.state.retryCount < MAX_RETRIES) {
       this.setState({ isRetrying: true })
       this.timer = setTimeout(() => {
