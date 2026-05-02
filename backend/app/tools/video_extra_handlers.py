@@ -660,30 +660,28 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     quality = payload.get("quality")
     fmt = _format_for_quality(quality)
 
-    # Strategy 1: yt-dlp mweb client (best bot bypass — simulates mobile browser)
-    primary = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
-        "extractor_args": {"youtube": {"player_client": ["mweb"], "skip_webpage": ["1"]}},
-    })
+    # Strategy 1: yt-dlp default (no client override) — most reliable, works without cookies
+    primary = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies)
     if primary.kind == "file":
         return primary
 
-    # Strategy 2: yt-dlp ios client (Apple client, very low bot detection)
+    # Strategy 2: tv_embedded client (bypasses age gates, confirmed working)
     r2 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
-        "extractor_args": {"youtube": {"player_client": ["ios"], "skip_webpage": ["1"]}},
+        "extractor_args": {"youtube": {"player_client": ["tv_embedded"]}},
     })
     if r2.kind == "file":
         return r2
 
-    # Strategy 3: yt-dlp tv_embedded client (TV/embedded, bypasses age gates)
+    # Strategy 3: mediaconnect client (confirmed working fallback)
     r3 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
-        "extractor_args": {"youtube": {"player_client": ["tv_embedded", "web_embedded"]}},
+        "extractor_args": {"youtube": {"player_client": ["mediaconnect"]}},
     })
     if r3.kind == "file":
         return r3
 
-    # Strategy 4: yt-dlp android+web clients (classic fallback)
+    # Strategy 4: mweb client (mobile browser simulation)
     r4 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
-        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+        "extractor_args": {"youtube": {"player_client": ["mweb"]}},
     })
     if r4.kind == "file":
         return r4
@@ -769,24 +767,23 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     kbps = _audio_quality_kbps(payload.get("audio_quality") or payload.get("bitrate") or payload.get("quality"))
 
-    # Strategy 1: mweb client
+    # Strategy 1: yt-dlp default (no client override) — most reliable, works without cookies
     primary = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
-                                audio_kbps=kbps, cookies_text=cookies,
-                                extra_opts={"extractor_args": {"youtube": {"player_client": ["mweb"], "skip_webpage": ["1"]}}})
+                                audio_kbps=kbps, cookies_text=cookies)
     if primary.kind == "file":
         return primary
 
-    # Strategy 2: ios client (low bot detection)
+    # Strategy 2: tv_embedded client (confirmed working)
     r2 = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
                            audio_kbps=kbps, cookies_text=cookies,
-                           extra_opts={"extractor_args": {"youtube": {"player_client": ["ios"], "skip_webpage": ["1"]}}})
+                           extra_opts={"extractor_args": {"youtube": {"player_client": ["tv_embedded"]}}})
     if r2.kind == "file":
         return r2
 
-    # Strategy 3: android+web clients
+    # Strategy 3: mediaconnect client (confirmed working fallback)
     r3 = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
                            audio_kbps=kbps, cookies_text=cookies,
-                           extra_opts={"extractor_args": {"youtube": {"player_client": ["android", "web"]}}})
+                           extra_opts={"extractor_args": {"youtube": {"player_client": ["mediaconnect"]}}})
     if r3.kind == "file":
         return r3
 
@@ -820,7 +817,7 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     return _video_recovery_result(
         url,
         "YouTube audio downloader",
-        ["yt-dlp mweb audio", "yt-dlp android/web audio", "Cobalt mirror APIs"],
+        ["yt-dlp default", "yt-dlp tv_embedded", "yt-dlp mediaconnect", "Cobalt mirror APIs"],
         primary,
     )
 
