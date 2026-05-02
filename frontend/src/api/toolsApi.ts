@@ -727,8 +727,11 @@ export async function runTool(
         type: 'json',
         payload: await res.json(),
       }
-      // Cache successful JSON results
-      if (!hasFiles) writeResultCache(slug, payload, result)
+      // Only cache successful results (not errors/fallback_mode)
+      const resultData = (result.payload as Record<string, unknown> | null) ?? {}
+      const isErrorResult = (resultData as Record<string, unknown>)?.status === 'error' ||
+        ((resultData as Record<string, unknown>)?.data as Record<string, unknown>)?.fallback_mode === true
+      if (!hasFiles && !isErrorResult) writeResultCache(slug, payload, result)
       return result
     }
 

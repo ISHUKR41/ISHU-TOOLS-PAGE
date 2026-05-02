@@ -817,15 +817,24 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
         return r3
 
     last = next((r for r in [r3, r2, primary] if r.data), primary)
+    last_msg = (last.message or "").lower()
+    err_code = last.data.get("error", "needs_authentication") if last.data else "needs_authentication"
+    is_geo = (err_code == "unavailable" or "unavailable" in last_msg or
+              "not available" in last_msg or "video unavailable" in last_msg)
+
     if not cookies:
+        geo_note = (
+            " It appears the video may be geo-restricted (India-only or region-locked)."
+            if is_geo else ""
+        )
         return ExecutionResult(
             kind="json",
             message=(
-                "YouTube is blocking this audio extraction from our server (bot detection). "
-                "The quickest fix is to paste your browser cookies — takes about 30 seconds."
+                f"YouTube could not extract audio from this video.{geo_note} "
+                "Paste your browser cookies to bypass region locks and authentication checks."
             ),
             data={
-                "error": last.data.get("error", "needs_authentication") if last.data else "needs_authentication",
+                "error": "geo_restricted" if is_geo else err_code,
                 "url": url,
                 "fallback_mode": True,
                 "fix_steps": [

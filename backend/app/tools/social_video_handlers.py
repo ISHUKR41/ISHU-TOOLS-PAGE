@@ -156,11 +156,12 @@ def _yt_dlp_download(url: str, job_dir: Path, extra_opts: dict | None = None) ->
             "merge_output_format": "mp4",
             "format": _social_format_for_quality(None),
             "max_filesize": 2 * 1024 * 1024 * 1024,  # 2 GB cap (4K-friendly)
-            "socket_timeout": 30,
-            "retries": 5,
-            "fragment_retries": 10,
+            "socket_timeout": 15,
+            "retries": 2,
+            "fragment_retries": 3,
+            "js_runtimes": {"node": {}},
             "http_headers": {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             },
         }
         if _SOCIAL_FFMPEG_PATH:
