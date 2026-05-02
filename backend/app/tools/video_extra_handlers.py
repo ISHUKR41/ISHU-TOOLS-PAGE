@@ -95,6 +95,9 @@ _YDL_COMMON_OPTS: dict[str, Any] = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     },
     "max_filesize": 2 * 1024 * 1024 * 1024,
+    # Use Node.js (v20, available in Replit) as the JS runtime so yt-dlp can
+    # decrypt modern YouTube signatures and other JS-gated formats.
+    "js_runtimes": {"node": {}},
 }
 # Tell yt-dlp where ffmpeg lives (critical when it's bundled inside a Python package)
 if _FFMPEG_PATH:
@@ -294,9 +297,11 @@ def _classify_ytdlp_error(err: str) -> str:
     if "sign in" in el or "login" in el or "age" in el:
         return "This video requires sign-in or is age-restricted. Paste your account cookies in the optional 'Cookies' field to download it."
     if "unavailable" in el or "not available" in el or "removed" in el:
-        return "This video is unavailable or has been removed."
+        return ("This video is not available from our server's region. "
+                "It may be geo-restricted (blocked outside certain countries), removed, or private. "
+                "Paste your YouTube browser cookies in the 'Cookies' field above to access geo-restricted content.")
     if "copyright" in el or "blocked" in el:
-        return "This video is blocked due to copyright restrictions."
+        return "This video is blocked due to copyright restrictions in our server's region."
     if "rate limit" in el or "429" in el or "too many" in el:
         return "Too many requests. Please wait a minute and try again."
     if "unsupported url" in el or "unable to extract" in el:
@@ -690,14 +695,48 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     # All strategies failed — give user a clear recovery path
     last = next((r for r in [r4, r3, r2, primary] if r.data), primary)
     err_code = (last.data.get("error", "needs_authentication") if last.data else "needs_authentication")
+    last_msg = (last.message or "").lower()
+
+    # Detect specific failure reason to give the most helpful message
+    is_geo = (err_code == "unavailable" or "unavailable" in last_msg or
+              "not available" in last_msg or "video unavailable" in last_msg)
+    is_age = "age" in last_msg or "sign in" in last_msg or "login" in last_msg
+    is_copyright = "copyright" in last_msg or "dmca" in last_msg
+
+    if is_geo and not cookies:
+        return ExecutionResult(
+            kind="json",
+            message=(
+                "This video is not available from our server's region. "
+                "It is likely geo-restricted (only available in certain countries). "
+                "Paste your YouTube browser cookies to access it — this works even for geo-restricted videos."
+            ),
+            data={
+                "error": "geo_restricted",
+                "url": url,
+                "fallback_mode": True,
+                "fix_steps": [
+                    "Open youtube.com in Chrome or Edge and sign in to your account",
+                    "Install the free 'Get cookies.txt LOCALLY' extension from the Chrome Web Store",
+                    "Click the extension icon while on youtube.com → choose 'Export'",
+                    "Open the downloaded cookies.txt, select all text, copy it",
+                    "Paste the copied text into the 'Cookies' field above and click Run again",
+                ],
+                "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
+                "alternatives": [
+                    "Check if the video is publicly available in your country using a VPN",
+                    "Look for the video on an alternate platform (Hotstar, JioSaavn, Spotify, etc.)",
+                    "Download using yt-dlp on your own computer with --cookies-from-browser chrome",
+                ],
+            },
+        )
 
     if not cookies:
         return ExecutionResult(
             kind="json",
             message=(
-                "YouTube is blocking this download from our server (bot detection). "
-                "The quickest fix is to paste your browser cookies — it takes about 30 seconds "
-                "and completely bypasses the bot check."
+                "YouTube blocked this download from our server. "
+                "Pasting your browser cookies is the fastest fix and works in under a minute."
             ),
             data={
                 "error": err_code,
@@ -712,9 +751,9 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
                 ],
                 "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
                 "alternatives": [
-                    "Try a lower quality (e.g. 720p instead of 1080p)",
+                    "Try a lower quality (e.g. 480p or 360p instead of 1080p)",
                     "Check if the video is public and not age-restricted",
-                    "Use youtube-dl or yt-dlp on your own computer for unrestricted downloads",
+                    "Use yt-dlp on your own computer: yt-dlp --cookies-from-browser chrome <URL>",
                 ],
             },
         )
@@ -1170,6 +1209,68 @@ def _normalize_instagram_url(url: str) -> str:
         return (url or "").strip().split("?")[0].split("#")[0].rstrip("/")
 
 
+def _snapinsta_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """snapinsta.app public Instagram downloader — form-based, no-auth."""
+    import re as _re
+    m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
+    if not m:
+        return None
+    shortcode = m.group(1)
+    clean = f"https://www.instagram.com/p/{shortcode}/"
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
+    try:
+        page = httpx.get("https://snapinsta.app/", headers={"User-Agent": ua}, timeout=10)
+        if page.status_code != 200:
+            return None
+        token_m = _re.search(r'name="_token"\s+value="([^"]+)"', page.text)
+        if not token_m:
+            token_m = _re.search(r'"_token":"([^"]+)"', page.text)
+        if not token_m:
+            return None
+        token = token_m.group(1)
+        r = httpx.post(
+            "https://snapinsta.app/action.php",
+            data={"url": clean, "lang": "en", "v": "v2"},
+            headers={
+                "User-Agent": ua,
+                "Referer": "https://snapinsta.app/",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "*/*",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            timeout=15,
+            follow_redirects=True,
+        )
+        if r.status_code != 200:
+            return None
+        try:
+            jdata = r.json()
+            html = jdata.get("data", "") or ""
+        except Exception:
+            html = r.text
+        mp4_urls = _re.findall(r'href="(https?://[^"]+\.mp4[^"]*)"', html)
+        if not mp4_urls:
+            mp4_urls = _re.findall(r'"url":"(https?://[^"]+\.mp4[^"]*)"', html)
+        if not mp4_urls:
+            return None
+        media_url = mp4_urls[0].replace("\\u0026", "&").replace("\\u003D", "=")
+        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": ua})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+        out = job_dir / f"instagram_{shortcode}_snap.mp4"
+        out.write_bytes(v.content)
+        size_mb = round(len(v.content) / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded Instagram video ({size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4",
+        )
+    except Exception:
+        return None
+
+
 def _igram_world_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     """Strategy 5: igram.world public Instagram downloader API (no-auth, public posts).
     Uses Laravel XSRF-TOKEN cookie extracted from the homepage for authentication.
@@ -1388,6 +1489,9 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
 
     # Try yt-dlp first (best quality, supports cookies for private/age-gated content).
+    # Use reduced retries/timeout for Instagram — it blocks cloud IPs deterministically.
+    ig_extra["retries"] = 2
+    ig_extra["socket_timeout"] = 12
     primary = _yt_dlp_download(clean_url, job_dir, fmt=ig_fmt, extra_opts=ig_extra, cookies_text=cookies)
     if primary.kind == "file":
         return primary
@@ -1406,6 +1510,11 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     igram_fb = _igram_world_fallback(clean_url, job_dir)
     if igram_fb is not None:
         return igram_fb
+
+    # Strategy 5: snapinsta.app — popular no-auth Instagram downloader
+    snap_fb = _snapinsta_fallback(clean_url, job_dir)
+    if snap_fb is not None:
+        return snap_fb
 
     # Strategy 6: sss.plus / SaveFrom-like public scraper
     sss_fb = _sss_plus_fallback(clean_url, job_dir)
@@ -1539,14 +1648,92 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
     )
 
 
+def _twitsave_fallback(url: str, tweet_id: str, job_dir: Path) -> "ExecutionResult | None":
+    """twitsave.com scraper — works from cloud IPs without auth."""
+    import re as _re
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
+    try:
+        api_url = f"https://twitsave.com/info?url={url}"
+        r = httpx.get(api_url, timeout=12, follow_redirects=True,
+                      headers={"User-Agent": ua, "Referer": "https://twitsave.com/"})
+        if r.status_code != 200:
+            return None
+        # Extract highest-quality mp4 link from the response page
+        mp4_urls = _re.findall(r'href="(https://video\.twimg\.com/[^"]+\.mp4[^"]*)"', r.text)
+        if not mp4_urls:
+            # Also try data-url attribute
+            mp4_urls = _re.findall(r'data-url="(https://[^"]+\.mp4[^"]*)"', r.text)
+        if not mp4_urls:
+            return None
+        best = mp4_urls[0]
+        vid = httpx.get(best, timeout=60, follow_redirects=True, headers={"User-Agent": ua})
+        if vid.status_code != 200 or len(vid.content) < 5000:
+            return None
+        out = job_dir / f"twitter_{tweet_id}.mp4"
+        out.write_bytes(vid.content)
+        size_mb = round(len(vid.content) / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded Twitter/X video ({size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4",
+        )
+    except Exception:
+        return None
+
+
+def _savetweetvid_fallback(url: str, tweet_id: str, job_dir: Path) -> "ExecutionResult | None":
+    """savetweetvid.com API fallback for Twitter videos."""
+    import re as _re
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
+    try:
+        r = httpx.post(
+            "https://www.savetweetvid.com/downloader",
+            data={"url": url},
+            headers={
+                "User-Agent": ua,
+                "Referer": "https://www.savetweetvid.com/",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "text/html,application/xhtml+xml",
+                "Origin": "https://www.savetweetvid.com",
+            },
+            timeout=15,
+            follow_redirects=True,
+        )
+        if r.status_code != 200:
+            return None
+        mp4_urls = _re.findall(r'href="(https://video\.twimg\.com/[^"]+\.mp4[^"]*)"', r.text)
+        if not mp4_urls:
+            mp4_urls = _re.findall(r'"(https://video\.twimg\.com/[^"]+\.mp4[^"]*)"', r.text)
+        if not mp4_urls:
+            return None
+        best = mp4_urls[0]
+        vid = httpx.get(best, timeout=60, follow_redirects=True, headers={"User-Agent": ua})
+        if vid.status_code != 200 or len(vid.content) < 5000:
+            return None
+        out = job_dir / f"twitter_{tweet_id}_stv.mp4"
+        out.write_bytes(vid.content)
+        size_mb = round(len(vid.content) / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded Twitter/X video ({size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4",
+        )
+    except Exception:
+        return None
+
+
 def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     """No-auth fallback for public tweets.
 
-    Tries two approaches:
-    1. Twitter syndication CDN (cdn.syndication.twimg.com/tweet-result) — the
-       public embed endpoint that returns full media JSON without auth.
-    2. ssstwitter.com HTMX form submission — extracts video.twimg.com CDN URLs
-       from the rendered result HTML.
+    Tries multiple approaches in order:
+    1. Twitter syndication CDN (cdn.syndication.twimg.com/tweet-result)
+    2. twitsave.com scraper
+    3. savetweetvid.com scraper
+    4. ssstwitter.com HTMX form submission
     """
     import re as _re
     m = _re.search(r"/status(?:es)?/(\d+)", url)
@@ -1561,7 +1748,7 @@ def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | 
         f"?id={tweet_id}&token=ishu&lang=en"
     )
     try:
-        r = httpx.get(api, timeout=15, follow_redirects=True,
+        r = httpx.get(api, timeout=8, follow_redirects=True,
                       headers={
                           "User-Agent": ua,
                           "Accept": "application/json",
@@ -1574,13 +1761,25 @@ def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | 
             except Exception:
                 data = None
             if data:
-                return _parse_syndication_data(data, tweet_id, job_dir)
+                result = _parse_syndication_data(data, tweet_id, job_dir)
+                if result is not None:
+                    return result
     except Exception:
         pass
 
-    # ── Strategy B: ssstwitter.com HTMX scraper ──────────────────────────────
+    # ── Strategy B: twitsave.com scraper ─────────────────────────────────────
+    ts_result = _twitsave_fallback(url, tweet_id, job_dir)
+    if ts_result is not None:
+        return ts_result
+
+    # ── Strategy C: savetweetvid.com scraper ─────────────────────────────────
+    stv_result = _savetweetvid_fallback(url, tweet_id, job_dir)
+    if stv_result is not None:
+        return stv_result
+
+    # ── Strategy D: ssstwitter.com HTMX scraper ──────────────────────────────
     try:
-        page = httpx.get("https://ssstwitter.com/", headers={"User-Agent": ua}, timeout=10)
+        page = httpx.get("https://ssstwitter.com/", headers={"User-Agent": ua}, timeout=8)
         tt_m = _re.search(r"tt:'([a-f0-9]+)'", page.text)
         ts_m = _re.search(r"ts:(\d+)", page.text)
         if tt_m and ts_m:
@@ -1599,7 +1798,7 @@ def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | 
                     "Accept": "*/*",
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
-                timeout=20,
+                timeout=15,
                 follow_redirects=True,
             )
             if r2.status_code == 200 and len(r2.text) > 200:
@@ -1608,7 +1807,7 @@ def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | 
                     r2.text,
                 )
                 if twimg_urls:
-                    best = twimg_urls[-1]  # last tends to be highest quality
+                    best = twimg_urls[-1]
                     vid = httpx.get(best, timeout=60, follow_redirects=True,
                                     headers={"User-Agent": ua})
                     if vid.status_code == 200 and len(vid.content) > 5000:
@@ -1672,23 +1871,29 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     if "twitter.com" not in url and "x.com" not in url and "t.co" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Twitter or X.com URL.", data={"error": "Not Twitter/X"})
     cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
-    # Syndication CDN works without auth even when yt-dlp gets rate-limited on cloud IPs.
-    # Try it first when we don't have user cookies — it's faster and more reliable for public tweets.
+    # Syndication CDN + scraper services work without auth even when yt-dlp gets
+    # rate-limited on cloud IPs. Try them first (faster, more reliable for public tweets).
     if not cookies:
         fast = _twitter_syndication_fallback(url, job_dir)
         if fast is not None:
             return fast
-    primary = _yt_dlp_download(url, job_dir, fmt=_format_for_quality(payload.get("quality")), cookies_text=cookies)
+    # yt-dlp with reduced retries to fail fast on auth-blocked cloud IPs
+    primary = _yt_dlp_download(url, job_dir,
+                               fmt=_format_for_quality(payload.get("quality")),
+                               cookies_text=cookies,
+                               extra_opts={"retries": 2, "socket_timeout": 12})
     if primary.kind == "file":
         return primary
-    fallback = _twitter_syndication_fallback(url, job_dir)
-    if fallback is not None:
-        return fallback
-        
+    # If cookies were provided and still failed, try no-auth scrapers as final fallback
+    if cookies:
+        fallback = _twitter_syndication_fallback(url, job_dir)
+        if fallback is not None:
+            return fallback
+
     return _video_recovery_result(
         url,
         "Twitter/X video downloader",
-        ["Twitter/X syndication CDN (no-auth)", "yt-dlp"],
+        ["Twitter/X syndication CDN", "twitsave.com", "savetweetvid.com", "ssstwitter.com", "yt-dlp"],
         primary,
     )
 

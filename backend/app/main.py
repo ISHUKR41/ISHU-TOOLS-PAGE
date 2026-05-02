@@ -768,7 +768,9 @@ def get_tool(slug: str) -> ToolDefinition:
 
 
 @app.get("/health")
+@app.head("/health")
 @app.get("/api/health")
+@app.head("/api/health")
 def health() -> dict[str, Any]:
     return {
         "status": "ok" if not _MISSING_HANDLER_SLUGS and not _DUPLICATE_TOOL_SLUGS else "degraded",
