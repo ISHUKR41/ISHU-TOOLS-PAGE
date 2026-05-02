@@ -282,7 +282,7 @@ export default function CommandPalette({ open, onClose }: Props) {
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder='Search 1,200+ tools — try "compress pdf", "remove bg", "emi"…'
+            placeholder='Search 1,300+ tools — try "compress pdf", "remove bg", "emi"…'
             className='cp-input'
             spellCheck={false}
             autoComplete='off'

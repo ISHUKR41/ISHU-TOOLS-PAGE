@@ -386,13 +386,13 @@ function generateSmartFAQs(
   // Voice/featured-snippet style FAQ
   faqs.push({
     question: `Is ${toolTitle} available on ISHU TOOLS?`,
-    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.fun). It is one of 1200+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
+    answer: `Yes! ${toolTitle} is available for free on ISHU TOOLS (ishutools.fun). It is one of 1300+ free online tools created by Ishu Kumar for students and professionals. Access it directly at ISHU TOOLS — no signup, no payment, no watermark.`,
   })
 
   // Creator/brand trust signal
   faqs.push({
     question: `Who created ${toolTitle} on ISHU TOOLS?`,
-    answer: `${toolTitle} is part of ISHU TOOLS — a free online tool platform created by Ishu Kumar (IIT Patna student). ISHU TOOLS stands for Indian Student Hub University Tools and provides 1200+ free tools for Indian students, developers, and working professionals.`,
+    answer: `${toolTitle} is part of ISHU TOOLS — a free online tool platform created by Ishu Kumar (IIT Patna student). ISHU TOOLS stands for Indian Student Hub University Tools and provides 1300+ free tools for Indian students, developers, and working professionals.`,
   })
 
   // Speed/performance FAQ

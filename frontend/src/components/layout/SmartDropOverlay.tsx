@@ -158,7 +158,7 @@ export default function SmartDropOverlay() {
           <div className='smart-drop-hint-orb'><Upload size={36} /></div>
           <div className='smart-drop-hint-title'>Drop your file anywhere</div>
           <div className='smart-drop-hint-sub'>
-            We'll match it to the right tool from {tools.length || '1,200+'} options
+            We'll match it to the right tool from {tools.length || '1,300+'} options
           </div>
         </div>
       ) : (
@@ -199,7 +199,7 @@ export default function SmartDropOverlay() {
             <div className='smart-drop-empty'>
               No tool matches this file type yet — try one of our{' '}
               <button className='smart-drop-link' onClick={() => { close(); navigate('/tools') }}>
-                1,200+ tools
+                1,300+ tools
               </button>.
             </div>
           )}

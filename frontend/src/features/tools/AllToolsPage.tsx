@@ -542,7 +542,7 @@ export default function AllToolsPage() {
         <section className='all-tools-hero'>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className='section-kicker'>Complete Library</span>
-            <h1>All {loading ? '1,200' : tools.length.toLocaleString()}+ Free Online Tools</h1>
+            <h1>All {loading ? '1,300' : tools.length.toLocaleString()}+ Free Online Tools</h1>
             <p>One smart-sorted list of every tool — daily-use tools surface first. Type to find anything in milliseconds.</p>
           </motion.div>
 
@@ -558,7 +558,7 @@ export default function AllToolsPage() {
                   value={query}
                   onChange={e => { setQuery(e.target.value); setSearchFocused(true) }}
                   onFocus={() => setSearchFocused(true)}
-                  placeholder='Search 1,200+ tools... or press / to focus'
+                  placeholder='Search 1,300+ tools... or press / to focus'
                   aria-label='Search all tools'
                   autoComplete='off'
                 />

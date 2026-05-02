@@ -24,7 +24,7 @@ import './home-modern.css'
 const BENTO_FEATURES = [
   {
     icon: Zap, accent: '#56a6ff', span: 'span-2 large',
-    stat: '1,200+', title: 'Free Professional Tools',
+    stat: '1,300+', title: 'Free Professional Tools',
     desc: 'PDF, Image, Developer, Math, Text, AI, Color, Security, Finance, Health, Network, Video — every tool you need, completely free.',
   },
   {
@@ -65,7 +65,7 @@ const BENTO_FEATURES = [
   {
     icon: Star, accent: '#e879f9', span: 'span-2',
     title: 'Better Than iLovePDF, SmallPDF & iLoveIMG',
-    desc: 'ISHU TOOLS combines PDF + Image + Developer + Math tools in one platform — all free, no watermark, no limits. The most complete free alternative to iLovePDF, SmallPDF, PDFCandy, iLoveIMG, and pi7.org. 1,200+ tools, zero cost.',
+    desc: 'ISHU TOOLS combines PDF + Image + Developer + Math tools in one platform — all free, no watermark, no limits. The most complete free alternative to iLovePDF, SmallPDF, PDFCandy, iLoveIMG, and pi7.org. 1,300+ tools, zero cost.',
   },
 ]
 
@@ -163,7 +163,7 @@ function CreatorSection() {
           </p>
           <p style={{ marginTop: '0.6rem', color: 'var(--muted)', fontSize: '0.93rem' }}>
             From the frustration of hitting paywalls and file limits on iLovePDF, SmallPDF, and similar
-            platforms, ISHU TOOLS was born — 1,200+ tools, all free, all day, every day.
+            platforms, ISHU TOOLS was born — 1,300+ tools, all free, all day, every day.
             <strong> ishutools.fun</strong> — the Indian Student Hub for digital tools.
           </p>
           <div className='creator-links'>
@@ -182,11 +182,11 @@ function CreatorSection() {
 const FAQ_ITEMS = [
   {
     q: 'What is ISHU TOOLS? (ISHU TOOLS kya hai?)',
-    a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 1,200+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar from IIT Patna, it is designed for students and professionals — no signup, no watermark, completely free. ISHU TOOLS bilkul free hai, koi signup nahi lagta.',
+    a: 'ISHU TOOLS (Indian Student Hub University Tools) is a free online platform with 1,300+ tools for PDF processing, image editing, developer utilities, math calculators, text operations, and more. Created by Ishu Kumar from IIT Patna, it is designed for students and professionals — no signup, no watermark, completely free. ISHU TOOLS bilkul free hai, koi signup nahi lagta.',
   },
   {
     q: 'Is ISHU TOOLS free? (ISHU TOOLS free hai kya?)',
-    a: 'Haan! ISHU TOOLS 100% free hai. All 1,200+ tools are available without any signup, registration, or payment. No watermarks, no limits, no hidden charges. Koi bhi tool use karo, bilkul free mein.',
+    a: 'Haan! ISHU TOOLS 100% free hai. All 1,300+ tools are available without any signup, registration, or payment. No watermarks, no limits, no hidden charges. Koi bhi tool use karo, bilkul free mein.',
   },
   {
     q: 'Is my data safe? (Mera data safe hai?)',
@@ -367,8 +367,8 @@ export default function HomePage() {
 
   useEffect(() => {
     applyDocumentBranding(
-      'ISHU TOOLS — Indian Student Hub University Tools | 1200+ Free Online Tools',
-      '1200+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
+      'ISHU TOOLS — Indian Student Hub University Tools | 1300+ Free Online Tools',
+      '1300+ free online tools for students & professionals. PDF, Image, Developer, Math, Text, AI, finance, health & video tools — no signup, no watermark.',
       '#3bd0ff',
     )
   }, [])
@@ -698,7 +698,7 @@ export default function HomePage() {
               <h2>Find the exact tool fast</h2>
             </div>
             <p>
-              Type to instantly search all {tools.length || '1,200+'} tools by name, tag, or
+              Type to instantly search all {tools.length || '1,300+'} tools by name, tag, or
               workflow. Press <kbd className='kbd'>/</kbd> from anywhere to focus,{' '}
               <kbd className='kbd'>Esc</kbd> to clear.
             </p>
@@ -1053,7 +1053,7 @@ export default function HomePage() {
             <div className='step-card'>
               <div className='step-number'><MousePointerClick size={20} /></div>
               <h3>1. Choose a Tool</h3>
-              <p>Search from 1,200+ free tools across 54 categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
+              <p>Search from 1,300+ free tools across 54 categories — PDF, Image, Developer, Math, and more. Each tool has its own dedicated page.</p>
             </div>
             <div className='step-card'>
               <div className='step-number'><Upload size={20} /></div>
@@ -1084,7 +1084,7 @@ export default function HomePage() {
         <footer className='home-footer'>
           <p>
             {loading
-              ? <>1,200+ tools · 54 categories · Free forever · No signup · No watermark</>
+              ? <>1,300+ tools · 54 categories · Free forever · No signup · No watermark</>
               : <><strong>{totalVisibleTools}</strong> tools · <strong>{categories.length}</strong> categories · Free forever · No signup · No watermark</>
             }
           </p>

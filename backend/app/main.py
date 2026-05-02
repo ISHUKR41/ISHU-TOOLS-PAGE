@@ -41,15 +41,35 @@ import threading
 import subprocess
 
 def _update_ytdlp_periodically():
+    import sys, shutil
     while True:
         try:
             print("[main] Running automated yt-dlp update...")
-            # We use python -m pip to ensure it runs in the same environment
-            import sys
-            subprocess.run([sys.executable, "-m", "pip", "install", "-U", "yt-dlp"], check=True, capture_output=True)
-            print("[main] yt-dlp updated successfully.")
+            # Try yt-dlp's own updater first (works in read-only pip envs)
+            ytdlp_bin = shutil.which("yt-dlp")
+            if ytdlp_bin:
+                result = subprocess.run([ytdlp_bin, "-U"], capture_output=True, text=True, timeout=60)
+                if result.returncode == 0:
+                    print("[main] yt-dlp updated successfully via built-in updater.")
+                    time.sleep(86400)
+                    continue
+            # Fallback: use pip install with --user flag (works in Replit)
+            result = subprocess.run(
+                [sys.executable, "-m", "pip", "install", "-U", "--user", "yt-dlp"],
+                capture_output=True, text=True, timeout=120
+            )
+            if result.returncode == 0:
+                print("[main] yt-dlp updated successfully via pip.")
+            else:
+                # Last resort: try without check so we don't crash
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp",
+                     "--target", str(Path(sys.executable).parent.parent / "lib" / f"python{sys.version_info.major}.{sys.version_info.minor}" / "site-packages")],
+                    capture_output=True, timeout=120
+                )
+                print("[main] yt-dlp update attempted.")
         except Exception as e:
-            print(f"[main] Failed to update yt-dlp: {e}")
+            print(f"[main] yt-dlp auto-update skipped: {e}")
         # wait 24 hours
         time.sleep(86400)
 

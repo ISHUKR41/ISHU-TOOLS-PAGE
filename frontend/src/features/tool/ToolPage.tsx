@@ -1604,6 +1604,53 @@ export default function ToolPage() {
                 >
                   {runError && (() => {
                     const diagHint = slug ? getToolDiagnosticHint(slug, runError) : ''
+                    const isYouTubeBot = /youtube.*block|bot.detection|bot.check|needs.authenti|cookies.*field|Get cookies/i.test(runError)
+                    const isCookieHint = /cookies/i.test(runError)
+
+                    if (isYouTubeBot) {
+                      return (
+                        <div className='result-error' style={{ borderLeft: `3px solid #ff0000`, background: 'rgba(255,0,0,0.06)' }}>
+                          <div style={{ fontSize: 22, lineHeight: 1 }}>📺</div>
+                          <div style={{ flex: 1 }}>
+                            <strong style={{ color: '#ff6b6b' }}>YouTube Bot Detection</strong>
+                            <p style={{ marginTop: 6, marginBottom: 12, lineHeight: 1.6 }}>
+                              YouTube is actively blocking server-side downloads. The fastest fix is to paste your browser cookies (takes ~30 seconds):
+                            </p>
+                            <ol style={{ margin: '0 0 14px 0', paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                              <li style={{ fontSize: 13, lineHeight: 1.6 }}>Open <strong>youtube.com</strong> in Chrome/Edge and sign in</li>
+                              <li style={{ fontSize: 13, lineHeight: 1.6 }}>Install the free <a href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc" target="_blank" rel="noopener noreferrer" style={{ color: toolTheme.accent }}>Get cookies.txt LOCALLY</a> extension</li>
+                              <li style={{ fontSize: 13, lineHeight: 1.6 }}>Click the extension on youtube.com → <strong>Export</strong></li>
+                              <li style={{ fontSize: 13, lineHeight: 1.6 }}>Open the file, select all text, copy it</li>
+                              <li style={{ fontSize: 13, lineHeight: 1.6 }}>Paste into the <strong>Cookies</strong> field above and click <strong>Run</strong> again</li>
+                            </ol>
+                            <div className='result-error-actions'>
+                              <a
+                                href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className='result-error-retry'
+                                style={{ color: toolTheme.accent, borderColor: `${toolTheme.accent}55`, textDecoration: 'none' }}
+                              >
+                                🔗 Get the Extension (Free)
+                              </a>
+                              <button
+                                type='button'
+                                className='result-error-retry secondary'
+                                onClick={() => {
+                                  handleReset()
+                                  const form = document.querySelector('.tool-form') as HTMLFormElement | null
+                                  form?.requestSubmit()
+                                }}
+                              >
+                                <RefreshCw size={14} />
+                                Retry
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+
                     return (
                     <div className='result-error'>
                       <X size={18} />
@@ -1613,6 +1660,11 @@ export default function ToolPage() {
                         {diagHint && (
                           <p className='result-error-diagnostic'>
                             💡 {diagHint}
+                          </p>
+                        )}
+                        {isCookieHint && !isYouTubeBot && (
+                          <p className='result-error-diagnostic'>
+                            💡 Paste your browser cookies in the Cookies field to authenticate with the platform.
                           </p>
                         )}
                         <p className='result-error-hint'>

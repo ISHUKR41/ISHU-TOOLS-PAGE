@@ -1308,10 +1308,22 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
   }
 
   // Fallback: generic smart display
-  const scalarKeys = Object.keys(data).filter(k => data[k] !== null && data[k] !== undefined && typeof data[k] !== 'object' && !Array.isArray(data[k]))
-  const arrayKeys = Object.keys(data).filter(k => Array.isArray(data[k]) && !((data[k] as unknown[])[0] && typeof (data[k] as unknown[])[0] === 'object'))
-  const objectArrayKeys = Object.keys(data).filter(k => rowsFromArray(data[k]).length > 0)
-  const objectKeys = Object.keys(data).filter(k => isRecord(data[k]))
+  // Keys that are rendered separately (fix_steps, help_url, etc.) — exclude from generic grid
+  const _SPECIAL_KEYS = new Set(['fix_steps', 'help_url', 'alternatives', 'next_steps', 'open_original_url',
+    'fallback_mode', 'attempts_tried', 'error', 'note', 'tip', 'url'])
+
+  const scalarKeys = Object.keys(data).filter(k =>
+    data[k] !== null && data[k] !== undefined &&
+    typeof data[k] !== 'object' && !Array.isArray(data[k]) &&
+    !_SPECIAL_KEYS.has(k)
+  )
+  const arrayKeys = Object.keys(data).filter(k =>
+    Array.isArray(data[k]) &&
+    !_SPECIAL_KEYS.has(k) &&
+    !((data[k] as unknown[])[0] && typeof (data[k] as unknown[])[0] === 'object')
+  )
+  const objectArrayKeys = Object.keys(data).filter(k => !_SPECIAL_KEYS.has(k) && rowsFromArray(data[k]).length > 0)
+  const objectKeys = Object.keys(data).filter(k => !_SPECIAL_KEYS.has(k) && isRecord(data[k]))
   // Check for primary text output
   const textKeys = ['output', 'text', 'result', 'content', 'answer', 'paraphrased', 'words', 'in_words', 'ascii_art']
   const primaryText = textKeys.find(k => data[k] && typeof data[k] === 'string')
@@ -1323,14 +1335,14 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
       {primaryText && (
         <CodeResultRenderer text={String(data[primaryText])} label={primaryText.replace(/_/g, ' ')} />
       )}
-      {typeof data.error === 'string' && (
+      {typeof data.error === 'string' && !['No URL', 'Not YouTube', 'No audio file produced', 'No video file produced'].includes(String(data.error)) && (
         <div style={{ padding: '12px 14px', background: 'rgba(255,100,80,0.08)', borderRadius: 8, fontSize: 13, color: '#ff9580', borderLeft: '3px solid #ff6889' }}>
           {String(data.error)}
         </div>
       )}
       {scalarKeys.filter(k => k !== primaryText).length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
-          {scalarKeys.filter(k => k !== primaryText && !['error', 'note', 'tip'].includes(k)).map(k => (
+          {scalarKeys.filter(k => k !== primaryText).map(k => (
             <DataCard key={k} label={k} value={data[k]} accent={accent} />
           ))}
         </div>
@@ -1386,6 +1398,116 @@ export default function SmartResultDisplay({ data, slug, accent = '#3bd0ff' }: S
           </div>
         )
       })}
+      {/* fix_steps: step-by-step recovery guide (YouTube bot detection, etc.) */}
+      {Array.isArray(data.fix_steps) && (data.fix_steps as unknown[]).length > 0 && (
+        <div style={{
+          padding: '16px 18px',
+          background: 'rgba(86,166,255,0.07)',
+          border: '1px solid rgba(86,166,255,0.25)',
+          borderRadius: 12,
+        }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#56a6ff', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            How to fix it — step by step
+          </div>
+          <ol style={{ margin: 0, paddingLeft: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {(data.fix_steps as string[]).map((step, i) => (
+              <li key={i} style={{ fontSize: 13, color: '#ecf2ff', lineHeight: 1.6 }}>
+                {step}
+              </li>
+            ))}
+          </ol>
+          {data.help_url && typeof data.help_url === 'string' && (
+            <a
+              href={data.help_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                marginTop: 14,
+                padding: '8px 14px',
+                background: '#56a6ff18',
+                border: '1px solid #56a6ff40',
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#56a6ff',
+                textDecoration: 'none',
+              }}
+            >
+              🔗 Get cookies.txt LOCALLY (free Chrome extension)
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* alternatives: alternative suggestions */}
+      {Array.isArray(data.alternatives) && (data.alternatives as unknown[]).length > 0 && (
+        <div style={{ padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Alternatives
+          </div>
+          <ul style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {(data.alternatives as string[]).map((alt, i) => (
+              <li key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{alt}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* next_steps: recovery suggestions from _video_recovery_result */}
+      {Array.isArray(data.next_steps) && (data.next_steps as unknown[]).length > 0 && !(data.fix_steps) && (
+        <div style={{ padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Next Steps
+          </div>
+          <ol style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {(data.next_steps as string[]).map((step, i) => (
+              <li key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* open_original_url */}
+      {data.open_original_url && typeof data.open_original_url === 'string' && (
+        <div style={{ marginTop: 4 }}>
+          <a
+            href={data.open_original_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 14px', background: 'rgba(255,255,255,0.06)',
+              border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8,
+              fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)',
+              textDecoration: 'none',
+            }}
+          >
+            ↗ Open original URL
+          </a>
+        </div>
+      )}
+
+      {/* help_url without fix_steps */}
+      {data.help_url && typeof data.help_url === 'string' && !Array.isArray(data.fix_steps) && (
+        <a
+          href={data.help_url as string}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '8px 14px', background: 'rgba(86,166,255,0.1)',
+            border: '1px solid rgba(86,166,255,0.3)', borderRadius: 8,
+            fontSize: 13, fontWeight: 600, color: '#56a6ff',
+            textDecoration: 'none',
+          }}
+        >
+          🔗 Help &amp; Guide
+        </a>
+      )}
+
       {Boolean(data.note) && (
         <div style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: 8, fontSize: 13, color: 'rgba(255,255,255,0.6)', borderLeft: `3px solid ${accent}` }}>
           ℹ️ {String(data.note)}

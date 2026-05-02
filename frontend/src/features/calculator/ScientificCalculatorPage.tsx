@@ -292,7 +292,7 @@ export default function ScientificCalculatorPage() {
               <span>Monthly EMI, total interest and amortization.</span>
             </Link>
             <Link to='/tools' className='sci-calc-related-card sci-calc-related-card--all'>
-              <strong>All 1,200+ tools</strong>
+              <strong>All 1,300+ tools</strong>
               <span>Browse every tool in one searchable directory.</span>
             </Link>
           </div>

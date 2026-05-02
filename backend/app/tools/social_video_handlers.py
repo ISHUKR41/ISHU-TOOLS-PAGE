@@ -280,10 +280,38 @@ def _handle_pinterest_downloader(files: list[Path], payload: dict[str, Any], job
     fb = _pinterest_html_fallback(url, job_dir)
     if fb is not None:
         return fb
+    # Strategy 3: OpenGraph meta-tag scrape
+    og_fb = _og_meta_video_fallback(url, job_dir, "Pinterest video")
+    if og_fb is not None:
+        return og_fb
+    # Strategy 4: Cobalt API
+    try:
+        import httpx as _httpx
+        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
+            try:
+                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
+                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    timeout=20)
+                if r.status_code == 200:
+                    d = r.json()
+                    if d.get("status") == "tunnel" or d.get("url"):
+                        mu = d.get("url")
+                        if mu:
+                            v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                            if v.status_code == 200 and len(v.content) > 5000:
+                                out = job_dir / "pinterest_cobalt.mp4"
+                                out.write_bytes(v.content)
+                                size_mb = round(len(v.content) / 1024 / 1024, 2)
+                                return ExecutionResult(kind="file", message=f"Downloaded Pinterest media ({size_mb} MB)",
+                                    output_path=out, filename=out.name, content_type="video/mp4")
+            except Exception:
+                continue
+    except Exception:
+        pass
     return _social_recovery_result(
         url,
         "Pinterest downloader",
-        ["yt-dlp", "Pinterest OpenGraph scrape"],
+        ["yt-dlp", "Pinterest OpenGraph scrape", "OG meta-tag scrape", "Cobalt API"],
         primary,
     )
 
@@ -352,16 +380,51 @@ def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Reddit post URL.", data={"error": "No URL"})
     if "reddit.com" not in url and "redd.it" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Reddit URL.", data={"error": "Not Reddit"})
-    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
-    if primary.kind == "file":
-        return primary
+    # Strategy 1: Reddit JSON API (fastest, no auth)
     fb = _reddit_json_fallback(url, job_dir)
     if fb is not None:
         return fb
+    # Strategy 2: yt-dlp (handles more formats)
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    # Strategy 3: Try old.reddit.com variant
+    old_url = url.replace("www.reddit.com", "old.reddit.com").replace("https://reddit.com", "https://old.reddit.com")
+    if old_url != url:
+        old_fb = _reddit_json_fallback(old_url, job_dir)
+        if old_fb is not None:
+            return old_fb
+    # Strategy 4: OpenGraph meta-tag scrape
+    og_fb = _og_meta_video_fallback(url, job_dir, "Reddit video")
+    if og_fb is not None:
+        return og_fb
+    # Strategy 5: Cobalt API
+    try:
+        import httpx as _httpx
+        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
+            try:
+                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
+                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    timeout=20)
+                if r.status_code == 200:
+                    d = r.json()
+                    mu = d.get("url")
+                    if mu:
+                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            out = job_dir / "reddit_cobalt.mp4"
+                            out.write_bytes(v.content)
+                            size_mb = round(len(v.content) / 1024 / 1024, 2)
+                            return ExecutionResult(kind="file", message=f"Downloaded Reddit media ({size_mb} MB)",
+                                output_path=out, filename=out.name, content_type="video/mp4")
+            except Exception:
+                continue
+    except Exception:
+        pass
     return _social_recovery_result(
         url,
         "Reddit video downloader",
-        ["yt-dlp with audio/video merge", "Reddit public JSON fallback"],
+        ["Reddit public JSON fallback", "yt-dlp with audio/video merge", "old.reddit.com fallback", "OG meta-tag scrape", "Cobalt API"],
         primary,
     )
 
@@ -377,13 +440,37 @@ def _handle_twitch_downloader(files: list[Path], payload: dict[str, Any], job_di
     primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
     if primary.kind == "file":
         return primary
+    # Strategy 2: OpenGraph meta-tag scrape
     fb = _og_meta_video_fallback(url, job_dir, "Twitch video")
     if fb is not None:
         return fb
+    # Strategy 3: Cobalt API
+    try:
+        import httpx as _httpx
+        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
+            try:
+                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
+                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    timeout=20)
+                if r.status_code == 200:
+                    d = r.json()
+                    mu = d.get("url")
+                    if mu:
+                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            out = job_dir / "twitch_cobalt.mp4"
+                            out.write_bytes(v.content)
+                            size_mb = round(len(v.content) / 1024 / 1024, 2)
+                            return ExecutionResult(kind="file", message=f"Downloaded Twitch clip ({size_mb} MB)",
+                                output_path=out, filename=out.name, content_type="video/mp4")
+            except Exception:
+                continue
+    except Exception:
+        pass
     return _social_recovery_result(
         url,
         "Twitch downloader",
-        ["yt-dlp", "OpenGraph video scrape"],
+        ["yt-dlp", "OpenGraph video scrape", "Cobalt API"],
         primary,
     )
 
@@ -457,17 +544,59 @@ def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a LinkedIn video post URL.", data={"error": "No URL"})
     if "linkedin.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid LinkedIn URL.", data={"error": "Not LinkedIn"})
-    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    cookies = (payload.get("cookies") or payload.get("cookies_text") or "").strip()
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality")), **({"cookiefile": None} if not cookies else {})})
     if primary.kind == "file":
         return primary
+    # Strategy 2: OpenGraph meta-tag scrape (works for public posts)
     fb = _og_meta_video_fallback(url, job_dir, "LinkedIn video")
     if fb is not None:
         return fb
-    return _social_recovery_result(
-        url,
-        "LinkedIn video downloader",
-        ["yt-dlp", "OpenGraph video scrape"],
-        primary,
+    # Strategy 3: Try mobile LinkedIn URL variant
+    mobile_url = url.replace("www.linkedin.com", "m.linkedin.com")
+    if mobile_url != url:
+        mob_fb = _og_meta_video_fallback(mobile_url, job_dir, "LinkedIn video")
+        if mob_fb is not None:
+            return mob_fb
+    # Strategy 4: Cobalt API
+    try:
+        import httpx as _httpx
+        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
+            try:
+                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
+                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    timeout=20)
+                if r.status_code == 200:
+                    d = r.json()
+                    mu = d.get("url")
+                    if mu:
+                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            out = job_dir / "linkedin_cobalt.mp4"
+                            out.write_bytes(v.content)
+                            size_mb = round(len(v.content) / 1024 / 1024, 2)
+                            return ExecutionResult(kind="file", message=f"Downloaded LinkedIn video ({size_mb} MB)",
+                                output_path=out, filename=out.name, content_type="video/mp4")
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return ExecutionResult(
+        kind="json",
+        message="LinkedIn video downloader could not fetch this media after trying every available method. LinkedIn's videos are often login-gated.",
+        data={
+            "error": "download_failed",
+            "fallback_mode": True,
+            "url": url,
+            "attempts_tried": ["yt-dlp", "OpenGraph video scrape", "mobile LinkedIn URL", "Cobalt API"],
+            "tip": "LinkedIn videos often require authentication. Sign in to LinkedIn in Chrome, install 'Get cookies.txt LOCALLY', export cookies, and paste them in the Cookies field.",
+            "next_steps": [
+                "Confirm the video is public (not login-gated).",
+                "Sign in to linkedin.com → install 'Get cookies.txt LOCALLY' Chrome extension → export cookies → paste in the Cookies field.",
+                "Try right-clicking the video on LinkedIn and selecting 'Save Video As' in your browser.",
+            ],
+            "open_original_url": url,
+        },
     )
 
 
@@ -479,11 +608,34 @@ def _handle_bilibili_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Bilibili video URL.", data={"error": "No URL"})
     if "bilibili.com" not in url and "b23.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Bilibili URL.", data={"error": "Not Bilibili"})
+    # Strategy 1: yt-dlp with bilibili-specific cookies hint
     primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
     if primary.kind == "file":
         return primary
+    # Strategy 2: OG meta tag fallback
     fb = _og_meta_video_fallback(url, job_dir, "Bilibili video")
-    return fb if fb is not None else primary
+    if fb is not None:
+        return fb
+    # Strategy 3: Cobalt API (supports Bilibili)
+    try:
+        import httpx as _httpx
+        r = _httpx.post("https://api.cobalt.tools/", json={"url": url, "downloadMode": "auto"},
+            headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, timeout=20)
+        if r.status_code == 200:
+            d = r.json()
+            mu = d.get("url")
+            if mu:
+                v = _httpx.get(mu, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                if v.status_code == 200 and len(v.content) > 5000:
+                    out = job_dir / "bilibili_video.mp4"
+                    out.write_bytes(v.content)
+                    size_mb = round(len(v.content) / 1024 / 1024, 2)
+                    return ExecutionResult(kind="file", message=f"Downloaded Bilibili video ({size_mb} MB)",
+                        output_path=out, filename=out.name, content_type="video/mp4")
+    except Exception:
+        pass
+    return _social_recovery_result(url, "Bilibili downloader",
+        ["yt-dlp", "OG meta scrape", "Cobalt API"], primary)
 
 
 # ─── Rumble Downloader ────────────────────────────────────────────────────────
@@ -494,11 +646,38 @@ def _handle_rumble_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste a Rumble video URL.", data={"error": "No URL"})
     if "rumble.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Rumble URL.", data={"error": "Not Rumble"})
+    # Strategy 1: yt-dlp
     primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
     if primary.kind == "file":
         return primary
+    # Strategy 2: Rumble embed API — public videos expose iframe src with direct video URLs
+    try:
+        import re as _re, httpx as _httpx
+        m = _re.search(r"rumble\.com/(?:embed/)?([a-zA-Z0-9_-]+)", url)
+        if m:
+            vid_id = m.group(1)
+            embed_url = f"https://rumble.com/embed/{vid_id}/"
+            r = _httpx.get(embed_url, timeout=15, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
+            if r.status_code == 200:
+                # Rumble embed page contains video.mp4 URLs in script tags
+                mp4s = _re.findall(r'"url":"(https://[^"]+\.mp4[^"]*)"', r.text)
+                if mp4s:
+                    best = mp4s[0].replace("\\u0026", "&")
+                    v = _httpx.get(best, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                    if v.status_code == 200 and len(v.content) > 5000:
+                        out = job_dir / f"rumble_{vid_id}.mp4"
+                        out.write_bytes(v.content)
+                        size_mb = round(len(v.content) / 1024 / 1024, 2)
+                        return ExecutionResult(kind="file", message=f"Downloaded Rumble video ({size_mb} MB)",
+                            output_path=out, filename=out.name, content_type="video/mp4")
+    except Exception:
+        pass
+    # Strategy 3: OG meta fallback
     fb = _og_meta_video_fallback(url, job_dir, "Rumble video")
-    return fb if fb is not None else primary
+    if fb is not None:
+        return fb
+    return _social_recovery_result(url, "Rumble downloader",
+        ["yt-dlp", "Rumble embed API", "OG meta scrape"], primary)
 
 
 # ─── SoundCloud Downloader ────────────────────────────────────────────────────
@@ -509,6 +688,7 @@ def _handle_soundcloud_downloader(files: list[Path], payload: dict[str, Any], jo
         return ExecutionResult(kind="json", message="Please paste a SoundCloud track URL.", data={"error": "No URL"})
     if "soundcloud.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid SoundCloud URL.", data={"error": "Not SoundCloud"})
+    # Strategy 1: yt-dlp with MP3 post-processing (best quality)
     opts = {
         "format": "bestaudio/best",
         "postprocessors": [{
@@ -518,18 +698,58 @@ def _handle_soundcloud_downloader(files: list[Path], payload: dict[str, Any], jo
         }],
         "outtmpl": str(job_dir / "%(title)s.%(ext)s"),
     }
+    title = "audio"
     try:
         import yt_dlp
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=True)
-            title = info.get("title", "audio")[:80]
+            title = (info or {}).get("title", "audio")[:80]
         mp3_files = list(job_dir.glob("*.mp3"))
         if mp3_files:
             out = sorted(mp3_files, key=lambda f: f.stat().st_size, reverse=True)[0]
             return ExecutionResult(kind="file", output_path=out, filename=f"{title}.mp3", message=f"Downloaded: {title}")
-        return ExecutionResult(kind="json", message="Download failed.", data={"error": "No MP3 output"})
-    except Exception as e:
-        return ExecutionResult(kind="json", message=f"SoundCloud download error: {str(e)[:200]}", data={"error": str(e)[:200]})
+    except Exception as e1:
+        pass
+    # Strategy 2: yt-dlp raw audio (no ffmpeg post-processing)
+    opts2 = {
+        "format": "bestaudio/best",
+        "outtmpl": str(job_dir / "%(title)s.%(ext)s"),
+    }
+    try:
+        import yt_dlp
+        with yt_dlp.YoutubeDL(opts2) as ydl:
+            info = ydl.extract_info(url, download=True)
+            title = (info or {}).get("title", "audio")[:80]
+        audio_files = [f for f in job_dir.iterdir() if f.suffix.lower() in (".mp3", ".m4a", ".opus", ".ogg", ".aac", ".webm")]
+        if audio_files:
+            out = sorted(audio_files, key=lambda f: f.stat().st_size, reverse=True)[0]
+            return ExecutionResult(kind="file", output_path=out, filename=out.name, message=f"Downloaded: {title}")
+    except Exception:
+        pass
+    # Strategy 3: Cobalt API (audio extraction)
+    try:
+        import httpx as _httpx
+        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
+            try:
+                r = _httpx.post(inst, json={"url": url, "downloadMode": "audio"},
+                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+                    timeout=20)
+                if r.status_code == 200:
+                    d = r.json()
+                    mu = d.get("url")
+                    if mu:
+                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            out = job_dir / f"{title[:50]}.mp3"
+                            out.write_bytes(v.content)
+                            return ExecutionResult(kind="file", message=f"Downloaded audio via Cobalt: {title}",
+                                output_path=out, filename=out.name, content_type="audio/mpeg")
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return ExecutionResult(kind="json", message="SoundCloud download failed. The track may be private or geo-restricted.",
+        data={"error": "All strategies failed", "tip": "Ensure the track is public. Some tracks are region-locked or require SoundCloud Go+."})
 
 
 # ─── Mixcloud Downloader ──────────────────────────────────────────────────────
@@ -540,7 +760,33 @@ def _handle_mixcloud_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Mixcloud URL.", data={"error": "No URL"})
     if "mixcloud.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Mixcloud URL.", data={"error": "Not Mixcloud"})
-    return _yt_dlp_download(url, job_dir, {"format": "bestaudio/best"})
+    primary = _yt_dlp_download(url, job_dir, {"format": "bestaudio/best"})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: Mixcloud GraphQL API (public tracks expose audio URL)
+    try:
+        import re as _re, httpx as _httpx
+        m = _re.search(r"mixcloud\.com/([^/]+)/([^/?#]+)", url)
+        if m:
+            user, slug = m.group(1), m.group(2)
+            query = '{"query":"{cloudcast(lookup:{username:\\"%s\\",slug:\\"%s\\"}){audioLength,audioUrl,name,owner{username}}}"}' % (user, slug)
+            r = _httpx.post("https://www.mixcloud.com/graphql", content=query,
+                headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, timeout=15)
+            if r.status_code == 200:
+                d = r.json()
+                audio_url = ((d.get("data") or {}).get("cloudcast") or {}).get("audioUrl")
+                if audio_url:
+                    v = _httpx.get(audio_url, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                    if v.status_code == 200 and len(v.content) > 5000:
+                        name = ((d["data"]["cloudcast"] or {}).get("name") or slug)[:60]
+                        out = job_dir / f"{name}.mp3"
+                        out.write_bytes(v.content)
+                        size_mb = round(len(v.content) / 1024 / 1024, 2)
+                        return ExecutionResult(kind="file", message=f"Downloaded: {name} ({size_mb} MB)",
+                            output_path=out, filename=out.name, content_type="audio/mpeg")
+    except Exception:
+        pass
+    return _social_recovery_result(url, "Mixcloud downloader", ["yt-dlp", "Mixcloud GraphQL API"], primary)
 
 
 # ─── Bandcamp Downloader ──────────────────────────────────────────────────────
@@ -551,7 +797,31 @@ def _handle_bandcamp_downloader(files: list[Path], payload: dict[str, Any], job_
         return ExecutionResult(kind="json", message="Please paste a Bandcamp track URL.", data={"error": "No URL"})
     if "bandcamp.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Bandcamp URL.", data={"error": "Not Bandcamp"})
-    return _yt_dlp_download(url, job_dir, {"format": "bestaudio/best"})
+    primary = _yt_dlp_download(url, job_dir, {"format": "bestaudio/best"})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: Bandcamp page scrape — public track pages embed MP3 in window.TralbumData
+    try:
+        import re as _re, httpx as _httpx, json as _json
+        r = _httpx.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
+        if r.status_code == 200:
+            m = _re.search(r'trackinfo:\s*(\[.+?\])\s*,\s*\n', r.text, _re.DOTALL)
+            if m:
+                tracks = _json.loads(m.group(1))
+                for track in tracks:
+                    mp3 = (track.get("file") or {}).get("mp3-128") or (track.get("file") or {}).get("mp3-v0")
+                    if mp3:
+                        v = _httpx.get(mp3, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            title = (track.get("title") or "bandcamp_track")[:60]
+                            out = job_dir / f"{title}.mp3"
+                            out.write_bytes(v.content)
+                            size_mb = round(len(v.content) / 1024 / 1024, 2)
+                            return ExecutionResult(kind="file", message=f"Downloaded: {title} ({size_mb} MB)",
+                                output_path=out, filename=out.name, content_type="audio/mpeg")
+    except Exception:
+        pass
+    return _social_recovery_result(url, "Bandcamp downloader", ["yt-dlp", "Bandcamp page scrape"], primary)
 
 
 # ─── Odysee / LBRY Downloader ─────────────────────────────────────────────────
@@ -562,7 +832,39 @@ def _handle_odysee_downloader(files: list[Path], payload: dict[str, Any], job_di
         return ExecutionResult(kind="json", message="Please paste an Odysee video URL.", data={"error": "No URL"})
     if "odysee.com" not in url and "lbry.tv" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Odysee URL.", data={"error": "Not Odysee"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: Odysee API — public claim info endpoint
+    try:
+        import re as _re, httpx as _httpx
+        m = _re.search(r"odysee\.com/@?([^/]+)/([^?#]+)", url)
+        if m:
+            channel, claim = m.group(1), m.group(2)
+            r = _httpx.post("https://api.na-backend.odysee.com/api/v1/proxy",
+                json={"method": "claim_search", "params": {"channel": f"@{channel}", "name": claim, "limit": 1}},
+                headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+            if r.status_code == 200:
+                claims = (r.json().get("result") or {}).get("items") or []
+                if claims:
+                    sd = (claims[0].get("value") or {}).get("source") or {}
+                    media_url = sd.get("url") or sd.get("download_url")
+                    if media_url:
+                        v = _httpx.get(media_url, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                        if v.status_code == 200 and len(v.content) > 5000:
+                            title = ((claims[0].get("value") or {}).get("title") or claim)[:60]
+                            ext = sd.get("media_type", "video/mp4").split("/")[-1]
+                            out = job_dir / f"{title}.{ext}"
+                            out.write_bytes(v.content)
+                            size_mb = round(len(v.content) / 1024 / 1024, 2)
+                            return ExecutionResult(kind="file", message=f"Downloaded: {title} ({size_mb} MB)",
+                                output_path=out, filename=out.name, content_type=f"video/{ext}")
+    except Exception:
+        pass
+    og = _og_meta_video_fallback(url, job_dir, "Odysee video")
+    if og is not None:
+        return og
+    return _social_recovery_result(url, "Odysee downloader", ["yt-dlp", "Odysee API", "OG meta scrape"], primary)
 
 
 # ─── Streamable Downloader ────────────────────────────────────────────────────
@@ -573,7 +875,46 @@ def _handle_streamable_downloader(files: list[Path], payload: dict[str, Any], jo
         return ExecutionResult(kind="json", message="Please paste a Streamable video URL.", data={"error": "No URL"})
     if "streamable.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Streamable URL.", data={"error": "Not Streamable"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: Streamable API — public videos expose direct MP4 via /api/videos/{shortcode}
+    try:
+        import re as _re, httpx as _httpx
+        m = _re.search(r"streamable\.com/([a-zA-Z0-9]+)", url)
+        if m:
+            sc = m.group(1)
+            api_url = f"https://api.streamable.com/videos/{sc}"
+            r = _httpx.get(api_url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+            if r.status_code == 200:
+                d = r.json()
+                files_data = d.get("files") or {}
+                best = None
+                best_h = 0
+                for key, fdata in files_data.items():
+                    if "mp4" in key.lower() and fdata.get("url"):
+                        h = fdata.get("height", 0)
+                        if h > best_h:
+                            best_h = h
+                            best = fdata.get("url")
+                if best:
+                    vid_url = best if best.startswith("http") else "https:" + best
+                    v = _httpx.get(vid_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                    if v.status_code == 200 and len(v.content) > 5000:
+                        title = d.get("title") or f"streamable_{sc}"
+                        out = job_dir / f"{title[:50]}.mp4"
+                        out.write_bytes(v.content)
+                        size_mb = round(len(v.content) / 1024 / 1024, 2)
+                        return ExecutionResult(kind="file", message=f"Downloaded: {title} ({size_mb} MB)",
+                            output_path=out, filename=out.name, content_type="video/mp4")
+    except Exception:
+        pass
+    # Strategy 3: OG meta fallback
+    og = _og_meta_video_fallback(url, job_dir, "Streamable video")
+    if og is not None:
+        return og
+    return _social_recovery_result(url, "Streamable downloader",
+        ["yt-dlp", "Streamable public API", "OG meta scrape"], primary)
 
 
 # ─── Kick Downloader ──────────────────────────────────────────────────────────
@@ -584,7 +925,33 @@ def _handle_kick_downloader(files: list[Path], payload: dict[str, Any], job_dir:
         return ExecutionResult(kind="json", message="Please paste a Kick clip URL.", data={"error": "No URL"})
     if "kick.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Kick.com URL.", data={"error": "Not Kick"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: OG meta-tag scrape (Kick embeds video URLs in OG tags)
+    og = _og_meta_video_fallback(url, job_dir, "Kick clip")
+    if og is not None:
+        return og
+    # Strategy 3: Cobalt API
+    try:
+        import httpx as _httpx
+        r = _httpx.post("https://api.cobalt.tools/", json={"url": url, "downloadMode": "auto"},
+            headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, timeout=20)
+        if r.status_code == 200:
+            d = r.json()
+            mu = d.get("url")
+            if mu:
+                v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                if v.status_code == 200 and len(v.content) > 5000:
+                    out = job_dir / "kick_clip.mp4"
+                    out.write_bytes(v.content)
+                    size_mb = round(len(v.content) / 1024 / 1024, 2)
+                    return ExecutionResult(kind="file", message=f"Downloaded Kick clip ({size_mb} MB)",
+                        output_path=out, filename=out.name, content_type="video/mp4")
+    except Exception:
+        pass
+    return _social_recovery_result(url, "Kick clip downloader",
+        ["yt-dlp", "OG meta scrape", "Cobalt API"], primary)
 
 
 # ─── Imgur Downloader ─────────────────────────────────────────────────────────
@@ -595,7 +962,39 @@ def _handle_imgur_downloader(files: list[Path], payload: dict[str, Any], job_dir
         return ExecutionResult(kind="json", message="Please paste an Imgur URL.", data={"error": "No URL"})
     if "imgur.com" not in url:
         return ExecutionResult(kind="json", message="Please enter a valid Imgur URL.", data={"error": "Not Imgur"})
-    return _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    primary = _yt_dlp_download(url, job_dir, {"format": _social_format_for_quality(payload.get("quality"))})
+    if primary.kind == "file":
+        return primary
+    # Strategy 2: Imgur API — public images/GIFs via /3/image/{hash}
+    try:
+        import re as _re, httpx as _httpx
+        m = _re.search(r"imgur\.com/(?:gallery/)?([a-zA-Z0-9]+)(?:\.[a-z]+)?$", url)
+        if m:
+            img_id = m.group(1)
+            api_url = f"https://api.imgur.com/3/image/{img_id}"
+            r = _httpx.get(api_url, headers={"Authorization": "Client-ID 546c25a59c58ad7", "User-Agent": "Mozilla/5.0"}, timeout=15)
+            if r.status_code == 200:
+                d = r.json().get("data", {})
+                link = d.get("mp4") or d.get("gifv", "").replace(".gifv", ".mp4") or d.get("link")
+                if link:
+                    v = _httpx.get(link, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+                    if v.status_code == 200 and len(v.content) > 1000:
+                        ext = link.rsplit(".", 1)[-1][:4].lower()
+                        out = job_dir / f"imgur_{img_id}.{ext}"
+                        out.write_bytes(v.content)
+                        title = d.get("title") or f"imgur_{img_id}"
+                        size_mb = round(len(v.content) / 1024 / 1024, 2)
+                        ctype = "video/mp4" if ext in ("mp4", "webm") else f"image/{ext}"
+                        return ExecutionResult(kind="file", message=f"Downloaded: {title} ({size_mb} MB)",
+                            output_path=out, filename=out.name, content_type=ctype)
+    except Exception:
+        pass
+    # Strategy 3: OG meta fallback
+    og = _og_meta_video_fallback(url, job_dir, "Imgur media")
+    if og is not None:
+        return og
+    return _social_recovery_result(url, "Imgur downloader",
+        ["yt-dlp", "Imgur public API", "OG meta scrape"], primary)
 
 
 # ─── YouTube Thumbnail Downloader ─────────────────────────────────────────────

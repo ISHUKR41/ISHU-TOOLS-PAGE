@@ -441,8 +441,16 @@ const DOWNLOADER_SLUGS = new Set([
   'linkedin-video-downloader', 'snapchat-downloader', 'snapchat-story-downloader',
   'twitch-clip-downloader', 'tumblr-downloader',
   'threads-downloader', 'bilibili-downloader',
+  'mixcloud-downloader', 'bandcamp-downloader', 'odysee-downloader',
+  'rumble-downloader', 'kick-downloader', 'kick-clip-downloader',
+  'streamable-downloader', 'imgur-downloader',
+  'twitch-downloader', 'twitch-video-downloader', 'twitch-clip-downloader',
+  'linkedin-downloader', 'linkedin-video-downloader',
   'any-video-downloader', 'video-downloader', 'all-video-downloader',
   'audio-downloader', 'music-downloader', 'mp3-downloader',
+  'universal-video-downloader', 'video-info-extractor',
+  'youtube-to-gif', 'youtube-chapter-downloader',
+  'm3u8-downloader', 'hls-downloader', 'playlist-downloader',
 ])
 
 const WEB_SCRAPER_SLUGS = new Set([
@@ -501,18 +509,30 @@ export function getToolDiagnosticHint(slug: string, errorMsg: string): string {
       return 'This content may be geo-restricted. Try using a VPN or check if the content is available in your region.'
     }
     if (/captcha|robot|bot|verify/i.test(lower)) {
-      return 'The platform is requiring human verification. Try again after a short wait, or paste fresh cookies.'
+      return 'The platform is requiring human verification. Try again after a short wait, or paste fresh cookies. For YouTube, paste your browser cookies in the Cookies field.'
     }
     if (/age.?restrict|mature|nsfw|18\+/i.test(lower)) {
-      return 'This content is age-restricted. Try signing in to the platform first, then paste your cookies.'
+      return 'This content is age-restricted. Try signing in to the platform first, then paste your browser cookies in the Cookies field.'
     }
     if (/copyright|dmca|taken down|claim/i.test(lower)) {
       return 'This content has been removed due to a copyright claim and cannot be downloaded.'
     }
     if (/timeout|timed? out/i.test(lower)) {
-      return 'The download is taking too long — the file may be very large. Try a shorter video or lower quality.'
+      return 'The download is taking too long — the file may be very large. Try a shorter video or lower quality setting.'
     }
-    return 'Social media platforms frequently change their APIs. If this tool fails, try again in a few minutes — our backend auto-updates to handle these changes.'
+    if (/instagram.*block|instagram.*rate|403.*instagram/i.test(lower)) {
+      return 'Instagram is blocking this download. Sign in to instagram.com in Chrome, install "Get cookies.txt LOCALLY" extension, export cookies, and paste them in the Cookies field above.'
+    }
+    if (/youtube.*block|bot.detection|sign.*youtube|youtube.*sign/i.test(lower)) {
+      return 'YouTube is detecting server requests as bot traffic. Sign in to youtube.com in Chrome, install "Get cookies.txt LOCALLY" extension, export cookies, and paste them in the Cookies field above.'
+    }
+    if (/tiktok.*block|tiktok.*rate|403.*tiktok/i.test(lower)) {
+      return 'TikTok is blocking this download. Try again in 60 seconds, or paste your TikTok cookies in the Cookies field.'
+    }
+    if (/twitter.*block|x\.com.*block|403.*twitter/i.test(lower)) {
+      return 'Twitter/X is blocking this download. This sometimes self-resolves — try again in a few minutes.'
+    }
+    return 'Social media platforms frequently change their APIs. If this tool fails, try again in a few minutes — our backend auto-updates to handle these changes. For persistent failures, paste your browser cookies in the Cookies field.'
   }
 
   if (WEB_SCRAPER_SLUGS.has(slug)) {

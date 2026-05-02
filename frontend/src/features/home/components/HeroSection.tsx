@@ -41,7 +41,7 @@ export default function HeroSection({
   imageCount,
   socialLinks,
 }: HeroSectionProps) {
-  const toolLabel = toolCount > 0 ? toolCount : 1200
+  const toolLabel = toolCount > 0 ? toolCount : 1300
   const categoryLabel = categoryCount > 0 ? categoryCount : 61
 
   return (

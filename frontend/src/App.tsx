@@ -22,7 +22,7 @@ function AppLoader() {
           <div className='app-loader-ring-core' />
         </div>
         <span className='app-loader-text'>ISHU TOOLS</span>
-        <span className='app-loader-sub'>Loading 1,200+ free tools…</span>
+        <span className='app-loader-sub'>Loading 1,300+ free tools…</span>
         <div className='app-loader-bar'><span /></div>
       </div>
     </div>

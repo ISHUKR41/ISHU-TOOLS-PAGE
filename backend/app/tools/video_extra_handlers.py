@@ -660,66 +660,81 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     quality = payload.get("quality")
     fmt = _format_for_quality(quality)
 
-    # YouTube-specific extractor args — try mweb client first (best bot bypass rate)
-    yt_extra_mweb = {
-        "extractor_args": {"youtube": {"player_client": ["mweb"]}},
-    }
-    yt_extra_default = {
+    # Strategy 1: yt-dlp mweb client (best bot bypass — simulates mobile browser)
+    primary = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
+        "extractor_args": {"youtube": {"player_client": ["mweb"], "skip_webpage": ["1"]}},
+    })
+    if primary.kind == "file":
+        return primary
+
+    # Strategy 2: yt-dlp ios client (Apple client, very low bot detection)
+    r2 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
+        "extractor_args": {"youtube": {"player_client": ["ios"], "skip_webpage": ["1"]}},
+    })
+    if r2.kind == "file":
+        return r2
+
+    # Strategy 3: yt-dlp tv_embedded client (TV/embedded, bypasses age gates)
+    r3 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
+        "extractor_args": {"youtube": {"player_client": ["tv_embedded", "web_embedded"]}},
+    })
+    if r3.kind == "file":
+        return r3
+
+    # Strategy 4: yt-dlp android+web clients (classic fallback)
+    r4 = _yt_dlp_download(url, job_dir, fmt=fmt, cookies_text=cookies, extra_opts={
         "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
-    }
+    })
+    if r4.kind == "file":
+        return r4
 
-    # Strategy 1: yt-dlp with mweb client (best bot bypass)
-    primary = _yt_dlp_download(url, job_dir, fmt=fmt, extra_opts=yt_extra_mweb, cookies_text=cookies)
-    if primary.kind == "file":
-        return primary
-
-    # Strategy 2: yt-dlp with android+web clients
-    primary = _yt_dlp_download(url, job_dir, fmt=fmt, extra_opts=yt_extra_default, cookies_text=cookies)
-    if primary.kind == "file":
-        return primary
-
-    # Strategy 3: Direct innertube API (multi-client, like SnapTube/VidMate)
+    # Strategy 5: Direct YouTube Innertube API (multi-client, like SnapTube/VidMate)
     fallback = _youtube_innertube_fallback(url, job_dir, quality=quality)
     if fallback is not None:
         return fallback
 
-    # Strategy 4: Cobalt API fallback
+    # Strategy 6: Cobalt API fallback (v10 + v9 multi-instance)
     cobalt_fb = _cobalt_api_fallback(url, job_dir)
     if cobalt_fb is not None:
         return cobalt_fb
 
-    # All strategies failed — give user a recovery path
+    # All strategies failed — give user a clear recovery path
+    last = next((r for r in [r4, r3, r2, primary] if r.data), primary)
+    err_code = (last.data.get("error", "needs_authentication") if last.data else "needs_authentication")
+
     if not cookies:
-        msg = (
-            "YouTube is blocking this download from our server (bot detection). "
-            "Quick fix: 1) Open youtube.com in Chrome and sign in. "
-            "2) Install the free 'Get cookies.txt LOCALLY' Chrome extension. "
-            "3) Click the extension on youtube.com \u2192 Export \u2192 copy the text. "
-            "4) Paste it into the 'Cookies' field above and retry. "
-            "This passes your browser session to the downloader and bypasses the bot check."
-        )
         return ExecutionResult(
             kind="json",
-            message=msg,
+            message=(
+                "YouTube is blocking this download from our server (bot detection). "
+                "The quickest fix is to paste your browser cookies — it takes about 30 seconds "
+                "and completely bypasses the bot check."
+            ),
             data={
-                "error": primary.data.get("error", "needs_authentication") if primary.data else "needs_authentication",
+                "error": err_code,
                 "url": url,
                 "fallback_mode": True,
                 "fix_steps": [
-                    "Sign in to youtube.com in Chrome",
-                    "Install 'Get cookies.txt LOCALLY' extension",
-                    "Export cookies on youtube.com",
-                    "Paste cookies text in the Cookies field",
-                    "Retry the download",
+                    "Open youtube.com in Chrome or Edge and sign in to your account",
+                    "Install the free 'Get cookies.txt LOCALLY' extension from the Chrome Web Store",
+                    "Click the extension icon while on youtube.com → choose 'Export'",
+                    "Open the downloaded cookies.txt, select all text, copy it",
+                    "Paste the copied text into the 'Cookies' field above and click Run again",
                 ],
                 "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
+                "alternatives": [
+                    "Try a lower quality (e.g. 720p instead of 1080p)",
+                    "Check if the video is public and not age-restricted",
+                    "Use youtube-dl or yt-dlp on your own computer for unrestricted downloads",
+                ],
             },
         )
     return _video_recovery_result(
         url,
         "YouTube downloader",
-        ["yt-dlp mweb client", "yt-dlp android/web clients", "YouTube Innertube clients", "Cobalt mirror APIs"],
-        primary,
+        ["yt-dlp mweb client", "yt-dlp ios client", "yt-dlp tv_embedded client",
+         "yt-dlp android/web clients", "YouTube Innertube API", "Cobalt mirror APIs (v10+v9)"],
+        last,
     )
 
 
@@ -754,41 +769,51 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     cookies = _coerce_str(payload.get("cookies") or payload.get("cookies_text"))
     kbps = _audio_quality_kbps(payload.get("audio_quality") or payload.get("bitrate") or payload.get("quality"))
 
-    # YouTube-specific extractor args — try mweb first for bot bypass
-    yt_extra_mweb = {"extractor_args": {"youtube": {"player_client": ["mweb"]}}}
-    yt_extra_default = {"extractor_args": {"youtube": {"player_client": ["android", "web"]}}}
-
     # Strategy 1: mweb client
     primary = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
-                                audio_kbps=kbps, extra_opts=yt_extra_mweb, cookies_text=cookies)
+                                audio_kbps=kbps, cookies_text=cookies,
+                                extra_opts={"extractor_args": {"youtube": {"player_client": ["mweb"], "skip_webpage": ["1"]}}})
     if primary.kind == "file":
         return primary
 
-    # Strategy 2: android+web clients
-    primary = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
-                                audio_kbps=kbps, extra_opts=yt_extra_default, cookies_text=cookies)
-    if primary.kind == "file":
-        return primary
+    # Strategy 2: ios client (low bot detection)
+    r2 = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
+                           audio_kbps=kbps, cookies_text=cookies,
+                           extra_opts={"extractor_args": {"youtube": {"player_client": ["ios"], "skip_webpage": ["1"]}}})
+    if r2.kind == "file":
+        return r2
 
-    # Strategy 3: Cobalt API fallback
+    # Strategy 3: android+web clients
+    r3 = _yt_dlp_download(url, job_dir, fmt=_AUDIO_FORMAT, audio_only=True,
+                           audio_kbps=kbps, cookies_text=cookies,
+                           extra_opts={"extractor_args": {"youtube": {"player_client": ["android", "web"]}}})
+    if r3.kind == "file":
+        return r3
+
+    # Strategy 4: Cobalt API fallback (audio mode)
     cobalt_fb = _cobalt_api_fallback(url, job_dir, audio_only=True)
     if cobalt_fb is not None:
         return cobalt_fb
 
-    # Give user a recovery path if no cookies provided
+    last = next((r for r in [r3, r2, primary] if r.data), primary)
     if not cookies:
-        msg = (
-            "YouTube is blocking this download from our server (bot detection). "
-            "Quick fix: Paste your YouTube cookies in the 'Cookies' field above. "
-            "Use the free 'Get cookies.txt LOCALLY' Chrome extension to export them."
-        )
         return ExecutionResult(
             kind="json",
-            message=msg,
+            message=(
+                "YouTube is blocking this audio extraction from our server (bot detection). "
+                "The quickest fix is to paste your browser cookies — takes about 30 seconds."
+            ),
             data={
-                "error": primary.data.get("error", "needs_authentication") if primary.data else "needs_authentication",
+                "error": last.data.get("error", "needs_authentication") if last.data else "needs_authentication",
                 "url": url,
                 "fallback_mode": True,
+                "fix_steps": [
+                    "Open youtube.com in Chrome or Edge and sign in",
+                    "Install the free 'Get cookies.txt LOCALLY' extension",
+                    "Click the extension on youtube.com → Export",
+                    "Copy all text from the downloaded file",
+                    "Paste into the 'Cookies' field above and click Run again",
+                ],
                 "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
             },
         )
@@ -803,73 +828,112 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
 
 def _cobalt_api_fallback(url: str, job_dir: Path, audio_only: bool = False) -> ExecutionResult | None:
-    """Third-party Cobalt API fallback (supports YT, IG, TikTok, X, Facebook, etc)."""
-    instances = [
-        "https://api.cobalt.tools/api/json",
+    """Multi-instance Cobalt API fallback supporting both v9 and v10 API formats."""
+
+    # --- Cobalt v10 instances (new API: POST /, Accept: application/json) ---
+    _V10_INSTANCES = [
+        "https://api.cobalt.tools/",
+        "https://cobalt.api.lisekilis.dev/",
+        "https://cobalt.perish.co/",
+        "https://cobalt.catto.codes/",
+        "https://cobalt.urdsbspam.eu.org/",
+    ]
+    # --- Legacy v9 instances (old API: POST /api/json) ---
+    _V9_INSTANCES = [
         "https://co.wuk.sh/api/json",
         "https://cobalt.kwiatekm.com/api/json",
-        "https://cobalt.qewertyy.dev/api/json"
+        "https://cobalt.qewertyy.dev/api/json",
+        "https://api.cobalt.tools/api/json",
     ]
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+
+    _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+    def _stream_to_file(media_url: str, out: Path) -> bool:
+        try:
+            with httpx.stream("GET", media_url, timeout=90, follow_redirects=True,
+                              headers={"User-Agent": _UA}) as v:
+                if v.status_code != 200:
+                    return False
+                with open(out, "wb") as f:
+                    for chunk in v.iter_bytes(chunk_size=256 * 1024):
+                        f.write(chunk)
+            return out.exists() and out.stat().st_size > 5000
+        except Exception:
+            return False
+
+    def _make_result(out: Path, ext: str) -> ExecutionResult:
+        size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+        ct = f"audio/{ext}" if audio_only else (f"video/{ext}" if ext in ("mp4", "webm") else f"image/{ext}")
+        return ExecutionResult(kind="file", message=f"Downloaded successfully via Cobalt ({size_mb} MB)",
+                               output_path=out, filename=out.name, content_type=ct)
+
+    # ── Try v10 API first ──────────────────────────────────────────────────
+    v10_payload = {
+        "url": url,
+        "videoQuality": "1080",
+        "downloadMode": "audio" if audio_only else "auto",
+        "audioFormat": "mp3" if audio_only else "best",
+        "filenameStyle": "basic",
     }
-    payload = {
+    v10_headers = {"Accept": "application/json", "Content-Type": "application/json", "User-Agent": _UA}
+    for endpoint in _V10_INSTANCES:
+        try:
+            r = httpx.post(endpoint, json=v10_payload, headers=v10_headers, timeout=12)
+            if r.status_code not in (200, 201):
+                continue
+            data = r.json()
+            status = data.get("status", "")
+            if status in ("tunnel", "redirect", "stream") and data.get("url"):
+                ext = "mp3" if audio_only else "mp4"
+                out = job_dir / f"cobalt_v10.{ext}"
+                if _stream_to_file(data["url"], out):
+                    return _make_result(out, ext)
+            elif status == "picker" and data.get("picker"):
+                for item in data["picker"]:
+                    media_url = item.get("url")
+                    if not media_url:
+                        continue
+                    ext = "mp4" if item.get("type") == "video" else ("mp3" if audio_only else "jpg")
+                    out = job_dir / f"cobalt_pick.{ext}"
+                    if _stream_to_file(media_url, out):
+                        return _make_result(out, ext)
+        except Exception:
+            continue
+
+    # ── Fall back to v9 API ────────────────────────────────────────────────
+    v9_payload = {
         "url": url,
         "vQuality": "1080",
         "isAudioOnly": audio_only,
         "aFormat": "mp3" if audio_only else "best",
-        "filenamePattern": "basic"
+        "filenamePattern": "basic",
     }
-    for endpoint in instances:
+    v9_headers = {"Accept": "application/json", "Content-Type": "application/json", "User-Agent": _UA}
+    for endpoint in _V9_INSTANCES:
         try:
-            r = httpx.post(endpoint, json=payload, headers=headers, timeout=15)
-            if r.status_code == 200:
-                data = r.json()
-                if data.get("status") in ["stream", "redirect", "success", "picker"] and data.get("url"):
-                    media_url = data["url"]
-                    ext = "mp3" if audio_only else "mp4"
-                    out = job_dir / f"download.{ext}"
-                    with httpx.stream("GET", media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]}) as v:
-                        if v.status_code == 200:
-                            with open(out, "wb") as f:
-                                for chunk in v.iter_bytes(chunk_size=256*1024):
-                                    f.write(chunk)
-                    if out.exists() and out.stat().st_size > 5000:
-                        size_mb = round(out.stat().st_size / 1024 / 1024, 2)
-                        return ExecutionResult(
-                            kind="file",
-                            message=f"Downloaded successfully ({size_mb} MB)",
-                            output_path=out,
-                            filename=out.name,
-                            content_type=f"audio/{ext}" if audio_only else f"video/{ext}"
-                        )
-                elif data.get("status") == "picker" and data.get("picker"):
-                    # Handle multiple media (e.g. IG carousel) - pick first video or image
-                    picker = data["picker"]
-                    for item in picker:
-                        media_url = item.get("url")
-                        if media_url:
-                            ext = "mp4" if item.get("type") == "video" else "jpg"
-                            if audio_only: ext = "mp3"
-                            out = job_dir / f"download.{ext}"
-                            with httpx.stream("GET", media_url, timeout=60, follow_redirects=True, headers={"User-Agent": headers["User-Agent"]}) as v:
-                                if v.status_code == 200:
-                                    with open(out, "wb") as f:
-                                        for chunk in v.iter_bytes(chunk_size=256*1024):
-                                            f.write(chunk)
-                            if out.exists() and out.stat().st_size > 5000:
-                                size_mb = round(out.stat().st_size / 1024 / 1024, 2)
-                                return ExecutionResult(
-                                    kind="file",
-                                    message=f"Downloaded successfully ({size_mb} MB)",
-                                    output_path=out,
-                                    filename=out.name,
-                                    content_type=f"audio/{ext}" if audio_only else (f"video/{ext}" if ext == "mp4" else f"image/{ext}")
-                                )
+            r = httpx.post(endpoint, json=v9_payload, headers=v9_headers, timeout=12)
+            if r.status_code != 200:
+                continue
+            data = r.json()
+            if data.get("status") in ("stream", "redirect", "success") and data.get("url"):
+                ext = "mp3" if audio_only else "mp4"
+                out = job_dir / f"cobalt_v9.{ext}"
+                if _stream_to_file(data["url"], out):
+                    return _make_result(out, ext)
+            elif data.get("status") == "picker" and data.get("picker"):
+                for item in data["picker"]:
+                    media_url = item.get("url")
+                    if not media_url:
+                        continue
+                    ext = "mp4" if item.get("type") == "video" else "jpg"
+                    if audio_only:
+                        ext = "mp3"
+                    out = job_dir / f"cobalt_pick_v9.{ext}"
+                    if _stream_to_file(media_url, out):
+                        return _make_result(out, ext)
         except Exception:
             continue
+
     return None
 
 
@@ -1034,6 +1098,126 @@ def _normalize_instagram_url(url: str) -> str:
         return (url or "").strip().split("?")[0].split("#")[0].rstrip("/")
 
 
+def _igram_world_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """Strategy 5: igram.world public Instagram downloader API (no-auth, public posts)."""
+    import re as _re
+    m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
+    if not m:
+        return None
+    shortcode = m.group(1)
+    try:
+        # igram.world uses a POST request with URL to return direct download links
+        r = httpx.post(
+            "https://igram.world/api/ig/",
+            json={"url": f"https://www.instagram.com/p/{shortcode}/"},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Origin": "https://igram.world",
+                "Referer": "https://igram.world/",
+            },
+            timeout=20,
+        )
+        if r.status_code != 200:
+            return None
+        data = r.json()
+        items = data if isinstance(data, list) else (data.get("media") or data.get("data") or [])
+        if not items:
+            return None
+        # Find the best video/image link
+        media_url = None
+        is_video = False
+        for item in (items if isinstance(items, list) else [items]):
+            if isinstance(item, dict):
+                u = item.get("url") or item.get("src") or item.get("download_url")
+                if u and ("mp4" in u or "video" in u.lower()):
+                    media_url = u
+                    is_video = True
+                    break
+                elif u and not media_url:
+                    media_url = u
+        if not media_url:
+            return None
+        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+        ext = "mp4" if is_video else "jpg"
+        out = job_dir / f"instagram_{shortcode}_ig5.{ext}"
+        out.write_bytes(v.content)
+        size_mb = round(len(v.content) / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded Instagram {'video' if is_video else 'photo'} ({size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4" if is_video else "image/jpeg",
+        )
+    except Exception:
+        return None
+
+
+def _sss_plus_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """Strategy 6: sssinstagram.com public downloader (form-based scraper, no auth needed)."""
+    import re as _re
+    m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
+    if not m:
+        return None
+    shortcode = m.group(1)
+    clean = f"https://www.instagram.com/p/{shortcode}/"
+    try:
+        # First get the token from the page
+        page = httpx.get(
+            "https://sssinstagram.com/",
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+            timeout=15,
+        )
+        if page.status_code != 200:
+            return None
+        token_m = _re.search(r'name="_token"\s+value="([^"]+)"', page.text)
+        if not token_m:
+            return None
+        token = token_m.group(1)
+        # Submit the form
+        r = httpx.post(
+            "https://sssinstagram.com/",
+            data={"url": clean, "_token": token},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": "https://sssinstagram.com/",
+                "Accept": "text/html,application/xhtml+xml",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            timeout=20,
+            follow_redirects=True,
+        )
+        if r.status_code != 200:
+            return None
+        html = r.text
+        # Find download links
+        links = _re.findall(r'href="(https://[^"]+\.(?:mp4|jpg|jpeg|png)[^"]*)"', html)
+        if not links:
+            return None
+        media_url = links[0]
+        is_video = ".mp4" in media_url.lower()
+        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        if v.status_code != 200 or len(v.content) < 5000:
+            return None
+        ext = "mp4" if is_video else "jpg"
+        out = job_dir / f"instagram_{shortcode}_sss.{ext}"
+        out.write_bytes(v.content)
+        size_mb = round(len(v.content) / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded Instagram {'video' if is_video else 'photo'} ({size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4" if is_video else "image/jpeg",
+        )
+    except Exception:
+        return None
+
+
 def _instagram_html_meta_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     """Fallback: scrape og:video / og:image from Instagram page HTML."""
     headers = {
@@ -1136,28 +1320,38 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if cobalt_fb is not None:
         return cobalt_fb
 
+    # Strategy 5: igram.world public API
+    igram_fb = _igram_world_fallback(clean_url, job_dir)
+    if igram_fb is not None:
+        return igram_fb
+
+    # Strategy 6: sss.plus / SaveFrom-like public scraper
+    sss_fb = _sss_plus_fallback(clean_url, job_dir)
+    if sss_fb is not None:
+        return sss_fb
+
     # All strategies failed — give the user a concrete recovery path.
-    msg = (
-        "Instagram is blocking this download from our server (this happens with reels from accounts that require login, "
-        "or when Instagram rate-limits cloud IPs). "
-        "Quick fix: 1) Open instagram.com in Chrome and sign in. "
-        "2) Install the free 'Get cookies.txt LOCALLY' extension. "
-        "3) Click the extension on instagram.com → Export → copy the text. "
-        "4) Paste it into the Cookies field above and try again. "
-        "Public posts from large creators usually work without cookies on the second or third retry."
-    )
     return ExecutionResult(
         kind="json",
-        message=msg,
+        message=(
+            "Instagram blocked this download after 6 attempts. This happens with private accounts, "
+            "age-gated content, or when Instagram rate-limits cloud servers. "
+            "The fastest fix: paste your browser cookies (takes ~30 seconds)."
+        ),
         data={
             "error": "instagram_blocked",
             "yt_dlp_error": primary.message,
             "fix_steps": [
-                "Sign in to instagram.com in your browser",
-                "Install the 'Get cookies.txt LOCALLY' Chrome extension",
-                "Export cookies on instagram.com",
-                "Paste the cookies text in the Cookies field above",
-                "Retry — it will now download as your account",
+                "Sign in to instagram.com in your browser (Chrome or Edge)",
+                "Install the free 'Get cookies.txt LOCALLY' Chrome extension",
+                "Click the extension on instagram.com → Export cookies",
+                "Open the downloaded file, select all text, copy it",
+                "Paste into the 'Cookies' field above and click Run again",
+            ],
+            "alternatives": [
+                "Try the URL in a VPN if content is geo-restricted",
+                "Ask the account owner to make the post public",
+                "Use the Instagram app's built-in share/save feature for personal content",
             ],
             "help_url": "https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc",
         },

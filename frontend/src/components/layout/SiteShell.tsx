@@ -7,7 +7,7 @@ import NavbarSearch from '../search/NavbarSearch'
 import SmartDropOverlay from './SmartDropOverlay'
 import { prefetchToolChunks } from '../../lib/prefetchTool'
 
-const TOOL_COUNT_LABEL = '1200+'
+const TOOL_COUNT_LABEL = '1300+'
 
 type NavCategory = {
   icon: typeof FileText
@@ -534,7 +534,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <Link to='/tools/youtube-downloader'>YouTube Downloader</Link>
               <Link to='/tools/instagram-downloader'>Instagram Downloader</Link>
               <Link to='/tools/generate-signature'>Signature Generator</Link>
-              <Link to='/'>All 1200+ Tools →</Link>
+              <Link to='/'>All 1300+ Tools →</Link>
             </div>
           </div>
         </div>
