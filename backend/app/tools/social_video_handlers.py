@@ -284,34 +284,10 @@ def _handle_pinterest_downloader(files: list[Path], payload: dict[str, Any], job
     og_fb = _og_meta_video_fallback(url, job_dir, "Pinterest video")
     if og_fb is not None:
         return og_fb
-    # Strategy 4: Cobalt API
-    try:
-        import httpx as _httpx
-        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
-            try:
-                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
-                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    timeout=20)
-                if r.status_code == 200:
-                    d = r.json()
-                    if d.get("status") == "tunnel" or d.get("url"):
-                        mu = d.get("url")
-                        if mu:
-                            v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                            if v.status_code == 200 and len(v.content) > 5000:
-                                out = job_dir / "pinterest_cobalt.mp4"
-                                out.write_bytes(v.content)
-                                size_mb = round(len(v.content) / 1024 / 1024, 2)
-                                return ExecutionResult(kind="file", message=f"Downloaded Pinterest media ({size_mb} MB)",
-                                    output_path=out, filename=out.name, content_type="video/mp4")
-            except Exception:
-                continue
-    except Exception:
-        pass
     return _social_recovery_result(
         url,
         "Pinterest downloader",
-        ["yt-dlp", "Pinterest OpenGraph scrape", "OG meta-tag scrape", "Cobalt API"],
+        ["yt-dlp", "Pinterest OpenGraph scrape", "OG meta-tag scrape"],
         primary,
     )
 
@@ -398,33 +374,10 @@ def _handle_reddit_downloader(files: list[Path], payload: dict[str, Any], job_di
     og_fb = _og_meta_video_fallback(url, job_dir, "Reddit video")
     if og_fb is not None:
         return og_fb
-    # Strategy 5: Cobalt API
-    try:
-        import httpx as _httpx
-        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
-            try:
-                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
-                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    timeout=20)
-                if r.status_code == 200:
-                    d = r.json()
-                    mu = d.get("url")
-                    if mu:
-                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                        if v.status_code == 200 and len(v.content) > 5000:
-                            out = job_dir / "reddit_cobalt.mp4"
-                            out.write_bytes(v.content)
-                            size_mb = round(len(v.content) / 1024 / 1024, 2)
-                            return ExecutionResult(kind="file", message=f"Downloaded Reddit media ({size_mb} MB)",
-                                output_path=out, filename=out.name, content_type="video/mp4")
-            except Exception:
-                continue
-    except Exception:
-        pass
     return _social_recovery_result(
         url,
         "Reddit video downloader",
-        ["Reddit public JSON fallback", "yt-dlp with audio/video merge", "old.reddit.com fallback", "OG meta-tag scrape", "Cobalt API"],
+        ["Reddit public JSON fallback", "yt-dlp with audio/video merge", "old.reddit.com fallback", "OG meta-tag scrape"],
         primary,
     )
 
@@ -444,33 +397,10 @@ def _handle_twitch_downloader(files: list[Path], payload: dict[str, Any], job_di
     fb = _og_meta_video_fallback(url, job_dir, "Twitch video")
     if fb is not None:
         return fb
-    # Strategy 3: Cobalt API
-    try:
-        import httpx as _httpx
-        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
-            try:
-                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
-                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    timeout=20)
-                if r.status_code == 200:
-                    d = r.json()
-                    mu = d.get("url")
-                    if mu:
-                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                        if v.status_code == 200 and len(v.content) > 5000:
-                            out = job_dir / "twitch_cobalt.mp4"
-                            out.write_bytes(v.content)
-                            size_mb = round(len(v.content) / 1024 / 1024, 2)
-                            return ExecutionResult(kind="file", message=f"Downloaded Twitch clip ({size_mb} MB)",
-                                output_path=out, filename=out.name, content_type="video/mp4")
-            except Exception:
-                continue
-    except Exception:
-        pass
     return _social_recovery_result(
         url,
         "Twitch downloader",
-        ["yt-dlp", "OpenGraph video scrape", "Cobalt API"],
+        ["yt-dlp", "OpenGraph video scrape"],
         primary,
     )
 
@@ -558,29 +488,6 @@ def _handle_linkedin_downloader(files: list[Path], payload: dict[str, Any], job_
         mob_fb = _og_meta_video_fallback(mobile_url, job_dir, "LinkedIn video")
         if mob_fb is not None:
             return mob_fb
-    # Strategy 4: Cobalt API
-    try:
-        import httpx as _httpx
-        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
-            try:
-                r = _httpx.post(inst, json={"url": url, "downloadMode": "auto"},
-                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    timeout=20)
-                if r.status_code == 200:
-                    d = r.json()
-                    mu = d.get("url")
-                    if mu:
-                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                        if v.status_code == 200 and len(v.content) > 5000:
-                            out = job_dir / "linkedin_cobalt.mp4"
-                            out.write_bytes(v.content)
-                            size_mb = round(len(v.content) / 1024 / 1024, 2)
-                            return ExecutionResult(kind="file", message=f"Downloaded LinkedIn video ({size_mb} MB)",
-                                output_path=out, filename=out.name, content_type="video/mp4")
-            except Exception:
-                continue
-    except Exception:
-        pass
     return ExecutionResult(
         kind="json",
         message="LinkedIn video downloader could not fetch this media after trying every available method. LinkedIn's videos are often login-gated.",
@@ -616,26 +523,8 @@ def _handle_bilibili_downloader(files: list[Path], payload: dict[str, Any], job_
     fb = _og_meta_video_fallback(url, job_dir, "Bilibili video")
     if fb is not None:
         return fb
-    # Strategy 3: Cobalt API (supports Bilibili)
-    try:
-        import httpx as _httpx
-        r = _httpx.post("https://api.cobalt.tools/", json={"url": url, "downloadMode": "auto"},
-            headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, timeout=20)
-        if r.status_code == 200:
-            d = r.json()
-            mu = d.get("url")
-            if mu:
-                v = _httpx.get(mu, timeout=90, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                if v.status_code == 200 and len(v.content) > 5000:
-                    out = job_dir / "bilibili_video.mp4"
-                    out.write_bytes(v.content)
-                    size_mb = round(len(v.content) / 1024 / 1024, 2)
-                    return ExecutionResult(kind="file", message=f"Downloaded Bilibili video ({size_mb} MB)",
-                        output_path=out, filename=out.name, content_type="video/mp4")
-    except Exception:
-        pass
     return _social_recovery_result(url, "Bilibili downloader",
-        ["yt-dlp", "OG meta scrape", "Cobalt API"], primary)
+        ["yt-dlp", "OG meta scrape"], primary)
 
 
 # ─── Rumble Downloader ────────────────────────────────────────────────────────
@@ -724,28 +613,6 @@ def _handle_soundcloud_downloader(files: list[Path], payload: dict[str, Any], jo
         if audio_files:
             out = sorted(audio_files, key=lambda f: f.stat().st_size, reverse=True)[0]
             return ExecutionResult(kind="file", output_path=out, filename=out.name, message=f"Downloaded: {title}")
-    except Exception:
-        pass
-    # Strategy 3: Cobalt API (audio extraction)
-    try:
-        import httpx as _httpx
-        for inst in ["https://api.cobalt.tools/", "https://cobalt.api.lisekilis.dev/"]:
-            try:
-                r = _httpx.post(inst, json={"url": url, "downloadMode": "audio"},
-                    headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
-                    timeout=20)
-                if r.status_code == 200:
-                    d = r.json()
-                    mu = d.get("url")
-                    if mu:
-                        v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                        if v.status_code == 200 and len(v.content) > 5000:
-                            out = job_dir / f"{title[:50]}.mp3"
-                            out.write_bytes(v.content)
-                            return ExecutionResult(kind="file", message=f"Downloaded audio via Cobalt: {title}",
-                                output_path=out, filename=out.name, content_type="audio/mpeg")
-            except Exception:
-                continue
     except Exception:
         pass
     return ExecutionResult(kind="json", message="SoundCloud download failed. The track may be private or geo-restricted.",
@@ -932,26 +799,8 @@ def _handle_kick_downloader(files: list[Path], payload: dict[str, Any], job_dir:
     og = _og_meta_video_fallback(url, job_dir, "Kick clip")
     if og is not None:
         return og
-    # Strategy 3: Cobalt API
-    try:
-        import httpx as _httpx
-        r = _httpx.post("https://api.cobalt.tools/", json={"url": url, "downloadMode": "auto"},
-            headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}, timeout=20)
-        if r.status_code == 200:
-            d = r.json()
-            mu = d.get("url")
-            if mu:
-                v = _httpx.get(mu, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
-                if v.status_code == 200 and len(v.content) > 5000:
-                    out = job_dir / "kick_clip.mp4"
-                    out.write_bytes(v.content)
-                    size_mb = round(len(v.content) / 1024 / 1024, 2)
-                    return ExecutionResult(kind="file", message=f"Downloaded Kick clip ({size_mb} MB)",
-                        output_path=out, filename=out.name, content_type="video/mp4")
-    except Exception:
-        pass
     return _social_recovery_result(url, "Kick clip downloader",
-        ["yt-dlp", "OG meta scrape", "Cobalt API"], primary)
+        ["yt-dlp", "OG meta scrape"], primary)
 
 
 # ─── Imgur Downloader ─────────────────────────────────────────────────────────

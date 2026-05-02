@@ -503,14 +503,10 @@ def _handle_video_downloader(files: list[Path], payload: dict[str, Any], job_dir
     if primary.kind == "file":
         return primary
 
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
-
     return _video_recovery_result(
         url,
         "Universal video downloader",
-        ["yt-dlp generic extractor", "Cobalt mirror APIs", "offline recovery response"],
+        ["yt-dlp generic extractor"],
         primary,
     )
 
@@ -691,11 +687,6 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     if fallback is not None:
         return fallback
 
-    # Strategy 6: Cobalt API fallback (v10 + v9 multi-instance)
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
-
     # All strategies failed — give user a clear recovery path
     last = next((r for r in [r4, r3, r2, primary] if r.data), primary)
     err_code = (last.data.get("error", "needs_authentication") if last.data else "needs_authentication")
@@ -730,8 +721,7 @@ def _handle_youtube_downloader(files: list[Path], payload: dict[str, Any], job_d
     return _video_recovery_result(
         url,
         "YouTube downloader",
-        ["yt-dlp mweb client", "yt-dlp ios client", "yt-dlp tv_embedded client",
-         "yt-dlp android/web clients", "YouTube Innertube API", "Cobalt mirror APIs (v10+v9)"],
+        ["yt-dlp default", "yt-dlp tv_embedded", "yt-dlp mediaconnect", "yt-dlp mweb", "YouTube Innertube API"],
         last,
     )
 
@@ -787,11 +777,6 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     if r3.kind == "file":
         return r3
 
-    # Strategy 4: Cobalt API fallback (audio mode)
-    cobalt_fb = _cobalt_api_fallback(url, job_dir, audio_only=True)
-    if cobalt_fb is not None:
-        return cobalt_fb
-
     last = next((r for r in [r3, r2, primary] if r.data), primary)
     if not cookies:
         return ExecutionResult(
@@ -817,7 +802,7 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
     return _video_recovery_result(
         url,
         "YouTube audio downloader",
-        ["yt-dlp default", "yt-dlp tv_embedded", "yt-dlp mediaconnect", "Cobalt mirror APIs"],
+        ["yt-dlp default", "yt-dlp tv_embedded", "yt-dlp mediaconnect"],
         primary,
     )
 
@@ -825,7 +810,11 @@ def _handle_youtube_to_mp3(files: list[Path], payload: dict[str, Any], job_dir: 
 # ─── Platform-Specific Downloaders ───────────────────────────────────────────
 
 def _cobalt_api_fallback(url: str, job_dir: Path, audio_only: bool = False) -> ExecutionResult | None:
-    """Multi-instance Cobalt API fallback supporting both v9 and v10 API formats."""
+    """Cobalt API fallback — DISABLED: all instances are DNS-blocked or require JWT auth from this server."""
+    # All cobalt.tools instances are either DNS-blocked from the server or now require
+    # JWT authentication (error.api.auth.jwt.missing). Returning None immediately to
+    # avoid 2+ minute timeouts on every download attempt.
+    return None
 
     # --- Cobalt v10 instances (new API: POST /, Accept: application/json) ---
     _V10_INSTANCES = [
@@ -967,6 +956,92 @@ def _ttsave_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     return None
 
 
+def _musicaldown_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
+    """musicaldown.com fallback — no-watermark TikTok download via form-based API."""
+    import re as _re
+    _UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36"
+    try:
+        # Step 1: Get page to extract dynamic form fields + session cookie
+        page = httpx.get(
+            "https://musicaldown.com/",
+            headers={"User-Agent": _UA, "Accept-Language": "en-US,en;q=0.9"},
+            timeout=12,
+            follow_redirects=True,
+        )
+        if page.status_code != 200:
+            return None
+        # Extract the URL input field name (changes per session, e.g. "_Flm", "_iBz")
+        url_field_m = _re.search(
+            r'<input name="(\w+)" type="text" autocapitalize', page.text
+        )
+        hidden_fields = _re.findall(
+            r'<input name="(\w+)" type="hidden" value="([^"]+)"', page.text
+        )
+        if not url_field_m:
+            return None
+        url_field_name = url_field_m.group(1)
+        session_cookie = page.cookies.get("session_data", "")
+
+        # Step 2: Submit the download form
+        form_data = {url_field_name: url}
+        for k, v in hidden_fields:
+            form_data[k] = v
+
+        r = httpx.post(
+            "https://musicaldown.com/download",
+            data=form_data,
+            headers={
+                "User-Agent": _UA,
+                "Referer": "https://musicaldown.com/",
+                "Cookie": f"session_data={session_cookie}" if session_cookie else "",
+            },
+            timeout=15,
+            follow_redirects=True,
+        )
+        if r.status_code != 200:
+            return None
+
+        # Step 3: Find the download URL (JWT token link from fastdl.muscdn.app)
+        # Priority: HD no-watermark link first, then any MP4 link
+        token_url_m = _re.search(
+            r'href="(https://fastdl\.muscdn\.app/v3\?token=[^"]+)"', r.text
+        )
+        if not token_url_m:
+            # Fallback: look for any direct CDN MP4 URL in the response
+            cdn_m = _re.search(
+                r'href="(https://v\d+\.tiktokcdn[^"]+\.mp4[^"]*)"', r.text
+            )
+            if not cdn_m:
+                return None
+            download_url = cdn_m.group(1)
+        else:
+            download_url = token_url_m.group(1)
+
+        # Step 4: Download the video
+        out = job_dir / "tiktok_musicaldown.mp4"
+        with httpx.stream(
+            "GET", download_url, timeout=90, follow_redirects=True,
+            headers={"User-Agent": _UA, "Referer": "https://musicaldown.com/"}
+        ) as v:
+            if v.status_code != 200:
+                return None
+            with open(out, "wb") as f:
+                for chunk in v.iter_bytes(chunk_size=256 * 1024):
+                    f.write(chunk)
+        if not out.exists() or out.stat().st_size < 5000:
+            return None
+        size_mb = round(out.stat().st_size / 1024 / 1024, 2)
+        return ExecutionResult(
+            kind="file",
+            message=f"Downloaded TikTok video (no watermark, {size_mb} MB)",
+            output_path=out,
+            filename=out.name,
+            content_type="video/mp4",
+        )
+    except Exception:
+        return None
+
+
 def _instagram_oembed_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
     """Free no-auth fallback for public Instagram reels/posts.
 
@@ -1096,47 +1171,62 @@ def _normalize_instagram_url(url: str) -> str:
 
 
 def _igram_world_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
-    """Strategy 5: igram.world public Instagram downloader API (no-auth, public posts)."""
+    """Strategy 5: igram.world public Instagram downloader API (no-auth, public posts).
+    Uses Laravel XSRF-TOKEN cookie extracted from the homepage for authentication.
+    """
     import re as _re
+    from urllib.parse import unquote as _unquote
     m = _re.search(r"/(?:reel|reels|p|tv)/([A-Za-z0-9_-]+)", url)
     if not m:
         return None
     shortcode = m.group(1)
+    clean_url = f"https://www.instagram.com/reel/{shortcode}/"
     try:
-        # igram.world uses a POST request with URL to return direct download links
-        r = httpx.post(
-            "https://igram.world/api/ig/",
-            json={"url": f"https://www.instagram.com/p/{shortcode}/"},
+        # Step 1: GET homepage to obtain Laravel XSRF-TOKEN cookie
+        ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
+        sess = httpx.Client(follow_redirects=True, headers={"User-Agent": ua}, timeout=12)
+        page = sess.get("https://igram.world/")
+        xsrf = _unquote(page.cookies.get("XSRF-TOKEN", ""))
+        if not xsrf:
+            return None
+        # Step 2: POST to /api/convert with XSRF token header (Laravel standard pattern)
+        r = sess.post(
+            "https://igram.world/api/convert",
+            json={"url": clean_url},
             headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "X-XSRF-TOKEN": xsrf,
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Origin": "https://igram.world",
                 "Referer": "https://igram.world/",
+                "X-Requested-With": "XMLHttpRequest",
+                "Origin": "https://igram.world",
             },
             timeout=20,
         )
         if r.status_code != 200:
             return None
         data = r.json()
-        items = data if isinstance(data, list) else (data.get("media") or data.get("data") or [])
-        if not items:
+        # Response: {"info": "<a href='...'>Download</a>", "code": "..."}
+        # Parse download links from the HTML info field
+        info_html = data.get("info", "")
+        if "error" in info_html.lower():
             return None
-        # Find the best video/image link
-        media_url = None
-        is_video = False
-        for item in (items if isinstance(items, list) else [items]):
-            if isinstance(item, dict):
-                u = item.get("url") or item.get("src") or item.get("download_url")
-                if u and ("mp4" in u or "video" in u.lower()):
-                    media_url = u
-                    is_video = True
-                    break
-                elif u and not media_url:
-                    media_url = u
-        if not media_url:
+        links = _re.findall(r'href=["\']([^"\']+\.(?:mp4|jpg|jpeg|png)[^"\']*)["\']', info_html)
+        if not links:
+            # Also try standard JSON keys
+            items = data if isinstance(data, list) else (data.get("media") or data.get("data") or [])
+            for item in (items if isinstance(items, list) else [items]):
+                if isinstance(item, dict):
+                    u = item.get("url") or item.get("src") or item.get("download_url")
+                    if u:
+                        links.append(u)
+        if not links:
             return None
-        v = httpx.get(media_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        # Prefer mp4 links
+        mp4_links = [l for l in links if ".mp4" in l.lower()]
+        media_url = mp4_links[0] if mp4_links else links[0]
+        is_video = ".mp4" in media_url.lower()
+        v = sess.get(media_url, timeout=60, follow_redirects=True)
         if v.status_code != 200 or len(v.content) < 5000:
             return None
         ext = "mp4" if is_video else "jpg"
@@ -1312,12 +1402,7 @@ def _handle_instagram_downloader(files: list[Path], payload: dict[str, Any], job
     if html_fallback is not None:
         return html_fallback
 
-    # Strategy 4: Cobalt API fallback
-    cobalt_fb = _cobalt_api_fallback(clean_url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
-
-    # Strategy 5: igram.world public API
+    # Strategy 4: igram.world public API
     igram_fb = _igram_world_fallback(clean_url, job_dir)
     if igram_fb is not None:
         return igram_fb
@@ -1365,7 +1450,11 @@ def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
             "https://www.tikwm.com/api/",
             data={"url": url, "hd": "1"},
             timeout=20,
-            headers={"User-Agent": "Mozilla/5.0"},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36",
+                "Referer": "https://www.tikwm.com/",
+                "Origin": "https://www.tikwm.com",
+            },
         )
         if r.status_code != 200:
             return None
@@ -1379,7 +1468,7 @@ def _tikwm_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
         # Some tikwm responses return relative URLs
         if video_url.startswith("/"):
             video_url = "https://www.tikwm.com" + video_url
-        v = httpx.get(video_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        v = httpx.get(video_url, timeout=60, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36"})
         if v.status_code != 200 or len(v.content) < 5000:
             return None
         title = (d.get("title") or "tiktok").strip() or "tiktok"
@@ -1431,51 +1520,116 @@ def _handle_tiktok_downloader(files: list[Path], payload: dict[str, Any], job_di
         fallback2 = _tikwm_fallback(url, job_dir)
         if fallback2:
             return fallback2
-            
+
+    # Try musicaldown.com (form-based, no-watermark download)
+    musical_fb = _musicaldown_fallback(clean_url, job_dir)
+    if musical_fb:
+        return musical_fb
+
     # Try ttsave.app fallback
     ttsave_fb = _ttsave_fallback(clean_url, job_dir)
     if ttsave_fb:
         return ttsave_fb
-        
-    # Try Cobalt fallback
-    cobalt_fb = _cobalt_api_fallback(clean_url, job_dir)
-    if cobalt_fb:
-        return cobalt_fb
-        
+
     return _video_recovery_result(
         url,
         "TikTok downloader",
-        ["yt-dlp mobile client", "TikWM public mirror", "original TikTok URL retry", "ttsave mirror", "Cobalt mirror APIs"],
+        ["yt-dlp mobile client", "TikWM public mirror (tikwm.com)", "musicaldown.com", "ttsave.app"],
         result,
     )
 
 
 def _twitter_syndication_fallback(url: str, job_dir: Path) -> ExecutionResult | None:
-    """No-auth fallback for public tweets via Twitter's syndication CDN.
+    """No-auth fallback for public tweets.
 
-    `cdn.syndication.twimg.com/tweet-result` is the public endpoint Twitter
-    uses to embed tweets on third-party sites. It returns full JSON including
-    `mediaDetails[].video_info.variants[]` (mp4 + m3u8) for any public tweet
-    without authentication.
+    Tries two approaches:
+    1. Twitter syndication CDN (cdn.syndication.twimg.com/tweet-result) — the
+       public embed endpoint that returns full media JSON without auth.
+    2. ssstwitter.com HTMX form submission — extracts video.twimg.com CDN URLs
+       from the rendered result HTML.
     """
     import re as _re
     m = _re.search(r"/status(?:es)?/(\d+)", url)
     if not m:
         return None
     tweet_id = m.group(1)
-    # Random token (any value works) — required parameter
+    ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
+
+    # ── Strategy A: Twitter syndication CDN ──────────────────────────────────
     api = (
         f"https://cdn.syndication.twimg.com/tweet-result"
         f"?id={tweet_id}&token=ishu&lang=en"
     )
     try:
-        r = httpx.get(api, timeout=20, follow_redirects=True,
-                      headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-        if r.status_code != 200:
-            return None
-        data = r.json()
+        r = httpx.get(api, timeout=15, follow_redirects=True,
+                      headers={
+                          "User-Agent": ua,
+                          "Accept": "application/json",
+                          "Origin": "https://platform.twitter.com",
+                          "Referer": "https://platform.twitter.com/",
+                      })
+        if r.status_code == 200:
+            try:
+                data = r.json()
+            except Exception:
+                data = None
+            if data:
+                return _parse_syndication_data(data, tweet_id, job_dir)
     except Exception:
-        return None
+        pass
+
+    # ── Strategy B: ssstwitter.com HTMX scraper ──────────────────────────────
+    try:
+        page = httpx.get("https://ssstwitter.com/", headers={"User-Agent": ua}, timeout=10)
+        tt_m = _re.search(r"tt:'([a-f0-9]+)'", page.text)
+        ts_m = _re.search(r"ts:(\d+)", page.text)
+        if tt_m and ts_m:
+            tt = tt_m.group(1)
+            ts = ts_m.group(1)
+            r2 = httpx.post(
+                "https://ssstwitter.com/",
+                data={"id": url, "locale": "en", "tt": tt, "ts": ts, "source": "form"},
+                headers={
+                    "User-Agent": ua,
+                    "Referer": "https://ssstwitter.com/",
+                    "HX-Request": "true",
+                    "HX-Trigger": "form",
+                    "HX-Target": "target",
+                    "HX-Current-URL": "https://ssstwitter.com/",
+                    "Accept": "*/*",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                timeout=20,
+                follow_redirects=True,
+            )
+            if r2.status_code == 200 and len(r2.text) > 200:
+                twimg_urls = _re.findall(
+                    r'(https://video\.twimg\.com/[^\s"\'<>&]+\.mp4[^\s"\'<>&]*)',
+                    r2.text,
+                )
+                if twimg_urls:
+                    best = twimg_urls[-1]  # last tends to be highest quality
+                    vid = httpx.get(best, timeout=60, follow_redirects=True,
+                                    headers={"User-Agent": ua})
+                    if vid.status_code == 200 and len(vid.content) > 5000:
+                        out = job_dir / f"twitter_{tweet_id}.mp4"
+                        out.write_bytes(vid.content)
+                        size_mb = round(len(vid.content) / 1024 / 1024, 2)
+                        return ExecutionResult(
+                            kind="file",
+                            message=f"Downloaded Twitter/X video ({size_mb} MB)",
+                            output_path=out,
+                            filename=out.name,
+                            content_type="video/mp4",
+                        )
+    except Exception:
+        pass
+
+    return None
+
+
+def _parse_syndication_data(data: dict, tweet_id: str, job_dir: Path) -> "ExecutionResult | None":
+    """Parse Twitter syndication CDN JSON and download the video/image."""
     media = data.get("mediaDetails") or []
     video_url = None
     is_video = False
@@ -1531,14 +1685,10 @@ def _handle_twitter_downloader(files: list[Path], payload: dict[str, Any], job_d
     if fallback is not None:
         return fallback
         
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
-        
     return _video_recovery_result(
         url,
         "Twitter/X video downloader",
-        ["Twitter/X syndication CDN", "yt-dlp", "Cobalt mirror APIs"],
+        ["Twitter/X syndication CDN (no-auth)", "yt-dlp"],
         primary,
     )
 
@@ -1616,13 +1766,10 @@ def _handle_facebook_downloader(files: list[Path], payload: dict[str, Any], job_
         fallback2 = _facebook_html_fallback(mbasic_url, job_dir)
         if fallback2 is not None:
             return fallback2
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
     return _video_recovery_result(
         url,
         "Facebook video downloader",
-        ["yt-dlp", "desktop HTML media scrape", "mbasic Facebook scrape", "Cobalt mirror APIs"],
+        ["yt-dlp", "desktop HTML media scrape", "mbasic Facebook scrape"],
         primary,
     )
 
@@ -1699,13 +1846,10 @@ def _handle_vimeo_downloader(files: list[Path], payload: dict[str, Any], job_dir
     fb = _vimeo_player_config_fallback(url, job_dir, payload.get("quality"))
     if fb is not None:
         return fb
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
     return _video_recovery_result(
         url,
         "Vimeo downloader",
-        ["yt-dlp", "Vimeo player config", "Cobalt mirror APIs"],
+        ["yt-dlp", "Vimeo player config API"],
         primary,
     )
 
@@ -1790,13 +1934,10 @@ def _handle_dailymotion_downloader(files: list[Path], payload: dict[str, Any], j
     fb = _dailymotion_metadata_fallback(url, job_dir, payload.get("quality"))
     if fb is not None:
         return fb
-    cobalt_fb = _cobalt_api_fallback(url, job_dir)
-    if cobalt_fb is not None:
-        return cobalt_fb
     return _video_recovery_result(
         url,
         "Dailymotion downloader",
-        ["yt-dlp", "Dailymotion metadata API", "Cobalt mirror APIs"],
+        ["yt-dlp", "Dailymotion metadata API"],
         primary,
     )
 
